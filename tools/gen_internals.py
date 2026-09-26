@@ -201,18 +201,18 @@ section('shape', 'The shape of the interpreter', ''.join([
          "primarily by backtracking rather than by collection, so a choice point "
          "records where the heap stood and failing rewinds to it."),
     table(['File', 'Lines', 'What lives there'], [
-        ['src/prolog.h', '341', 'the shared declarations: terms, marks, frames, choice points'],
-        ['src/term.c', '824', 'heap and arenas, atom table, unification, standard order, copying, the collector'],
-        ['src/parser.c', '914', 'tokeniser, operator table, operator-precedence reader'],
+        ['src/prolog.h', '357', 'the shared declarations: terms, marks, frames, choice points'],
+        ['src/term.c', '835', 'heap and arenas, atom table, unification, standard order, copying, the collector'],
+        ['src/parser.c', '919', 'tokeniser, operator table, operator-precedence reader'],
         ['src/write.c', '328', 'the term writer'],
-        ['src/arith.c', '401', 'arithmetic evaluation'],
+        ['src/arith.c', '404', 'arithmetic evaluation'],
         ['src/db.c', '148', 'predicate table, clause lists, first-argument indexing'],
-        ['src/machine.c', '606', 'the solver: goal frames, choice points, cut, exceptions'],
-        ['src/builtins.c', '2304', 'the builtin predicates and their dispatch table'],
-        ['src/stream.c', '152', 'streams, including in-memory sinks'],
+        ['src/machine.c', '636', 'the solver: goal frames, choice points, cut, exceptions'],
+        ['src/builtins.c', '2427', 'the builtin predicates and their dispatch table'],
+        ['src/stream.c', '173', 'streams, including in-memory sinks'],
         ['src/consult.c', '227', 'loading programs, error messages'],
         ['src/main.c', '269', 'command line and the interactive toplevel'],
-        ['lib/boot.pl', '633', 'the library written in Prolog, compiled into the binary'],
+        ['lib/boot.pl', '616', 'the library written in Prolog, compiled into the binary'],
     ], 'mono1'),
     para("`lib/boot.pl` is turned into a C string by `tools/pl2c.awk` at build time and "
          "consulted at start-up, so predicates that are easier to write in Prolog — "

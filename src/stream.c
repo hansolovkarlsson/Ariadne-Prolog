@@ -10,7 +10,6 @@ struct PStream {
     int    is_input;
     int    alias;           /* atom, or -1 */
     char  *name;
-    int    peeked;          /* pushed-back character, or -2 */
     Reader reader;
     int    reader_ready;
 };
@@ -30,7 +29,6 @@ void stream_init(void)
     streams[1].alias = intern("user_output"); streams[1].name = "user_output";
     streams[2].f = stderr; streams[2].in_use = 1;
     streams[2].alias = intern("user_error");  streams[2].name = "user_error";
-    streams[0].peeked = streams[1].peeked = streams[2].peeked = -2;
 }
 
 int stream_index(PStream *s) { return (int)(s - streams); }
@@ -84,7 +82,6 @@ PStream *stream_open(const char *path, const char *mode, int is_input)
     streams[i].is_input = is_input;
     streams[i].alias = -1;
     streams[i].name = pl_strdup(path);
-    streams[i].peeked = -2;
     return &streams[i];
 }
 
@@ -100,7 +97,6 @@ PStream *stream_open_sink(void)
     streams[i].cap = 256;
     streams[i].buf = (char *)malloc(streams[i].cap);
     streams[i].buf[0] = 0;
-    streams[i].peeked = -2;
     return &streams[i];
 }
 
@@ -135,13 +131,6 @@ void stream_write(PStream *s, const char *buf, size_t n)
     s->buf[s->len] = 0;
 }
 
-int stream_getc(PStream *s)
-{
-    if (s->peeked != -2) { int c = s->peeked; s->peeked = -2; return c; }
-    if (s->f) return fgetc(s->f);
-    return EOF;
-}
-
 Reader *stream_reader(PStream *s)
 {
     if (!s->reader_ready) {
@@ -149,4 +138,36 @@ Reader *stream_reader(PStream *s)
         s->reader_ready = 1;
     }
     return &s->reader;
+}
+
+/* Reads one UTF-8 character into buf and returns its length in bytes, or
+   0 at end of stream.  Bytes go through the stream's Reader, so that a
+   character read and a term read see one input.  A byte that does not
+   start a well-formed sequence is taken alone. */
+int stream_get_char(PStream *s, char *buf)
+{
+    Reader *r = stream_reader(s);
+    int c = reader_getc(r), n, i;
+    if (c == EOF) return 0;
+    buf[0] = (char)c;
+    n = c >= 0xF0 && c < 0xF8 ? 4 : c >= 0xE0 ? 3 : c >= 0xC0 ? 2 : 1;
+    if (c >= 0xF8) n = 1;
+    for (i = 1; i < n; i++) {
+        int d = reader_getc(r);
+        if (d == EOF || (d & 0xC0) != 0x80) {
+            reader_ungetc(r, d);
+            return i;
+        }
+        buf[i] = (char)d;
+    }
+    return n;
+}
+
+/* As stream_get_char, then pushes the bytes back. */
+int stream_peek_char(PStream *s, char *buf)
+{
+    int n = stream_get_char(s, buf), i;
+    for (i = n - 1; i >= 0; i--)
+        reader_ungetc(stream_reader(s), (unsigned char)buf[i]);
+    return n;
 }

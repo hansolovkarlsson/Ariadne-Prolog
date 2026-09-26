@@ -423,6 +423,31 @@ test(io_with_output,  (with_output_to(atom(A), (write(a), write(b))), A == ab)).
 test(io_format_stream,(tmp_file(F), open(F, write, S), format(S, "~w.~n", [42]),
                        close(S), open(F, read, S2), read_term(S2, T, []), close(S2),
                        T =:= 42)).
+test(io_put_get_char, (tmp_file(F), open(F, write, S), put_char(S, a), put_char(S, 'é'),
+                       close(S), open(F, read, S2), get_char(S2, A), get_char(S2, B),
+                       get_char(S2, E), close(S2), [A, B, E] == [a, 'é', end_of_file])).
+test(io_peek_char,    (tmp_file(F), open(F, write, S), write(S, xy), close(S),
+                       open(F, read, S2), peek_char(S2, P), peek_char(S2, P2),
+                       get_char(S2, G), get_char(S2, H), close(S2),
+                       [P, P2, G, H] == [x, x, x, y])).
+test(io_char_then_read,(tmp_file(F), open(F, write, S), write(S, 'x foo(y).'), nl(S),
+                       close(S), open(F, read, S2), get_char(S2, C), read(S2, T),
+                       ( at_end_of_stream(S2) -> End = yes ; End = no ), close(S2),
+                       C == x, T == foo(y), End == yes)).
+test(io_at_end,       (tmp_file(F), open(F, write, S), write(S, a), close(S),
+                       open(F, read, S2), \+ at_end_of_stream(S2), get_char(S2, _),
+                       at_end_of_stream(S2), get_char(S2, E1), get_char(S2, E2),
+                       close(S2), E1 == end_of_file, E2 == end_of_file)).
+test(io_put_char_out, (with_output_to(atom(A), (put_char(a), current_output(S),
+                                                put_char(S, b))), A == ab)).
+test(io_char_errors,  (catch(put_char(ab), error(type_error(character, ab), _), true),
+                       catch(put_char(_), error(instantiation_error, _), true),
+                       catch(get_char(user_input, 1),
+                             error(type_error(in_character, 1), _), true),
+                       catch(get_char(user_output, _),
+                             error(permission_error(input, stream, user_output), _), true),
+                       catch(put_char(user_input, a),
+                             error(permission_error(output, stream, user_input), _), true))).
 
 tmp_file('/tmp/cprolog_test_tmp.pl').
 

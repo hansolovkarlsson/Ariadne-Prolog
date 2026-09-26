@@ -186,6 +186,11 @@ static void rd_ungetc(Reader *r, int c)
     r->pushback[r->npush++] = c;
 }
 
+/* The same two, for the character predicates: reading a character and
+   reading a term from one stream must share one pushback. */
+int  reader_getc(Reader *r)          { return rd_getc(r); }
+void reader_ungetc(Reader *r, int c) { rd_ungetc(r, c); }
+
 /* ------------------------------------------------------------------ */
 /* Tokeniser                                                          */
 /* ------------------------------------------------------------------ */

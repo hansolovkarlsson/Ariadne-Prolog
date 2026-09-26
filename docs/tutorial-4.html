@@ -686,7 +686,7 @@ sell(rope, 2).
 sell(tent, 1).
 sell(unicorn, 1).
 sell(kettle, 99).
-sell(screwdriver, 2).</code></pre><p>Reading stops at the end of the file, which arrives as the atom <code>end_of_file</code>. There is no <code>at_end_of_stream/0</code> in this interpreter, so that atom is the test:</p><pre><code>read_orders :-
+sell(screwdriver, 2).</code></pre><p>Reading stops at the end of the file, which arrives as the atom <code>end_of_file</code>, and that atom is the test. <code>at_end_of_stream/0</code> exists too, but it looks at characters, not terms: a blank line after the last order leaves it false while <code>read/1</code> has nothing more to give:</p><pre><code>read_orders :-
     read(Term),
     (   Term == end_of_file
     -&gt;  true
@@ -697,7 +697,7 @@ sell(screwdriver, 2).</code></pre><p>Reading stops at the end of the file, which
 apply_order(sell(Item, Count)) :- !,
     ignore(try_sell(Item, Count)).
 apply_order(Other) :-
-    format("not an order, ignored: ~q~n", [Other]).</code></pre><aside class="note note-impl"><span class="note-tag">A file of terms is not a file of text</span><div>There are no character-reading predicates here — no <code>get_char/1</code>, no line reading — so a file this interpreter reads has to be Prolog terms. For text with its own shape, read it as one term (a quoted atom, or a code list) and take it apart with a grammar, exactly as Level 3 did with the order text.</div></aside><h3>Closing the stream whatever happens</h3><p>A stream must be closed even when the goal using it throws. Most systems have <code>setup_call_cleanup/3</code> for this; this one does not:</p><pre><code>?- setup_call_cleanup(true, true, true).
+    format("not an order, ignored: ~q~n", [Other]).</code></pre><aside class="note note-impl"><span class="note-tag">A file of terms is not a file of text</span><div><code>read/1</code> only reads Prolog terms. For text with its own shape, read it a character at a time with <code>get_char/1</code> and <code>peek_char/1</code> until <code>end_of_file</code>, turn each one into its code with <code>char_code/2</code>, and hand the code list to a grammar, exactly as Level 3 did with the order text. There is no line reading; a line is the characters up to <code>'\n'</code>.</div></aside><h3>Closing the stream whatever happens</h3><p>A stream must be closed even when the goal using it throws. Most systems have <code>setup_call_cleanup/3</code> for this; this one does not:</p><pre><code>?- setup_call_cleanup(true, true, true).
 ERROR: Unknown procedure: setup_call_cleanup/3</code></pre><p>So you write it out. Catch the ball, clean up, then re-throw it — the shape is the same every time:</p><pre><code>load_orders(File) :-
     open(File, read, Stream),
     current_input(Old),

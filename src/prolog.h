@@ -168,6 +168,8 @@ typedef struct {
 
 void  reader_init_string(Reader *r, const char *s, size_t len);
 void  reader_init_file(Reader *r, FILE *f, const char *name);
+int   reader_getc(Reader *r);
+void  reader_ungetc(Reader *r, int c);
 
 /* Reads one clause terminated by '.'.  Returns:
      1 on success (*out set),
@@ -341,7 +343,8 @@ PStream    *stream_open(const char *path, const char *mode, int is_input);
 PStream    *stream_open_sink(void);
 const char *stream_sink_text(PStream *s, size_t *len);
 int         stream_close(PStream *s);
-int         stream_getc(PStream *s);
+int         stream_get_char(PStream *s, char *buf);
+int         stream_peek_char(PStream *s, char *buf);
 int         stream_is_input(PStream *s);
 Reader     *stream_reader(PStream *s);
 

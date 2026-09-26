@@ -613,7 +613,9 @@ BUILTINS = [
      "goals and a closing full stop."),
     ('nl', "Writes a newline."),
     ('tab(+N)', "Writes N spaces."),
-    ('put_char(+Char)', "Writes a one-character atom."),
+    ('put_char(+Char)',
+     "Writes Char, a one-character atom; put_char/2 writes to a stream. Anything "
+     "longer is a `type_error(character, Char)`."),
     ('print_message(+Kind, +Message)',
      "Prints an error term on standard error the way the toplevel does."),
 
@@ -631,6 +633,18 @@ BUILTINS = [
      "Reads a term from the current input; gives `end_of_file` at the end."),
     ('read_term(?Term, +Options)',
      "As read/1, with `variable_names(L)`, `variables(L)` or `singletons(L)`."),
+    ('get_char(?Char)',
+     "Reads the next character from the current input as a one-character atom, or "
+     "`end_of_file` at the end, and again on every call after it. Text is read as "
+     "UTF-8. get_char/2 takes a stream. Characters and terms can be read "
+     "alternately from one stream."),
+    ('peek_char(?Char)',
+     "As get_char/1, but leaves the character to be read again; peek_char/2 takes a "
+     "stream."),
+    ('at_end_of_stream',
+     "True when nothing is left to read on the current input; "
+     "at_end_of_stream/1 takes a stream. On a terminal it waits for input to "
+     "decide."),
     ('open(+File, +Mode, -Stream)',
      "Opens File in mode `read`, `write` or `append`. open/4 takes an options list, "
      "which is accepted and ignored."),
@@ -860,9 +874,6 @@ section('limits', 'Deviations and limits', ''.join([
         "threads.",
         "No yall lambdas, so `maplist([X]>>Goal, L)` is not available — write a named "
         "helper predicate instead.",
-        "The character predicates `get_char/1,2`, `peek_char/1,2` and "
-        "`at_end_of_stream/0,1` are not implemented, and `put_char/2` exists only in "
-        "its one-argument form.",
         "`read_term/2,3` accepts `singletons(L)` but always reports `[]`.",
         "`open/4` accepts an options list and ignores it.",
         "`discontiguous/1` is recorded but never enforced; clauses may be spread "

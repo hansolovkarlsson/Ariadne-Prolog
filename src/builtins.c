@@ -1502,14 +1502,86 @@ BI(bi_tab)
     return PL_OK;
 }
 
-BI(bi_put_char)
+/* ------------------------------------------------------------------ */
+/* Characters: get_char/1,2, peek_char/1,2, put_char/1,2,             */
+/* at_end_of_stream/0,1                                               */
+/* ------------------------------------------------------------------ */
+
+static int input_stream_arg(Term *t, PStream **s)
+{
+    int rc = stream_arg(t, s);
+    if (rc != PL_OK) return rc;
+    if (!stream_is_input(*s)) return permission_error("input", "stream", t);
+    return PL_OK;
+}
+
+static int output_stream_arg(Term *t, PStream **s)
+{
+    int rc = stream_arg(t, s);
+    if (rc != PL_OK) return rc;
+    if (stream_is_input(*s)) return permission_error("output", "stream", t);
+    return PL_OK;
+}
+
+static int is_char_atom(Term *t)
+{
+    return t->tag == TAG_ATOM
+        && utf8_len(atom_name(AT(t)), atom_len(AT(t))) == 1;
+}
+
+/* get_char and peek_char: the next character as a one-character atom, or
+   end_of_file.  At the end they keep answering end_of_file, as read/1
+   does. */
+static int read_char(PStream *s, Term *out, int peek)
+{
+    Term *c = deref(out);
+    char buf[4];
+    int n;
+    if (c->tag != TAG_VAR && !is_char_atom(c)
+        && !(c->tag == TAG_ATOM && AT(c) == a_end_of_file))
+        return type_error("in_character", c);
+    n = peek ? stream_peek_char(s, buf) : stream_get_char(s, buf);
+    RET(unify(out, mk_atom(n ? intern_n(buf, (size_t)n) : a_end_of_file)));
+}
+
+BI(bi_get_char)  { UNUSED; return read_char(stream_current_input(), A[0], 0); }
+BI(bi_peek_char) { UNUSED; return read_char(stream_current_input(), A[0], 1); }
+BI(bi_get_char2) { UNUSED; PStream *s; int rc = input_stream_arg(A[0], &s);
+                   if (rc != PL_OK) return rc;
+                   return read_char(s, A[1], 0); }
+BI(bi_peek_char2){ UNUSED; PStream *s; int rc = input_stream_arg(A[0], &s);
+                   if (rc != PL_OK) return rc;
+                   return read_char(s, A[1], 1); }
+
+static int write_char(PStream *s, Term *t)
+{
+    Term *c = deref(t);
+    if (c->tag == TAG_VAR) return instantiation_error();
+    if (!is_char_atom(c)) return type_error("character", c);
+    stream_write(s, atom_name(AT(c)), atom_len(AT(c)));
+    return PL_OK;
+}
+
+BI(bi_put_char)  { UNUSED; return write_char(stream_current_output(), A[0]); }
+BI(bi_put_char2) { UNUSED; PStream *s; int rc = output_stream_arg(A[0], &s);
+                   if (rc != PL_OK) return rc;
+                   return write_char(s, A[1]); }
+
+BI(bi_at_end_of_stream)
 {
     UNUSED;
-    int a;
-    int rc = get_atom(A[0], &a);
+    char buf[4];
+    RET(stream_peek_char(stream_current_input(), buf) == 0);
+}
+
+BI(bi_at_end_of_stream1)
+{
+    UNUSED;
+    char buf[4];
+    PStream *s;
+    int rc = input_stream_arg(A[0], &s);
     if (rc != PL_OK) return rc;
-    stream_write(stream_current_output(), atom_name(a), atom_len(a));
-    return PL_OK;
+    RET(stream_peek_char(s, buf) == 0);
 }
 
 BI(bi_flush_output)
@@ -2290,7 +2362,8 @@ static const BiEntry bi_table[] = {
     { "write_term", 2, bi_write_term }, { "write_term", 3, bi_write_term3 },
     { "writeln", 1, bi_writeln }, { "writeln", 2, bi_writeln2 },
     { "nl", 0, bi_nl }, { "nl", 1, bi_nl1 },
-    { "tab", 1, bi_tab }, { "put_char", 1, bi_put_char },
+    { "tab", 1, bi_tab },
+    { "put_char", 1, bi_put_char }, { "put_char", 2, bi_put_char2 },
     { "flush_output", 0, bi_flush_output },
     { "halt", 0, bi_halt }, { "halt", 1, bi_halt1 },
     { "format", 1, bi_format1 }, { "format", 2, bi_format2 },
@@ -2303,6 +2376,10 @@ static const BiEntry bi_table[] = {
     { "with_output_to", 2, bi_with_output_to },
     { "read", 1, bi_read }, { "read", 2, bi_read2 },
     { "read_term", 2, bi_read_term2 }, { "read_term", 3, bi_read_term3 },
+    { "get_char", 1, bi_get_char }, { "get_char", 2, bi_get_char2 },
+    { "peek_char", 1, bi_peek_char }, { "peek_char", 2, bi_peek_char2 },
+    { "at_end_of_stream", 0, bi_at_end_of_stream },
+    { "at_end_of_stream", 1, bi_at_end_of_stream1 },
     /* flags, operators, misc */
     { "set_prolog_flag", 2, bi_set_prolog_flag }, { "$flag", 2, bi_flag },
     { "op", 3, bi_op }, { "$op_list", 1, bi_op_list },

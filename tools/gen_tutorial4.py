@@ -547,8 +547,9 @@ sell(kettle, 99).
 sell(screwdriver, 2).
 """),
     para("Reading stops at the end of the file, which arrives as the atom "
-         "`end_of_file`. There is no `at_end_of_stream/0` in this interpreter, "
-         "so that atom is the test:"),
+         "`end_of_file`, and that atom is the test. `at_end_of_stream/0` exists "
+         "too, but it looks at characters, not terms: a blank line after the last "
+         "order leaves it false while `read/1` has nothing more to give:"),
     pre("""
 read_orders :-
     read(Term),
@@ -564,12 +565,11 @@ apply_order(Other) :-
     format("not an order, ignored: ~q~n", [Other]).
 """),
     note('impl', 'A file of terms is not a file of text',
-         "There are no character-reading predicates here — no `get_char/1`, no "
-         "line reading — so a file this interpreter reads has to be Prolog "
-         "terms. "
-         "For text with its own shape, read it as one term (a quoted atom, or a "
-         "code list) and take it apart with a grammar, exactly as Level 3 did "
-         "with the order text."),
+         "`read/1` only reads Prolog terms. For text with its own shape, read it "
+         "a character at a time with `get_char/1` and `peek_char/1` until "
+         "`end_of_file`, turn each one into its code with `char_code/2`, and hand "
+         "the code list to a grammar, exactly as Level 3 did with the order text. "
+         "There is no line reading; a line is the characters up to `'\\n'`."),
     '<h3>Closing the stream whatever happens</h3>',
     para("A stream must be closed even when the goal using it throws. Most "
          "systems have `setup_call_cleanup/3` for this; this one does not:"),
