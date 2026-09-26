@@ -12,10 +12,6 @@ produced some of the entries below.
 
 ## Near term
 
-- **The missing character predicates.** `get_char/1,2`, `peek_char/1,2`,
-  `at_end_of_stream/0,1` and `put_char/2` are ISO and are not implemented. The
-  stream layer already has the pushback needed for `peek_char`.
-
 - **Real singleton reporting.** `read_term/2,3` accepts `singletons(L)` and
   always reports `[]`. The reader already counts variable occurrences.
 

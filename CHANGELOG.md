@@ -6,6 +6,25 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-09-25
+
+### Added
+
+- **The character predicates.** `get_char/1,2`, `peek_char/1,2`,
+  `at_end_of_stream/0,1` and `put_char/2`. Characters are read as UTF-8 and
+  come back as one-character atoms, or `end_of_file` at the end and on every
+  call after it, as `read/1` does. Characters and terms can be read
+  alternately from one stream: both go through the stream's one reader and its
+  pushback. The unused one-character slot the roadmap counted on for
+  `peek_char` was removed instead of used, because a character held there would
+  have been invisible to `read/1`. Reading from an output stream, or writing to
+  an input one, is a `permission_error`. Six tests; the suite is at 275. (`0a37c7c`)
+
+### Changed
+
+- **`put_char/1` takes exactly one character.** It wrote any atom it was given;
+  `put_char(ab)` is now `type_error(character, ab)`, as ISO has it. (`0a37c7c`)
+
 ## 2026-09-12
 
 ### Added
