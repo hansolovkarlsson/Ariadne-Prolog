@@ -324,6 +324,72 @@ The habit worth the paragraph is the wrong first number. It was plausible
 enough to write down and wrong enough to have gone into the changelog, and it
 was caught only because 61% was too good for what one constant could do.
 
+## Day five: an English grammar, placed and not started
+
+Thirteen days after day four, and once more nothing about the interpreter
+changed. The day was one question, asked outside this repository, and the
+answer turned out to belong inside it.
+
+### The question
+
+Could a program with a dictionary of word classes, which words are verbs,
+which adjectives, and so on, say whether a sentence is proper English, and how
+big a project would that be? It can, and it is one of the oldest problems in
+computational linguistics. The size is set entirely by coverage: a toy is a
+weekend, textbook English is months, and broad coverage of real text has taken
+research groups decades. The English Resource Grammar has been in development
+for about thirty years.
+
+What makes it hard was written out in full in a workspace document, and the
+short version is seven things. Most common words belong to several classes
+("time flies like an arrow" has several parses), so the dictionary can only
+list candidates. The grammar is ambiguous by nature ("I saw the man with the
+telescope"), so the one-parse machinery of a compiler does not apply.
+Agreement, case, verb forms and what each verb requires all need features on
+the rules. English is enormous. Grammatical is not the same as sensible, and
+garden-path sentences such as "the old man the boat" are grammatical while
+reading as errors. Correctness is a matter of degree. And there are always
+words the dictionary does not know.
+
+### Why here
+
+The PEG and Pratt parsers elsewhere in the workspace were ruled out first,
+because both commit to one reading and English needs every reading kept alive.
+Prolog is the natural host, and this interpreter already has the whole
+mechanism: DCG translation in `lib/boot.pl` and `phrase/2,3`. DCGs were
+invented for exactly this problem. Agreement is a rule argument and costs
+nothing, since Prolog's own unification does the checking, and backtracking
+explores the ambiguous readings without extra machinery.
+
+That was checked rather than assumed. A seven-rule grammar with singular and
+plural carried as an argument, loaded with `./prolog g.pl`, accepted
+`[the,dogs,chase,a,cat]` and rejected both `[the,dogs,chases,a,cat]` and
+`[a,dogs,chase,the,cat]`, with no agreement code written by hand. The file was
+a scratch experiment and is not in the tree.
+
+### Where it lives, decided twice
+
+The first answer was a separate project, `~/Projects/English`, on the reasoning
+that a program written in Prolog is to this interpreter what a C program is to
+a C compiler. A setup pass for that directory was started and stopped before it
+wrote anything, and the decision was reversed: the grammar lives **in this
+repository**, as `english/`, a project inside the project. `examples/` was the
+other candidate and was passed over, because `make examples` checks five small
+programs against fixed answers, and a grammar that is meant to grow in stages
+is not one of those.
+
+The reversal has a practical argument behind it as well as a preference. The
+grammar will meet the interpreter's limits before its own: plain DCGs loop on
+left-recursive rules, and the fix is tabling, already on the roadmap as a
+large structural project with no hooks yet. Kept in the same repository, the
+program that needs tabling and the engine that lacks it are recorded side by
+side, and the roadmap entry for one is the case for the other.
+
+**Nothing was started.** The roadmap carries the entry, under a new heading,
+*Built on the interpreter*, with the three stages and the wall. No directory
+was created, since a directory with nothing in it is not a place yet; `english/`
+arrives with its first grammar file.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:

@@ -1,9 +1,10 @@
 # Roadmap
 
-Known work, roughly in the order it would pay off. Everything here is a
-consequence of decisions described in the
+Known work, roughly in the order it would pay off. Everything under the first
+three headings is a consequence of decisions described in the
 [engine internals](https://hansolovkarlsson.github.io/cprolog/internals.html)
-document; nothing is speculative.
+document; nothing is speculative. *Built on the interpreter* holds programs
+written in Prolog that live in this repository and run on it.
 
 Finished work moves to [CHANGELOG.md](CHANGELOG.md). [POSTMORTEM.md](POSTMORTEM.md)
 covers the defects the project has found in itself, including the ones that
@@ -61,6 +62,33 @@ These change the shape of the system rather than adding to it.
 
 - **Tabling and constraints.** Both are large, self-contained projects that the
   current solver has no hooks for.
+
+## Built on the interpreter
+
+- **An English grammar checker, written as DCGs, in `english/`.** A lexicon
+  that records each word's parts of speech and features, a grammar of `-->`
+  rules, and `phrase/2` as the parser: a sentence is grammatical when a parse
+  exists. Nothing in the interpreter breaks without it. What it buys is the
+  first program here that leans on DCG translation and `phrase/2,3` as hard as
+  their intended use does; today only the suite and tutorial level 3 touch
+  them. Decided 2026-09-25 and **not started**; the journal's day five has the
+  reasoning. Three stages, each worth stopping at:
+
+  1. A few hundred words, simple declarative sentences, and agreement carried
+     as a rule argument (`sentence --> noun_phrase(N), verb_phrase(N).`), so
+     that "the dogs chases" and "a dogs" are rejected by unification alone.
+     A weekend to two weeks.
+  2. What each verb takes after it, questions, negation, passives and relative
+     clauses, and morphology rules for words missing from the lexicon. Months,
+     part-time.
+  3. A lexicon generated from WordNet or Wiktionary, and a record of what
+     breaks. Broad coverage of real text is out of scope: rule-based grammars
+     that aim for it have taken decades.
+
+  The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
+  DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
+  it by writing such rules right-recursively. Past that, the answer is
+  *Tabling* under *Structural*, which gives this entry a case for that one.
 
 ## Not planned
 
