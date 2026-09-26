@@ -201,9 +201,9 @@ section('shape', 'The shape of the interpreter', ''.join([
          "primarily by backtracking rather than by collection, so a choice point "
          "records where the heap stood and failing rewinds to it."),
     table(['File', 'Lines', 'What lives there'], [
-        ['src/prolog.h', '357', 'the shared declarations: terms, marks, frames, choice points'],
+        ['src/prolog.h', '358', 'the shared declarations: terms, marks, frames, choice points'],
         ['src/term.c', '835', 'heap and arenas, atom table, unification, standard order, copying, the collector'],
-        ['src/parser.c', '919', 'tokeniser, operator table, operator-precedence reader'],
+        ['src/parser.c', '938', 'tokeniser, operator table, operator-precedence reader'],
         ['src/write.c', '328', 'the term writer'],
         ['src/arith.c', '404', 'arithmetic evaluation'],
         ['src/db.c', '148', 'predicate table, clause lists, first-argument indexing'],

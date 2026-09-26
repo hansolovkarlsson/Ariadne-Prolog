@@ -632,7 +632,9 @@ BUILTINS = [
     ('read(?Term)',
      "Reads a term from the current input; gives `end_of_file` at the end."),
     ('read_term(?Term, +Options)',
-     "As read/1, with `variable_names(L)`, `variables(L)` or `singletons(L)`."),
+     "As read/1, with `variable_names(L)`, `variables(L)` or `singletons(L)`. "
+     "`singletons(L)` lists `Name = Var` for each named variable that occurs once, "
+     "in the order read; names starting with `_` count, only `_` itself does not."),
     ('get_char(?Char)',
      "Reads the next character from the current input as a one-character atom, or "
      "`end_of_file` at the end, and again on every call after it. Text is read as "
@@ -874,7 +876,6 @@ section('limits', 'Deviations and limits', ''.join([
         "threads.",
         "No yall lambdas, so `maplist([X]>>Goal, L)` is not available — write a named "
         "helper predicate instead.",
-        "`read_term/2,3` accepts `singletons(L)` but always reports `[]`.",
         "`open/4` accepts an options list and ignores it.",
         "`discontiguous/1` is recorded but never enforced; clauses may be spread "
         "through a file regardless.",

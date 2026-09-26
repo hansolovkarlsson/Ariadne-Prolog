@@ -423,6 +423,13 @@ test(io_with_output,  (with_output_to(atom(A), (write(a), write(b))), A == ab)).
 test(io_format_stream,(tmp_file(F), open(F, write, S), format(S, "~w.~n", [42]),
                        close(S), open(F, read, S2), read_term(S2, T, []), close(S2),
                        T =:= 42)).
+test(io_singletons,   (tmp_file(F), open(F, write, S),
+                       write(S, 'f(X, Y, _Z, _, X, W).'), nl(S), close(S),
+                       open(F, read, S2), read_term(S2, T, [singletons(L)]), close(S2),
+                       T = f(_, Y, Z, _, _, W), L == ['Y'=Y, '_Z'=Z, 'W'=W])).
+test(io_singletons_none,(tmp_file(F), open(F, write, S), write(S, 'g(A, A, _).'), nl(S),
+                       close(S), open(F, read, S2), read_term(S2, _, [singletons(L)]),
+                       close(S2), L == [])).
 test(io_put_get_char, (tmp_file(F), open(F, write, S), put_char(S, a), put_char(S, 'é'),
                        close(S), open(F, read, S2), get_char(S2, A), get_char(S2, B),
                        get_char(S2, E), close(S2), [A, B, E] == [a, 'é', end_of_file])).

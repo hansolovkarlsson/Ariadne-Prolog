@@ -2027,7 +2027,7 @@ BI(bi_with_output_to)
     return rc;
 }
 
-static int read_opts(Term *opts, Term *varnames, Term *vars)
+static int read_opts(Term *opts, Term *varnames, Term *singles, Term *vars)
 {
     Term *l = deref(opts);
     while (l->tag == TAG_STR && FN(l) == a_dot && AR(l) == 2) {
@@ -2041,7 +2041,7 @@ static int read_opts(Term *opts, Term *varnames, Term *vars)
                 int n = term_variables(vars, buf, 1024, 0);
                 if (!unify(ARG(o, 0), list_from_array(buf, n))) return PL_FAIL;
             } else if (!strcmp(nm, "singletons")) {
-                if (!unify(ARG(o, 0), mk_atom(a_nil))) return PL_FAIL;
+                if (!unify(ARG(o, 0), singles)) return PL_FAIL;
             }
         }
         l = deref(ARG(l, 1));
@@ -2052,11 +2052,11 @@ static int read_opts(Term *opts, Term *varnames, Term *vars)
 static int read_from_stream(PStream *s, Term *out, Term *opts)
 {
     Reader *r = stream_reader(s);
-    Term *t, *names;
-    int rc = read_term_from(r, &t, &names);
+    Term *t, *names, *singles;
+    int rc = read_term_full(r, &t, &names, &singles);
     if (rc < 0) return PL_ERROR;
     if (opts) {
-        rc = read_opts(opts, names, t);
+        rc = read_opts(opts, names, singles, t);
         if (rc != PL_OK) return rc;
     }
     RET(unify(out, t));

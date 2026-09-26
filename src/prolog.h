@@ -176,6 +176,7 @@ void  reader_ungetc(Reader *r, int c);
      0 at end of file,
     -1 on a syntax error (exception raised). */
 int read_term_from(Reader *r, Term **out, Term **varnames);
+int read_term_full(Reader *r, Term **out, Term **varnames, Term **singletons);
 
 /* ------------------------------------------------------------------ */
 /* Writer                                                             */

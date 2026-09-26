@@ -869,6 +869,15 @@ static void parser_free(Parser *p)
 
 int read_term_from(Reader *r, Term **out, Term **varnames)
 {
+    return read_term_full(r, out, varnames, NULL);
+}
+
+/* As read_term_from, and also the singletons: every named variable that
+   occurs exactly once, as Name = Var in the order read.  A name that
+   starts with an underscore is still a name, as ISO has it; only the
+   anonymous `_` is left out. */
+int read_term_full(Reader *r, Term **out, Term **varnames, Term **singletons)
+{
     Parser p;
     Term *t;
     int rc;
@@ -881,6 +890,7 @@ int read_term_from(Reader *r, Term **out, Term **varnames)
         parser_free(&p);
         *out = mk_atom(a_end_of_file);
         if (varnames) *varnames = mk_atom(a_nil);
+        if (singletons) *singletons = mk_atom(a_nil);
         return 0;
     }
     if (parse(&p, 1200, &t, NULL) < 0) goto error;
@@ -897,6 +907,15 @@ int read_term_from(Reader *r, Term **out, Term **varnames)
             list = mk_cons(mk2(a_eq, mk_atom(p.vars[i].name), p.vars[i].var), list);
         }
         *varnames = list;
+    }
+    if (singletons) {
+        Term *list = mk_atom(a_nil);
+        int i;
+        for (i = p.nvars - 1; i >= 0; i--)
+            if (p.vars[i].count == 1)
+                list = mk_cons(mk2(a_eq, mk_atom(p.vars[i].name), p.vars[i].var),
+                               list);
+        *singletons = list;
     }
     *out = t;
     parser_free(&p);
