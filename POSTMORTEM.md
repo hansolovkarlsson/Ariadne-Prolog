@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Seventeen defects, in four cohorts that failed for four different reasons:
+Nineteen defects, in four cohorts that failed for four different reasons:
 
 - **Design era** — five bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Fixed before the first
@@ -19,9 +19,9 @@ Seventeen defects, in four cohorts that failed for four different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency** — eight defects in which the code, the documentation and the
-  flag reporting the behaviour did not agree with each other. All found while
-  writing the tutorials.
+- **Consistency** — ten defects in which the code, the documentation and the
+  flag reporting the behaviour did not agree with each other. Eight found while
+  writing the tutorials, two while adding the character predicates.
 - **The suite about itself**: one defect in the test file, invisible to the
   suite because the suite was the thing that was wrong. Found by an audit that
   counted the file against the runner.
@@ -105,8 +105,8 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Eight defects in which two parts of the project disagreed. All were found while
-writing the four tutorial levels, which is the interesting part: writing
+Ten defects in which two parts of the project disagreed. The first eight were
+found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
 
@@ -195,6 +195,29 @@ bug. Neither would have been caught by re-reading.
 *What this says:* worked solutions are code. The fact that they live in a
 document does not change what they are.
 
+### Two claims that had stopped being true
+
+Both found on 2026-09-25 while adding the character predicates (`0a37c7c`),
+neither by a check:
+
+- **`put_char/1` wrote any atom.** The reference said "Writes a one-character
+  atom" and the code called `get_atom` and wrote whatever it got, so
+  `put_char(ab)` printed `ab`. Found by reading the one-argument version in
+  order to write the two-argument one next to it. It raises
+  `type_error(character, ab)` now, as ISO has it.
+- **Six of the twelve line counts on the internals page were wrong**,
+  `src/builtins.c` by forty-six lines and `lib/boot.pl` by seventeen in the
+  other direction. Found
+  when the change moved `src/stream.c` and the table had to be touched: counting
+  every row with `wc -l` rather than only the edited one showed the rest had
+  drifted too. All twelve are current now.
+
+*What this says:* a figure in a document that nothing regenerates is a claim
+that starts decaying the day it is written, and the only thing that re-checks
+it is somebody editing the row next to it. The same goes for a one-line
+description of a predicate: it was true of what the author meant, and nothing
+compared it with what the code did.
+
 ## Cohort D — the suite about itself
 
 One defect, and it gets a cohort of its own because it failed for a reason none
@@ -235,24 +258,24 @@ image: green is not the same as quiet, and quiet is not the same as complete.
 
 | Found by | Count |
 | --- | --- |
-| Writing the documentation, then testing the claim | 5 |
+| Writing the documentation, then testing the claim | 6 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 3 |
 | Rendering the pages and looking at them | 3 |
 | Address sanitizer | 1 |
-| Reading the code | 1 |
+| Reading the code | 2 |
 | An audit counting the test file against the runner | 1 |
 
 Two things stand out.
 
-**The test suite found three of seventeen.** It is a good suite — 269 tests,
+**The test suite found three of nineteen.** It is a good suite — 277 tests,
 run twice per leg, run again under two sanitizers — and it found under a fifth
 of the defects. Everything it found was a wrong *answer*. Everything it missed
 was a wrong *limit*, a wrong *platform assumption*, a wrong *claim in the
 documentation*, or, in the last case, a wrong *count of itself*, and no
 realistic number of additional tests would have changed that.
 
-**Writing the documentation found the most.** Five defects, and they were the
+**Writing the documentation found the most.** Six defects, and they were the
 ones nothing else could have reached, because the question a document asks is
 "is this sentence true?" — which is a different question from "does this goal
 succeed?". The most productive single activity in the project was writing a

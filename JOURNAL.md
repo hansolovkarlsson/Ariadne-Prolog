@@ -390,6 +390,51 @@ side, and the roadmap entry for one is the case for the other.
 was created, since a directory with nothing in it is not a place yet; `english/`
 arrives with its first grammar file.
 
+### The character predicates, and a slot that could not be used
+
+Later the same day the interpreter changed after all: the cheapest item on the
+roadmap, `get_char/1,2`, `peek_char/1,2`, `at_end_of_stream/0,1` and
+`put_char/2` (`0a37c7c`). The roadmap had priced it low on the strength of one
+sentence, that the stream layer already had the pushback `peek_char` needs. It
+did have a slot for one pushed-back character, in `src/stream.c`, and nothing
+had ever used it. Reading `read/1` before building on the slot showed why using
+it would have been a bug: terms are read by the parser's `Reader`, which keeps
+its own pushback and pulls bytes from the `FILE` directly. A character peeked
+into the stream's slot would have been skipped by the next `read/1`, and
+a character left behind in the Reader's pushback by a term read would have
+been skipped by the next `get_char`. So the slot was removed, and both kinds of
+read now go through the Reader: the parser exports its byte-level get and
+unget, and the stream layer builds UTF-8 characters on them. The test that
+matters reads `x foo(y).` as a character, then a term, then asks whether the
+stream is at its end.
+
+Writing `put_char/2` meant reading `put_char/1`, which turned out to write any
+atom at all. It takes one character now, and the postmortem has that and the
+internals page's stale line counts as two more consistency defects.
+
+### Singletons, and which names count
+
+The next item went in the same way (`c7bfa74`). The reader counted every
+variable's occurrences and threw the counts away; `read_term/2,3` answered
+`singletons(L)` with `[]` whatever it had read. A second entry point,
+`read_term_full`, passes the counts out, and `read_term_from` keeps its
+signature for its six other callers. The only decision was whether `_Z` is a
+singleton. ISO says yes, since it is a named variable; SWI-Prolog's warning
+leaves such names out, and possibly its `read_term` does too. This follows ISO,
+and the reference says so.
+
+### A defect that was not one
+
+While updating the reference, its line listing the stream versions of the
+output predicates named `tab/2`, and a search of the builtin table in
+`src/builtins.c` found only `tab/1`. That was reported as a false claim in the
+reference. It was not: `tab/2` is one line of Prolog in `lib/boot.pl`, and the
+search had looked in only one of the two places a predicate can be defined.
+Running `tab(user_output, 3)` settled it at closeout, before it reached the
+postmortem. It is the day-four lesson with the sign reversed: a missing
+predicate is a claim about everywhere, and the check has to look everywhere,
+or at least ask the interpreter.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -407,8 +452,8 @@ Every one of these was added in response to something it would have caught.
 
 ## Where it stands
 
-About 6,600 lines of hand-written C, 616 lines of library written in Prolog,
-a 269-test suite, five examples, four tutorial levels, and a reference and
+About 6,700 lines of hand-written C, 616 lines of library written in Prolog,
+a 277-test suite, five examples, four tutorial levels, and a reference and
 internals document generated from the interpreter's own tables.
 
 What it is not: fast, modular, tabled, constrained, or capable of integers
