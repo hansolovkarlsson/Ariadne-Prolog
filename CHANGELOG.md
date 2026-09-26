@@ -20,6 +20,12 @@ There are no releases yet, so entries are grouped by the day they landed on
   have been invisible to `read/1`. Reading from an output stream, or writing to
   an input one, is a `permission_error`. Six tests; the suite is at 275. (`0a37c7c`)
 
+- **`read_term/2,3` reports singletons.** `singletons(L)` gave `[]` whatever
+  was read; it now lists `Name = Var` for every named variable that occurs
+  exactly once, in the order read. Names starting with an underscore count,
+  as ISO has it; only the anonymous `_` does not. Two tests; the suite is at
+  277. (`c7bfa74`)
+
 ### Changed
 
 - **`put_char/1` takes exactly one character.** It wrote any atom it was given;

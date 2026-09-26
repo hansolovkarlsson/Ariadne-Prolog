@@ -12,9 +12,6 @@ produced some of the entries below.
 
 ## Near term
 
-- **Real singleton reporting.** `read_term/2,3` accepts `singletons(L)` and
-  always reports `[]`. The reader already counts variable occurrences.
-
 - **`open/4` options.** The options list is accepted and ignored; at least
   `alias/1` and `eof_action/1` should be honoured or rejected rather than
   silently dropped.
