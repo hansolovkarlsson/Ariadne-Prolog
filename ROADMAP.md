@@ -14,10 +14,6 @@ produced some of the entries below.
 
 ## Medium term
 
-- **Reclaiming retracted clauses.** A retracted clause is held until its
-  predicate is abolished, because a choice point may still point at it. A
-  reference count or a generation stamp would let the common case be freed.
-
 ## Structural
 
 These change the shape of the system rather than adding to it.

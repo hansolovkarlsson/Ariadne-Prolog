@@ -440,7 +440,7 @@ or at least ask the interpreter.
 Two days after day five, and the busiest day the interpreter has had since the
 first. It began with the standup's list and a runner pin, and ended with every
 walk in the engine rewritten, a test leg that had never done its job doing it,
-and sixteen defects in the postmortem.
+and seventeen defects in the postmortem.
 
 ### Two small things first
 
@@ -623,6 +623,27 @@ The tests nearly proved nothing. The first versions caught
 because its unbound context unified with the pattern. A test that a value has
 a shape has to check first that the value exists.
 
+### Retracted clauses, freed
+
+The last fix was the roadmap's reclaiming of retracted clauses (`d936ad0`). A
+retracted clause is unlinked from its predicate but keeps its next pointer, so
+that a choice point sitting on it can walk on, and so it had been held until
+the predicate was abolished. The reference count the roadmap proposed became a
+count on each predicate of the clause choice points live on it. The work was in
+making the count exact: seventeen places lowered the choice point stack
+directly, a cut among them lowering it by any number at once, and all of them
+now go through one function that releases what each popped choice point held.
+The first version crashed the suite, because the last-clause path popped its
+choice point and then read the predicate the pop had just released.
+
+Reading `pred_abolish` for the design turned up the day's seventeenth defect:
+it freed clauses under a choice point, and backtracking into an abolished
+predicate crashed. A counter reasserted a million times now peaks at 43 MB
+where it peaked at 3.6 GB, and `statistics(retained_clauses, N)` lets the suite
+see the freeing happen rather than infer it. Four of the six tests pass on the
+old binary as well. That is what they are for: they guard that freeing a clause
+never changes what `retract/1` means.
+
 ### What the day was like
 
 Every defect of the day in the interpreter passed the suite, because every
@@ -657,7 +678,7 @@ Every one of these was added in response to something it would have caught.
 ## Where it stands
 
 About 7,500 lines of hand-written C, 599 lines of library written in Prolog,
-a 319-test suite with a second leg that collects and a deep-term run beside
+a 325-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, and a reference and internals
 document generated from the interpreter's own tables.
 

@@ -9,11 +9,12 @@ shipped. This is the failures.
 
 ## Scope
 
-Thirty-five defects, in five cohorts that failed for five different reasons:
+Thirty-six defects, in five cohorts that failed for five different reasons:
 
-- **Design era** — five bugs about memory lifetime and ordering, produced by the
-  choice to copy structures and manage memory by hand. Fixed before the first
-  commit; documented in full in the [engine
+- **Design era**: six bugs about memory lifetime and ordering, produced by the
+  choice to copy structures and manage memory by hand. Five fixed before the
+  first commit, and one of the same kind found on 2026-09-27; the five are
+  documented in full in the [engine
   internals](https://hansolovkarlsson.github.io/ariadne-prolog/internals.html)
   under *Five bugs this design produced*, and summarised here.
 - **Portability** — three bugs that existed from the first commit and were
@@ -60,6 +61,22 @@ The internals page adds the observation that none of the five was found by
 *using* the interpreter — only by the sanitizer, by tests that asked for every
 solution rather than the first, and by reading. That is the argument for
 `make test-asan` and for writing `\+ more_solutions` style tests.
+
+### A sixth, found later: `abolish/1` freed clauses in use
+
+`retract/1` had always kept a retracted clause on a garbage list, because a
+choice point on the predicate could still walk to it. `abolish/1` did not: it
+freed every clause of the predicate at once, live or retracted, whether or not a
+choice point was on one. Backtracking into a predicate abolished under it read
+freed memory, and `findall(X, (p(X), (X == 2 -> abolish(p/1) ; true)), L)` died
+with SIGSEGV.
+
+Found on 2026-09-27 by reading `pred_abolish` while making retracted clauses
+freeable, and confirmed by running that goal against the old binary. It is the
+first rule above broken by the one path nobody had checked it on: anything a
+choice point refers to must outlive it. `abolish/1` now puts every clause on
+the garbage list, and each predicate counts the choice points on its clauses,
+so the list is freed only when that count is zero. (`d936ad0`)
 
 ## Cohort B — portability
 
@@ -384,7 +401,7 @@ is the one aimed at the neighbour of the last.
 
 | Found by | Count |
 | --- | --- |
-| Reading the code | 10 |
+| Reading the code | 11 |
 | Writing the documentation, then testing the claim | 6 |
 | Probing past what the suite tries, at a million elements or levels | 4 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
@@ -399,7 +416,7 @@ is the one aimed at the neighbour of the last.
 
 Three things stand out.
 
-**The test suite found three of thirty-five.** It is a good suite, 319 tests
+**The test suite found three of thirty-six.** It is a good suite, 325 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
@@ -417,7 +434,7 @@ productive single activity in the project was writing a tutorial for a
 beginner, because a beginner's questions have no respect for which parts were
 carefully implemented.
 
-**Reading the code now leads, and it is not one activity.** Eight of its ten
+**Reading the code now leads, and it is not one activity.** Nine of its eleven
 were found on one day, each while working on something beside it: the parser
 while fixing its error path, `=@=` while fixing its crash, the toplevel while
 working on streams. Reading the path that will be touched, before touching it,

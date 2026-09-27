@@ -88,6 +88,16 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Fixed
 
+- **Retracted clauses are freed once no choice point can reach them.** They
+  were held until the predicate was abolished, so a counter retracted and
+  reasserted a million times held a million clauses, 3.6 GB at peak; it holds
+  one now, at 43 MB. `statistics(retained_clauses, N)` says how many are held.
+  (`d936ad0`)
+
+- **`abolish/1` no longer frees clauses a goal is still backtracking through.**
+  Backtracking into a predicate abolished under it read freed memory and could
+  crash; the goal now finds no more clauses. (`d936ad0`)
+
 - **A variable where a goal stands is `call/1` of it,** as ISO has it. A cut
   bound to one cut the whole clause: `p :- G = !, G, fail.` never reached
   `p`'s next clause. It is local now, and `clause/2` shows such a body as
@@ -171,7 +181,7 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Tests
 
-- 277 → 319. Seven for `open/4` and the end of stream, one changed; twelve for
+- 277 → 325. Seven for `open/4` and the end of stream, one changed; twelve for
   the fixes above. Nine were seen failing against the code before their fix;
   `tm_reader_list_tail` and `tm_variant_pairs` pass on both, and guard the
   code that was rewritten. `at_join_many` was not run against the old join,
@@ -180,8 +190,9 @@ There are no releases yet, so entries are grouped by the day they landed on
   `at_split` and `at_split_many` pass on it, slowly in the second case. One
   for the reader's variables, `tm_reader_many_vars`, which passes on the old
   code in 0.43 seconds against 0.06. One for the dialect flag, eleven for
-  lambdas, and seven for error context and the variable goal, six of which
-  fail on the old code.
+  lambdas, seven for error context and the variable goal, six of which fail on
+  the old code, and six for retracted clauses, one of which fails and one
+  crashes on the old code.
 - `tests/deep.pl`, 22 checks outside the suite. Against the code before
   `d1e3088` it dies with SIGSEGV.
 - The suite's second leg, `make test-gc`, turns out never to have collected
