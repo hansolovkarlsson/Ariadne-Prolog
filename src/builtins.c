@@ -2165,11 +2165,11 @@ static int read_from_stream(PStream *s, Term *given, Term *out, Term *opts)
 }
 
 BI(bi_read)  { UNUSED; return read_from_stream(stream_current_input(), NULL, A[0], NULL); }
-BI(bi_read2) { UNUSED; PStream *s; int rc = stream_arg(A[0], &s);
+BI(bi_read2) { UNUSED; PStream *s; int rc = input_stream_arg(A[0], &s);
                if (rc != PL_OK) return rc;
                return read_from_stream(s, A[0], A[1], NULL); }
 BI(bi_read_term2) { UNUSED; return read_from_stream(stream_current_input(), NULL, A[0], A[1]); }
-BI(bi_read_term3) { UNUSED; PStream *s; int rc = stream_arg(A[0], &s);
+BI(bi_read_term3) { UNUSED; PStream *s; int rc = input_stream_arg(A[0], &s);
                     if (rc != PL_OK) return rc;
                     return read_from_stream(s, A[0], A[1], A[2]); }
 

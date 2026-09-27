@@ -528,6 +528,10 @@ test(io_char_errors,  (catch(put_char(ab), error(type_error(character, ab), _), 
                              error(permission_error(input, stream, user_output), _), true),
                        catch(put_char(user_input, a),
                              error(permission_error(output, stream, user_input), _), true))).
+test(io_read_output,  (catch(read(user_output, _), error(E1, _), true),
+                       E1 == permission_error(input, stream, user_output),
+                       catch(read_term(user_error, _, []), error(E2, _), true),
+                       E2 == permission_error(input, stream, user_error))).
 
 tmp_file('/tmp/cprolog_test_tmp.pl').
 
