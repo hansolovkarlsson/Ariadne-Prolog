@@ -10,11 +10,25 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A second leg that collects.** `make test-gc` ran the suite through
+  `run_tests`, which holds choice points around every test, so the collector
+  never ran: not one collection, however low `PROLOG_GC_THRESHOLD` was set.
+  It now runs `run_tests_bare`, which runs every test again as `Goal, !` with
+  nothing around it, stops at the first failure and names it. With the new
+  `PROLOG_GC_INTERVAL=4` and the threshold now held where
+  `PROLOG_GC_THRESHOLD` puts it, instead of tripling after each collection,
+  every one of the 296 tests is collected while it runs, about 525,000
+  collections in 11 seconds. A collector planted with a bug, one that stopped
+  forwarding variables, passed the old leg and fails this one. `make test-asan`
+  runs the new leg too. `tests/deep.pl` runs once, as the forced run added
+  nothing, and a `-g "halt(1)"` after it and the bare leg turns a failed goal,
+  which exits 0, into a failed make. (`19f42ca`)
+
 - **`statistics(garbage_collection, [Collections, BytesFreed, Milliseconds])`,**
   as SWI has it, and **`make test-deep`**, which runs `tests/deep.pl`: terms
   nested a million deep put through 21 walks at the top level, where the
-  collector can run, failing unless it did. `make check` runs it twice, once
-  with the collector's threshold at its lowest, and `make test-asan` once.
+  collector can run, failing unless it did. `make check` and `make test-asan`
+  run it.
   (`d1e3088`)
 
 - **`open/4` options.** The list was accepted and ignored; every option is
@@ -97,7 +111,9 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 - **`atomic_list_concat` joins in one pass.** It made a new atom at every
   step and atoms are never freed, so a million parts ran the machine out of
-  memory. (`678e501`)
+  memory. (`678e501`) Its test now joins 50,000 parts, not 200,000: run bare
+  with the collector in every fourth inference, building the larger list took
+  46 seconds.
 
 ### Tests
 
@@ -109,7 +125,8 @@ There are no releases yet, so entries are grouped by the day they landed on
 - `tests/deep.pl`, 22 checks outside the suite. Against the code before
   `d1e3088` it dies with SIGSEGV.
 - The suite's second leg, `make test-gc`, turns out never to have collected
-  anything; see the roadmap.
+  anything before today; every earlier count of "both legs" was one leg run
+  twice. It now runs the same 296 tests bare, each collected while it runs.
 
 ## 2026-09-25
 

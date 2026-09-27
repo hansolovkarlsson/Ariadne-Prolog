@@ -12,15 +12,6 @@ produced some of the entries below.
 
 ## Near term
 
-- **The suite never runs the collector.** The collector only runs when no
-  choice point is live, and `run_tests` holds one from its first test to its
-  last, so `make test-gc` and the second leg of `make test-asan` have run the
-  whole suite without a single collection: `statistics(garbage_collection,
-  [N|_])` is 0 at the end. `tests/deep.pl` now exercises the collector, but
-  only on deep terms. Either the harness runs each test with nothing live
-  around it, or the GC leg is dropped and the counts in the records stop
-  calling it a second leg. Found on 2026-09-27.
-
 - **Splitting an atom is quadratic.** `atomic_list_concat/3` in split mode
   interns every remainder on the way, as joining did until 2026-09-27; a
   builtin as for `'$join'` would make it linear.
