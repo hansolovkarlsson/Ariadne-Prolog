@@ -221,6 +221,18 @@ test(tm_max_arity_reader,
       numlist(1, N, Ns), atomic_list_concat(Ns, ',', Args),
       atomic_list_concat(['f(', Args, ')'], Text),
       atom_to_term(Text, T, _), functor(T, f, A), A =:= N)).
+test(tm_max_arity_reader_over,
+     (current_prolog_flag(max_arity, N), N1 is N + 1,
+      numlist(1, N1, Ns), atomic_list_concat(Ns, ',', Args),
+      atomic_list_concat(['f(', Args, ')'], Text),
+      catch(atom_to_term(Text, _, _), error(E, _), true),
+      E == representation_error(max_arity))).
+/*  A list is not a compound in the reader's eyes: it has no length limit. */
+test(tm_reader_long_list,
+     (numlist(1, 5000, L), format(atom(Text), '~w', [L]),
+      atom_to_term(Text, T, _), T == L)).
+test(tm_reader_list_tail,
+     (atom_to_term('[a, b | T]', L, ['T' = T]), L = [a, b | T], var(T))).
 
 /* ---------------- atoms and text ---------------- */
 

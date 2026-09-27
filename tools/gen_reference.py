@@ -801,8 +801,9 @@ ERRORS = [
     ['evaluation_error(undefined)',
      'An arithmetic function has no value there, such as sqrt of a negative number.'],
     ['representation_error(max_arity)',
-     'A term of more than 256 arguments, from `=../2` or `functor/3`. The '
-     'reader reports the same limit as a syntax error.'],
+     'A term of more than 256 arguments, from `=../2`, `functor/3` or the '
+     'reader. From the reader, the context is `file(Name, Line)`. Lists have '
+     'no length limit.'],
     ['representation_error(character_code)', 'A character code outside Unicode.'],
     ['permission_error(modify, static_procedure, PI)',
      'An attempt to assert to, retract from or inspect a predicate written in C.'],
@@ -819,7 +820,8 @@ ERRORS = [
 section('errors', 'Exceptions and errors', ''.join([
     para("Builtin predicates report problems by throwing a term of the form "
          "`error(Formal, Context)`, where Formal describes what went wrong and Context "
-         "is currently an unbound variable. Programs may throw anything at all with "
+         "is an unbound variable, except where the reader gives the place as "
+         "`file(Name, Line)`. Programs may throw anything at all with "
          "`throw/1`."),
     table(['Formal', 'Raised when'], ERRORS, 'mono1'),
     pre("""

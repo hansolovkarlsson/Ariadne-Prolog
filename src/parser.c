@@ -218,6 +218,7 @@ typedef struct {
     size_t  buflen, bufcap;
     char    err[256];
     int     errline;
+    const char *repr;    /* set when the error is a representation error */
 } Parser;
 
 static void buf_reset(Parser *p) { p->buflen = 0; }
@@ -253,6 +254,16 @@ static void buf_put_utf8(Parser *p, long code)
 static int syntax_err(Parser *p, const char *msg)
 {
     snprintf(p->err, sizeof(p->err), "%s", msg);
+    p->errline = p->r->line;
+    return -1;
+}
+
+/* Text that is well formed but names a term this system cannot build,
+   such as a compound past MAX_ARITY: ISO makes that a representation
+   error, not a syntax error. */
+static int repr_err(Parser *p, const char *what)
+{
+    p->repr = what;
     p->errline = p->r->line;
     return -1;
 }
@@ -614,7 +625,7 @@ static Term *var_for(Parser *p, int name)
 }
 
 static int parse(Parser *p, int maxprec, Term **out, int *outprec);
-static int parse_arglist(Parser *p, Term **args, int *n, int max);
+static int parse_arglist(Parser *p, Term **args, int *n);
 static int expect_punct(Parser *p, int c, const char *what);
 static int atom_or_compound(Parser *p, int atom, Term **out);
 
@@ -625,11 +636,12 @@ static int expect_punct(Parser *p, int c, const char *what)
     return next_token(p);
 }
 
-static int parse_arglist(Parser *p, Term **args, int *n, int max)
+/* The arguments of a compound, into args, which holds MAX_ARITY. */
+static int parse_arglist(Parser *p, Term **args, int *n)
 {
     for (;;) {
         Term *a;
-        if (*n >= max) return syntax_err(p, "too many arguments");
+        if (*n >= MAX_ARITY) return repr_err(p, "max_arity");
         if (parse(p, 999, &a, NULL) < 0) return -1;
         args[(*n)++] = a;
         if (p->tok.kind == TK_PUNCT && p->tok.atom == ',') {
@@ -640,24 +652,34 @@ static int parse_arglist(Parser *p, Term **args, int *n, int max)
     }
 }
 
+/* A list is built a cell at a time as its elements are read, so it has
+   no length limit. */
 static int parse_list(Parser *p, Term **out)
 {
-    Term *items[4096], *tail;
-    int n = 0, i;
+    Term *head = NULL, *last = NULL;
 
     if (p->tok.kind == TK_PUNCT && p->tok.atom == ']') {
         if (next_token(p) < 0) return -1;
         return atom_or_compound(p, a_nil, out);
     }
-    if (parse_arglist(p, items, &n, 4096) < 0) return -1;
-    tail = mk_atom(a_nil);
+    for (;;) {
+        Term *a, *cell;
+        if (parse(p, 999, &a, NULL) < 0) return -1;
+        cell = mk_cons(a, mk_atom(a_nil));
+        if (last) ARG(last, 1) = cell;
+        else head = cell;
+        last = cell;
+        if (p->tok.kind != TK_PUNCT || p->tok.atom != ',') break;
+        if (next_token(p) < 0) return -1;
+    }
     if (p->tok.kind == TK_PUNCT && p->tok.atom == '|') {
+        Term *tail;
         if (next_token(p) < 0) return -1;
         if (parse(p, 999, &tail, NULL) < 0) return -1;
+        ARG(last, 1) = tail;
     }
     if (expect_punct(p, ']', "expected ]") < 0) return -1;
-    for (i = n - 1; i >= 0; i--) tail = mk_cons(items[i], tail);
-    *out = tail;
+    *out = head;
     return 0;
 }
 
@@ -668,7 +690,7 @@ static int atom_or_compound(Parser *p, int atom, Term **out)
         Term *args[MAX_ARITY], *s;
         int n = 0, i;
         if (next_token(p) < 0) return -1;
-        if (parse_arglist(p, args, &n, MAX_ARITY) < 0) return -1;
+        if (parse_arglist(p, args, &n) < 0) return -1;
         if (expect_punct(p, ')', "expected ) in arguments") < 0) return -1;
         s = mk_str(atom, n);
         for (i = 0; i < n; i++) ARG(s, i) = args[i];
@@ -775,7 +797,7 @@ static int parse_primary(Parser *p, int maxprec, Term **out, int *outprec)
             if (p->tok.kind != TK_PUNCT || p->tok.atom != '(')
                 return syntax_err(p, "expected (");
             if (next_token(p) < 0) return -1;
-            if (parse_arglist(p, args, &n, MAX_ARITY) < 0) return -1;
+            if (parse_arglist(p, args, &n) < 0) return -1;
             if (expect_punct(p, ')', "expected ) in arguments") < 0) return -1;
             s = mk_str(t.atom, n);
             for (i = 0; i < n; i++) ARG(s, i) = args[i];
@@ -930,6 +952,16 @@ error:
         /* Skip forward to the end of the offending clause. */
         while (p.tok.kind != TK_END && p.tok.kind != TK_EOF)
             if (next_token(&p) < 0) break;
+        if (p.repr) {
+            /* Not a syntax error, so the place goes in the context, where
+               the error printer looks for it. */
+            err = mk2(a_error,
+                      mk1(intern("representation_error"), mk_atom_str(p.repr)),
+                      mk2(intern("file"), mk_atom_str(r->name), mk_int(rc)));
+            parser_free(&p);
+            pl_throw_ball(err);
+            return -1;
+        }
         err = mk1(intern("syntax_error"), mk_atom_str(msg));
         parser_free(&p);
         pl_throw(err);

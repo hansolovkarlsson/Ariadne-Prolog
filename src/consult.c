@@ -29,6 +29,18 @@ void print_error_term(FILE *f, Term *ball)
         return;
     }
     formal = deref(ARG(ball, 0));
+    {
+        /* The reader puts the place of an error that is not a syntax error
+           in the context, as file(Name, Line). */
+        Term *ctx = deref(ARG(ball, 1));
+        if (ctx->tag == TAG_STR && AR(ctx) == 2 && !strcmp(atom_name(FN(ctx)), "file")) {
+            Term *name = deref(ARG(ctx, 0));
+            if (name->tag == TAG_ATOM) fprintf(f, "%s:", atom_name(AT(name)));
+            else { wr(f, name); fprintf(f, ":"); }
+            wr(f, ARG(ctx, 1));
+            fprintf(f, ": ");
+        }
+    }
     if (formal->tag == TAG_ATOM &&
         !strcmp(atom_name(AT(formal)), "instantiation_error")) {
         fprintf(f, "Arguments are not sufficiently instantiated\n");
