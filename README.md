@@ -204,10 +204,7 @@ These are deliberate, and each would be a substantial piece of work:
   about a kilobyte an iteration — a million iterations peak at 754 MB, against
   2.8 MB for the same loop over `between/3`, which retries one choice point in
   place.
-- Maximum arity is 256; `read_term/2` reports `singletons` as `[]`.
-- One `assert`/`retract` cycle keeps the retracted clause until the predicate
-  is abolished, so a program that retracts millions of clauses from one
-  predicate will hold them.
+- Maximum arity is 256.
 
 ## Testing
 

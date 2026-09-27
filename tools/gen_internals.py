@@ -401,8 +401,15 @@ section('clauses', 'Clauses and indexing', ''.join([
          "on the first argument never builds the rest of the head."),
     para("Freeing is the reason for the private arena: one `arena_free` releases the "
          "whole clause. `retract/1` unlinks the clause from the predicate but does not "
-         "free it — a choice point may still hold a pointer to it — and puts it on a "
-         "garbage list that is released when the predicate is abolished."),
+         "free it at once, since a choice point on the predicate may still reach it "
+         "through the next pointer it keeps, and puts it on the predicate's garbage "
+         "list. Each predicate counts the clause choice points live on it, and every "
+         "choice point leaves the stack through one function that releases its hold; "
+         "when the count falls to zero, or the next `retract/1` finds it zero, the "
+         "garbage list is freed. So a counter retracted and reasserted a million times "
+         "holds one old clause, not a million. `abolish/1` puts every clause on the "
+         "list the same way, so a choice point still on one of them never reads freed "
+         "memory."),
     '<h3>First-argument indexing</h3>',
     para("Each clause records a tag and a key derived from the principal functor of its "
          "first head argument: the atom index for an atom, the value for an integer, the "
@@ -620,8 +627,6 @@ section('weaknesses', 'Where the design is weak', ''.join([
         "write a constant-space generator in Prolog alone.",
         "The collector runs only when the choice point stack is empty. A long computation "
         "that keeps one choice point open never collects at all.",
-        "Retracted clauses are held until the predicate is abolished, so a long-running "
-        "program that retracts millions of clauses from one predicate accumulates them.",
         "Integers are 64-bit with overflow raised as an error rather than promoted to "
         "bignums, and there are no modules, tabling or constraints.",
     ]),

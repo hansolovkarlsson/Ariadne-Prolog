@@ -601,7 +601,8 @@ BUILTINS = [
     ('retractall(+Head)',
      "Removes every clause whose head unifies with Head, and makes the predicate known "
      "and dynamic so that later calls fail rather than raise an error."),
-    ('abolish(+Name/+Arity)', "Removes all clauses of a predicate."),
+    ('abolish(+Name/+Arity)', "Removes all clauses of a predicate. A goal still "
+     "backtracking through it finds no more clauses."),
     ('clause(+Head, ?Body)',
      "Enumerates the clauses of a predicate; a fact has the body `true`."),
     ('dynamic(+Spec)',
@@ -702,8 +703,10 @@ BUILTINS = [
     ('statistics(+Key, -Value)',
      "Key is runtime, cputime, process_cputime or walltime, giving "
      "`[Total, SinceLast]` in milliseconds; inferences, giving a count; memory, "
-     "giving `[InUse, 0]` in bytes; or garbage_collection, giving "
-     "`[Collections, BytesFreed, Milliseconds]` since the start."),
+     "giving `[InUse, 0]` in bytes; garbage_collection, giving "
+     "`[Collections, BytesFreed, Milliseconds]` since the start; or "
+     "retained_clauses, the number of retracted clauses still held because a "
+     "choice point may reach them."),
     ('set_prolog_flag(+Flag, +Value)', "Sets `double_quotes` or `unknown`."),
     ('current_prolog_flag(?Flag, ?Value)', "Reads a flag; enumerates when unbound."),
     ('garbage_collect', "Accepted; collection is automatic, so this does nothing."),
@@ -939,10 +942,6 @@ section('limits', 'Deviations and limits', ''.join([
         "ahead of it. Retracting the clause a goal is currently on is safe; for "
         "anything else, collect with `findall/3` first and change the database "
         "afterwards.",
-        "A retracted clause is held until its predicate is abolished, so a program "
-        "that retracts millions of clauses from one predicate keeps them in memory.",
-        "A `-g` goal that fails prints a warning but still exits with status 0; only "
-        "an uncaught exception exits with 1.",
         "Memory is reclaimed on backtracking, and otherwise by a collector that can "
         "only run when the computation is deterministic. The heap is released to the "
         "newest choice point's mark, so a loop driven by `between/3`, `repeat/0` or "

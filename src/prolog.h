@@ -253,6 +253,7 @@ struct Pred {
     int     discontiguous;
     Clause *garbage;         /* retracted clauses, freed on abolish */
     int     library;         /* defined by lib/boot.pl */
+    int     cprefs;          /* live choice points on its clauses */
 };
 
 Pred   *pred_lookup(int functor, int arity, int create);
@@ -260,6 +261,8 @@ Clause *clause_make(Term *head, Term *body);
 void    pred_add_clause(Pred *p, Clause *c, int at_end);
 void    clause_retract(Pred *p, Clause *c);
 void    pred_abolish(Pred *p);
+void    pred_reclaim(Pred *p);
+extern long long m_clauses_retained;
 int     pred_enumerate(int i, Pred **out);
 void    pred_mark_library(void);
 int     clause_may_match(Clause *c, Term *goal);
@@ -276,6 +279,7 @@ struct Goal { Term *goal; Goal *next; size_t cutb; Pred *owner; };
 
 Goal *goal_push(Term *t, Goal *next, size_t cutb);
 Goal *goal_push_top(Term *t, size_t cutb);
+void  cp_pop_to(size_t n);
 
 enum { CP_CLAUSES = 1, CP_ALT, CP_CATCH, CP_ITER, CP_REDO };
 

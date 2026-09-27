@@ -78,6 +78,29 @@ static Pred *m_owner;
 static int   bi_functor = -1, bi_arity;
 static Pred *bi_owner;
 
+/* A clause choice point holds its predicate, so that the clauses retracted
+   from it are kept until no choice point can reach them. */
+static void cp_hold(ChoicePoint *cp, Pred *p)
+{
+    cp->pred = p;
+    p->cprefs++;
+}
+
+/* Every choice point leaves the stack through here, and releases the
+   predicate it holds; the last one to go lets the predicate's retracted
+   clauses be freed. */
+void cp_pop_to(size_t n)
+{
+    while (m_cp_top > n) {
+        ChoicePoint *cp = &m_cps[--m_cp_top];
+        if ((cp->kind == CP_CLAUSES || cp->kind == CP_ITER) && cp->pred) {
+            Pred *p = cp->pred;
+            cp->pred = NULL;
+            if (--p->cprefs == 0 && p->garbage) pred_reclaim(p);
+        }
+    }
+}
+
 /* The first goal of a run that no other run encloses: nothing owns it. */
 Goal *goal_push_top(Term *t, size_t cutb)
 {
@@ -258,7 +281,7 @@ static int iter_try(Pred *p, Clause *start, Term *head, Term *body,
 
         while (c && !clause_may_match(c, head)) c = c->next;
         if (!c) {
-            if (have_cp) m_cp_top = cpidx;       /* drop our choice point */
+            if (have_cp) cp_pop_to(cpidx);       /* drop our choice point */
             return 0;
         }
         /* The next candidate has to be picked while the head arguments are
@@ -273,7 +296,7 @@ static int iter_try(Pred *p, Clause *start, Term *head, Term *body,
         if (unify(head, h) && unify(body, b)) {
             if (have_cp) {
                 if (nx) m_cps[cpidx].clause = nx;
-                else m_cp_top = cpidx;           /* last solution */
+                else cp_pop_to(cpidx);           /* last solution */
             }
             if (kind == ITER_RETRACT) clause_retract(p, c);
             m_goals = cont;
@@ -300,16 +323,17 @@ int backtrack(size_t base)
         case CP_CLAUSES: {
             Term *call = cp->call;
             Goal *cont = cp->goals;
+            Pred *p = cp->pred;                 /* read before a pop releases it */
             Clause *c = next_match(cp->clause, call);
             Clause *nx;
 
-            if (!c) { m_cp_top--; continue; }
+            if (!c) { cp_pop_to(m_cp_top - 1); continue; }
             heap_release(cp->heap);
             nx = next_match(c->next, call);
             if (nx) m_cps[idx].clause = nx;
-            else m_cp_top--;                    /* last clause: pop */
+            else cp_pop_to(m_cp_top - 1);       /* last clause: pop */
             m_owner = cp->owner;
-            if (try_clause(cp->pred, c, call, cont, idx)) return 1;
+            if (try_clause(p, c, call, cont, idx)) return 1;
             continue;                           /* head did not unify */
         }
         case CP_ALT: {
@@ -317,7 +341,7 @@ int backtrack(size_t base)
             Goal *cont = cp->goals;
             size_t cutb = cp->cutb;
             int active = cp->active;
-            m_cp_top--;
+            cp_pop_to(m_cp_top - 1);
             if (!active) continue;              /* disabled by a soft cut */
             heap_release(cp->heap);
             m_owner = cp->owner;
@@ -346,8 +370,8 @@ int backtrack(size_t base)
                 m_goals = cont;
                 return 1;
             }
-            if (cur > high) { m_cp_top--; continue; }
-            if (cur == high) m_cp_top--;     /* the last one: leave nothing behind */
+            if (cur > high) { cp_pop_to(m_cp_top - 1); continue; }
+            if (cur == high) cp_pop_to(m_cp_top - 1); /* the last one: leave nothing behind */
             else m_cps[idx].redo_a = cur + 1;
             if (!unify(var, mk_int(cur))) continue;
             m_goals = cont;
@@ -356,7 +380,7 @@ int backtrack(size_t base)
         case CP_CATCH:
         default:
             heap_release(cp->heap);
-            m_cp_top--;
+            cp_pop_to(m_cp_top - 1);
             continue;
         }
     }
@@ -370,7 +394,7 @@ static int handle_throw(size_t base)
 
         trail_undo(cp->trail);
         heap_release(cp->heap);
-        m_cp_top--;
+        cp_pop_to(m_cp_top - 1);
         if (cp->kind == CP_CATCH && cp->active) {
             size_t tm = trail_mark();
             Term *ball = ball_to_heap();
@@ -447,7 +471,7 @@ static int execute1(Term *t, Goal *frame)
     if (n == 0) {
         if (f == a_true) { m_goals = cont; return PL_OK; }
         if (f == a_fail || f == a_false) return PL_FAIL;
-        if (f == a_cut) { m_cp_top = cutb; m_goals = cont; return PL_OK; }
+        if (f == a_cut) { cp_pop_to(cutb); m_goals = cont; return PL_OK; }
     } else if (n == 2 && f == a_comma) {
         m_goals = goal_push(ARG(t, 0), goal_push(ARG(t, 1), cont, cutb), cutb);
         return PL_OK;
@@ -495,7 +519,7 @@ static int execute1(Term *t, Goal *frame)
         return PL_OK;
     } else if (n == 1 && f == a_dollar_cut) {
         Term *a = deref(ARG(t, 0));
-        m_cp_top = (size_t)IV(a);
+        cp_pop_to((size_t)IV(a));
         m_goals = cont;
         return PL_OK;
     } else if (n == 1 && f == a_dollar_softcut) {
@@ -511,7 +535,7 @@ static int execute1(Term *t, Goal *frame)
         Term *a = deref(ARG(t, 0));
         size_t idx = (size_t)IV(a);
         if (idx < m_cp_top && m_cps[idx].kind == CP_CATCH) {
-            if (idx == m_cp_top - 1) m_cp_top--;        /* nothing left to undo */
+            if (idx == m_cp_top - 1) cp_pop_to(idx);    /* nothing left to undo */
             else { trail_flag(&m_cps[idx].active); m_cps[idx].active = 0; }
         }
         m_goals = cont;
@@ -581,7 +605,7 @@ static int execute1(Term *t, Goal *frame)
         ChoicePoint *cp = cp_push(CP_CLAUSES, cont, cutb);
         cp->call = t;
         cp->clause = nx;
-        cp->pred = p;
+        cp_hold(cp, p);
     }
     if (try_clause(p, c, t, cont, barrier)) return PL_OK;
     return PL_FAIL;
@@ -658,7 +682,7 @@ int clause_iter_start(Pred *p, Term *head, Term *body, int kind,
         ChoicePoint *cp = cp_push(CP_ITER, cont, cutb);
         cp->iter_a = head;
         cp->iter_b = body;
-        cp->pred = p;
+        cp_hold(cp, p);
         cp->clause = first;
         cp->iter_kind = kind;
         /* The retry path re-examines `first` as well, so start there. */
@@ -689,7 +713,7 @@ int solve_sub(Term *goal, int (*on_solution)(void *), void *ctx)
         rc = machine_redo(base);
     }
     m_nesting = saved_nesting;
-    m_cp_top = base;
+    cp_pop_to(base);
     trail_undo(tm);
     heap_release(hm);
     m_goals = saved;
@@ -714,7 +738,7 @@ int solve_once(Term *goal)
     m_goals = goal_push_top(goal, base);
     rc = machine_run(base);
     m_nesting = saved_nesting;
-    m_cp_top = base;
+    cp_pop_to(base);
     m_goals = saved;
     m_owner = saved_owner;
     return rc;
@@ -722,6 +746,6 @@ int solve_once(Term *goal)
 
 void machine_reset(void)
 {
-    m_cp_top = 0;
+    cp_pop_to(0);
     m_goals = NULL;
 }

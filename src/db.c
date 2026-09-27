@@ -156,35 +156,58 @@ void pred_add_clause(Pred *p, Clause *c, int at_end)
     }
 }
 
+/* Frees the clauses retracted from p, once no choice point is left on
+   p's clauses: only a choice point can still reach a retracted clause,
+   through the next pointers it keeps. */
+long long m_clauses_retained;   /* retracted clauses not yet freed */
+
+void pred_reclaim(Pred *p)
+{
+    Clause *c, *nx;
+    if (p->cprefs > 0) return;
+    for (c = p->garbage; c; c = nx) {
+        nx = c->gnext;
+        arena_free(c->arena);
+        free(c);
+        m_clauses_retained--;
+    }
+    p->garbage = NULL;
+}
+
 void clause_retract(Pred *p, Clause *c)
 {
     Clause **link = &p->first, *prev = NULL;
+
+    /* What was retracted before can go now if nothing is iterating p.
+       This clause cannot, as the caller may still be reading it. */
+    pred_reclaim(p);
 
     while (*link && *link != c) { prev = *link; link = &(*link)->next; }
     if (*link != c) return;
     *link = c->next;         /* c->next stays intact so iterators can go on */
     if (p->last == c) p->last = prev;
     c->alive = 0;
-    /* The clause is not freed yet: choice points may still point at it.
-       It is kept on the garbage list and released when the predicate is. */
+    /* Not freed yet: a choice point may still point at it, or the caller
+       be reading it. It is kept on the garbage list for pred_reclaim. */
     c->gnext = p->garbage;
     p->garbage = c;
+    m_clauses_retained++;
 }
 
+/* Every clause goes to the garbage list, dead, with its next pointer
+   kept, and is freed at once unless a choice point is still on one of
+   them, when it is freed as the last such choice point goes. */
 void pred_abolish(Pred *p)
 {
     Clause *c, *nx;
     for (c = p->first; c; c = nx) {
         nx = c->next;
-        arena_free(c->arena);
-        free(c);
-    }
-    for (c = p->garbage; c; c = nx) {
-        nx = c->gnext;
-        arena_free(c->arena);
-        free(c);
+        c->alive = 0;
+        c->gnext = p->garbage;
+        p->garbage = c;
+        m_clauses_retained++;
     }
     p->first = p->last = NULL;
-    p->garbage = NULL;
     p->defined = 0;
+    pred_reclaim(p);
 }

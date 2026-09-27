@@ -149,7 +149,7 @@ static void run_query(Term *goal, Term *names)
         if (rc == PL_ERROR) { report_error(); break; }
         break;                              /* PL_HALT */
     }
-    m_cp_top = base;
+    cp_pop_to(base);
     trail_undo(tm);
     gc_unprotect(roots);
     fflush(stdout);

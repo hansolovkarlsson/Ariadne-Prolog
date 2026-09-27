@@ -2432,6 +2432,10 @@ BI(bi_statistics)
         v = m_inferences;
         RET(unify(A[1], mk_int(v)));
     }
+    if (!strcmp(nm, "retained_clauses")) {
+        /* Retracted clauses still held for a choice point that may reach them. */
+        RET(unify(A[1], mk_int(m_clauses_retained)));
+    }
     if (!strcmp(nm, "garbage_collection")) {
         /* [Collections, BytesFreed, Milliseconds], as SWI has it. */
         Term *l = mk_cons(mk_int(m_gc_count), mk_cons(mk_int(m_gc_freed),

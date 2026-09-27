@@ -9,6 +9,8 @@
 */
 
 :- dynamic(tmp/1).
+:- dynamic(rc/1).
+:- dynamic(rc_self/0).
 :- dynamic(cnt/1).
 
 /* ---------------- unification and comparison ---------------- */
@@ -420,6 +422,23 @@ test(db_indexed_bt,   (retractall(tmp(_)),
                        findall(N, retract(tmp(N)), L), length(L, 20),
                        \+ tmp(_))).
 test(db_current_pred, (current_predicate(p/2))).
+
+/*  A retracted clause is freed once no choice point is left on its
+    predicate, and kept while one is: the choice point may still walk to it.
+    rc_reset/0 gives rc/1 the clauses 1 to 4. */
+rc_reset :- retractall(rc(_)), forall(member(X, [1,2,3,4]), assertz(rc(X))).
+
+test(db_reclaim,      (rc_reset, forall(between(1, 20000, _),
+                                        (retract(rc(N)), N1 is N + 1, assertz(rc(N1)))),
+                       statistics(retained_clauses, K), K =< 4, retractall(rc(_)))).
+test(db_retract_iter, (rc_reset, findall(X, (rc(X), once(retract(rc(_)))), L), L == [1,2,3,4])).
+test(db_retract_redo, (rc_reset, findall(X, (retract(rc(X)), X >= 3), L), L == [3,4], \+ rc(_))).
+test(db_abolish_iter, (rc_reset, findall(X, (rc(X), (X == 2 -> abolish(rc/1) ; true)), L),
+                       L == [1,2])).
+test(db_retract_cut,  (rc_reset, rc(X), retract(rc(X)), !, X == 1,
+                       findall(Y, rc(Y), L), L == [2,3,4], retractall(rc(_)))).
+test(db_retract_self, (retractall(rc_self), assertz((rc_self :- retract((rc_self :- _)))),
+                       rc_self, \+ clause(rc_self, _))).
 
 /* ---------------- parsing and writing ---------------- */
 
