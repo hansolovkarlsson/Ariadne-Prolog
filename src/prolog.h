@@ -348,6 +348,14 @@ int         stream_get_char(PStream *s, char *buf);
 int         stream_peek_char(PStream *s, char *buf);
 int         stream_is_input(PStream *s);
 Reader     *stream_reader(PStream *s);
+int         stream_alias(PStream *s);
+void        stream_set_alias(PStream *s, int alias);
+void        stream_set_eof_action(PStream *s, int action);
+int         stream_read_check(PStream *s);
+void        stream_set_past(PStream *s);
+int         stream_at_end(PStream *s);
+enum { EOF_ERROR, EOF_CODE, EOF_RESET };        /* eof_action/1 */
+enum { STREAM_READ, STREAM_EOF, STREAM_PAST };  /* stream_read_check */
 
 /* Error reporting used by the toplevel and by consult. */
 void print_error_term(FILE *f, Term *ball);

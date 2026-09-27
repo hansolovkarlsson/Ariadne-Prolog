@@ -630,26 +630,33 @@ BUILTINS = [
 
     ('##', 'Reading terms and streams'),
     ('read(?Term)',
-     "Reads a term from the current input; gives `end_of_file` at the end."),
+     "Reads a term from the current input; gives `end_of_file` at the end. A "
+     "read after that does what the stream's `eof_action` says: by default it "
+     "raises `permission_error(input, past_end_of_stream, S)`."),
     ('read_term(?Term, +Options)',
      "As read/1, with `variable_names(L)`, `variables(L)` or `singletons(L)`. "
      "`singletons(L)` lists `Name = Var` for each named variable that occurs once, "
      "in the order read; names starting with `_` count, only `_` itself does not."),
     ('get_char(?Char)',
      "Reads the next character from the current input as a one-character atom, or "
-     "`end_of_file` at the end, and again on every call after it. Text is read as "
+     "`end_of_file` at the end, then as read/1 does after it. Text is read as "
      "UTF-8. get_char/2 takes a stream. Characters and terms can be read "
      "alternately from one stream."),
     ('peek_char(?Char)',
      "As get_char/1, but leaves the character to be read again; peek_char/2 takes a "
-     "stream."),
+     "stream. Peeking at the end does not move the stream past it."),
     ('at_end_of_stream',
      "True when nothing is left to read on the current input; "
      "at_end_of_stream/1 takes a stream. On a terminal it waits for input to "
      "decide."),
     ('open(+File, +Mode, -Stream)',
-     "Opens File in mode `read`, `write` or `append`. open/4 takes an options list, "
-     "which is accepted and ignored."),
+     "Opens File in mode `read`, `write` or `append`. open/4 takes an options list: "
+     "`alias(A)` names the stream A wherever a stream is expected; "
+     "`eof_action(Action)` says what a read does after `end_of_file`, which is "
+     "`error` (the default), `eof_code` (answer `end_of_file` again) or `reset` "
+     "(ask the source again). `type(text)` and `reposition(false)` are accepted; "
+     "`type(binary)` and `reposition(true)` are refused, as there is no byte input "
+     "and no seeking. `user_input` resets, so a terminal can be read after ^D."),
     ('close(+Stream)', "Closes a stream."),
     ('current_input(-Stream)', "The stream read/1 uses; also current_output/1."),
     ('set_input(+Stream)', "Makes Stream the current input; also set_output/1."),
@@ -799,6 +806,12 @@ ERRORS = [
     ['representation_error(character_code)', 'A character code outside Unicode.'],
     ['permission_error(modify, static_procedure, PI)',
      'An attempt to assert to, retract from or inspect a predicate written in C.'],
+    ['permission_error(input, past_end_of_stream, S)',
+     'A read from S after it gave `end_of_file`, when S was opened with '
+     '`eof_action(error)`, the default.'],
+    ['permission_error(open, source_sink, Option)',
+     'An `alias/1` already in use, or `type(binary)` or `reposition(true)`, '
+     'passed to `open/4`.'],
     ['syntax_error(Message)',
      'The reader could not parse the text. Message names the file and line.'],
 ]
@@ -876,7 +889,6 @@ section('limits', 'Deviations and limits', ''.join([
         "threads.",
         "No yall lambdas, so `maplist([X]>>Goal, L)` is not available — write a named "
         "helper predicate instead.",
-        "`open/4` accepts an options list and ignores it.",
         "`discontiguous/1` is recorded but never enforced; clauses may be spread "
         "through a file regardless.",
         "No `setup_call_cleanup/3`. Write the cleanup out: catch the ball with "

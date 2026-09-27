@@ -443,8 +443,55 @@ test(io_char_then_read,(tmp_file(F), open(F, write, S), write(S, 'x foo(y).'), n
                        C == x, T == foo(y), End == yes)).
 test(io_at_end,       (tmp_file(F), open(F, write, S), write(S, a), close(S),
                        open(F, read, S2), \+ at_end_of_stream(S2), get_char(S2, _),
-                       at_end_of_stream(S2), get_char(S2, E1), get_char(S2, E2),
-                       close(S2), E1 == end_of_file, E2 == end_of_file)).
+                       at_end_of_stream(S2), get_char(S2, E1), at_end_of_stream(S2),
+                       catch(get_char(S2, _), error(E2, _), true),
+                       close(S2), E1 == end_of_file,
+                       E2 == permission_error(input, past_end_of_stream, S2))).
+test(io_read_past_end,(tmp_file(F), open(F, write, S), close(S),
+                       open(F, read, S2), read(S2, T),
+                       catch(read(S2, _), error(E, _), true), close(S2),
+                       T == end_of_file,
+                       E == permission_error(input, past_end_of_stream, S2))).
+test(io_peek_at_end,  (tmp_file(F), open(F, write, S), close(S),
+                       open(F, read, S2), peek_char(S2, P1), peek_char(S2, P2),
+                       get_char(S2, G), catch(peek_char(S2, _), error(E, _), true),
+                       close(S2), [P1, P2, G] == [end_of_file, end_of_file, end_of_file],
+                       E = permission_error(input, past_end_of_stream, _))).
+test(io_eof_code,     (tmp_file(F), open(F, write, S), write(S, 'a.'), close(S),
+                       open(F, read, S2, [eof_action(eof_code)]), read(S2, T),
+                       read(S2, E1), read(S2, E2), get_char(S2, E3), close(S2),
+                       [T, E1, E2, E3] == [a, end_of_file, end_of_file, end_of_file])).
+test(io_eof_reset,    (tmp_file(F), open(F, write, S), close(S),
+                       open(F, read, S2, [eof_action(reset)]), get_char(S2, E1),
+                       get_char(S2, E2), read(S2, E3), close(S2),
+                       [E1, E2, E3] == [end_of_file, end_of_file, end_of_file])).
+test(io_alias,        (tmp_file(F), open(F, write, _, [alias(out)]), write(out, 'x.'),
+                       close(out), open(F, read, _, [alias(in), type(text),
+                                                     reposition(false)]),
+                       read(in, T), read(in, End), catch(read(in, _), error(E, _), true),
+                       close(in), T == x, End == end_of_file,
+                       E == permission_error(input, past_end_of_stream, in),
+                       open(F, read, _, [alias(in)]), close(in))).
+test(io_alias_taken,  (tmp_file(F),
+                       catch(open(F, read, _, [alias(user_input)]), error(E, _), true),
+                       E == permission_error(open, source_sink, alias(user_input)))).
+test(io_open_options, (tmp_file(F),
+                       catch(open(F, read, _, [bogus(1)]), error(E1, _), true),
+                       E1 == domain_error(stream_option, bogus(1)),
+                       catch(open(F, read, _, [eof_action(never)]), error(E2, _), true),
+                       E2 == domain_error(stream_option, eof_action(never)),
+                       catch(open(F, read, _, [_]), error(E3, _), true),
+                       E3 == instantiation_error,
+                       catch(open(F, read, _, [alias(a)|_]), error(E4, _), true),
+                       E4 == instantiation_error,
+                       catch(open(F, read, _, foo), error(E5, _), true),
+                       E5 == type_error(list, foo),
+                       catch(open(F, read, _, [type(binary)]), error(E6, _), true),
+                       E6 == permission_error(open, source_sink, type(binary)),
+                       catch(open(F, read, _, [reposition(true)]), error(E7, _), true),
+                       E7 == permission_error(open, source_sink, reposition(true)),
+                       catch(open(F, read, _, [alias(1)]), error(E8, _), true),
+                       E8 == domain_error(stream_option, alias(1)))).
 test(io_put_char_out, (with_output_to(atom(A), (put_char(a), current_output(S),
                                                 put_char(S, b))), A == ab)).
 test(io_char_errors,  (catch(put_char(ab), error(type_error(character, ab), _), true),

@@ -1529,29 +1529,54 @@ static int is_char_atom(Term *t)
         && utf8_len(atom_name(AT(t)), atom_len(AT(t))) == 1;
 }
 
+/* The stream as an error names it: by its alias when the goal did not
+   name it at all. */
+static Term *stream_culprit(PStream *s, Term *given)
+{
+    if (given) return deref(given);
+    return stream_alias(s) >= 0 ? mk_atom(stream_alias(s)) : stream_term(s);
+}
+
+/* Asks the stream whether a read may go ahead.  PL_OK to read, PL_FAIL
+   when the answer is end_of_file without reading, and the error when the
+   stream is already past its end and its eof_action is error. */
+static int check_read(PStream *s, Term *given)
+{
+    switch (stream_read_check(s)) {
+    case STREAM_READ: return PL_OK;
+    case STREAM_EOF:  return PL_FAIL;
+    default:
+        return permission_error("input", "past_end_of_stream",
+                                stream_culprit(s, given));
+    }
+}
+
 /* get_char and peek_char: the next character as a one-character atom, or
-   end_of_file.  At the end they keep answering end_of_file, as read/1
-   does. */
-static int read_char(PStream *s, Term *out, int peek)
+   end_of_file.  After end_of_file, the next read does what the stream's
+   eof_action says. */
+static int read_char(PStream *s, Term *given, Term *out, int peek)
 {
     Term *c = deref(out);
     char buf[4];
-    int n;
+    int n, rc;
     if (c->tag != TAG_VAR && !is_char_atom(c)
         && !(c->tag == TAG_ATOM && AT(c) == a_end_of_file))
         return type_error("in_character", c);
+    rc = check_read(s, given);
+    if (rc == PL_FAIL) RET(unify(out, mk_atom(a_end_of_file)));
+    if (rc != PL_OK) return rc;
     n = peek ? stream_peek_char(s, buf) : stream_get_char(s, buf);
     RET(unify(out, mk_atom(n ? intern_n(buf, (size_t)n) : a_end_of_file)));
 }
 
-BI(bi_get_char)  { UNUSED; return read_char(stream_current_input(), A[0], 0); }
-BI(bi_peek_char) { UNUSED; return read_char(stream_current_input(), A[0], 1); }
+BI(bi_get_char)  { UNUSED; return read_char(stream_current_input(), NULL, A[0], 0); }
+BI(bi_peek_char) { UNUSED; return read_char(stream_current_input(), NULL, A[0], 1); }
 BI(bi_get_char2) { UNUSED; PStream *s; int rc = input_stream_arg(A[0], &s);
                    if (rc != PL_OK) return rc;
-                   return read_char(s, A[1], 0); }
+                   return read_char(s, A[0], A[1], 0); }
 BI(bi_peek_char2){ UNUSED; PStream *s; int rc = input_stream_arg(A[0], &s);
                    if (rc != PL_OK) return rc;
-                   return read_char(s, A[1], 1); }
+                   return read_char(s, A[0], A[1], 1); }
 
 static int write_char(PStream *s, Term *t)
 {
@@ -1567,21 +1592,15 @@ BI(bi_put_char2) { UNUSED; PStream *s; int rc = output_stream_arg(A[0], &s);
                    if (rc != PL_OK) return rc;
                    return write_char(s, A[1]); }
 
-BI(bi_at_end_of_stream)
-{
-    UNUSED;
-    char buf[4];
-    RET(stream_peek_char(stream_current_input(), buf) == 0);
-}
+BI(bi_at_end_of_stream) { UNUSED; RET(stream_at_end(stream_current_input())); }
 
 BI(bi_at_end_of_stream1)
 {
     UNUSED;
-    char buf[4];
     PStream *s;
     int rc = input_stream_arg(A[0], &s);
     if (rc != PL_OK) return rc;
-    RET(stream_peek_char(s, buf) == 0);
+    RET(stream_at_end(s));
 }
 
 BI(bi_flush_output)
@@ -1938,30 +1957,87 @@ BI(bi_format3)
 /* Streams                                                            */
 /* ------------------------------------------------------------------ */
 
-BI(bi_open4)
+/* open/4's options, all checked before the file is touched.  alias/1 and
+   eof_action/1 are honoured.  type(text) and reposition(false) describe
+   every stream here, so they are accepted; type(binary) and
+   reposition(true) ask for byte input and seeking, which this stream
+   layer does not have, and are refused with the permission error ISO
+   gives for reposition(true). */
+static int open_opts(Term *opts, int *alias, int *eof_action)
 {
-    UNUSED;
+    Term *l = deref(opts);
+    *alias = -1;
+    *eof_action = EOF_ERROR;
+    while (l->tag == TAG_STR && FN(l) == a_dot && AR(l) == 2) {
+        Term *o = deref(ARG(l, 0)), *v;
+        const char *nm, *vn;
+        if (o->tag == TAG_VAR) return instantiation_error();
+        if (o->tag != TAG_STR || AR(o) != 1)
+            return domain_error("stream_option", o);
+        nm = atom_name(FN(o));
+        v = deref(ARG(o, 0));
+        if (v->tag == TAG_VAR) return instantiation_error();
+        if (v->tag != TAG_ATOM) return domain_error("stream_option", o);
+        vn = atom_name(AT(v));
+        if (!strcmp(nm, "alias")) {
+            if (stream_of(v)) return permission_error("open", "source_sink", o);
+            *alias = AT(v);
+        } else if (!strcmp(nm, "eof_action")) {
+            if (!strcmp(vn, "error")) *eof_action = EOF_ERROR;
+            else if (!strcmp(vn, "eof_code")) *eof_action = EOF_CODE;
+            else if (!strcmp(vn, "reset")) *eof_action = EOF_RESET;
+            else return domain_error("stream_option", o);
+        } else if (!strcmp(nm, "type")) {
+            if (!strcmp(vn, "binary"))
+                return permission_error("open", "source_sink", o);
+            if (strcmp(vn, "text")) return domain_error("stream_option", o);
+        } else if (!strcmp(nm, "reposition")) {
+            if (!strcmp(vn, "true"))
+                return permission_error("open", "source_sink", o);
+            if (strcmp(vn, "false")) return domain_error("stream_option", o);
+        } else return domain_error("stream_option", o);
+        l = deref(ARG(l, 1));
+    }
+    if (l->tag == TAG_VAR) return instantiation_error();
+    if (!(l->tag == TAG_ATOM && AT(l) == a_nil)) return type_error("list", deref(opts));
+    return PL_OK;
+}
+
+static int open_stream(Term **A, Term *opts)
+{
     char *path;
     size_t n;
-    int mode, rc;
+    int mode, rc, alias = -1, eof_action = EOF_ERROR;
     PStream *s;
     const char *m;
 
     if ((rc = get_text(A[0], &path, &n, "atom")) != PL_OK) return rc;
     if ((rc = get_atom(A[1], &mode)) != PL_OK) { free(path); return rc; }
     m = atom_name(mode);
+    if (strcmp(m, "read") && strcmp(m, "write") && strcmp(m, "append")) {
+        free(path);
+        return domain_error("io_mode", deref(A[1]));
+    }
+    if (opts && (rc = open_opts(opts, &alias, &eof_action)) != PL_OK) {
+        free(path);
+        return rc;
+    }
     if (!strcmp(m, "read")) s = stream_open(path, "r", 1);
     else if (!strcmp(m, "write")) s = stream_open(path, "w", 0);
-    else if (!strcmp(m, "append")) s = stream_open(path, "a", 0);
-    else { free(path); return domain_error("io_mode", deref(A[1])); }
+    else s = stream_open(path, "a", 0);
     if (!s) {
         Term *culprit = mk_atom_str(path);
         free(path);
         return existence_error("source_sink", culprit);
     }
     free(path);
+    if (alias >= 0) stream_set_alias(s, alias);
+    stream_set_eof_action(s, eof_action);
     RET(unify(A[2], stream_term(s)));
 }
+
+BI(bi_open3) { UNUSED; return open_stream(A, NULL); }
+BI(bi_open4) { UNUSED; return open_stream(A, A[3]); }
 
 BI(bi_close)
 {
@@ -2049,12 +2125,20 @@ static int read_opts(Term *opts, Term *varnames, Term *singles, Term *vars)
     return PL_OK;
 }
 
-static int read_from_stream(PStream *s, Term *out, Term *opts)
+static int read_from_stream(PStream *s, Term *given, Term *out, Term *opts)
 {
     Reader *r = stream_reader(s);
     Term *t, *names, *singles;
-    int rc = read_term_full(r, &t, &names, &singles);
-    if (rc < 0) return PL_ERROR;
+    int rc = check_read(s, given);
+    if (rc == PL_FAIL) {
+        t = mk_atom(a_end_of_file);
+        names = singles = mk_atom(a_nil);
+    } else if (rc != PL_OK) return rc;
+    else {
+        rc = read_term_full(r, &t, &names, &singles);
+        if (rc < 0) return PL_ERROR;
+        if (rc == 0) stream_set_past(s);
+    }
     if (opts) {
         rc = read_opts(opts, names, singles, t);
         if (rc != PL_OK) return rc;
@@ -2062,14 +2146,14 @@ static int read_from_stream(PStream *s, Term *out, Term *opts)
     RET(unify(out, t));
 }
 
-BI(bi_read)  { UNUSED; return read_from_stream(stream_current_input(), A[0], NULL); }
+BI(bi_read)  { UNUSED; return read_from_stream(stream_current_input(), NULL, A[0], NULL); }
 BI(bi_read2) { UNUSED; PStream *s; int rc = stream_arg(A[0], &s);
                if (rc != PL_OK) return rc;
-               return read_from_stream(s, A[1], NULL); }
-BI(bi_read_term2) { UNUSED; return read_from_stream(stream_current_input(), A[0], A[1]); }
+               return read_from_stream(s, A[0], A[1], NULL); }
+BI(bi_read_term2) { UNUSED; return read_from_stream(stream_current_input(), NULL, A[0], A[1]); }
 BI(bi_read_term3) { UNUSED; PStream *s; int rc = stream_arg(A[0], &s);
                     if (rc != PL_OK) return rc;
-                    return read_from_stream(s, A[1], A[2]); }
+                    return read_from_stream(s, A[0], A[1], A[2]); }
 
 /* ------------------------------------------------------------------ */
 /* Flags, operators, statistics                                       */
@@ -2369,7 +2453,7 @@ static const BiEntry bi_table[] = {
     { "format", 1, bi_format1 }, { "format", 2, bi_format2 },
     { "format", 3, bi_format3 },
     /* streams */
-    { "open", 3, bi_open4 }, { "open", 4, bi_open4 }, { "close", 1, bi_close },
+    { "open", 3, bi_open3 }, { "open", 4, bi_open4 }, { "close", 1, bi_close },
     { "current_output", 1, bi_current_output },
     { "current_input", 1, bi_current_input },
     { "set_output", 1, bi_set_output }, { "set_input", 1, bi_set_input },

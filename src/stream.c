@@ -12,6 +12,8 @@ struct PStream {
     char  *name;
     Reader reader;
     int    reader_ready;
+    int    past;            /* a read has already answered end_of_file */
+    int    eof_action;      /* EOF_ERROR, EOF_CODE or EOF_RESET */
 };
 
 #define MAX_STREAMS 64
@@ -25,6 +27,8 @@ void stream_init(void)
     memset(streams, 0, sizeof(streams));
     streams[0].f = stdin;  streams[0].in_use = 1; streams[0].is_input = 1;
     streams[0].alias = intern("user_input");  streams[0].name = "user_input";
+    /* At a terminal, end of file is one ^D, and the user may type again. */
+    streams[0].eof_action = EOF_RESET;
     streams[1].f = stdout; streams[1].in_use = 1;
     streams[1].alias = intern("user_output"); streams[1].name = "user_output";
     streams[2].f = stderr; streams[2].in_use = 1;
@@ -82,8 +86,13 @@ PStream *stream_open(const char *path, const char *mode, int is_input)
     streams[i].is_input = is_input;
     streams[i].alias = -1;
     streams[i].name = pl_strdup(path);
+    streams[i].eof_action = EOF_ERROR;
     return &streams[i];
 }
+
+int  stream_alias(PStream *s)                      { return s->alias; }
+void stream_set_alias(PStream *s, int alias)       { s->alias = alias; }
+void stream_set_eof_action(PStream *s, int action) { s->eof_action = action; }
 
 /* An in-memory output stream; the text is collected in a buffer. */
 PStream *stream_open_sink(void)
@@ -140,11 +149,39 @@ Reader *stream_reader(PStream *s)
     return &s->reader;
 }
 
+/* ISO's end of stream has three positions: not yet at it, at it, and past
+   it.  A read that answers end_of_file moves the stream past; what the
+   next read does is the stream's eof_action.  Every read of a stream,
+   character or term, asks here first. */
+int stream_read_check(PStream *s)
+{
+    if (!s->past) return STREAM_READ;
+    if (s->eof_action == EOF_ERROR) return STREAM_PAST;
+    if (s->eof_action == EOF_CODE) return STREAM_EOF;
+    s->past = 0;                               /* EOF_RESET: try again */
+    if (s->f) clearerr(s->f);
+    return STREAM_READ;
+}
+
+void stream_set_past(PStream *s) { s->past = 1; }
+
+/* True when a read would answer end_of_file.  Past the end, that is known
+   without reading, unless the stream resets, when the source is asked
+   again. */
+int stream_at_end(PStream *s)
+{
+    char buf[4];
+    if (s->past && s->eof_action != EOF_RESET) return 1;
+    if (s->past && s->f) clearerr(s->f);
+    return stream_peek_char(s, buf) == 0;
+}
+
 /* Reads one UTF-8 character into buf and returns its length in bytes, or
    0 at end of stream.  Bytes go through the stream's Reader, so that a
    character read and a term read see one input.  A byte that does not
-   start a well-formed sequence is taken alone. */
-int stream_get_char(PStream *s, char *buf)
+   start a well-formed sequence is taken alone.  Does not move the stream
+   past its end; stream_get_char does. */
+static int next_char(PStream *s, char *buf)
 {
     Reader *r = stream_reader(s);
     int c = reader_getc(r), n, i;
@@ -163,10 +200,18 @@ int stream_get_char(PStream *s, char *buf)
     return n;
 }
 
-/* As stream_get_char, then pushes the bytes back. */
+int stream_get_char(PStream *s, char *buf)
+{
+    int n = next_char(s, buf);
+    if (n == 0) s->past = 1;
+    return n;
+}
+
+/* As stream_get_char, then pushes the bytes back.  Peeking at the end
+   leaves the stream at it, not past it. */
 int stream_peek_char(PStream *s, char *buf)
 {
-    int n = stream_get_char(s, buf), i;
+    int n = next_char(s, buf), i;
     for (i = n - 1; i >= 0; i--)
         reader_ungetc(stream_reader(s), (unsigned char)buf[i]);
     return n;
