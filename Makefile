@@ -29,18 +29,22 @@ $(OBJS): src/prolog.h
 test: $(BIN)
 	./$(BIN) -q tests/test.pl -g run_tests
 
-# The same suite with the collector's threshold at its lowest. The collector
-# only runs when no choice point is live, and run_tests holds one throughout,
-# so this leg collects nothing; test-deep is what puts the collector to work.
+# Every test again, bare, with the collector running inside each one. The
+# collector only runs when no choice point is live, and run_tests holds
+# several around every test, so run_tests_bare runs each as Goal, ! with
+# nothing around it. It stops at the first failure, and the second goal names
+# it. GC_ENV lets the collector in at every fourth inference, whatever the
+# size of the heap.
+GC_ENV = PROLOG_GC_THRESHOLD=1 PROLOG_GC_INTERVAL=4
 test-gc: $(BIN)
-	PROLOG_GC_THRESHOLD=1 ./$(BIN) -q tests/test.pl -g run_tests
+	$(GC_ENV) ./$(BIN) -q tests/test.pl -g run_tests_bare -g run_tests_bare_failed
 
 # Terms nested a million deep through every walk, the reader and the writer,
 # run at the top level so that the collector copies them; it fails unless a
-# collection happened. Once normally, once with the threshold at its lowest.
+# collection happened. The collector's ordinary threshold is enough: forced,
+# it would copy million-deep terms thousands of times to no further purpose.
 test-deep: $(BIN)
-	./$(BIN) -q tests/deep.pl -g "run, halt"
-	PROLOG_GC_THRESHOLD=1 ./$(BIN) -q tests/deep.pl -g "run, halt"
+	./$(BIN) -q tests/deep.pl -g "run, halt" -g "halt(1)"
 
 # The suite under the address and undefined behaviour sanitizers.
 # -fno-sanitize-recover makes undefined behaviour abort rather than print and
@@ -50,8 +54,8 @@ test-asan:
 	$(MAKE) CFLAGS="-std=c99 -O1 -g -fsanitize=address,undefined \
 	                -fno-sanitize-recover=undefined -fno-omit-frame-pointer"
 	./$(BIN) -q tests/test.pl -g run_tests
-	PROLOG_GC_THRESHOLD=1 ./$(BIN) -q tests/test.pl -g run_tests
-	./$(BIN) -q tests/deep.pl -g "run, halt"
+	$(GC_ENV) ./$(BIN) -q tests/test.pl -g run_tests_bare -g run_tests_bare_failed
+	./$(BIN) -q tests/deep.pl -g "run, halt" -g "halt(1)"
 	$(MAKE) clean
 
 check: test test-gc test-deep

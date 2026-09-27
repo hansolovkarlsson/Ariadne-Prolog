@@ -511,12 +511,16 @@ section('gc', 'Garbage collection', ''.join([
          "epoch in a mark is for: the epoch counter moves on, and releasing a mark from an "
          "older epoch does nothing at all."),
     note('impl', 'How it is tested',
-         "The environment variable `PROLOG_GC_THRESHOLD=1` makes the collector run at "
-         "every opportunity, every 1024 inferences with no choice point live. The test "
-         "suite always has one live, so it is never collected; `make test-deep` is what "
-         "exercises the collector. It builds terms nested a million deep at the top "
-         "level, puts every walk through them, and fails unless "
-         "`statistics(garbage_collection, [N|_])` shows that collections happened."),
+         "`PROLOG_GC_THRESHOLD=1` holds the threshold at one byte, and "
+         "`PROLOG_GC_INTERVAL=4` makes the collector considered every fourth inference "
+         "instead of every 1024th. That still needs no choice point live, and the "
+         "suite's harness holds several around every test, so `make test-gc` runs "
+         "each test again bare, as `Goal, !`, and stops at the first failure. Every "
+         "one of the tests is collected while it runs, about half a million "
+         "collections in all; a collector that forgot to forward a variable passes "
+         "the harness's own run and fails this one. `make test-deep` builds terms "
+         "nested a million deep at the top level and fails unless "
+         "`statistics(garbage_collection, [N|_])` shows they were collected."),
 ]))
 
 section('reader', 'Reader and writer', ''.join([

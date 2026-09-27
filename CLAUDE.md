@@ -18,7 +18,7 @@ collector and library. No dependencies beyond libc and libm.
 
 ## Commands
 
-`make`, `make test`, `make check`, `make test-gc`, `make test-asan`,
+`make`, `make test`, `make check`, `make test-gc`, `make test-deep`, `make test-asan`,
 `make tutorials`, `make examples`, `make clean`.
 
 ## The records

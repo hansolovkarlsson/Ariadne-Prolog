@@ -13,6 +13,8 @@ int          m_flag_unknown_error = 1;
 static int   m_nesting;            /* depth of re-entrant machine runs */
 static size_t gc_min = 16 * 1024 * 1024;
 static size_t gc_threshold = 16 * 1024 * 1024;
+static unsigned long gc_mask = 1023;
+static int gc_forced;                 /* PROLOG_GC_THRESHOLD is set: the threshold stays put */  /* the collector is considered every gc_mask+1 inferences */
 int          m_flag_double_quotes = DQ_CODES;
 long long    m_inferences;
 
@@ -40,12 +42,23 @@ void machine_init(void)
     a_not_provable = intern("\\+");
     a_call_n = intern("call");
     a_curly_call = intern("{}");
-    {   /* PROLOG_GC_THRESHOLD makes the collector run early; it exists so
-           that the test suite can exercise it on every code path. */
+    {   /* PROLOG_GC_THRESHOLD makes the collector run early, and
+           PROLOG_GC_INTERVAL makes it considered more often than every 1024
+           inferences, rounded down to a power of two; they exist so that
+           the test suite can exercise it inside tests of any length. */
         const char *e = getenv("PROLOG_GC_THRESHOLD");
         if (e) {
             long v = atol(e);
-            if (v > 0) gc_min = gc_threshold = (size_t)v;
+            if (v > 0) { gc_min = gc_threshold = (size_t)v; gc_forced = 1; }
+        }
+        e = getenv("PROLOG_GC_INTERVAL");
+        if (e) {
+            long v = atol(e);
+            unsigned long p = 1;
+            if (v > 0) {
+                while (p * 2 <= (unsigned long)v && p < 1024) p *= 2;
+                gc_mask = p - 1;
+            }
         }
     }
     K_true = permanent_atom(a_true);
@@ -517,13 +530,13 @@ int machine_run(size_t base)
         /* Collect when the computation is deterministic: with no choice
            points and no enclosing run, the goal stack and the registered C
            roots are the only things that can still be reached. */
-        if ((m_inferences & 0x3FF) == 0 && m_cp_top == 0 && m_nesting == 0 &&
+        if ((m_inferences & gc_mask) == 0 && m_cp_top == 0 && m_nesting == 0 &&
             heap_in_use() > gc_threshold) {
             size_t live;
             heap_gc(&m_goals);
             g = m_goals;
             live = heap_in_use();
-            gc_threshold = live * 3 > gc_min ? live * 3 : gc_min;
+            if (!gc_forced) gc_threshold = live * 3 > gc_min ? live * 3 : gc_min;
         }
         rc = execute(deref(g->goal), g);
         if (rc == PL_OK) continue;

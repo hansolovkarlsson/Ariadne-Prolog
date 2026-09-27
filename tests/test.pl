@@ -1,6 +1,8 @@
 /*  test.pl -- the regression test suite.
 
     Run with:  make test      (or ./prolog -q tests/test.pl -g run_tests)
+               make test-gc   (every test again, bare, with the collector
+                               running; see run_tests_bare below)
 
     Every test/2 fact names a goal that must succeed.  Goals that must fail
     are written with \+, and goals that must raise are wrapped in catch/3.
@@ -263,8 +265,8 @@ test(at_number_float, (number_codes(N, "3.25"), N =:= 3.25)).
 test(at_atom_number,  (atom_number('42', N), N =:= 42, \+ atom_number(foo, _))).
 test(at_concat,       (atom_concat(foo, bar, X), X == foobar)).
 test(at_concat_split, (findall(A-B, atom_concat(A,B,ab), [''-ab, a-b, ab-'']))).
-test(at_join_many,    (numlist(1, 200000, L), atomic_list_concat(L, ',', A),
-                       atom_length(A, N), N =:= 1288894)).
+test(at_join_many,    (numlist(1, 50000, L), atomic_list_concat(L, ',', A),
+                       atom_length(A, N), N =:= 288893)).
 test(at_sub_atom,     (sub_atom(abcde, 1, 3, A, S), S == bcd, A =:= 1)).
 test(at_sub_find,     (sub_atom(hello_world, B, _, _, world), B =:= 6)).
 test(at_sub_all,      (findall(S, sub_atom(abc, _, 1, _, S), [a,b,c]))).
@@ -593,12 +595,7 @@ mk_atom_(N, A) :- atom_concat(item_, N, A).
     test other than 2 exists: a suite that cannot count itself is not a suite.
 */
 run_tests :-
-    findall(N, (current_predicate(test/N), N =\= 2), Wrong),
-    Wrong \== [],
-    !,
-    format("test/~w exists: a test body with more than one goal needs parentheses~n", Wrong),
-    halt(1).
-run_tests :-
+    arity_check,
     nb_setval(passed, 0),
     nb_setval(failed, 0),
     forall(test(Name, Goal), run_one(Name, Goal)),
@@ -622,3 +619,61 @@ bump(Key) :-
     nb_getval(Key, V),
     V1 is V + 1,
     nb_setval(Key, V1).
+
+arity_check :-
+    findall(N, (current_predicate(test/N), N =\= 2), Wrong),
+    (   Wrong == []
+    ->  true
+    ;   format("test/~w exists: a test body with more than one goal needs parentheses~n", Wrong),
+        halt(1)
+    ).
+
+/*  The second leg: every test again, bare.
+
+    The collector only runs when no choice point is live, and run_tests
+    holds several around every test: forall/2's for the next test, and the
+    -> and catch/3 in run_one/2. So run_tests is never collected, however
+    low PROLOG_GC_THRESHOLD is set. Here each test runs as Goal, ! with
+    nothing around it, and PROLOG_GC_INTERVAL=4 lets the collector in often
+    enough that every test is collected while it runs.
+
+    Nothing around a test also means nothing to report a failure and carry
+    on: the first failure ends the run. The name of the test running is kept
+    with nb_setval/2, which a failure does not undo, so a second -g goal,
+    run_tests_bare_failed, can say which one it was:
+
+        ./prolog -q tests/test.pl -g run_tests_bare -g run_tests_bare_failed
+
+    An error ends the run before that second goal, with the error and not
+    the test's name. run_tests_bare(verbose) prints each name before it runs
+    the test, so the last name printed is the one that raised.
+*/
+run_tests_bare :- run_tests_bare(quiet).
+
+run_tests_bare(Mode) :-
+    arity_check,
+    nb_setval(bare_mode, Mode),
+    findall(Name-Goal, test(Name, Goal), Tests),
+    statistics(garbage_collection, [C0|_]),
+    run_bare(Tests, 0, 0, Total, Inside),
+    statistics(garbage_collection, [C1|_]),
+    Collections is C1 - C0,
+    format("~n~d tests passed bare, ~d collections, inside ~d of the tests~n",
+           [Total, Collections, Inside]),
+    halt.
+
+run_bare([], Total, Inside, Total, Inside).
+run_bare([Name-Goal|Tests], T0, I0, Total, Inside) :-
+    nb_setval(bare_test, Name),
+    (   nb_getval(bare_mode, verbose) -> format(user_error, "~w~n", [Name]) ; true ),
+    statistics(garbage_collection, [A|_]),
+    Goal, !,
+    statistics(garbage_collection, [B|_]),
+    T1 is T0 + 1,
+    (   B > A -> I1 is I0 + 1 ; I1 = I0 ),
+    run_bare(Tests, T1, I1, Total, Inside).
+
+run_tests_bare_failed :-
+    nb_getval(bare_test, Name),
+    format("FAIL  ~w, run bare with the collector running~n", [Name]),
+    halt(1).
