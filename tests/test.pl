@@ -263,6 +263,8 @@ test(at_number_float, (number_codes(N, "3.25"), N =:= 3.25)).
 test(at_atom_number,  (atom_number('42', N), N =:= 42, \+ atom_number(foo, _))).
 test(at_concat,       (atom_concat(foo, bar, X), X == foobar)).
 test(at_concat_split, (findall(A-B, atom_concat(A,B,ab), [''-ab, a-b, ab-'']))).
+test(at_join_many,    (numlist(1, 200000, L), atomic_list_concat(L, ',', A),
+                       atom_length(A, N), N =:= 1288894)).
 test(at_sub_atom,     (sub_atom(abcde, 1, 3, A, S), S == bcd, A =:= 1)).
 test(at_sub_find,     (sub_atom(hello_world, B, _, _, world), B =:= 6)).
 test(at_sub_all,      (findall(S, sub_atom(abc, _, 1, _, S), [a,b,c]))).

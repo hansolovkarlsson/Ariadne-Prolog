@@ -760,6 +760,44 @@ BI(bi_atom_concat3)
     RET(ok);
 }
 
+/* '$join'(+List, +Sep, -Atom): the parts of List with Sep between them,
+   gathered into one buffer and interned once.  Joining in Prolog made a
+   new atom at every step, and atoms are never freed, so a million parts
+   cost quadratic time and memory. */
+BI(bi_join3)
+{
+    UNUSED;
+    Term *l = deref(A[0]);
+    char *sep = NULL, *buf = NULL;
+    size_t nsep = 0, len = 0, cap = 0;
+    int rc = PL_OK, first = 1, ok;
+
+    while (l->tag == TAG_STR && FN(l) == a_dot && AR(l) == 2) {
+        char *part;
+        size_t n;
+        if ((rc = get_text(ARG(l, 0), &part, &n, "atomic")) != PL_OK) break;
+        l = deref(ARG(l, 1));
+        if (!first && !sep && (rc = get_text(A[1], &sep, &nsep, "atomic")) != PL_OK) {
+            free(part);
+            break;
+        }
+        if (len + nsep + n + 1 > cap) {
+            while (len + nsep + n + 1 > cap) cap = cap ? cap * 2 : 256;
+            buf = (char *)realloc(buf, cap);
+        }
+        if (!first) { memcpy(buf + len, sep, nsep); len += nsep; }
+        memcpy(buf + len, part, n);
+        len += n;
+        free(part);
+        first = 0;
+    }
+    free(sep);
+    if (rc != PL_OK) { free(buf); return rc; }
+    ok = unify(A[2], mk_atom(intern_n(buf ? buf : "", len)));
+    free(buf);
+    RET(ok);
+}
+
 /* '$sub_atom'(+Atom, +Before, +Len, -Sub) in characters. */
 BI(bi_sub_atom4)
 {
@@ -2435,7 +2473,7 @@ static const BiEntry bi_table[] = {
     { "atom_length", 2, bi_atom_length }, { "atom_codes", 2, bi_atom_codes },
     { "atom_chars", 2, bi_atom_chars }, { "char_code", 2, bi_char_code },
     { "number_codes", 2, bi_number_codes }, { "number_chars", 2, bi_number_chars },
-    { "atom_number", 2, bi_atom_number }, { "$atom_concat", 3, bi_atom_concat3 },
+    { "atom_number", 2, bi_atom_number }, { "$atom_concat", 3, bi_atom_concat3 }, { "$join", 3, bi_join3 },
     { "$sub_atom", 4, bi_sub_atom4 }, { "upcase_atom", 2, bi_upcase },
     { "downcase_atom", 2, bi_downcase }, { "term_to_atom", 2, bi_term_to_atom },
     { "atom_to_term", 3, bi_atom_to_term },
