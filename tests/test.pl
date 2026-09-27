@@ -528,6 +528,11 @@ test(io_char_errors,  (catch(put_char(ab), error(type_error(character, ab), _), 
                              error(permission_error(input, stream, user_output), _), true),
                        catch(put_char(user_input, a),
                              error(permission_error(output, stream, user_input), _), true))).
+test(io_end_then_comment,
+                      (tmp_file(F), open(F, write, S), write(S, 'a.% one'), nl(S),
+                       write(S, 'b.%two'), close(S), open(F, read, S2),
+                       read(S2, T1), read(S2, T2), read(S2, T3), close(S2),
+                       [T1, T2, T3] == [a, b, end_of_file])).
 test(io_read_output,  (catch(read(user_output, _), error(E1, _), true),
                        E1 == permission_error(input, stream, user_output),
                        catch(read_term(user_error, _, []), error(E2, _), true),

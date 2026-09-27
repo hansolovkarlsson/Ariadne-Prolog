@@ -578,9 +578,11 @@ static int next_token(Parser *p)
         while (is_symbol_char(c = rd_getc(r))) buf_put(p, c);
         rd_ungetc(r, c);
         if (p->buflen == 1 && p->buf[0] == '.') {
-            /* A lone dot followed by layout or EOF ends the clause. */
+            /* A lone dot followed by layout or EOF ends the clause.  A
+               space is consumed; a % is left, so that the next read skips
+               the comment it starts instead of reading its text. */
             if (c == EOF || isspace(c) || c == '%') {
-                if (c != EOF) rd_getc(r);       /* consume the layout char */
+                if (c != EOF && c != '%') rd_getc(r);
                 t->kind = TK_END;
                 return 0;
             }
