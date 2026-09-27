@@ -16,7 +16,7 @@ from docpage import (esc, lit, inline, para, ul, pre, table, note, preds,
 
 # ---- 1. reading this manual
 section('notation', 'Reading this manual', ''.join([
-    para("This is the reference for C Prolog, a Prolog interpreter written in C99. "
+    para("This is the reference for Ariadne Prolog, a Prolog interpreter written in C99. "
          "It describes the language the interpreter actually implements: every "
          "predicate, operator, arithmetic function and directive listed here was "
          "checked against the running system, and anything the interpreter does not "
@@ -853,7 +853,7 @@ FLAGS = [
      'How "text" is read: codes, chars or atom.'],
     ['unknown', 'error', 'settable',
      'What calling an undefined predicate does: error or fail.'],
-    ['dialect', 'cprolog', 'read-only', 'Identifies this implementation.'],
+    ['dialect', 'ariadne', 'read-only', 'Identifies this implementation.'],
     ['version', '10000', 'read-only', 'Version as a single integer.'],
     ['max_arity', '256', 'read-only',
      'The largest number of arguments a compound term may have.'],
@@ -928,7 +928,7 @@ section('limits', 'Deviations and limits', ''.join([
 ]))
 
 
-render(title='C Prolog Reference',
+render(title='Ariadne Prolog Reference',
        prompt='?- version 1.0',
        subtitle="The language as this interpreter implements it: syntax, control, "
                 "arithmetic, every builtin predicate, grammars, errors, and the "

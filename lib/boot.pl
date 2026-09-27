@@ -590,7 +590,7 @@ print_message(_Kind, Message) :- '$print_error'(Message).
 tab(Stream, N) :- forall(between(1, N, _), write(Stream, ' ')).
 
 help :-
-    format("C Prolog -- a small ISO-style Prolog interpreter.~n~n"),
+    format("Ariadne Prolog -- a small ISO-style Prolog interpreter.~n~n"),
     format("  ?- Goal.            solve Goal; type ; for more solutions~n"),
     format("  ?- [file].          load file.pl~n"),
     format("  ?- consult(file).   the same~n"),

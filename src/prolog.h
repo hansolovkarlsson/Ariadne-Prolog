@@ -1,4 +1,4 @@
-/* prolog.h -- shared declarations for the C Prolog interpreter. */
+/* prolog.h -- shared declarations for the Ariadne Prolog interpreter. */
 #ifndef PROLOG_H
 #define PROLOG_H
 

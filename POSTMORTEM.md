@@ -14,7 +14,7 @@ Thirty-four defects, in five cohorts that failed for five different reasons:
 - **Design era** — five bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Fixed before the first
   commit; documented in full in the [engine
-  internals](https://hansolovkarlsson.github.io/cprolog/internals.html)
+  internals](https://hansolovkarlsson.github.io/ariadne-prolog/internals.html)
   under *Five bugs this design produced*, and summarised here.
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
@@ -384,7 +384,7 @@ is the one aimed at the neighbour of the last.
 
 Three things stand out.
 
-**The test suite found three of thirty-four.** It is a good suite, 300 tests
+**The test suite found three of thirty-four.** It is a good suite, 301 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong

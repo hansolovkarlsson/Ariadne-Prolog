@@ -1,4 +1,4 @@
-# C Prolog -- a Prolog interpreter written in C.
+# Ariadne Prolog -- a Prolog interpreter written in C.
 
 CC      ?= cc
 CFLAGS  ?= -std=c99 -O2 -Wall -Wextra

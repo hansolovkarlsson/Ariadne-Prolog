@@ -215,6 +215,7 @@ test(tm_setarg,       (T = f(a), setarg(1, T, b), T == f(b))).
     reports it, so these tests are written against the flag rather than
     against a literal 256.
 */
+test(tm_dialect_flag, current_prolog_flag(dialect, ariadne)).
 test(tm_max_arity_flag,
      (current_prolog_flag(max_arity, N), integer(N), N > 0)).
 test(tm_max_arity_functor,
@@ -557,7 +558,7 @@ test(io_read_output,  (catch(read(user_output, _), error(E1, _), true),
                        catch(read_term(user_error, _, []), error(E2, _), true),
                        E2 == permission_error(input, stream, user_error))).
 
-tmp_file('/tmp/cprolog_test_tmp.pl').
+tmp_file('/tmp/ariadne_test_tmp.pl').
 
 /* ---------------- flags and misc ---------------- */
 

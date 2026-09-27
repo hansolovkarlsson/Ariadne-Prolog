@@ -8,6 +8,15 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ## 2026-09-27
 
+### Changed
+
+- **The interpreter is Ariadne Prolog.** It was called C Prolog, which is the
+  name of Fernando Pereira's interpreter from Edinburgh in the early 1980s, an
+  ancestor of Quintus and SWI-Prolog. The banner, `--version`, the pages and
+  the repository are renamed, and `current_prolog_flag(dialect, D)` answers
+  `ariadne` where it answered `cprolog`, which a portable program would have
+  taken for the other C-Prolog. The binary is still `prolog`.
+
 ### Added
 
 - **A second leg that collects.** `make test-gc` ran the suite through
@@ -140,7 +149,7 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Tests
 
-- 277 → 300. Seven for `open/4` and the end of stream, one changed; twelve for
+- 277 → 301. Seven for `open/4` and the end of stream, one changed; twelve for
   the fixes above. Nine were seen failing against the code before their fix;
   `tm_reader_list_tail` and `tm_variant_pairs` pass on both, and guard the
   code that was rewritten. `at_join_many` was not run against the old join,
@@ -148,7 +157,7 @@ There are no releases yet, so entries are grouped by the day they landed on
   Three for the split: `at_split_undoes_join` fails on the old code, and
   `at_split` and `at_split_many` pass on it, slowly in the second case. One
   for the reader's variables, `tm_reader_many_vars`, which passes on the old
-  code in 0.43 seconds against 0.06.
+  code in 0.43 seconds against 0.06. One for the dialect flag.
 - `tests/deep.pl`, 22 checks outside the suite. Against the code before
   `d1e3088` it dies with SIGSEGV.
 - The suite's second leg, `make test-gc`, turns out never to have collected

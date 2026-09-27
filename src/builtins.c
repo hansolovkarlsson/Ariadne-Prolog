@@ -2337,7 +2337,7 @@ BI(bi_flag)
                                     m_flag_double_quotes == DQ_CHARS ? "chars" : "atom")));
     if (!strcmp(nm, "unknown"))
         RET(unify(A[1], mk_atom_str(m_flag_unknown_error ? "error" : "fail")));
-    if (!strcmp(nm, "dialect")) RET(unify(A[1], mk_atom_str("cprolog")));
+    if (!strcmp(nm, "dialect")) RET(unify(A[1], mk_atom_str("ariadne")));
     if (!strcmp(nm, "version")) RET(unify(A[1], mk_int(10000)));
     if (!strcmp(nm, "max_arity")) RET(unify(A[1], mk_int(MAX_ARITY)));
     return PL_FAIL;

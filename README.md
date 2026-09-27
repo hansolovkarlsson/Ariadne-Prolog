@@ -1,14 +1,19 @@
-# C Prolog
+# Ariadne Prolog
 
-[![CI](https://github.com/hansolovkarlsson/cprolog/actions/workflows/ci.yml/badge.svg)](https://github.com/hansolovkarlsson/cprolog/actions/workflows/ci.yml)
+[![CI](https://github.com/hansolovkarlsson/ariadne-prolog/actions/workflows/ci.yml/badge.svg)](https://github.com/hansolovkarlsson/ariadne-prolog/actions/workflows/ci.yml)
 
 A Prolog interpreter written from scratch in C99 — reader, engine, garbage
 collector and library. No dependencies beyond libc and libm.
 
+The name is Ariadne's thread, which let Theseus find his way back out of the
+labyrinth. In logic the phrase names solving a problem by trying each path,
+keeping a record of every choice, and going back to the last one when a path
+fails, which is how Prolog searches; here the record is the trail.
+
 ```
 $ make
 $ ./prolog
-C Prolog 1.0 -- a Prolog interpreter in C
+Ariadne Prolog 1.0 -- a Prolog interpreter in C
 Type help. for help, halt. to quit.
 
 ?- X = hello, atom_length(X, N).
@@ -23,18 +28,18 @@ false.
 ```
 
 Documentation is published at
-**[hansolovkarlsson.github.io/cprolog](https://hansolovkarlsson.github.io/cprolog/)**:
+**[hansolovkarlsson.github.io/ariadne-prolog](https://hansolovkarlsson.github.io/ariadne-prolog/)**:
 a four-part tutorial that teaches Prolog from the beginning using this
-interpreter ([level 1](https://hansolovkarlsson.github.io/cprolog/tutorial-1.html),
-[level 2](https://hansolovkarlsson.github.io/cprolog/tutorial-2.html),
-[level 3](https://hansolovkarlsson.github.io/cprolog/tutorial-3.html),
-[level 4](https://hansolovkarlsson.github.io/cprolog/tutorial-4.html)),
-a [language reference](https://hansolovkarlsson.github.io/cprolog/reference.html)
+interpreter ([level 1](https://hansolovkarlsson.github.io/ariadne-prolog/tutorial-1.html),
+[level 2](https://hansolovkarlsson.github.io/ariadne-prolog/tutorial-2.html),
+[level 3](https://hansolovkarlsson.github.io/ariadne-prolog/tutorial-3.html),
+[level 4](https://hansolovkarlsson.github.io/ariadne-prolog/tutorial-4.html)),
+a [language reference](https://hansolovkarlsson.github.io/ariadne-prolog/reference.html)
 covering syntax, control, arithmetic, every builtin predicate, grammars and
-errors, and an [engine internals](https://hansolovkarlsson.github.io/cprolog/internals.html)
+errors, and an [engine internals](https://hansolovkarlsson.github.io/ariadne-prolog/internals.html)
 document describing how the interpreter is built and where the design costs
-something. The [journal](https://hansolovkarlsson.github.io/cprolog/journal.html)
-and the [postmortem](https://hansolovkarlsson.github.io/cprolog/postmortem.html)
+something. The [journal](https://hansolovkarlsson.github.io/ariadne-prolog/journal.html)
+and the [postmortem](https://hansolovkarlsson.github.io/ariadne-prolog/postmortem.html)
 are published there too, rendered from the Markdown below. All of it is
 generated into `docs/` by `make doc`.
 
@@ -42,7 +47,7 @@ generated into `docs/` by `make doc`.
 
 ```
 make            # build ./prolog
-make test       # run the regression suite (300 tests)
+make test       # run the regression suite (301 tests)
 make test-gc    # every test again, bare, collected while it runs
 make test-deep  # terms nested a million deep, with the collector running
 make test-asan  # the same suite under ASan + UBSan
@@ -171,7 +176,7 @@ into a fresh heap and the old one is released. Forwarding pointers keep shared
 structure shared. The collector runs only when no choice point is live, and the
 suite's own harness always holds some, so `make test-gc` runs every test again
 bare, with nothing around it and the collector let in at every fourth
-inference: each of the 300 tests is collected while it runs. `make test-deep`
+inference: each of the 301 tests is collected while it runs. `make test-deep`
 builds terms nested a million deep at the top level and fails unless they were
 collected.
 
@@ -206,7 +211,7 @@ These are deliberate, and each would be a substantial piece of work:
 
 ## Testing
 
-`tests/test.pl` holds 300 tests as `test(Name, Goal)` facts covering
+`tests/test.pl` holds 301 tests as `test(Name, Goal)` facts covering
 unification and the standard order, arithmetic and its errors, control and cut,
 exceptions, all-solutions predicates, term inspection, atoms and UTF-8 text,
 sorting, the list library, the database, the reader and writer (including
@@ -220,10 +225,10 @@ running constantly; `make test-asan` runs both under the sanitizers.
 - [CHANGELOG.md](CHANGELOG.md) — what has shipped, newest first.
 - [JOURNAL.md](JOURNAL.md) — how the interpreter was built and why it is shaped
   this way. Also
-  [on the site](https://hansolovkarlsson.github.io/cprolog/journal.html).
+  [on the site](https://hansolovkarlsson.github.io/ariadne-prolog/journal.html).
 - [POSTMORTEM.md](POSTMORTEM.md) — every defect the project has found in itself,
   and, more usefully, what found it. Also
-  [on the site](https://hansolovkarlsson.github.io/cprolog/postmortem.html).
+  [on the site](https://hansolovkarlsson.github.io/ariadne-prolog/postmortem.html).
 
 The last two are the source for their published pages: `tools/mdpage.py` renders
 the Markdown, and CI fails if `docs/` no longer matches it.

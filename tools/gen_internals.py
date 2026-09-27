@@ -189,7 +189,7 @@ def fig_gc():
 # ---------------------------------------------------------------- sections
 
 section('shape', 'The shape of the interpreter', ''.join([
-    para("C Prolog resolves goals by copying structures, not by compiling to an "
+    para("Ariadne Prolog resolves goals by copying structures, not by compiling to an "
          "abstract machine. There is no WAM, no register allocation and no clause "
          "compiler: a clause is stored as a term, and calling it copies that term with "
          "fresh variables. That costs some speed against a compiling system and buys "
@@ -690,7 +690,7 @@ RET(unify(A[2], mk_int(lo)));
          "memory handling that passes only the first is not tested."),
 ]))
 
-render(title='C Prolog Internals',
+render(title='Ariadne Prolog Internals',
        prompt='?- engine design',
        subtitle="How the interpreter is built: terms in memory, the solver loop, choice "
                 "points and cut, the three memory regions and the collector — and the "

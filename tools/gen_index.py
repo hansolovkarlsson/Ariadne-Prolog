@@ -11,7 +11,7 @@
 import io, os
 from docpage import CSS, esc, inline, FAVICON
 
-REPO = 'https://github.com/hansolovkarlsson/cprolog'
+REPO = 'https://github.com/hansolovkarlsson/ariadne-prolog'
 
 EXTRA_CSS = """
 /* ---- landing page ---- */
@@ -148,10 +148,10 @@ table.plain td:first-child { font-family: var(--mono); font-size: 0.82rem; color
 """
 
 TRANSCRIPT = [
-    ('c', '$ git clone https://github.com/hansolovkarlsson/cprolog'),
-    ('c', '$ cd cprolog && make'),
+    ('c', '$ git clone https://github.com/hansolovkarlsson/ariadne-prolog'),
+    ('c', '$ cd ariadne-prolog && make'),
     ('c', '$ ./prolog'),
-    ('', 'C Prolog 1.0 -- a Prolog interpreter in C'),
+    ('', 'Ariadne Prolog 1.0 -- a Prolog interpreter in C'),
     ('', 'Type help. for help, halt. to quit.'),
     ('', ''),
     ('q', '?- X = hello, atom_length(X, N).'),
@@ -189,7 +189,7 @@ HIGHLIGHTS = [
      "inside every test, and under the address and undefined behaviour "
      "sanitizers, and terms nested a million deep go through every walk. It "
      "builds warning-free under both clang and gcc.",
-     "300 tests · make check · make test-asan"),
+     "301 tests · make check · make test-asan"),
 ]
 
 EXAMPLES = [
@@ -246,7 +246,7 @@ def render():
     examples = ''.join('<tr><td>%s</td><td>%s</td></tr>' % (esc(f), inline(d))
                        for f, d in EXAMPLES)
 
-    return """<title>C Prolog</title>
+    return """<title>Ariadne Prolog</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="A Prolog interpreter written from scratch in C99: reader, engine, copying garbage collector and library, with no dependencies beyond libc.">
 <!--FAVICON-->
@@ -258,7 +258,7 @@ def render():
 <header class="hero">
   <div class="hero-inner">
     <div>
-      <h1>C Prolog</h1>
+      <h1>Ariadne Prolog</h1>
       <p class="lede">A Prolog interpreter written from scratch in C99 — reader,
         engine, garbage collector and library, with no dependencies beyond libc.</p>
       <div class="meta">
@@ -286,7 +286,7 @@ def render():
   <div class="cards" style="grid-template-columns: minmax(0,1fr);">
     <div class="card">
       <p style="font-family: var(--mono); font-size: 0.82rem; color: var(--ink); line-height: 1.8;">
-make<br>./prolog<br>make check<span style="color: var(--muted)">      # 300 tests, twice</span><br>make examples</p>
+make<br>./prolog<br>make check<span style="color: var(--muted)">      # 301 tests, twice</span><br>make examples</p>
     </div>
   </div>
   <p style="margin-top: 1rem; color: var(--muted); font-size: 0.92rem; max-width: 68ch;">

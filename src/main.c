@@ -6,7 +6,7 @@
 
 static void banner(void)
 {
-    printf("C Prolog %s -- a Prolog interpreter in C\n", VERSION);
+    printf("Ariadne Prolog %s -- a Prolog interpreter in C\n", VERSION);
     printf("Type help. for help, halt. to quit.\n\n");
 }
 
@@ -218,7 +218,7 @@ int main(int argc, char **argv)
         const char *a = argv[i];
         if (!strcmp(a, "-h") || !strcmp(a, "--help")) { usage(argv[0]); return 0; }
         if (!strcmp(a, "-v") || !strcmp(a, "--version")) {
-            printf("C Prolog %s\n", VERSION);
+            printf("Ariadne Prolog %s\n", VERSION);
             return 0;
         }
         if (!strcmp(a, "-q") || !strcmp(a, "--quiet")) { quiet = 1; continue; }

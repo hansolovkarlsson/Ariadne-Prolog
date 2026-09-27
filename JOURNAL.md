@@ -568,6 +568,23 @@ The question day four left open, whether the changelog should record the
 journal and postmortem pages published on 2026-08-28, was answered yes, and
 the entry is under that date (`d0ed4cb`).
 
+### A name that was taken
+
+At the end of the day, word came that the repository's name was in conflict
+with existing Prolog work. It was: C-Prolog is Fernando Pereira's interpreter
+from Edinburgh in the early 1980s, the one that came before Quintus and
+SWI-Prolog, and this interpreter had been answering
+`current_prolog_flag(dialect, cprolog)`, which a program testing the dialect
+would have believed. Of the names searched, Resolvent, Clew, Cairn and
+Longhand were free; Claw and Clue were taken by other programming languages;
+Ariadne by nothing in Prolog, but by a Python GraphQL library, a Rust
+diagnostics crate and a C++ model checker among others. The choice was
+**Ariadne Prolog**, the full name doing the work a bare Ariadne could not,
+after Ariadne's thread, which in logic is search by trying each path and
+backing up to the last choice when one fails. That is Prolog's search, and the
+trail is the thread. The binary is still `prolog`, and the dialect flag
+answers `ariadne`.
+
 ### What the day was like
 
 Every defect of the day in the interpreter passed the suite, because every
@@ -602,7 +619,7 @@ Every one of these was added in response to something it would have caught.
 ## Where it stands
 
 About 7,500 lines of hand-written C, 599 lines of library written in Prolog,
-a 300-test suite with a second leg that collects and a deep-term run beside
+a 301-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, and a reference and internals
 document generated from the interpreter's own tables.
 

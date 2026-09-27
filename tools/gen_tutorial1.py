@@ -83,7 +83,7 @@ section('start', 'Before you begin', ''.join([
     pre("""
 $ make
 $ ./prolog
-C Prolog 1.0 -- a Prolog interpreter in C
+Ariadne Prolog 1.0 -- a Prolog interpreter in C
 Type help. for help, halt. to quit.
 
 ?-
