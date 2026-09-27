@@ -41,6 +41,17 @@ int pred_enumerate(int i, Pred **out)
     return 0;
 }
 
+/* Marks every predicate defined so far as the library's: called once,
+   when lib/boot.pl has been loaded. */
+void pred_mark_library(void)
+{
+    int b;
+    Pred *p;
+    for (b = 0; b < PRED_BUCKETS; b++)
+        for (p = preds[b]; p; p = p->next)
+            if (p->defined || p->dynamic) p->library = 1;
+}
+
 /* ---- first argument indexing ---- */
 
 static void clause_index(Clause *c)
@@ -81,11 +92,42 @@ int clause_may_match(Clause *c, Term *goal)
 
 /* ---- clauses ---- */
 
+/* ISO's conversion of a clause body: a variable where a goal stands is
+   call(V), so that a cut it is later bound to is local to it rather than
+   cutting the clause.  Only the control constructs are walked, iteratively,
+   since a body may be a conjunction a million goals long; every other goal
+   is kept as it is. */
+static Term *body_convert(Term *b)
+{
+    WorkStack ws = { NULL, 0, 0 };
+    Term *result = NULL, **slot;
+
+    WS_PUSH(&ws, b);
+    WS_PUSH(&ws, &result);
+    while (ws.n) {
+        slot = (Term **)WS_POP(&ws);
+        b = deref((Term *)WS_POP(&ws));
+        if (b->tag == TAG_VAR) *slot = mk1(a_call, b);
+        else if (b->tag == TAG_STR && AR(b) == 2 &&
+                 (FN(b) == a_comma || FN(b) == a_semicolon ||
+                  FN(b) == a_arrow || FN(b) == a_softarrow)) {
+            Term *c = mk_str(FN(b), 2);
+            *slot = c;
+            WS_PUSH(&ws, ARG(b, 1));
+            WS_PUSH(&ws, &ARG(c, 1));
+            WS_PUSH(&ws, ARG(b, 0));
+            WS_PUSH(&ws, &ARG(c, 0));
+        } else *slot = b;
+    }
+    free(ws.item);
+    return result;
+}
+
 Clause *clause_make(Term *head, Term *body)
 {
     Arena *a = arena_new();
     Clause *c = (Clause *)calloc(1, sizeof(Clause));
-    Term *pair = mk2(a_neck, head, body);
+    Term *pair = mk2(a_neck, head, body_convert(body));
     Term *compiled;
     int nvars = 0;
 

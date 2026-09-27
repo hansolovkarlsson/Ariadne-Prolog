@@ -582,6 +582,7 @@ void heap_gc(Goal **goals_root)
     for (g = *goals_root, link = goals_root; g; g = g->next) {
         Goal *ng = (Goal *)heap_alloc(sizeof(Goal));
         ng->cutb = g->cutb;
+        ng->owner = g->owner;
         ng->next = NULL;
         ng->goal = gc_copy(g->goal);
         *link = ng;

@@ -675,7 +675,7 @@ written to /tmp/stock-report.txt
          "message of its own:"),
     pre("""
 $ ./prolog -q tutorial/restock.pl        # with the orders file renamed away
-ERROR: Unknown source_sink: 'tutorial/orders.txt'
+ERROR: open/3: Unknown source_sink: 'tutorial/orders.txt'
 $ echo $?
 1
 """),

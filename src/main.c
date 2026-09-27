@@ -130,7 +130,7 @@ static void run_query(Term *goal, Term *names)
     /* The answer bindings are printed after the run, so the collector must
        keep the variable names reachable. */
     gc_protect(&names);
-    m_goals = goal_push(goal, NULL, base);
+    m_goals = goal_push_top(goal, base);
     rc = machine_run(base);
     for (;;) {
         if (rc == PL_OK) {
@@ -244,6 +244,7 @@ int main(int argc, char **argv)
 
     rc = consult_string(boot_pl);
     if (rc == PL_HALT) return m_halt_code;
+    pred_mark_library();
 
     for (i = 0; i < nfiles; i++) {
         if (consult_file(files[i]) == PL_FAIL) {

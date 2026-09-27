@@ -252,6 +252,7 @@ struct Pred {
     int     defined;
     int     discontiguous;
     Clause *garbage;         /* retracted clauses, freed on abolish */
+    int     library;         /* defined by lib/boot.pl */
 };
 
 Pred   *pred_lookup(int functor, int arity, int create);
@@ -260,6 +261,7 @@ void    pred_add_clause(Pred *p, Clause *c, int at_end);
 void    clause_retract(Pred *p, Clause *c);
 void    pred_abolish(Pred *p);
 int     pred_enumerate(int i, Pred **out);
+void    pred_mark_library(void);
 int     clause_may_match(Clause *c, Term *goal);
 void    db_init(void);
 
@@ -268,9 +270,12 @@ void    db_init(void);
 /* ------------------------------------------------------------------ */
 
 typedef struct Goal Goal;
-struct Goal { Term *goal; Goal *next; size_t cutb; };
+/* owner: the outermost library predicate whose clauses pushed this goal,
+   or NULL for a goal of the user's own program; see pl_throw. */
+struct Goal { Term *goal; Goal *next; size_t cutb; Pred *owner; };
 
 Goal *goal_push(Term *t, Goal *next, size_t cutb);
+Goal *goal_push_top(Term *t, size_t cutb);
 
 enum { CP_CLAUSES = 1, CP_ALT, CP_CATCH, CP_ITER, CP_REDO };
 
@@ -289,6 +294,7 @@ typedef struct {
     Term    *iter_a, *iter_b;
     int      iter_kind;
     long long redo_a, redo_b;   /* CP_REDO: the state of a retried builtin */
+    Pred    *owner;        /* the owner of the goals it will push     */
 } ChoicePoint;
 
 extern Goal        *m_goals;

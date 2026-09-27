@@ -69,12 +69,29 @@ void machine_init(void)
     m_goals = NULL;
 }
 
+/* The owner every goal pushed now is given: the owner of the goal being
+   executed, or of the choice point being resumed. */
+static Pred *m_owner;
+
+/* The builtin running, and the owner of the goal that called it, for the
+   context of an error it raises; bi_functor is -1 when none is. */
+static int   bi_functor = -1, bi_arity;
+static Pred *bi_owner;
+
+/* The first goal of a run that no other run encloses: nothing owns it. */
+Goal *goal_push_top(Term *t, size_t cutb)
+{
+    m_owner = NULL;
+    return goal_push(t, NULL, cutb);
+}
+
 Goal *goal_push(Term *t, Goal *next, size_t cutb)
 {
     Goal *g = (Goal *)heap_alloc(sizeof(Goal));
     g->goal = t;
     g->next = next;
     g->cutb = cutb;
+    g->owner = m_owner;
     return g;
 }
 
@@ -92,6 +109,7 @@ static ChoicePoint *cp_push(int kind, Goal *cont, size_t cutb)
     cp->active = 1;
     cp->goals = cont;
     cp->cutb = cutb;
+    cp->owner = m_owner;
     cp->trail = trail_mark();
     cp->heap = heap_mark();
     return cp;
@@ -109,10 +127,26 @@ int pl_throw_ball(Term *ball)
     return PL_ERROR;
 }
 
+static Term *context_of(int functor, int arity)
+{
+    return mk2(intern("context"), mk2(a_slash, mk_atom(functor), mk_int(arity)),
+               mk_var());
+}
+
+/* Wraps a formal error description as error(Formal, Context).  Context is
+   context(Name/Arity, _) for the predicate the program called: when the
+   builtin raising it was called by library code, the library predicate
+   the program called, and otherwise the builtin itself, unless it is one
+   of the library's internal $ builtins.  Raised by the machine itself, for
+   an unknown procedure or a goal that is not callable, it is unbound. */
 int pl_throw(Term *formal)
 {
-    /* Wraps a formal error description as error(Formal, Context). */
-    return pl_throw_ball(mk2(a_error, formal, mk_var()));
+    Term *ctx = mk_var();
+    if (bi_functor >= 0) {
+        if (bi_owner) ctx = context_of(bi_owner->functor, bi_owner->arity);
+        else if (atom_name(bi_functor)[0] != '$') ctx = context_of(bi_functor, bi_arity);
+    }
+    return pl_throw_ball(mk2(a_error, formal, ctx));
 }
 
 int type_error(const char *type, Term *culprit)
@@ -173,7 +207,12 @@ static Clause *next_match(Clause *c, Term *goal)
 
 /* Tries clause `c` for `goal`.  Returns 1 if the head unified (and the
    machine state has been advanced), 0 otherwise. */
-static int try_clause(Clause *c, Term *goal, Goal *cont, size_t barrier)
+/* Pushes the body of clause c of predicate p.  A public library
+   predicate owns its own body; one of the library's internal $ predicates
+   passes on the owner of the goal that called it, so that an error in a
+   helper names the predicate the program called; a predicate of the
+   program's own owns nothing.  m_owner is the owner of the calling goal. */
+static int try_clause(Pred *p, Clause *c, Term *goal, Goal *cont, size_t barrier)
 {
     Term **vars;
     Term *head = c->head;
@@ -190,9 +229,14 @@ static int try_clause(Clause *c, Term *goal, Goal *cont, size_t barrier)
     }
     if (c->body->tag == TAG_ATOM && AT(c->body) == a_true)
         m_goals = cont;
-    else
+    else {
+        Pred *caller = m_owner;
+        m_owner = !p->library ? NULL
+                : atom_name(p->functor)[0] == '$' ? caller : p;
         m_goals = goal_push(heap_instantiate(c->body, vars, c->nvars),
                             cont, barrier);
+        m_owner = caller;
+    }
     return 1;
 }
 
@@ -264,7 +308,8 @@ int backtrack(size_t base)
             nx = next_match(c->next, call);
             if (nx) m_cps[idx].clause = nx;
             else m_cp_top--;                    /* last clause: pop */
-            if (try_clause(c, call, cont, idx)) return 1;
+            m_owner = cp->owner;
+            if (try_clause(cp->pred, c, call, cont, idx)) return 1;
             continue;                           /* head did not unify */
         }
         case CP_ALT: {
@@ -275,6 +320,7 @@ int backtrack(size_t base)
             m_cp_top--;
             if (!active) continue;              /* disabled by a soft cut */
             heap_release(cp->heap);
+            m_owner = cp->owner;
             m_goals = goal_push(alt, cont, cutb);
             return 1;
         }
@@ -329,6 +375,7 @@ static int handle_throw(size_t base)
             size_t tm = trail_mark();
             Term *ball = ball_to_heap();
             if (unify(cp->alt, ball)) {
+                m_owner = cp->owner;
                 m_goals = goal_push(cp->recovery, cp->goals, cp->cutb);
                 return 1;
             }
@@ -365,7 +412,22 @@ static int check_callable(Term *g)
     return PL_OK;
 }
 
+static int execute1(Term *t, Goal *frame);
+
+/* Runs one goal.  Goals it pushes take its owner, and while it runs no
+   builtin is, until execute1 calls one. */
 static int execute(Term *t, Goal *frame)
+{
+    int f = bi_functor, n = bi_arity, rc;
+    Pred *o = bi_owner;
+    m_owner = frame->owner;
+    bi_functor = -1;
+    rc = execute1(t, frame);
+    bi_functor = f; bi_arity = n; bi_owner = o;
+    return rc;
+}
+
+static int execute1(Term *t, Goal *frame)
 {
     Goal *cont = frame->next;
     size_t cutb = frame->cutb;
@@ -428,6 +490,7 @@ static int execute(Term *t, Goal *frame)
         cp->alt = K_true;
         g = goal_push(K_fail, cont, cutb);
         g = goal_push(mk1(a_dollar_cut, mk_int((long long)idx)), g, cutb);
+        m_owner = NULL;                 /* a meta-call: the goal is the caller's */
         m_goals = goal_push(ARG(t, 0), g, m_cp_top);
         return PL_OK;
     } else if (n == 1 && f == a_dollar_cut) {
@@ -458,6 +521,7 @@ static int execute(Term *t, Goal *frame)
         int rc;
         g = add_args(ARG(t, 0), &ARG(t, 1), n - 1);
         if ((rc = check_callable(g)) != PL_OK) return rc;
+        m_owner = NULL;                 /* a meta-call: the goal is the caller's */
         m_goals = goal_push(g, cont, m_cp_top);     /* cut is local to call/N */
         return PL_OK;
     } else if (n == 3 && f == a_catch) {
@@ -468,11 +532,18 @@ static int execute(Term *t, Goal *frame)
         cp->recovery = ARG(t, 2);
         g = goal_push(mk1(a_dollar_exit_catch, mk_int((long long)idx)),
                       cont, cutb);
+        m_owner = NULL;                 /* a meta-call: the goal is the caller's */
         m_goals = goal_push(ARG(t, 0), g, m_cp_top);
         return PL_OK;
     } else if (n == 1 && f == a_throw) {
         Term *b = deref(ARG(t, 0));
         if (b->tag == TAG_VAR) return instantiation_error();
+        /* An error the library throws names the predicate the program
+           called, as one a builtin raises does. */
+        if (frame->owner && b->tag == TAG_STR && FN(b) == a_error && AR(b) == 2
+            && deref(ARG(b, 1))->tag == TAG_VAR)
+            b = mk2(a_error, ARG(b, 0),
+                    context_of(frame->owner->functor, frame->owner->arity));
         return pl_throw_ball(b);
     } else if (n == 1 && f == a_curly_call) {
         /* {}/1 is only callable in DCG bodies; treat it as its argument. */
@@ -486,6 +557,9 @@ static int execute(Term *t, Goal *frame)
         Goal *saved = m_goals;
         int rc;
         m_goals = cont;
+        bi_functor = f;
+        bi_arity = n;
+        bi_owner = frame->owner;
         rc = bi(t->tag == TAG_STR ? t->u.s.args : NULL, cont, cutb);
         if (rc == PL_FAIL) m_goals = saved;
         return rc;
@@ -509,7 +583,7 @@ static int execute(Term *t, Goal *frame)
         cp->clause = nx;
         cp->pred = p;
     }
-    if (try_clause(c, t, cont, barrier)) return PL_OK;
+    if (try_clause(p, c, t, cont, barrier)) return PL_OK;
     return PL_FAIL;
 }
 
@@ -598,6 +672,7 @@ int clause_iter_start(Pred *p, Term *head, Term *body, int kind,
 
 int solve_sub(Term *goal, int (*on_solution)(void *), void *ctx)
 {
+    Pred    *saved_owner = m_owner;
     Goal    *saved = m_goals;
     int      saved_nesting = m_nesting;
     size_t   base = m_cp_top;
@@ -605,7 +680,7 @@ int solve_sub(Term *goal, int (*on_solution)(void *), void *ctx)
     HeapMark hm = heap_mark();
     int      rc;
 
-    m_goals = goal_push(goal, NULL, base);
+    m_goals = goal_push_top(goal, base);
     /* The caller holds C pointers into the heap, so no collection here. */
     m_nesting++;
     rc = machine_run(base);
@@ -618,6 +693,7 @@ int solve_sub(Term *goal, int (*on_solution)(void *), void *ctx)
     trail_undo(tm);
     heap_release(hm);
     m_goals = saved;
+    m_owner = saved_owner;
     if (rc == PL_ERROR) return PL_ERROR;
     if (rc == PL_HALT) return PL_HALT;
     return PL_OK;
@@ -626,6 +702,7 @@ int solve_sub(Term *goal, int (*on_solution)(void *), void *ctx)
 /* Runs a goal to its first solution, keeping the bindings it made. */
 int solve_once(Term *goal)
 {
+    Pred  *saved_owner = m_owner;
     Goal  *saved = m_goals;
     size_t base = m_cp_top;
     int    saved_nesting = m_nesting;
@@ -634,11 +711,12 @@ int solve_once(Term *goal)
     /* Re-entrant calls (a builtin running a goal) keep C pointers into the
        heap alive; only an outermost call may collect. */
     if (saved) m_nesting++;
-    m_goals = goal_push(goal, NULL, base);
+    m_goals = goal_push_top(goal, base);
     rc = machine_run(base);
     m_nesting = saved_nesting;
     m_cp_top = base;
     m_goals = saved;
+    m_owner = saved_owner;
     return rc;
 }
 

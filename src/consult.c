@@ -30,9 +30,19 @@ void print_error_term(FILE *f, Term *ball)
     }
     formal = deref(ARG(ball, 0));
     {
-        /* The reader puts the place of an error that is not a syntax error
-           in the context, as file(Name, Line). */
+        /* The machine puts the predicate that raised the error in the
+           context, as context(Name/Arity, _); the reader puts the place of
+           an error that is not a syntax error there, as file(Name, Line). */
         Term *ctx = deref(ARG(ball, 1));
+        if (ctx->tag == TAG_STR && AR(ctx) == 2 && !strcmp(atom_name(FN(ctx)), "context")) {
+            /* context(Name/Arity, _): the predicate the program called. */
+            Term *pi = deref(ARG(ctx, 0));
+            if (pi->tag == TAG_STR && FN(pi) == a_slash && AR(pi) == 2) {
+                Term *nm = deref(ARG(pi, 0)), *ar = deref(ARG(pi, 1));
+                if (nm->tag == TAG_ATOM && ar->tag == TAG_INT)
+                    fprintf(f, "%s/%lld: ", atom_name(AT(nm)), IV(ar));
+            }
+        }
         if (ctx->tag == TAG_STR && AR(ctx) == 2 && !strcmp(atom_name(FN(ctx)), "file")) {
             Term *name = deref(ARG(ctx, 0));
             if (name->tag == TAG_ATOM) fprintf(f, "%s:", atom_name(AT(name)));

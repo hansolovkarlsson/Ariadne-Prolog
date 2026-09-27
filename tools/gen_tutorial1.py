@@ -396,7 +396,7 @@ X = 7.
          "the left. Everything in the expression must already have a value:"),
     pre("""
 ?- X is Y + 1.
-ERROR: Arguments are not sufficiently instantiated
+ERROR: is/2: Arguments are not sufficiently instantiated
 """),
     para("This is the one place where Prolog stops being able to run in several "
          "directions: `is` computes forwards only. Comparisons work the same "

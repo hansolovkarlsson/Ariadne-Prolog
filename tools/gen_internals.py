@@ -278,8 +278,9 @@ section('unify', 'Unification and the trail', ''.join([
 
 section('loop', 'The solver loop', ''.join([
     para("The continuation is a linked list of goal frames, each holding a goal, the "
-         "next frame, and one integer — the cut barrier."),
-    pre("struct Goal { Term *goal; Goal *next; size_t cutb; };"),
+         "next frame, one integer, the cut barrier, and the library predicate that "
+         "owns the frame, if any, which is what an error names as its context."),
+    pre("struct Goal { Term *goal; Goal *next; size_t cutb; Pred *owner; };"),
     para("The loop takes the first frame, executes its goal, and repeats. Executing a "
          "goal never calls the loop recursively; it rewrites the goal list instead. "
          "Conjunction pushes two frames, `call/1` pushes one with a fresh barrier, and a "

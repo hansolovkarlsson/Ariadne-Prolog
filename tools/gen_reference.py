@@ -282,7 +282,10 @@ section('control', 'Control constructs', ''.join([
          "including the clause alternatives of the predicate it appears in. It is "
          "transparent to `,` `;` `->` — a cut in either branch of a disjunction cuts "
          "the enclosing clause — and opaque to `call/1`, `\\+/1`, `findall/3` and the "
-         "other predicates that call a goal, where it only cuts inside that goal."),
+         "other predicates that call a goal, where it only cuts inside that goal. A "
+         "variable where a goal stands in a clause body is `call/1` of it, as ISO has "
+         "it, so a cut it is bound to is local: `p :- G = !, G, fail.` does not cut "
+         "`p`'s other clauses, and `clause/2` shows the body as `call(G)`."),
     pre("""
 first(X) :- member(X, [1,2,3]), !.     % one solution: X = 1
 all(X)   :- member(X, [1,2,3]).        % three solutions
@@ -823,7 +826,8 @@ ERRORS = [
      'An arithmetic function has no value there, such as sqrt of a negative number.'],
     ['representation_error(max_arity)',
      'A term of more than 256 arguments, from `=../2`, `functor/3` or the '
-     'reader. From the reader, the context is `file(Name, Line)`. Lists have '
+     'reader. From the reader, the context is `file(Name, Line)`, not '
+     '`context(Name/Arity, _)`. Lists have '
      'no length limit.'],
     ['representation_error(character_code)', 'A character code outside Unicode.'],
     ['permission_error(modify, static_procedure, PI)',
@@ -841,9 +845,17 @@ ERRORS = [
 section('errors', 'Exceptions and errors', ''.join([
     para("Builtin predicates report problems by throwing a term of the form "
          "`error(Formal, Context)`, where Formal describes what went wrong and Context "
-         "is an unbound variable, except where the reader gives the place as "
-         "`file(Name, Line)`. Programs may throw anything at all with "
-         "`throw/1`."),
+         "says where: `context(Name/Arity, _)` for the predicate the program called. "
+         "That is the builtin itself, or, when a library predicate raised the error "
+         "through one of its helpers, the library predicate, so "
+         "`atomic_list_concat([a, f(x)], A)` names `atomic_list_concat/3`. A goal "
+         "passed to `maplist/2`, `findall/3` or another predicate that calls a goal is "
+         "the program's own, and an error in it names the predicate it called. The "
+         "reader gives the place instead, as `file(Name, Line)`. Context is unbound "
+         "for an unknown procedure, a goal that is not callable, and whatever a "
+         "program throws itself. The toplevel prints the predicate before the "
+         "message: `ERROR: atom_length/2: Arguments are not sufficiently "
+         "instantiated`. Programs may throw anything at all with `throw/1`."),
     table(['Formal', 'Raised when'], ERRORS, 'mono1'),
     pre("""
 ?- catch(X is foo + 1, error(type_error(T, C), _), true).

@@ -156,6 +156,29 @@ test(exc_after_exit,  (catch(( catch(true, e, true), throw(e2)), e2, true))).
 test(exc_type,        catch(atom_length(1, _), _, true)).
 test(exc_cut_in_catch,(catch((member(X,[1,2]), !), _, true), X == 1)).
 
+/*  An error's context names the predicate the program called: the builtin
+    itself, or the library predicate whose helpers raised it. ctx/2 checks
+    the context is bound, since an unbound one unifies with anything. */
+ctx(Goal, PI) :- catch(Goal, error(_, C), true), nonvar(C), C = context(PI, _).
+
+test(exc_ctx_builtin, ctx(atom_length(_, _), atom_length/2)).
+test(exc_ctx_library, (ctx(atom_concat(_, _, _), atom_concat/3),
+                       ctx(atomic_list_concat([a, f(x)], _), atomic_list_concat/3),
+                       ctx(sub_atom(_, _, _, _, _), sub_atom/5))).
+test(exc_ctx_meta,    (ctx(maplist(atom_length, [f(x)], _), atom_length/2),
+                       ctx(findall(X, atom_length(X, _), _), atom_length/2))).
+test(exc_ctx_lambda,  ctx(call(foo>>true, 1), (>>)/3)).
+test(exc_ctx_unbound, (catch(throw(error(mine, _)), error(mine, C1), true), var(C1),
+                       catch(no_such_predicate_here, error(_, C2), true), var(C2))).
+
+/*  ISO makes a variable where a goal stands call(V), so a cut bound to it
+    is local and clause/2 shows the call. */
+cut_through_var :- G = !, G, fail.
+cut_through_var.
+test(exc_var_goal_cut, cut_through_var).
+test(exc_var_goal_body,(assertz((tmp_var_goal :- _)), clause(tmp_var_goal, B),
+                       retract((tmp_var_goal :- _)), nonvar(B), B = call(V), var(V))).
+
 /* ---------------- findall, bagof, setof ---------------- */
 
 test(fa_basic,        findall(X, member(X,[a,b,c]), [a,b,c])).
