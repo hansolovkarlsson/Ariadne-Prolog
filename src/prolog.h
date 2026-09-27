@@ -124,7 +124,7 @@ void   trail_undo(size_t mark);
 
 int  unify(Term *a, Term *b);
 int  compare_terms(Term *a, Term *b);       /* standard order: -1/0/1 */
-int  term_variables(Term *t, Term **buf, int max, int n);
+Term **term_variables(Term *t, int *n);   /* malloc'd; caller frees */
 
 /* Copying.  A "compiled" term stores its variables as TAG_VAR cells whose
    serial number is an index in 0..nvars-1; instantiate rebuilds it with

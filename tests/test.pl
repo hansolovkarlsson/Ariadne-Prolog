@@ -190,6 +190,11 @@ test(tm_univ_make,    (T =.. [g,1,2], T == g(1,2))).
 test(tm_univ_atom,    (foo =.. L, L == [foo])).
 test(tm_copy,         (copy_term(f(X,Y,X), C), C = f(A,B,A2), A == A2, A \== B, X == X, Y == Y)).
 test(tm_vars,         (term_variables(f(X,g(Y),X), Vs), Vs == [X,Y])).
+test(tm_vars_unmarked,(term_variables(f(X,Y,X), _), var(X), var(Y), X \== Y,
+                       X = 1, Y = 2)).
+test(tm_vars_many,    (length(L, 5000), term_variables(L, Vs), Vs == L)).
+test(tm_vars_long,    (length(L, 1000000), term_variables(L, Vs), length(Vs, N),
+                       N =:= 1000000)).
 test(tm_numbervars,   (T = f(_,_), numbervars(T, 0, E), E =:= 2,
                        with_output_to(atom(A), write(T)), A == 'f(A,B)')).
 test(tm_setarg,       (T = f(a), setarg(1, T, b), T == f(b))).

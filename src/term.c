@@ -820,16 +820,39 @@ tail:
     }
 }
 
-int term_variables(Term *t, Term **buf, int max, int n)
+/* The distinct unbound variables of t, depth first and left to right, as
+   a malloc'd array the caller frees; *n is set to their number.  The walk
+   keeps its own stack, so a long list costs no C stack.  A variable is
+   bound to a marker when first found, so meeting it again costs nothing;
+   the marks are taken off before return.  Nothing here allocates on the
+   heap, so no collection can see a mark. */
+Term **term_variables(Term *t, int *n)
 {
-    int i;
-    t = deref(t);
-    if (t->tag == TAG_VAR) {
-        for (i = 0; i < n; i++) if (buf[i] == t) return n;
-        if (n < max) buf[n++] = t;
-        return n;
+    static Term seen;                   /* the marker; only its address matters */
+    Term **vars = NULL, **stack = NULL;
+    int nv = 0, cv = 0, top = 0, cs = 0, i;
+
+    #define PUSH(x) do { if (top == cs) { cs = cs ? cs * 2 : 64;              \
+                         stack = (Term **)realloc(stack, cs * sizeof(Term *)); } \
+                         stack[top++] = (x); } while (0)
+    PUSH(t);
+    while (top) {
+        t = deref(stack[--top]);
+        if (t == &seen) continue;
+        if (t->tag == TAG_VAR) {
+            if (nv == cv) {
+                cv = cv ? cv * 2 : 16;
+                vars = (Term **)realloc(vars, cv * sizeof(Term *));
+            }
+            vars[nv++] = t;
+            t->u.v.ref = &seen;
+        } else if (t->tag == TAG_STR) {
+            for (i = AR(t) - 1; i >= 0; i--) PUSH(ARG(t, i));
+        }
     }
-    if (t->tag == TAG_STR)
-        for (i = 0; i < AR(t); i++) n = term_variables(ARG(t, i), buf, max, n);
-    return n;
+    #undef PUSH
+    for (i = 0; i < nv; i++) vars[i]->u.v.ref = NULL;
+    free(stack);
+    *n = nv;
+    return vars;
 }

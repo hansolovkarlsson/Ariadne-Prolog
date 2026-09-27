@@ -470,9 +470,11 @@ BI(bi_copy_term) { UNUSED; RET(unify(A[1], heap_copy(A[0]))); }
 BI(bi_term_variables)
 {
     UNUSED;
-    Term *buf[4096];
-    int n = term_variables(A[0], buf, 4096, 0);
-    RET(unify(A[1], list_from_array(buf, n)));
+    int n, ok;
+    Term **vars = term_variables(A[0], &n);
+    ok = unify(A[1], list_from_array(vars, n));
+    free(vars);
+    RET(ok);
 }
 
 static long long numbervars_walk(Term *t, long long n)
@@ -2113,9 +2115,11 @@ static int read_opts(Term *opts, Term *varnames, Term *singles, Term *vars)
             if (!strcmp(nm, "variable_names") || !strcmp(nm, "bindings")) {
                 if (!unify(ARG(o, 0), varnames)) return PL_FAIL;
             } else if (!strcmp(nm, "variables")) {
-                Term *buf[1024];
-                int n = term_variables(vars, buf, 1024, 0);
-                if (!unify(ARG(o, 0), list_from_array(buf, n))) return PL_FAIL;
+                int n, ok;
+                Term **vs = term_variables(vars, &n);
+                ok = unify(ARG(o, 0), list_from_array(vs, n));
+                free(vs);
+                if (!ok) return PL_FAIL;
             } else if (!strcmp(nm, "singletons")) {
                 if (!unify(ARG(o, 0), singles)) return PL_FAIL;
             }
