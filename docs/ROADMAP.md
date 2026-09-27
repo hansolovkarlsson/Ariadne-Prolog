@@ -12,6 +12,20 @@ produced some of the entries below.
 
 ## Near term
 
+- **`char_type/2` and `code_type/2`.** Neither exists, so a program that
+  splits text into words tests letters by comparing character codes, as
+  `english/check.pl` does. Found by the grammar checker on 2026-09-27; the
+  common types (`alpha`, `digit`, `space`, `upper`, `lower`, `punct`) would
+  cover it.
+
+- **`consult/1` inside a file resolves paths against the current directory.**
+  SWI-Prolog resolves them against the directory of the file being loaded, so
+  a program split into files loads from anywhere. Here it loads only from the
+  directory its paths were written for, which is why `english/check.pl` and
+  `tutorial/restock.pl` must be run from the top of the repository. Found by
+  the grammar checker on 2026-09-27. Trying the loading file's directory first
+  and the current one second would keep both working.
+
 ## Medium term
 
 ## Structural
@@ -41,25 +55,26 @@ These change the shape of the system rather than adding to it.
   rules, and `phrase/2` as the parser: a sentence is grammatical when a parse
   exists. Nothing in the interpreter breaks without it. What it buys is the
   first program here that leans on DCG translation and `phrase/2,3` as hard as
-  their intended use does; today only the suite and tutorial level 3 touch
-  them. Decided 2026-09-25 and **not started**; the journal's day five has the
+  their intended use does. Decided 2026-09-25; the journal's day five has the
   reasoning. Three stages, each worth stopping at:
 
-  1. A few hundred words, simple declarative sentences, and agreement carried
-     as a rule argument (`sentence --> noun_phrase(N), verb_phrase(N).`), so
-     that "the dogs chases" and "a dogs" are rejected by unification alone.
-     A weekend to two weeks.
-  2. What each verb takes after it, questions, negation, passives and relative
-     clauses, and morphology rules for words missing from the lexicon. Months,
-     part-time.
+  1. **Done on 2026-09-27**, in [the changelog](CHANGELOG.md): 262 words,
+     simple declarative sentences, agreement by unification alone, a
+     diagnosis that names what disagrees, and, earlier than planned, what each
+     verb takes after it, since simple sentences cannot be checked without it.
+  2. Questions, negation, passives and relative clauses, and morphology rules
+     for words missing from the lexicon. Months, part-time.
   3. A lexicon generated from WordNet or Wiktionary, and a record of what
      breaks. Broad coverage of real text is out of scope: rule-based grammars
      that aim for it have taken decades.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
-  it by writing such rules right-recursively. Past that, the answer is
-  *Tabling* under *Structural*, which gives this entry a case for that one.
+  it by writing such rules right-recursively. Past that, there are two
+  answers: a chart or left-corner parser written in Prolog, which is days, or
+  *Tabling* under *Structural*, which is months. Which one is a decision for
+  when stage 2 meets its first left-recursive rule, taken from what it costs
+  then.
 
 ## Not planned
 

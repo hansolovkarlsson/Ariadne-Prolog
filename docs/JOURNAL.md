@@ -659,6 +659,30 @@ root or from `docs/`, so publishing `web/` takes a workflow,
 `.github/workflows/pages.yml`, which uploads `web/` and deploys it, and the
 Pages source has to be switched from the branch to that workflow.
 
+### The grammar, stage 1
+
+At the end of the day the roadmap's English grammar checker got its first
+stage, in `english/` (`7fda6d9`). Two design decisions
+carry it. Subject and verb agree through one feature term,
+`agr(First, Third, SingularNotSecond)`: a subject binds every slot and a verb
+form only those it cares about, so that *chases*, *chase*, *am*, *are* and
+*were* each impose their condition by a single unification, which is what the
+roadmap asked for. And the diagnosis is the same grammar: every agreement goes
+through one predicate that threads a list of violations, so with the list
+closed the grammar is strict, and with it open it parses a faulty sentence and
+names what disagreed. The first run accepted and rejected every sentence tried
+correctly, and a planted fault, subject-verb agreement removed, failed four of
+the 73 checks.
+
+The grammar found the interpreter's gaps, as expected, and they were small:
+there is no `char_type/2`, so the tokenizer compares character codes, and
+`consult/1` resolves a path against the current directory rather than the
+loading file's, so the checker runs from the top of the repository, as
+`tutorial/restock.pl` already did. Both went on the roadmap. None of the
+structural items was needed; the first of them the grammar will argue for is
+tabling, at stage 2's first left-recursive rule, and the roadmap now says a
+chart parser in Prolog is the cheaper answer to weigh against it.
+
 ### What the day was like
 
 Every defect of the day in the interpreter passed the suite, because every

@@ -10,6 +10,16 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **An English grammar checker, stage 1, in `english/`.** Written as a DCG and
+  run on the interpreter: 262 words, simple declarative sentences with
+  determiners, adjectives, prepositional phrases, `and`, and verbs taking
+  none, one or two objects, or `be` with an adjective, noun phrase or place.
+  It checks subject and verb, determiner and noun, *a* and *an* by sound,
+  pronoun case, and a singular noun's determiner, by unification alone; says
+  which words disagree when a sentence fails; and prints every reading of an
+  ambiguous one as a labelled bracketing. `make english` runs its 73 checks,
+  and CI runs it. (`7fda6d9`)
+
 - **Errors say which predicate raised them.** The second argument of
   `error/2` is `context(Name/Arity, _)` for the predicate the program called:
   the builtin itself, or the library predicate whose helper raised it, so
