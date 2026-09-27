@@ -253,11 +253,14 @@ struct Term {
 ]))
 
 section('unify', 'Unification and the trail', ''.join([
-    para("Unification is the ordinary recursive walk, with two details that matter."),
-    para("It recurses into the first n-1 arguments and loops on the last, so a list — "
-         "which is nested entirely in its tails — is unified iteratively. Without that, "
-         "unifying two 100,000-element lists would need 100,000 C frames. Comparison and "
-         "both copying routines use the same shape."),
+    para("Unification is the ordinary walk over two terms, with two details that matter."),
+    para("It keeps the argument pairs still to be unified on a stack of its own, not "
+         "on the C stack, because a term may be nested a million deep in any argument: "
+         "a list in its tails, `1+1+...+1` in its heads. Leaves are unified in place, the "
+         "first pair of compound arguments is gone into, and the pairs after it wait, so "
+         "arguments are met left to right and a list of constants never touches the "
+         "stack. Comparison, both copying routines, the collector, the writer, the "
+         "reader and the arithmetic evaluator are built the same way."),
     para("Every binding is pushed on the trail, an array of entries recording the "
          "variable that was bound. Undoing is a loop that walks the trail back to a mark, "
          "writing null into each variable. There is no attempt to avoid trailing bindings "
@@ -509,17 +512,21 @@ section('gc', 'Garbage collection', ''.join([
          "older epoch does nothing at all."),
     note('impl', 'How it is tested',
          "The environment variable `PROLOG_GC_THRESHOLD=1` makes the collector run at "
-         "every opportunity — every 1024 inferences. `make test-gc` runs the whole suite "
-         "that way, and `make test-asan` runs it again under the address and undefined "
-         "behaviour sanitizers. A collector that only runs under memory pressure would "
-         "otherwise be tested by almost nothing."),
+         "every opportunity, every 1024 inferences with no choice point live. The test "
+         "suite always has one live, so it is never collected; `make test-deep` is what "
+         "exercises the collector. It builds terms nested a million deep at the top "
+         "level, puts every walk through them, and fails unless "
+         "`statistics(garbage_collection, [N|_])` shows that collections happened."),
 ]))
 
 section('reader', 'Reader and writer', ''.join([
     para("The reader is a hand-written tokeniser and an operator-precedence parser. The "
          "parser is the standard two-part shape: read a primary term, then repeatedly "
          "look for an infix or postfix operator whose priority fits under the current "
-         "maximum and whose left argument fits the associativity."),
+         "maximum and whose left argument fits the associativity. It is written as one "
+         "loop over a stack of continuations, each saying what to do with the next "
+         "subterm once it is read, so text nested a million deep in brackets, "
+         "arguments, lists or operators costs heap rather than C stack."),
     para("Two details do most of the work. The tokeniser marks whether layout preceded a "
          "token, which is what separates `f(a)` from `f (a)` and what makes `- 1` a "
          "prefix operator applied to 1 while `-1` is a negative literal. And a lone `.` "

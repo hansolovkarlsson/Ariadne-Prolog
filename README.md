@@ -42,8 +42,9 @@ generated into `docs/` by `make doc`.
 
 ```
 make            # build ./prolog
-make test       # run the regression suite (277 tests)
-make test-gc    # the same suite with the collector running constantly
+make test       # run the regression suite (296 tests)
+make test-gc    # the same suite with the collector's threshold at its lowest
+make test-deep  # terms nested a million deep, with the collector running
 make test-asan  # the same suite under ASan + UBSan
 make examples   # run the example programs
 make tutorials  # run the tutorial programs
@@ -167,8 +168,9 @@ a long deterministic recursion — is handled by a copying collector: when the
 choice point stack is empty and no builtin is mid-flight, the terms reachable
 from the goal stack (plus the C roots registered by the toplevel) are copied
 into a fresh heap and the old one is released. Forwarding pointers keep shared
-structure shared. `make test-gc` runs the whole suite with the collector firing
-every 1024 inferences.
+structure shared. The collector runs only when no choice point is live, which the
+test suite never is, so `make test-deep` is what puts it to work: it builds terms
+nested a million deep at the top level and fails unless they were collected.
 
 **Indexing** filters clauses on the principal functor of the first argument
 before any unification, and the next matching clause is looked up before the

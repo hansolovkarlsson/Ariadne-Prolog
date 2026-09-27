@@ -219,6 +219,10 @@ typedef struct {
     char    err[256];
     int     errline;
     const char *repr;    /* set when the error is a representation error */
+    struct Cont *conts;  /* what is left to do once a subterm is read */
+    int     nconts, cconts;
+    Term  **args;        /* compound arguments read so far, all levels */
+    int     nargs, cargs;
 } Parser;
 
 static void buf_reset(Parser *p) { p->buflen = 0; }
@@ -626,81 +630,11 @@ static Term *var_for(Parser *p, int name)
     return p->vars[p->nvars++].var;
 }
 
-static int parse(Parser *p, int maxprec, Term **out, int *outprec);
-static int parse_arglist(Parser *p, Term **args, int *n);
-static int expect_punct(Parser *p, int c, const char *what);
-static int atom_or_compound(Parser *p, int atom, Term **out);
-
 static int expect_punct(Parser *p, int c, const char *what)
 {
     if (p->tok.kind != TK_PUNCT || p->tok.atom != c)
         return syntax_err(p, what);
     return next_token(p);
-}
-
-/* The arguments of a compound, into args, which holds MAX_ARITY. */
-static int parse_arglist(Parser *p, Term **args, int *n)
-{
-    for (;;) {
-        Term *a;
-        if (*n >= MAX_ARITY) return repr_err(p, "max_arity");
-        if (parse(p, 999, &a, NULL) < 0) return -1;
-        args[(*n)++] = a;
-        if (p->tok.kind == TK_PUNCT && p->tok.atom == ',') {
-            if (next_token(p) < 0) return -1;
-            continue;
-        }
-        return 0;
-    }
-}
-
-/* A list is built a cell at a time as its elements are read, so it has
-   no length limit. */
-static int parse_list(Parser *p, Term **out)
-{
-    Term *head = NULL, *last = NULL;
-
-    if (p->tok.kind == TK_PUNCT && p->tok.atom == ']') {
-        if (next_token(p) < 0) return -1;
-        return atom_or_compound(p, a_nil, out);
-    }
-    for (;;) {
-        Term *a, *cell;
-        if (parse(p, 999, &a, NULL) < 0) return -1;
-        cell = mk_cons(a, mk_atom(a_nil));
-        if (last) ARG(last, 1) = cell;
-        else head = cell;
-        last = cell;
-        if (p->tok.kind != TK_PUNCT || p->tok.atom != ',') break;
-        if (next_token(p) < 0) return -1;
-    }
-    if (p->tok.kind == TK_PUNCT && p->tok.atom == '|') {
-        Term *tail;
-        if (next_token(p) < 0) return -1;
-        if (parse(p, 999, &tail, NULL) < 0) return -1;
-        ARG(last, 1) = tail;
-    }
-    if (expect_punct(p, ']', "expected ]") < 0) return -1;
-    *out = head;
-    return 0;
-}
-
-/* An atom directly followed by '(' is a functor: this covers []( ) and {}( ). */
-static int atom_or_compound(Parser *p, int atom, Term **out)
-{
-    if (p->tok.kind == TK_PUNCT && p->tok.atom == '(' && !p->tok.layout) {
-        Term *args[MAX_ARITY], *s;
-        int n = 0, i;
-        if (next_token(p) < 0) return -1;
-        if (parse_arglist(p, args, &n) < 0) return -1;
-        if (expect_punct(p, ')', "expected ) in arguments") < 0) return -1;
-        s = mk_str(atom, n);
-        for (i = 0; i < n; i++) ARG(s, i) = args[i];
-        *out = s;
-        return 0;
-    }
-    *out = mk_atom(atom);
-    return 0;
 }
 
 static Term *make_string_term(Parser *p, Token *t)
@@ -735,121 +669,175 @@ static int can_start_term(Parser *p)
     }
 }
 
-static int parse_primary(Parser *p, int maxprec, Term **out, int *outprec)
+/* The reader is one loop over an explicit stack of continuations, not a
+   set of functions that call each other, because text may nest a term a
+   million deep: in brackets, in arguments, in lists, or under operators.
+   A continuation says what to do with the next subterm once it has been
+   read; the maxprec it holds is the priority allowed where the construct
+   it belongs to began, which the operator loop resumes with. */
+enum { K_INFIX, K_PREFIX, K_PAREN, K_CURLY, K_ARGS, K_LIST, K_LIST_TAIL };
+
+struct Cont {
+    int   kind;
+    int   maxprec;
+    int   atom;          /* K_INFIX, K_PREFIX: the operator; K_ARGS: the functor */
+    int   prec;          /* K_INFIX, K_PREFIX: the priority of the result */
+    Term *left;          /* K_INFIX: the left operand */
+    Term *head, *last;   /* K_LIST, K_LIST_TAIL: the list so far */
+    int   argbase;       /* K_ARGS: where its arguments start in p->args */
+};
+
+static struct Cont *push_cont(Parser *p, int kind, int maxprec)
 {
-    Token t = p->tok;
-    int prec = 0;
-
-    switch (t.kind) {
-    case TK_INT:
-        if (next_token(p) < 0) return -1;
-        *out = mk_int(t.ival);
-        break;
-    case TK_FLT:
-        if (next_token(p) < 0) return -1;
-        *out = mk_float(t.fval);
-        break;
-    case TK_VAR:
-        if (next_token(p) < 0) return -1;
-        *out = var_for(p, t.atom);
-        break;
-    case TK_STR: case TK_BQ: {
-        Term *s;
-        if (t.kind == TK_BQ) s = mk_codes(t.text, t.tlen);
-        else s = make_string_term(p, &t);
-        free(t.text);
-        if (next_token(p) < 0) return -1;
-        *out = s;
-        break;
+    struct Cont *k;
+    if (p->nconts == p->cconts) {
+        p->cconts = p->cconts ? p->cconts * 2 : 64;
+        p->conts = realloc(p->conts, p->cconts * sizeof(*p->conts));
     }
-    case TK_PUNCT:
-        switch (t.atom) {
-        case '(':
-            if (next_token(p) < 0) return -1;
-            if (parse(p, 1200, out, NULL) < 0) return -1;
-            if (expect_punct(p, ')', "expected )") < 0) return -1;
-            break;
-        case '[':
-            if (next_token(p) < 0) return -1;
-            if (parse_list(p, out) < 0) return -1;
-            break;
-        case '{':
-            if (next_token(p) < 0) return -1;
-            if (p->tok.kind == TK_PUNCT && p->tok.atom == '}') {
-                if (next_token(p) < 0) return -1;
-                if (atom_or_compound(p, a_curly, out) < 0) return -1;
-            } else {
-                Term *inner;
-                if (parse(p, 1200, &inner, NULL) < 0) return -1;
-                if (expect_punct(p, '}', "expected }") < 0) return -1;
-                *out = mk1(a_curly, inner);
-            }
-            break;
-        default:
-            return syntax_err(p, "unexpected token");
-        }
-        break;
-
-    case TK_ATOM: {
-        int pprec, argp;
-        if (t.func) {
-            Term *args[MAX_ARITY], *s;
-            int n = 0, i;
-            if (next_token(p) < 0) return -1;   /* the '(' */
-            if (p->tok.kind != TK_PUNCT || p->tok.atom != '(')
-                return syntax_err(p, "expected (");
-            if (next_token(p) < 0) return -1;
-            if (parse_arglist(p, args, &n) < 0) return -1;
-            if (expect_punct(p, ')', "expected ) in arguments") < 0) return -1;
-            s = mk_str(t.atom, n);
-            for (i = 0; i < n; i++) ARG(s, i) = args[i];
-            *out = s;
-            break;
-        }
-        if (next_token(p) < 0) return -1;
-
-        /* Negative numeric literals: '-' directly before a number. */
-        if (!t.quoted && (t.atom == a_minus || t.atom == a_plus) &&
-            (p->tok.kind == TK_INT || p->tok.kind == TK_FLT) && !p->tok.layout) {
-            Token num = p->tok;
-            int neg = (t.atom == a_minus);
-            if (next_token(p) < 0) return -1;
-            if (num.kind == TK_INT) *out = mk_int(neg ? -num.ival : num.ival);
-            else *out = mk_float(neg ? -num.fval : num.fval);
-            break;
-        }
-
-        if (!t.quoted && op_prefix(t.atom, &pprec, &argp) && can_start_term(p)) {
-            Term *arg;
-            if (pprec > maxprec) {
-                /* Try the reduced priority permitted for the operand. */
-                pprec = maxprec;
-                argp = maxprec;
-            }
-            if (parse(p, argp, &arg, NULL) < 0) return -1;
-            *out = mk1(t.atom, arg);
-            prec = pprec;
-            break;
-        }
-        *out = mk_atom(t.atom);
-        if (!t.quoted && op_is_op(t.atom)) prec = 0;
-        break;
-    }
-    default:
-        return syntax_err(p, t.kind == TK_END ? "unexpected end of clause"
-                                              : "unexpected end of file");
-    }
-    if (outprec) *outprec = prec;
-    return 0;
+    k = &p->conts[p->nconts++];
+    memset(k, 0, sizeof(*k));
+    k->kind = kind;
+    k->maxprec = maxprec;
+    return k;
 }
 
+static void push_arg(Parser *p, Term *t)
+{
+    if (p->nargs == p->cargs) {
+        p->cargs = p->cargs ? p->cargs * 2 : 64;
+        p->args = realloc(p->args, p->cargs * sizeof(*p->args));
+    }
+    p->args[p->nargs++] = t;
+}
+
+/* Reads a term of priority at most maxprec. */
 static int parse(Parser *p, int maxprec, Term **out, int *outprec)
 {
-    Term *left;
+    int base = p->nconts;
+    int mp = maxprec;        /* the priority allowed for what is being read */
+    Term *left = NULL;       /* the term read so far at this level */
     int leftprec = 0;
+    struct Cont *k;
 
-    if (parse_primary(p, maxprec, &left, &leftprec) < 0) return -1;
+start:
+    /* A primary term: either complete at once, or a construct that pushes
+       a continuation and starts on its first subterm. */
+    {
+        Token t = p->tok;
+        leftprec = 0;
+        switch (t.kind) {
+        case TK_INT:
+            if (next_token(p) < 0) goto error;
+            left = mk_int(t.ival);
+            goto oploop;
+        case TK_FLT:
+            if (next_token(p) < 0) goto error;
+            left = mk_float(t.fval);
+            goto oploop;
+        case TK_VAR:
+            if (next_token(p) < 0) goto error;
+            left = var_for(p, t.atom);
+            goto oploop;
+        case TK_STR: case TK_BQ:
+            if (t.kind == TK_BQ) left = mk_codes(t.text, t.tlen);
+            else left = make_string_term(p, &t);
+            free(t.text);
+            if (next_token(p) < 0) goto error;
+            goto oploop;
+        case TK_PUNCT:
+            switch (t.atom) {
+            case '(':
+                if (next_token(p) < 0) goto error;
+                push_cont(p, K_PAREN, mp);
+                mp = 1200;
+                goto start;
+            case '[':
+                if (next_token(p) < 0) goto error;
+                if (p->tok.kind == TK_PUNCT && p->tok.atom == ']') {
+                    if (next_token(p) < 0) goto error;
+                    t.atom = a_nil;
+                    goto atom_or_compound;
+                }
+                push_cont(p, K_LIST, mp);
+                mp = 999;
+                goto start;
+            case '{':
+                if (next_token(p) < 0) goto error;
+                if (p->tok.kind == TK_PUNCT && p->tok.atom == '}') {
+                    if (next_token(p) < 0) goto error;
+                    t.atom = a_curly;
+                    goto atom_or_compound;
+                }
+                push_cont(p, K_CURLY, mp);
+                mp = 1200;
+                goto start;
+            default:
+                syntax_err(p, "unexpected token");
+                goto error;
+            }
+        case TK_ATOM: {
+            int pprec, argp;
+            if (t.func) {
+                if (next_token(p) < 0) goto error;   /* the '(' */
+                if (p->tok.kind != TK_PUNCT || p->tok.atom != '(') {
+                    syntax_err(p, "expected (");
+                    goto error;
+                }
+                goto arguments;
+            }
+            if (next_token(p) < 0) goto error;
 
+            /* Negative numeric literals: '-' directly before a number. */
+            if (!t.quoted && (t.atom == a_minus || t.atom == a_plus) &&
+                (p->tok.kind == TK_INT || p->tok.kind == TK_FLT) && !p->tok.layout) {
+                Token num = p->tok;
+                int neg = (t.atom == a_minus);
+                if (next_token(p) < 0) goto error;
+                if (num.kind == TK_INT) left = mk_int(neg ? -num.ival : num.ival);
+                else left = mk_float(neg ? -num.fval : num.fval);
+                goto oploop;
+            }
+
+            if (!t.quoted && op_prefix(t.atom, &pprec, &argp) && can_start_term(p)) {
+                if (pprec > mp) {
+                    /* Try the reduced priority permitted for the operand. */
+                    pprec = mp;
+                    argp = mp;
+                }
+                k = push_cont(p, K_PREFIX, mp);
+                k->atom = t.atom;
+                k->prec = pprec;
+                mp = argp;
+                goto start;
+            }
+            left = mk_atom(t.atom);
+            goto oploop;
+        }
+        default:
+            syntax_err(p, t.kind == TK_END ? "unexpected end of clause"
+                                           : "unexpected end of file");
+            goto error;
+        }
+
+    atom_or_compound:
+        /* An atom directly followed by '(' is a functor: this covers []( )
+           and {}( ). */
+        if (!(p->tok.kind == TK_PUNCT && p->tok.atom == '(' && !p->tok.layout)) {
+            left = mk_atom(t.atom);
+            goto oploop;
+        }
+    arguments:
+        /* At the '(' of a compound whose functor is t.atom. */
+        if (next_token(p) < 0) goto error;
+        k = push_cont(p, K_ARGS, mp);
+        k->atom = t.atom;
+        k->argbase = p->nargs;
+        mp = 999;
+        goto start;
+    }
+
+oploop:
+    /* Infix and postfix operators after the term read so far. */
     for (;;) {
         int name = -1, prec, lp, rp;
 
@@ -858,27 +846,108 @@ static int parse(Parser *p, int maxprec, Term **out, int *outprec)
         else if (p->tok.kind == TK_PUNCT && p->tok.atom == '|') name = a_bar;
         else break;
 
-        if (op_infix(name, &prec, &lp, &rp) && prec <= maxprec && leftprec <= lp) {
-            Term *right;
-            if (next_token(p) < 0) return -1;
-            if (parse(p, rp, &right, NULL) < 0) return -1;
+        if (op_infix(name, &prec, &lp, &rp) && prec <= mp && leftprec <= lp) {
+            if (next_token(p) < 0) goto error;
             /* '|' used as an infix operator denotes disjunction. */
             if (name == a_bar && prec >= 1001) name = a_semicolon;
-            left = mk2(name, left, right);
-            leftprec = prec;
-            continue;
+            k = push_cont(p, K_INFIX, mp);
+            k->atom = name;
+            k->prec = prec;
+            k->left = left;
+            mp = rp;
+            goto start;
         }
-        if (op_postfix(name, &prec, &lp) && prec <= maxprec && leftprec <= lp) {
-            if (next_token(p) < 0) return -1;
+        if (op_postfix(name, &prec, &lp) && prec <= mp && leftprec <= lp) {
+            if (next_token(p) < 0) goto error;
             left = mk1(name, left);
             leftprec = prec;
             continue;
         }
         break;
     }
-    *out = left;
-    if (outprec) *outprec = leftprec;
-    return 0;
+
+    /* A complete subterm: hand it to whatever was waiting for it. */
+    if (p->nconts == base) {
+        *out = left;
+        if (outprec) *outprec = leftprec;
+        return 0;
+    }
+    k = &p->conts[--p->nconts];
+    mp = k->maxprec;
+    switch (k->kind) {
+    case K_INFIX:
+        left = mk2(k->atom, k->left, left);
+        leftprec = k->prec;
+        goto oploop;
+    case K_PREFIX:
+        left = mk1(k->atom, left);
+        leftprec = k->prec;
+        goto oploop;
+    case K_PAREN:
+        if (expect_punct(p, ')', "expected )") < 0) goto error;
+        leftprec = 0;
+        goto oploop;
+    case K_CURLY:
+        if (expect_punct(p, '}', "expected }") < 0) goto error;
+        left = mk1(a_curly, left);
+        leftprec = 0;
+        goto oploop;
+    case K_ARGS: {
+        int atom = k->atom, argbase = k->argbase, n, i;
+        Term *c;
+        if (p->nargs - argbase >= MAX_ARITY) { repr_err(p, "max_arity"); goto error; }
+        push_arg(p, left);
+        if (p->tok.kind == TK_PUNCT && p->tok.atom == ',') {
+            if (next_token(p) < 0) goto error;
+            p->nconts++;                         /* the same continuation again */
+            mp = 999;
+            goto start;
+        }
+        if (expect_punct(p, ')', "expected ) in arguments") < 0) goto error;
+        n = p->nargs - argbase;
+        c = mk_str(atom, n);
+        for (i = 0; i < n; i++) ARG(c, i) = p->args[argbase + i];
+        p->nargs = argbase;
+        left = c;
+        leftprec = 0;
+        goto oploop;
+    }
+    case K_LIST: {
+        /* A list is built a cell at a time as its elements are read, so
+           it has no length limit. */
+        Term *cell = mk_cons(left, mk_atom(a_nil));
+        if (k->last) ARG(k->last, 1) = cell;
+        else k->head = cell;
+        k->last = cell;
+        if (p->tok.kind == TK_PUNCT && p->tok.atom == ',') {
+            if (next_token(p) < 0) goto error;
+            p->nconts++;
+            mp = 999;
+            goto start;
+        }
+        if (p->tok.kind == TK_PUNCT && p->tok.atom == '|') {
+            if (next_token(p) < 0) goto error;
+            k->kind = K_LIST_TAIL;
+            p->nconts++;
+            mp = 999;
+            goto start;
+        }
+        if (expect_punct(p, ']', "expected ]") < 0) goto error;
+        left = k->head;
+        leftprec = 0;
+        goto oploop;
+    }
+    case K_LIST_TAIL:
+        ARG(k->last, 1) = left;
+        if (expect_punct(p, ']', "expected ]") < 0) goto error;
+        left = k->head;
+        leftprec = 0;
+        goto oploop;
+    }
+
+error:
+    p->nconts = base;
+    return -1;
 }
 
 /* ------------------------------------------------------------------ */
@@ -889,6 +958,8 @@ static void parser_free(Parser *p)
 {
     free(p->vars);
     free(p->buf);
+    free(p->conts);
+    free(p->args);
 }
 
 int read_term_from(Reader *r, Term **out, Term **varnames)

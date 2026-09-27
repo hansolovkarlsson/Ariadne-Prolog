@@ -347,38 +347,117 @@ static int eval_atom(Term *t, Num *n)
     return evaluable_error(t);
 }
 
+/* An operand that is not a compound: 1 with *rc set, or 0 when t is a
+   compound and must be taken apart. */
+static int eval_leaf(Term *t, Num *n, int *rc)
+{
+    switch (t->tag) {
+    case TAG_VAR: *rc = instantiation_error(); return 1;
+    case TAG_INT: n->isf = 0; n->i = IV(t); *rc = PL_OK; return 1;
+    case TAG_FLT: n->isf = 1; n->f = FV(t); *rc = PL_OK; return 1;
+    case TAG_ATOM: *rc = eval_atom(t, n); return 1;
+    }
+    return 0;
+}
+
+/* The evaluator keeps its pending expressions on a stack of frames and the
+   values computed so far on a second stack, and not on the C stack,
+   because an expression such as 1+1+...+1 is nested as deep as it is
+   long.  A frame's stage says how many of its operands are done.
+   Operands are evaluated left to right, so the first error is the one a
+   recursive evaluator would meet first. */
+typedef struct { Term *t; int stage; } Frame;
+static Frame *frames;
+static size_t nframes, cframes;
+static Num   *vals;
+static size_t nvals, cvals;
+
+static void push_frame(Term *t)
+{
+    if (nframes == cframes) {
+        cframes = cframes ? cframes * 2 : 64;
+        frames = (Frame *)realloc(frames, cframes * sizeof(Frame));
+        if (!frames) { fprintf(stderr, "prolog: out of memory\n"); exit(1); }
+    }
+    frames[nframes].t = t;
+    frames[nframes].stage = 0;
+    nframes++;
+}
+
+static void push_val(const Num *n)
+{
+    if (nvals == cvals) {
+        cvals = cvals ? cvals * 2 : 64;
+        vals = (Num *)realloc(vals, cvals * sizeof(Num));
+        if (!vals) { fprintf(stderr, "prolog: out of memory\n"); exit(1); }
+    }
+    vals[nvals++] = *n;
+}
+
 static int eval(Term *t, Num *n)
 {
+    size_t fbase = nframes, vbase = nvals;
+    int rc;
+
     t = deref(t);
-    switch (t->tag) {
-    case TAG_VAR:
-        return instantiation_error();
-    case TAG_INT:
-        n->isf = 0; n->i = IV(t); return PL_OK;
-    case TAG_FLT:
-        n->isf = 1; n->f = FV(t); return PL_OK;
-    case TAG_ATOM:
-        return eval_atom(t, n);
-    default:
-        /* A one-element code or char list evaluates to the character code. */
-        if (FN(t) == a_dot && AR(t) == 2) {
-            Term *h = deref(ARG(t, 0)), *tl = deref(ARG(t, 1));
-            if (tl->tag == TAG_ATOM && AT(tl) == a_nil) return eval(h, n);
-            return type_error("evaluable", t);
-        }
-        if (AR(t) == 1) {
-            Num a;
-            if (eval(ARG(t, 0), &a) != PL_OK) return PL_ERROR;
-            return eval_unary(FN(t), t, &a, n);
-        }
-        if (AR(t) == 2) {
+    if (eval_leaf(t, n, &rc)) return rc;
+    /* Most expressions have only numbers or variables as operands. */
+    if (AR(t) == 2 && FN(t) != a_dot) {
+        Term *x = deref(ARG(t, 0)), *y = deref(ARG(t, 1));
+        if (x->tag != TAG_STR && y->tag != TAG_STR) {
             Num a, b;
-            if (eval(ARG(t, 0), &a) != PL_OK) return PL_ERROR;
-            if (eval(ARG(t, 1), &b) != PL_OK) return PL_ERROR;
+            if (eval_leaf(x, &a, &rc), rc != PL_OK) return PL_ERROR;
+            if (eval_leaf(y, &b, &rc), rc != PL_OK) return PL_ERROR;
             return eval_binary(FN(t), t, &a, &b, n);
         }
-        return evaluable_error(t);
     }
+
+    push_frame(t);
+    while (nframes > fbase) {
+        Frame *f = &frames[nframes - 1];
+        Num a, b, r;
+        t = deref(f->t);
+        if (f->stage == 0 && eval_leaf(t, &r, &rc)) {
+            if (rc != PL_OK) goto error;
+            nframes--;
+            push_val(&r);
+            continue;
+        }
+        if (FN(t) == a_dot && AR(t) == 2) {
+            /* A one-element code or char list evaluates to the character
+               code. */
+            Term *tl = deref(ARG(t, 1));
+            if (!(tl->tag == TAG_ATOM && AT(tl) == a_nil)) {
+                type_error("evaluable", t);
+                goto error;
+            }
+            f->t = ARG(t, 0);
+            continue;
+        }
+        if (AR(t) != 1 && AR(t) != 2) { evaluable_error(t); goto error; }
+        if (f->stage < AR(t)) {
+            push_frame(ARG(t, f->stage++));   /* may move frames: f is stale */
+            continue;
+        }
+        if (AR(t) == 1) {
+            a = vals[--nvals];
+            rc = eval_unary(FN(t), t, &a, &r);
+        } else {
+            b = vals[--nvals];
+            a = vals[--nvals];
+            rc = eval_binary(FN(t), t, &a, &b, &r);
+        }
+        if (rc != PL_OK) goto error;
+        nframes--;
+        push_val(&r);
+    }
+    *n = vals[--nvals];
+    return PL_OK;
+
+error:
+    nframes = fbase;
+    nvals = vbase;
+    return PL_ERROR;
 }
 
 int arith_eval(Term *expr, Term **result)

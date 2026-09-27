@@ -84,7 +84,7 @@ void   heap_gc(struct Goal **goals_root);
 void   gc_protect(Term **slot);
 void   gc_unprotect(int n);
 int    gc_root_top(void);
-extern long long m_gc_count;
+extern long long m_gc_count, m_gc_freed, m_gc_msecs;
 
 /* Non-backtrackable arenas, used for clauses, exception balls and
    findall/3 style solution buffers. */
@@ -125,6 +125,23 @@ void   trail_undo(size_t mark);
 int  unify(Term *a, Term *b);
 int  compare_terms(Term *a, Term *b);       /* standard order: -1/0/1 */
 Term **term_variables(Term *t, int *n);   /* malloc'd; caller frees */
+
+/* A growable stack of pointers.  The walks over a term keep their pending
+   arguments here and not on the C stack, because a term may be nested a
+   million deep in any argument, not only the last.  Each walk loops into
+   the first argument and pushes the rest in reverse, so arguments are met
+   left to right and a list costs one entry whatever its length. */
+typedef struct { void **item; size_t n, cap; } WorkStack;
+/* The walks handle leaves through small helpers that must not cost a call. */
+#if defined(__GNUC__)
+#define ALWAYS_INLINE inline __attribute__((always_inline))
+#else
+#define ALWAYS_INLINE inline
+#endif
+void ws_grow(WorkStack *s);
+#define WS_PUSH(s, p) do { if ((s)->n == (s)->cap) ws_grow(s);            \
+                           (s)->item[(s)->n++] = (void *)(p); } while (0)
+#define WS_POP(s)     ((s)->item[--(s)->n])
 
 /* A map from variable to term, in the order the variables were put, with
    a hash index so that a lookup does not scan. */

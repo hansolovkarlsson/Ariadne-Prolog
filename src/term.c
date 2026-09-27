@@ -1,5 +1,6 @@
 /* term.c -- memory management, atom table, terms, unification. */
 #include "prolog.h"
+#include <time.h>
 
 /* ------------------------------------------------------------------ */
 /* Backtrackable heap                                                 */
@@ -11,6 +12,8 @@ static HeapChunk *heap_head, *heap_cur;
 static size_t heap_total;
 static unsigned heap_epoch = 1;
 long long m_gc_count;
+long long m_gc_freed;        /* bytes of heap in use given back, over every collection */
+long long m_gc_msecs;        /* time spent collecting */
 
 static HeapChunk *chunk_new(size_t size)
 {
@@ -487,6 +490,13 @@ void trail_undo(size_t mark)
     }
 }
 
+void ws_grow(WorkStack *s)
+{
+    s->cap = s->cap ? s->cap * 2 : 256;
+    s->item = (void **)realloc(s->item, s->cap * sizeof(void *));
+    if (!s->item) { fprintf(stderr, "prolog: out of memory\n"); exit(1); }
+}
+
 /* ------------------------------------------------------------------ */
 /* Garbage collection                                                 */
 /* ------------------------------------------------------------------ */
@@ -509,42 +519,52 @@ void gc_unprotect(int n) { gc_nroots = n; }
    that shared (and cyclic) structure is copied exactly once. */
 static Term *gc_copy(Term *t)
 {
+    static WorkStack ws;                /* pending (source, slot) pairs */
+    size_t base = ws.n;
     Term *result = NULL, *c;
     Term **slot = &result;
     int i;
 
-tail:
-    while (t->tag == TAG_VAR && t->u.v.ref) t = t->u.v.ref;
-    if (t->tag == TAG_FWD) { *slot = t->u.v.ref; return result; }
-
-    switch (t->tag) {
-    case TAG_VAR:
-        c = (Term *)heap_alloc(sizeof(Term));
-        c->tag = TAG_VAR;
-        c->u.v.ref = NULL;
-        c->u.v.serial = t->u.v.serial;      /* keep the standard order stable */
-        t->tag = TAG_FWD;
-        t->u.v.ref = c;
-        *slot = c;
-        return result;
-    case TAG_ATOM: case TAG_INT: case TAG_FLT:
-        c = (Term *)heap_alloc(sizeof(Term));
-        *c = *t;
-        *slot = c;
-        return result;
-    default: {
-        int f = FN(t), n = AR(t);
-        Term **args = t->u.s.args;          /* saved: forwarding clobbers it */
-        c = mk_str(f, n);
-        t->tag = TAG_FWD;
-        t->u.v.ref = c;
-        *slot = c;
-        if (n == 0) return result;
-        for (i = 0; i < n - 1; i++) ARG(c, i) = gc_copy(args[i]);
-        slot = &ARG(c, n - 1);
-        t = args[n - 1];
-        goto tail;
-    }
+    for (;;) {
+        while (t->tag == TAG_VAR && t->u.v.ref) t = t->u.v.ref;
+        switch (t->tag) {
+        case TAG_FWD:
+            *slot = t->u.v.ref;
+            break;
+        case TAG_VAR:
+            c = (Term *)heap_alloc(sizeof(Term));
+            c->tag = TAG_VAR;
+            c->u.v.ref = NULL;
+            c->u.v.serial = t->u.v.serial;  /* keep the standard order stable */
+            t->tag = TAG_FWD;
+            t->u.v.ref = c;
+            *slot = c;
+            break;
+        case TAG_ATOM: case TAG_INT: case TAG_FLT:
+            c = (Term *)heap_alloc(sizeof(Term));
+            *c = *t;
+            *slot = c;
+            break;
+        default: {
+            int f = FN(t), n = AR(t);
+            Term **args = t->u.s.args;      /* saved: forwarding clobbers it */
+            c = mk_str(f, n);
+            t->tag = TAG_FWD;
+            t->u.v.ref = c;
+            *slot = c;
+            if (n == 0) break;
+            for (i = n - 1; i > 0; i--) {
+                WS_PUSH(&ws, args[i]);
+                WS_PUSH(&ws, &ARG(c, i));
+            }
+            slot = &ARG(c, 0);
+            t = args[0];
+            continue;
+        }
+        }
+        if (ws.n == base) return result;
+        slot = (Term **)WS_POP(&ws);
+        t = (Term *)WS_POP(&ws);
     }
 }
 
@@ -553,6 +573,8 @@ void heap_gc(Goal **goals_root)
     HeapChunk *old_head = heap_head, *c, *nx;
     Goal *g, **link;
     int i;
+    size_t before = heap_in_use();
+    clock_t t0 = clock();
 
     /* Start a fresh heap; everything reachable is copied into it. */
     heap_head = heap_cur = chunk_new(HEAP_CHUNK_MIN);
@@ -572,6 +594,7 @@ void heap_gc(Goal **goals_root)
     tr_top = 0;
     heap_epoch++;
     m_gc_count++;
+    if (heap_in_use() < before) m_gc_freed += (long long)(before - heap_in_use());
 
     for (c = old_head; c; c = nx) {
         nx = c->next;
@@ -579,47 +602,76 @@ void heap_gc(Goal **goals_root)
         free(c->data);
         free(c);
     }
+    m_gc_msecs += (long long)((double)(clock() - t0) * 1000.0 / CLOCKS_PER_SEC);
 }
 
 /* ------------------------------------------------------------------ */
 /* Unification                                                        */
 /* ------------------------------------------------------------------ */
 
-int unify(Term *a, Term *b)
+/* Unifies two dereferenced terms that are not both compound. */
+static ALWAYS_INLINE int unify_leaf(Term *a, Term *b)
 {
-    int i;
-
-tail:
-    a = deref(a);
-    b = deref(b);
     if (a == b) return 1;
-
     if (a->tag == TAG_VAR) {
-        if (b->tag == TAG_VAR) {
-            /* Bind the younger variable to the older one. */
-            if (a->u.v.serial < b->u.v.serial) { bind(b, a); return 1; }
-        }
-        bind(a, b);
+        /* Bind the younger variable to the older one. */
+        if (b->tag == TAG_VAR && a->u.v.serial < b->u.v.serial) bind(b, a);
+        else bind(a, b);
         return 1;
     }
     if (b->tag == TAG_VAR) { bind(b, a); return 1; }
     if (a->tag != b->tag) return 0;
-
     switch (a->tag) {
     case TAG_ATOM: return AT(a) == AT(b);
     case TAG_INT:  return IV(a) == IV(b);
     case TAG_FLT:  return FV(a) == FV(b);
-    case TAG_STR:
-        if (FN(a) != FN(b) || AR(a) != AR(b)) return 0;
-        if (AR(a) == 0) return 1;
-        for (i = 0; i < AR(a) - 1; i++)
-            if (!unify(ARG(a, i), ARG(b, i))) return 0;
-        /* Recurse iteratively on the last argument, so that long lists do
-           not grow the C stack. */
-        b = ARG(b, i);
-        a = ARG(a, i);
-        goto tail;
     }
+    return 0;
+}
+
+int unify(Term *a, Term *b)
+{
+    static WorkStack ws;                /* pending argument pairs */
+    size_t base;
+    int i, j, n;
+
+    /* Most calls meet a variable or a constant at once. */
+    a = deref(a);
+    b = deref(b);
+    if (a->tag != TAG_STR || b->tag != TAG_STR) return unify_leaf(a, b);
+    base = ws.n;
+next:
+    a = deref(a);
+    b = deref(b);
+    if (a->tag != TAG_STR || b->tag != TAG_STR) {
+        if (!unify_leaf(a, b)) goto fail;
+    } else if (a != b) {
+        if (FN(a) != FN(b) || AR(a) != AR(b)) goto fail;
+        n = AR(a);
+        /* Leaves in place, in order; the first pair of compounds is gone
+           into, and the pairs after it wait. */
+        for (i = 0; i < n; i++) {
+            Term *x = deref(ARG(a, i)), *y = deref(ARG(b, i));
+            if (x->tag != TAG_STR || y->tag != TAG_STR) {
+                if (!unify_leaf(x, y)) goto fail;
+                continue;
+            }
+            if (x == y) continue;
+            for (j = n - 1; j > i; j--) {
+                WS_PUSH(&ws, ARG(a, j));
+                WS_PUSH(&ws, ARG(b, j));
+            }
+            a = x;
+            b = y;
+            goto next;
+        }
+    }
+    if (ws.n == base) return 1;
+    b = (Term *)WS_POP(&ws);
+    a = (Term *)WS_POP(&ws);
+    goto next;
+fail:
+    ws.n = base;
     return 0;
 }
 
@@ -641,18 +693,15 @@ static int type_rank(Term *t)
 static int cmp_ll(long long a, long long b) { return a < b ? -1 : a > b ? 1 : 0; }
 static int cmp_d(double a, double b) { return a < b ? -1 : a > b ? 1 : 0; }
 
-int compare_terms(Term *a, Term *b)
+/* Compares two dereferenced terms that are not both compound, or are of
+   different ranks. */
+static ALWAYS_INLINE int compare_leaf(Term *a, Term *b)
 {
-    int ra, rb, c, i;
-
-tail:
-    a = deref(a);
-    b = deref(b);
+    int ra, rb, c;
     if (a == b) return 0;
     ra = type_rank(a);
     rb = type_rank(b);
     if (ra != rb) return ra < rb ? -1 : 1;
-
     switch (a->tag) {
     case TAG_VAR:
         return a->u.v.serial < b->u.v.serial ? -1 :
@@ -668,19 +717,51 @@ tail:
     case TAG_ATOM:
         c = strcmp(atom_name(AT(a)), atom_name(AT(b)));
         return c < 0 ? -1 : c > 0 ? 1 : 0;
-    default:
-        if (AR(a) != AR(b)) return AR(a) < AR(b) ? -1 : 1;
-        c = strcmp(atom_name(FN(a)), atom_name(FN(b)));
-        if (c) return c < 0 ? -1 : 1;
-        if (AR(a) == 0) return 0;
-        for (i = 0; i < AR(a) - 1; i++) {
-            c = compare_terms(ARG(a, i), ARG(b, i));
-            if (c) return c;
-        }
-        b = ARG(b, i);
-        a = ARG(a, i);
-        goto tail;
     }
+    return 0;
+}
+
+int compare_terms(Term *a, Term *b)
+{
+    static WorkStack ws;                /* pending argument pairs */
+    size_t base = ws.n;
+    int c = 0, i, j, n;
+
+next:
+    a = deref(a);
+    b = deref(b);
+    if (a->tag != TAG_STR || b->tag != TAG_STR) {
+        if ((c = compare_leaf(a, b)) != 0) goto done;
+    } else if (a != b) {
+        if (AR(a) != AR(b)) { c = AR(a) < AR(b) ? -1 : 1; goto done; }
+        c = strcmp(atom_name(FN(a)), atom_name(FN(b)));
+        if (c) { c = c < 0 ? -1 : 1; goto done; }
+        n = AR(a);
+        /* Arguments left to right: leaves in place, the first pair of
+           compounds gone into, the pairs after it waiting. */
+        for (i = 0; i < n; i++) {
+            Term *x = deref(ARG(a, i)), *y = deref(ARG(b, i));
+            if (x->tag != TAG_STR || y->tag != TAG_STR) {
+                if ((c = compare_leaf(x, y)) != 0) goto done;
+                continue;
+            }
+            if (x == y) continue;
+            for (j = n - 1; j > i; j--) {
+                WS_PUSH(&ws, ARG(a, j));
+                WS_PUSH(&ws, ARG(b, j));
+            }
+            a = x;
+            b = y;
+            goto next;
+        }
+    }
+    if (ws.n == base) return 0;
+    b = (Term *)WS_POP(&ws);
+    a = (Term *)WS_POP(&ws);
+    goto next;
+done:
+    ws.n = base;
+    return c;
 }
 
 /* ------------------------------------------------------------------ */
@@ -727,16 +808,11 @@ void varmap_put(VarMap *m, Term *from, Term *to)
 
 void varmap_free(VarMap *m) { free(m->from); free(m->to); free(m->index); }
 
-static Term *copy_rec(Term *t, VarMap *m, Arena *a, int compile)
+/* One dereferenced term of copy_rec that is not a compound. */
+static ALWAYS_INLINE Term *copy_leaf(Term *t, VarMap *m, Arena *a, int compile)
 {
-    Term *c, *r, *result = NULL;
-    Term **slot = &result;
-    int i;
-
-tail:
-    t = deref(t);
-    switch (t->tag) {
-    case TAG_VAR:
+    Term *r;
+    if (t->tag == TAG_VAR) {
         r = varmap_get(m, t);
         if (!r) {
             if (a) {
@@ -749,34 +825,56 @@ tail:
             }
             varmap_put(m, t, r);
         }
-        *slot = r;
-        return result;
-    case TAG_ATOM:
-    case TAG_INT:
-    case TAG_FLT:
-        if (!a) { *slot = t; return result; } /* constants can be shared */
-        c = (Term *)arena_alloc(a, sizeof(Term));
-        *c = *t;
-        *slot = c;
-        return result;
-    default:
+        return r;
+    }
+    if (!a) return t;                   /* constants can be shared */
+    r = (Term *)arena_alloc(a, sizeof(Term));
+    *r = *t;
+    return r;
+}
+
+static Term *copy_rec(Term *t, VarMap *m, Arena *a, int compile)
+{
+    static WorkStack ws;                /* pending (source, slot) pairs */
+    size_t base = ws.n;
+    Term *c, *result = NULL;
+    Term **slot = &result;
+    int i, j, n;
+
+next:
+    t = deref(t);
+    if (t->tag != TAG_STR) *slot = copy_leaf(t, m, a, compile);
+    else {
+        n = AR(t);
         if (a) {
-            c = (Term *)arena_alloc(a, sizeof(Term) + AR(t) * sizeof(Term *));
+            c = (Term *)arena_alloc(a, sizeof(Term) + n * sizeof(Term *));
             c->tag = TAG_STR;
             c->u.s.functor = FN(t);
-            c->u.s.arity = AR(t);
+            c->u.s.arity = n;
             c->u.s.args = (Term **)((char *)c + sizeof(Term));
         } else {
-            c = mk_str(FN(t), AR(t));
+            c = mk_str(FN(t), n);
         }
         *slot = c;
-        if (AR(t) == 0) return result;
-        for (i = 0; i < AR(t) - 1; i++)
-            ARG(c, i) = copy_rec(ARG(t, i), m, a, compile);
-        slot = &ARG(c, i);
-        t = ARG(t, i);
-        goto tail;
+        /* Left to right, so variables are met, and numbered, in the order
+           they appear: leaves in place, the first compound gone into, the
+           arguments after it waiting. */
+        for (i = 0; i < n; i++) {
+            Term *x = deref(ARG(t, i));
+            if (x->tag != TAG_STR) { ARG(c, i) = copy_leaf(x, m, a, compile); continue; }
+            for (j = n - 1; j > i; j--) {
+                WS_PUSH(&ws, ARG(t, j));
+                WS_PUSH(&ws, &ARG(c, j));
+            }
+            slot = &ARG(c, i);
+            t = x;
+            goto next;
+        }
     }
+    if (ws.n == base) return result;
+    slot = (Term **)WS_POP(&ws);
+    t = (Term *)WS_POP(&ws);
+    goto next;
 }
 
 Term *heap_copy(Term *t)
@@ -796,41 +894,57 @@ Term *arena_compile(Arena *a, Term *t, int *nvars)
     return r;
 }
 
+/* One argument of heap_instantiate that is not a compound. */
+static ALWAYS_INLINE Term *instantiate_leaf(Term *t, Term **vars, int nvars)
+{
+    Term *c;
+    if (t->tag == TAG_VAR) {
+        unsigned long idx = t->u.v.serial;
+        if ((int)idx >= nvars) return mk_var();
+        if (!vars[idx]) vars[idx] = mk_var();
+        return vars[idx];
+    }
+    /* Constants are copied rather than shared: the source term may live in
+       an arena (a clause, a findall buffer, an exception ball) that is
+       released long before the instantiated copy dies. */
+    c = (Term *)heap_alloc(sizeof(Term));
+    *c = *t;
+    return c;
+}
+
 Term *heap_instantiate(Term *t, Term **vars, int nvars)
 {
+    static WorkStack ws;                /* pending (source, slot) pairs */
+    size_t base = ws.n;
     Term *c, *result = NULL;
     Term **slot = &result;
-    int i;
+    int i, j, n;
 
-tail:
-    switch (t->tag) {
-    case TAG_VAR: {
-        unsigned long idx = t->u.v.serial;
-        if ((int)idx >= nvars) { *slot = mk_var(); return result; }
-        if (!vars[idx]) vars[idx] = mk_var();
-        *slot = vars[idx];
-        return result;
-    }
-    case TAG_ATOM:
-    case TAG_INT:
-    case TAG_FLT:
-        /* Constants are copied rather than shared: the source term may live
-           in an arena (a clause, a findall buffer, an exception ball) that is
-           released long before the instantiated copy dies. */
-        c = (Term *)heap_alloc(sizeof(Term));
-        *c = *t;
+next:
+    if (t->tag != TAG_STR) *slot = instantiate_leaf(t, vars, nvars);
+    else {
+        n = AR(t);
+        c = mk_str(FN(t), n);
         *slot = c;
-        return result;
-    default:
-        c = mk_str(FN(t), AR(t));
-        *slot = c;
-        if (AR(t) == 0) return result;
-        for (i = 0; i < AR(t) - 1; i++)
-            ARG(c, i) = heap_instantiate(ARG(t, i), vars, nvars);
-        slot = &ARG(c, i);
-        t = ARG(t, i);
-        goto tail;
+        /* Leaves are done in place; the first compound argument is gone
+           into, and the ones after it wait.  So arguments are met left to
+           right, and a list of constants never touches the stack. */
+        for (i = 0; i < n; i++) {
+            Term *x = ARG(t, i);
+            if (x->tag != TAG_STR) { ARG(c, i) = instantiate_leaf(x, vars, nvars); continue; }
+            for (j = n - 1; j > i; j--) {
+                WS_PUSH(&ws, ARG(t, j));
+                WS_PUSH(&ws, &ARG(c, j));
+            }
+            slot = &ARG(c, i);
+            t = x;
+            goto next;
+        }
     }
+    if (ws.n == base) return result;
+    slot = (Term **)WS_POP(&ws);
+    t = (Term *)WS_POP(&ws);
+    goto next;
 }
 
 /* The distinct unbound variables of t, depth first and left to right, as

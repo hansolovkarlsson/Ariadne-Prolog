@@ -121,44 +121,6 @@ static void write_number(Writer *w, Term *t)
     puts_(w, buf);
 }
 
-static void wr(Writer *w, Term *t, int maxprec, int depth);
-
-static void write_args(Writer *w, Term *t, int from, int depth)
-{
-    int i;
-    raw(w, "(");
-    w->lastc = 0;
-    for (i = from; i < AR(t); i++) {
-        if (i > from) { raw(w, ","); w->lastc = 0; }
-        wr(w, ARG(t, i), 999, depth + 1);
-    }
-    raw(w, ")");
-}
-
-static void write_list(Writer *w, Term *t, int depth)
-{
-    int n = 0;
-    raw(w, "[");
-    w->lastc = 0;
-    for (;;) {
-        wr(w, ARG(t, 0), 999, depth + 1);
-        t = deref(ARG(t, 1));
-        n++;
-        if (t->tag == TAG_STR && FN(t) == a_dot && AR(t) == 2) {
-            if (w->maxdepth && n >= w->maxdepth) { raw(w, "|..."); break; }
-            raw(w, ",");
-            w->lastc = 0;
-            continue;
-        }
-        if (t->tag == TAG_ATOM && AT(t) == a_nil) break;
-        raw(w, "|");
-        w->lastc = 0;
-        wr(w, t, 999, depth + 1);
-        break;
-    }
-    raw(w, "]");
-}
-
 /* '$VAR'(N) printing: A, B, ... Z, A1, B1, ... */
 static int write_numbervar(Writer *w, Term *t)
 {
@@ -179,9 +141,77 @@ static int write_numbervar(Writer *w, Term *t)
     return 0;
 }
 
-static void wr(Writer *w, Term *t, int maxprec, int depth)
+/* The writer keeps what is left to print on a stack of tasks rather than
+   on the C stack, because a term may be nested a million deep in any
+   argument.  Each term prints what it can at once and pushes the rest in
+   reverse, so the tasks come off in the order they are printed. */
+enum { W_TERM, W_RAW, W_RAW0, W_ATOM, W_OP, W_LIST };
+
+typedef struct {
+    int         kind;
+    Term       *t;          /* W_TERM, W_LIST */
+    int         prec;       /* W_TERM: the priority it may take */
+    int         depth;
+    int         n;          /* W_ATOM, W_OP: the atom; W_LIST: cells so far */
+    const char *s;          /* W_RAW, W_RAW0 */
+} WTask;
+
+typedef struct { WTask *item; size_t n, cap; } WTasks;
+
+static void task(WTasks *st, int kind, Term *t, int prec, int depth, int n,
+                 const char *s)
 {
-    int prec, lp, rp;
+    WTask *k;
+    if (st->n == st->cap) {
+        st->cap = st->cap ? st->cap * 2 : 256;
+        st->item = (WTask *)realloc(st->item, st->cap * sizeof(WTask));
+        if (!st->item) { fprintf(stderr, "prolog: out of memory\n"); exit(1); }
+    }
+    k = &st->item[st->n++];
+    k->kind = kind; k->t = t; k->prec = prec; k->depth = depth; k->n = n; k->s = s;
+}
+
+#define PUSH_TERM(t, p, d) task(st, W_TERM, (t), (p), (d), 0, NULL)
+#define PUSH_RAW(s)        task(st, W_RAW, NULL, 0, 0, 0, (s))
+#define PUSH_RAW0(s)       task(st, W_RAW0, NULL, 0, 0, 0, (s))  /* then lastc = 0 */
+
+/* An infix operator, between the operands already written and to come. */
+static void write_infix_op(Writer *w, int f)
+{
+    if (f == a_comma) { raw(w, ","); w->lastc = 0; return; }
+    if (isalpha((unsigned char)atom_name(f)[0])) {
+        raw(w, " ");
+        write_atom(w, f);
+        raw(w, " ");
+        w->lastc = 0;
+        return;
+    }
+    write_atom(w, f);
+}
+
+/* After the head of list cell t, the n-th, has been written. */
+static void write_list_rest(Writer *w, WTasks *st, Term *t, int n, int depth)
+{
+    t = deref(ARG(t, 1));
+    if (t->tag == TAG_STR && FN(t) == a_dot && AR(t) == 2) {
+        if (w->maxdepth && n >= w->maxdepth) { raw(w, "|..."); raw(w, "]"); return; }
+        raw(w, ",");
+        w->lastc = 0;
+        task(st, W_LIST, t, 0, depth, n + 1, NULL);
+        PUSH_TERM(ARG(t, 0), 999, depth + 1);
+        return;
+    }
+    if (t->tag == TAG_ATOM && AT(t) == a_nil) { raw(w, "]"); return; }
+    raw(w, "|");
+    w->lastc = 0;
+    PUSH_RAW("]");
+    PUSH_TERM(t, 999, depth + 1);
+}
+
+/* Writes one term: what it can now, and the rest as tasks. */
+static void write_one(Writer *w, WTasks *st, Term *t, int maxprec, int depth)
+{
+    int prec, lp, rp, i;
 
     t = deref(t);
     if (w->maxdepth && depth > w->maxdepth) { puts_(w, "..."); return; }
@@ -223,27 +253,26 @@ static void wr(Writer *w, Term *t, int maxprec, int depth)
     if (write_numbervar(w, t)) return;
 
     if (!(w->flags & WR_IGNORE_OPS)) {
-        if (FN(t) == a_dot && AR(t) == 2) { write_list(w, t, depth); return; }
+        if (FN(t) == a_dot && AR(t) == 2) {
+            raw(w, "[");
+            w->lastc = 0;
+            task(st, W_LIST, t, 0, depth, 1, NULL);
+            PUSH_TERM(ARG(t, 0), 999, depth + 1);
+            return;
+        }
         if (FN(t) == a_curly && AR(t) == 1) {
             raw(w, "{");
             w->lastc = 0;
-            wr(w, ARG(t, 0), 1200, depth + 1);
-            raw(w, "}");
+            PUSH_RAW("}");
+            PUSH_TERM(ARG(t, 0), 1200, depth + 1);
             return;
         }
         if (AR(t) == 2 && op_infix(FN(t), &prec, &lp, &rp)) {
             int paren = prec > maxprec;
-            if (paren) { raw(w, "("); w->lastc = 0; }
-            wr(w, ARG(t, 0), lp, depth + 1);
-            if (FN(t) == a_comma) { raw(w, ","); w->lastc = 0; }
-            else {
-                int alpha = isalpha((unsigned char)atom_name(FN(t))[0]);
-                if (alpha) raw(w, " ");
-                write_atom(w, FN(t));
-                if (alpha) { raw(w, " "); w->lastc = 0; }
-            }
-            wr(w, ARG(t, 1), rp, depth + 1);
-            if (paren) raw(w, ")");
+            if (paren) { raw(w, "("); w->lastc = 0; PUSH_RAW(")"); }
+            PUSH_TERM(ARG(t, 1), rp, depth + 1);
+            task(st, W_OP, NULL, 0, 0, FN(t), NULL);
+            PUSH_TERM(ARG(t, 0), lp, depth + 1);
             return;
         }
         if (AR(t) == 1 && op_prefix(FN(t), &prec, &lp)) {
@@ -251,26 +280,50 @@ static void wr(Writer *w, Term *t, int maxprec, int depth)
             Term *arg = deref(ARG(t, 0));
             /* '-'(1) must not print as -1, which would read back as a number. */
             int spaced = isalpha((unsigned char)atom_name(FN(t))[0]);
-            if (paren) { raw(w, "("); w->lastc = 0; }
+            if (paren) { raw(w, "("); w->lastc = 0; PUSH_RAW(")"); }
             write_atom(w, FN(t));
             if (spaced) raw(w, " ");
             if (IS_NUM(arg) && (FN(t) == a_minus || FN(t) == a_plus)) raw(w, " ");
-            wr(w, arg, lp, depth + 1);
-            if (paren) raw(w, ")");
+            PUSH_TERM(arg, lp, depth + 1);
             return;
         }
         if (AR(t) == 1 && op_postfix(FN(t), &prec, &lp)) {
             int paren = prec > maxprec;
-            if (paren) { raw(w, "("); w->lastc = 0; }
-            wr(w, ARG(t, 0), lp, depth + 1);
-            write_atom(w, FN(t));
-            if (paren) raw(w, ")");
+            if (paren) { raw(w, "("); w->lastc = 0; PUSH_RAW(")"); }
+            task(st, W_ATOM, NULL, 0, 0, FN(t), NULL);
+            PUSH_TERM(ARG(t, 0), lp, depth + 1);
             return;
         }
     }
 
     write_atom(w, FN(t));
-    write_args(w, t, 0, depth);
+    raw(w, "(");
+    w->lastc = 0;
+    PUSH_RAW(")");
+    for (i = AR(t) - 1; i >= 0; i--) {
+        PUSH_TERM(ARG(t, i), 999, depth + 1);
+        if (i > 0) PUSH_RAW0(",");
+    }
+}
+
+static void wr(Writer *w, Term *t, int maxprec, int depth)
+{
+    static WTasks tasks;
+    WTasks *st = &tasks;
+    size_t base = st->n;
+
+    PUSH_TERM(t, maxprec, depth);
+    while (st->n > base) {
+        WTask k = st->item[--st->n];
+        switch (k.kind) {
+        case W_TERM: write_one(w, st, k.t, k.prec, k.depth); break;
+        case W_RAW:  raw(w, k.s); break;
+        case W_RAW0: raw(w, k.s); w->lastc = 0; break;
+        case W_ATOM: write_atom(w, k.n); break;
+        case W_OP:   write_infix_op(w, k.n); break;
+        case W_LIST: write_list_rest(w, st, k.t, k.n, k.depth); break;
+        }
+    }
 }
 
 void write_term(Writer *w, Term *t)

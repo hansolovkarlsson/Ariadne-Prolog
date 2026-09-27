@@ -29,10 +29,18 @@ $(OBJS): src/prolog.h
 test: $(BIN)
 	./$(BIN) -q tests/test.pl -g run_tests
 
-# The same suite with the collector running as often as it can, which
-# exercises garbage collection on every code path.
+# The same suite with the collector's threshold at its lowest. The collector
+# only runs when no choice point is live, and run_tests holds one throughout,
+# so this leg collects nothing; test-deep is what puts the collector to work.
 test-gc: $(BIN)
 	PROLOG_GC_THRESHOLD=1 ./$(BIN) -q tests/test.pl -g run_tests
+
+# Terms nested a million deep through every walk, the reader and the writer,
+# run at the top level so that the collector copies them; it fails unless a
+# collection happened. Once normally, once with the threshold at its lowest.
+test-deep: $(BIN)
+	./$(BIN) -q tests/deep.pl -g "run, halt"
+	PROLOG_GC_THRESHOLD=1 ./$(BIN) -q tests/deep.pl -g "run, halt"
 
 # The suite under the address and undefined behaviour sanitizers.
 # -fno-sanitize-recover makes undefined behaviour abort rather than print and
@@ -43,9 +51,10 @@ test-asan:
 	                -fno-sanitize-recover=undefined -fno-omit-frame-pointer"
 	./$(BIN) -q tests/test.pl -g run_tests
 	PROLOG_GC_THRESHOLD=1 ./$(BIN) -q tests/test.pl -g run_tests
+	./$(BIN) -q tests/deep.pl -g "run, halt"
 	$(MAKE) clean
 
-check: test test-gc
+check: test test-gc test-deep
 
 # The tutorial programs are what the published tutorial pages quote from, so
 # loading each one and running a query out of its page keeps the two in step.
@@ -106,4 +115,4 @@ install: $(BIN)
 clean:
 	rm -f $(OBJS) $(BIN) src/boot_pl.c
 
-.PHONY: all test test-gc test-asan check examples tutorials doc install clean
+.PHONY: all test test-gc test-deep test-asan check examples tutorials doc install clean

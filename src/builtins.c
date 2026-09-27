@@ -144,18 +144,26 @@ BI(bi_atomic)   { UNUSED; Term *t = deref(A[0]);
                   RET(t->tag == TAG_ATOM || IS_NUM(t)); }
 BI(bi_is_list)  { UNUSED; RET(list_length(A[0]) >= 0); }
 
-/* This walk and the ones below recurse on every argument but the last
-   and loop on the last, as unify does, so a long list costs no C stack. */
+/* This walk and the ones below keep their pending arguments on a
+   WorkStack, as unify does, so a term nested deep in any argument costs
+   no C stack. */
 static int is_ground(Term *t)
 {
+    static WorkStack ws;
+    size_t base = ws.n;
     int i;
-tail:
-    t = deref(t);
-    if (t->tag == TAG_VAR) return 0;
-    if (t->tag != TAG_STR || AR(t) == 0) return 1;
-    for (i = 0; i < AR(t) - 1; i++) if (!is_ground(ARG(t, i))) return 0;
-    t = ARG(t, i);
-    goto tail;
+
+    for (;;) {
+        t = deref(t);
+        if (t->tag == TAG_VAR) { ws.n = base; return 0; }
+        if (t->tag == TAG_STR && AR(t) > 0) {
+            for (i = AR(t) - 1; i > 0; i--) WS_PUSH(&ws, ARG(t, i));
+            t = ARG(t, 0);
+            continue;
+        }
+        if (ws.n == base) return 1;
+        t = (Term *)WS_POP(&ws);
+    }
 }
 
 BI(bi_ground) { UNUSED; RET(is_ground(A[0])); }
@@ -177,43 +185,62 @@ BI(bi_not_unify)
 
 static int occurs_in(Term *v, Term *t)
 {
+    static WorkStack ws;
+    size_t base = ws.n;
     int i;
-tail:
-    t = deref(t);
-    if (t == v) return 1;
-    if (t->tag != TAG_STR || AR(t) == 0) return 0;
-    for (i = 0; i < AR(t) - 1; i++) if (occurs_in(v, ARG(t, i))) return 1;
-    t = ARG(t, i);
-    goto tail;
+
+    for (;;) {
+        t = deref(t);
+        if (t == v) { ws.n = base; return 1; }
+        if (t->tag == TAG_STR && AR(t) > 0) {
+            for (i = AR(t) - 1; i > 0; i--) WS_PUSH(&ws, ARG(t, i));
+            t = ARG(t, 0);
+            continue;
+        }
+        if (ws.n == base) return 0;
+        t = (Term *)WS_POP(&ws);
+    }
 }
 
 static int unify_oc(Term *a, Term *b)
 {
+    static WorkStack ws;
+    size_t base = ws.n;
     int i;
-tail:
-    a = deref(a);
-    b = deref(b);
-    if (a == b) return 1;
-    if (a->tag == TAG_VAR) {
-        if (occurs_in(a, b)) return 0;
-        bind(a, b);
-        return 1;
+
+    for (;;) {
+        a = deref(a);
+        b = deref(b);
+        if (a == b) goto next;
+        if (b->tag == TAG_VAR && a->tag != TAG_VAR) { Term *x = a; a = b; b = x; }
+        if (a->tag == TAG_VAR) {
+            if (occurs_in(a, b)) goto fail;
+            bind(a, b);
+            goto next;
+        }
+        if (a->tag != b->tag) goto fail;
+        switch (a->tag) {
+        case TAG_ATOM: if (AT(a) != AT(b)) goto fail; goto next;
+        case TAG_INT:  if (IV(a) != IV(b)) goto fail; goto next;
+        case TAG_FLT:  if (FV(a) != FV(b)) goto fail; goto next;
+        }
+        if (FN(a) != FN(b) || AR(a) != AR(b)) goto fail;
+        if (AR(a) == 0) goto next;
+        for (i = AR(a) - 1; i > 0; i--) {
+            WS_PUSH(&ws, ARG(a, i));
+            WS_PUSH(&ws, ARG(b, i));
+        }
+        a = ARG(a, 0);
+        b = ARG(b, 0);
+        continue;
+    next:
+        if (ws.n == base) return 1;
+        b = (Term *)WS_POP(&ws);
+        a = (Term *)WS_POP(&ws);
     }
-    if (b->tag == TAG_VAR) return unify_oc(b, a);
-    if (a->tag != b->tag) return 0;
-    switch (a->tag) {
-    case TAG_ATOM: return AT(a) == AT(b);
-    case TAG_INT:  return IV(a) == IV(b);
-    case TAG_FLT:  return FV(a) == FV(b);
-    default:
-        if (FN(a) != FN(b) || AR(a) != AR(b)) return 0;
-        if (AR(a) == 0) return 1;
-        for (i = 0; i < AR(a) - 1; i++)
-            if (!unify_oc(ARG(a, i), ARG(b, i))) return 0;
-        a = ARG(a, i);
-        b = ARG(b, i);
-        goto tail;
-    }
+fail:
+    ws.n = base;
+    return 0;
 }
 
 BI(bi_unify_oc)
@@ -229,33 +256,48 @@ BI(bi_unify_oc)
    The renaming is kept both ways, as two variable maps. */
 static int variant_rec(Term *a, Term *b, VarMap *lr, VarMap *rl)
 {
+    static WorkStack ws;
+    size_t base = ws.n;
     int i;
-tail:
-    a = deref(a);
-    b = deref(b);
-    if (a->tag == TAG_VAR || b->tag == TAG_VAR) {
-        Term *seen;
-        if (a->tag != TAG_VAR || b->tag != TAG_VAR) return 0;
-        if ((seen = varmap_get(lr, a)) != NULL) return seen == b;
-        if (varmap_get(rl, b)) return 0;
-        varmap_put(lr, a, b);
-        varmap_put(rl, b, a);
-        return 1;
+
+    for (;;) {
+        a = deref(a);
+        b = deref(b);
+        if (a->tag == TAG_VAR || b->tag == TAG_VAR) {
+            Term *seen;
+            if (a->tag != TAG_VAR || b->tag != TAG_VAR) goto fail;
+            if ((seen = varmap_get(lr, a)) != NULL) {
+                if (seen != b) goto fail;
+                goto next;
+            }
+            if (varmap_get(rl, b)) goto fail;
+            varmap_put(lr, a, b);
+            varmap_put(rl, b, a);
+            goto next;
+        }
+        if (a->tag != b->tag) goto fail;
+        switch (a->tag) {
+        case TAG_ATOM: if (AT(a) != AT(b)) goto fail; goto next;
+        case TAG_INT:  if (IV(a) != IV(b)) goto fail; goto next;
+        case TAG_FLT:  if (FV(a) != FV(b)) goto fail; goto next;
+        }
+        if (FN(a) != FN(b) || AR(a) != AR(b)) goto fail;
+        if (AR(a) == 0) goto next;
+        for (i = AR(a) - 1; i > 0; i--) {
+            WS_PUSH(&ws, ARG(a, i));
+            WS_PUSH(&ws, ARG(b, i));
+        }
+        a = ARG(a, 0);
+        b = ARG(b, 0);
+        continue;
+    next:
+        if (ws.n == base) return 1;
+        b = (Term *)WS_POP(&ws);
+        a = (Term *)WS_POP(&ws);
     }
-    if (a->tag != b->tag) return 0;
-    switch (a->tag) {
-    case TAG_ATOM: return AT(a) == AT(b);
-    case TAG_INT:  return IV(a) == IV(b);
-    case TAG_FLT:  return FV(a) == FV(b);
-    default:
-        if (FN(a) != FN(b) || AR(a) != AR(b)) return 0;
-        if (AR(a) == 0) return 1;
-        for (i = 0; i < AR(a) - 1; i++)
-            if (!variant_rec(ARG(a, i), ARG(b, i), lr, rl)) return 0;
-        a = ARG(a, i);
-        b = ARG(b, i);
-        goto tail;
-    }
+fail:
+    ws.n = base;
+    return 0;
 }
 
 static int is_variant(Term *a, Term *b)
@@ -491,17 +533,22 @@ BI(bi_term_variables)
 
 static long long numbervars_walk(Term *t, long long n)
 {
+    static WorkStack ws;
+    size_t base = ws.n;
     int i;
-tail:
-    t = deref(t);
-    if (t->tag == TAG_VAR) {
-        bind(t, mk1(a_dollar_var, mk_int(n)));
-        return n + 1;
+
+    for (;;) {
+        t = deref(t);
+        if (t->tag == TAG_VAR) bind(t, mk1(a_dollar_var, mk_int(n++)));
+        else if (t->tag == TAG_STR && AR(t) > 0) {
+            /* Left to right, so the numbers follow the order of reading. */
+            for (i = AR(t) - 1; i > 0; i--) WS_PUSH(&ws, ARG(t, i));
+            t = ARG(t, 0);
+            continue;
+        }
+        if (ws.n == base) return n;
+        t = (Term *)WS_POP(&ws);
     }
-    if (t->tag != TAG_STR || AR(t) == 0) return n;
-    for (i = 0; i < AR(t) - 1; i++) n = numbervars_walk(ARG(t, i), n);
-    t = ARG(t, i);
-    goto tail;
 }
 
 BI(bi_numbervars)
@@ -2352,6 +2399,12 @@ BI(bi_statistics)
     if (!strcmp(nm, "inferences")) {
         v = m_inferences;
         RET(unify(A[1], mk_int(v)));
+    }
+    if (!strcmp(nm, "garbage_collection")) {
+        /* [Collections, BytesFreed, Milliseconds], as SWI has it. */
+        Term *l = mk_cons(mk_int(m_gc_count), mk_cons(mk_int(m_gc_freed),
+                          mk_cons(mk_int(m_gc_msecs), mk_atom(a_nil))));
+        RET(unify(A[1], l));
     }
     if (!strcmp(nm, "memory") || !strcmp(nm, "heap")) {
         Term *l = mk_cons(mk_int((long long)heap_in_use()),

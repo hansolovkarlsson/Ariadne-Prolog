@@ -678,8 +678,9 @@ BUILTINS = [
     ('halt', "Leaves the interpreter; halt/1 sets the exit status."),
     ('statistics(+Key, -Value)',
      "Key is runtime, cputime, process_cputime or walltime, giving "
-     "`[Total, SinceLast]` in milliseconds; inferences, giving a count; or memory, "
-     "giving `[InUse, 0]` in bytes."),
+     "`[Total, SinceLast]` in milliseconds; inferences, giving a count; memory, "
+     "giving `[InUse, 0]` in bytes; or garbage_collection, giving "
+     "`[Collections, BytesFreed, Milliseconds]` since the start."),
     ('set_prolog_flag(+Flag, +Value)', "Sets `double_quotes` or `unknown`."),
     ('current_prolog_flag(?Flag, ?Value)', "Reads a flag; enumerates when unbound."),
     ('garbage_collect', "Accepted; collection is automatic, so this does nothing."),
