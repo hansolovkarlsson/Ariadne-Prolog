@@ -644,6 +644,21 @@ see the freeing happen rather than infer it. Four of the six tests pass on the
 old binary as well. That is what they are for: they guard that freeing a clause
 never changes what `retract/1` means.
 
+### The records move into docs/
+
+Last, the tree was reorganised on request. Day three had kept the four records
+at the root because `docs/` held the generated site, and a record written
+there would have sat one `make doc` from a generator. The answer now is to
+separate the two by name instead: the Markdown records live in `docs/`, the
+generated HTML in `web/`, and `README.md`, `CLAUDE.md` and `LICENSE` stay at
+the root, where GitHub and Claude Code look for them. The moves are `git mv`,
+so each file's history follows it.
+
+The one cost was outside the tree. GitHub Pages serves a branch only from its
+root or from `docs/`, so publishing `web/` takes a workflow,
+`.github/workflows/pages.yml`, which uploads `web/` and deploys it, and the
+Pages source has to be switched from the branch to that workflow.
+
 ### What the day was like
 
 Every defect of the day in the interpreter passed the suite, because every

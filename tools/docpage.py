@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Shared page furniture for the generated documentation.
 
-    Every page under docs/ is built from this module: it owns the escaping
+    Every page under web/ is built from this module: it owns the escaping
     helpers, the block builders, the design tokens and the page shell, so the
     overview, the three tutorial levels, the reference and the internals
     document all stay a matched set.
@@ -748,6 +748,6 @@ def render(title, prompt, subtitle, outfile, sub_under=None, levels=None,
 
     page = page.replace('<!--FAVICON-->', FAVICON)
 
-    with io.open('docs/' + outfile, 'w', encoding='utf-8') as f:
+    with io.open('web/' + outfile, 'w', encoding='utf-8') as f:
         f.write(page)
-    print('wrote docs/' + outfile)
+    print('wrote web/' + outfile)

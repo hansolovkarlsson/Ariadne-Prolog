@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Generates docs/postmortem.html from POSTMORTEM.md.
+"""Generates web/postmortem.html from docs/POSTMORTEM.md.
 
     Run from the top of the source tree:  make doc
 
@@ -11,7 +11,7 @@ from mdpage import build
 
 REPO = 'https://github.com/hansolovkarlsson/ariadne-prolog/blob/main/'
 
-build(mdfile='POSTMORTEM.md',
+build(mdfile='docs/POSTMORTEM.md',
       outfile='postmortem.html',
       title='Postmortem',
       prompt='?- postmortem',
@@ -20,14 +20,14 @@ build(mdfile='POSTMORTEM.md',
                "found three of sixteen; writing the documentation found five.",
       rewrite={
           'JOURNAL.md':   os.environ.get('DOC_URL_JOURNAL') or 'journal.html',
-          'CHANGELOG.md': REPO + 'CHANGELOG.md',
-          'ROADMAP.md':   REPO + 'ROADMAP.md',
+          'CHANGELOG.md': REPO + 'docs/CHANGELOG.md',
+          'ROADMAP.md':   REPO + 'docs/ROADMAP.md',
           'README.md':    REPO + 'README.md',
       },
       retitle={
           'JOURNAL.md':   'The journal',
           'CHANGELOG.md': 'the changelog',
       },
-      footer="Rendered from `POSTMORTEM.md` at the top of the source tree, which is "
+      footer="Rendered from `docs/POSTMORTEM.md` in the source tree, which is "
              "the source of truth; `make doc` rebuilds this page and CI "
              "fails if the two no longer match.")

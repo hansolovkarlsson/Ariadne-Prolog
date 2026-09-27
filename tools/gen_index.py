@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Generates docs/index.html, the front page of the project site.
+"""Generates web/index.html, the front page of the project site.
 
     Run from the top of the source tree:  make doc
 
     The HTML is generated, so edit the content here rather than in
-    docs/index.html, which is overwritten. Everything quoted on the page --
+    web/index.html, which is overwritten. Everything quoted on the page --
     the transcript, the figures, the measurements -- comes from the running
     interpreter.
 """
@@ -308,7 +308,7 @@ make<br>./prolog<br>make check<span style="color: var(--muted)">      # 325 test
 <footer class="site-footer">
   <span>MIT licensed</span>
   <a href="%s">Source on GitHub</a>
-  <a href="%s/blob/main/ROADMAP.md">Roadmap</a>
+  <a href="%s/blob/main/docs/ROADMAP.md">Roadmap</a>
   <span>Documentation generated from the interpreter's own tables.</span>
 </footer>
 """ % (CSS, EXTRA_CSS,
@@ -318,6 +318,6 @@ make<br>./prolog<br>make check<span style="color: var(--muted)">      # 325 test
        os.environ.get('DOC_URL_INTERNALS') or 'internals.html',
        transcript(), highlights, cards, examples, REPO, REPO)
 
-with io.open('docs/index.html', 'w', encoding='utf-8') as f:
+with io.open('web/index.html', 'w', encoding='utf-8') as f:
     f.write(render().replace('<!--FAVICON-->', FAVICON))
-print('wrote docs/index.html')
+print('wrote web/index.html')

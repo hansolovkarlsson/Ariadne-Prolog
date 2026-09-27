@@ -23,8 +23,9 @@ collector and library. No dependencies beyond libc and libm.
 
 ## The records
 
-**They are at the repository root, not in `docs/`:** `JOURNAL.md`,
-`POSTMORTEM.md`, `ROADMAP.md`, `CHANGELOG.md`.
+**They are in `docs/`:** `docs/JOURNAL.md`, `docs/POSTMORTEM.md`,
+`docs/ROADMAP.md`, `docs/CHANGELOG.md`. `README.md`, `CLAUDE.md` and `LICENSE`
+stay at the root, where GitHub and Claude Code look for them.
 
 `JOURNAL.md` is why, in the order it happened; `POSTMORTEM.md` is what a defect
 taught and, more to the point, what found it; `ROADMAP.md` is what is left;
@@ -36,6 +37,7 @@ Each of those opens with a note stating its own job. That note is the
 specification for what belongs in the document — follow it over any general
 instruction, including this one.
 
-`docs/` holds **generated HTML only** — `make doc` builds it from the Markdown
-above via `tools/gen_*.py`. Never hand-edit a file in `docs/`; edit the
-Markdown at the root and regenerate.
+`web/` holds **generated HTML only**: `make doc` builds it via `tools/gen_*.py`,
+the journal and postmortem pages from their Markdown in `docs/`, and
+`.github/workflows/pages.yml` publishes it. Never hand-edit a file in `web/`;
+edit the Markdown in `docs/`, or the generator, and regenerate.

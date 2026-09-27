@@ -27,6 +27,11 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Changed
 
+- **The records are in `docs/` and the site in `web/`.** `JOURNAL.md`,
+  `POSTMORTEM.md`, `ROADMAP.md` and `CHANGELOG.md` moved from the root into
+  `docs/`, and the generated pages from `docs/` into `web/`, which a new
+  workflow publishes to GitHub Pages. The site's addresses are unchanged.
+
 - **The interpreter is Ariadne Prolog.** It was called C Prolog, which is the
   name of Fernando Pereira's interpreter from Edinburgh in the early 1980s, an
   ancestor of Quintus and SWI-Prolog. The banner, `--version`, the pages and

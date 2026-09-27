@@ -41,7 +41,7 @@ document describing how the interpreter is built and where the design costs
 something. The [journal](https://hansolovkarlsson.github.io/ariadne-prolog/journal.html)
 and the [postmortem](https://hansolovkarlsson.github.io/ariadne-prolog/postmortem.html)
 are published there too, rendered from the Markdown below. All of it is
-generated into `docs/` by `make doc`.
+generated into `web/` by `make doc`, and published from there.
 
 ## Building
 
@@ -58,7 +58,7 @@ make install    # install to $(PREFIX)/bin, default /usr/local
 
 Builds clean with `-Wall -Wextra` under both clang and gcc. Every push runs the
 suite on Linux and macOS, with both compilers, under the sanitizers, and checks
-that `docs/` still matches its generators.
+that `web/` still matches its generators.
 
 ## Using it
 
@@ -218,17 +218,18 @@ running constantly; `make test-asan` runs both under the sanitizers.
 
 ## Project documents
 
-- [ROADMAP.md](ROADMAP.md) — known work and deliberate non-goals.
-- [CHANGELOG.md](CHANGELOG.md) — what has shipped, newest first.
-- [JOURNAL.md](JOURNAL.md) — how the interpreter was built and why it is shaped
+- [ROADMAP.md](docs/ROADMAP.md): known work and deliberate non-goals.
+- [CHANGELOG.md](docs/CHANGELOG.md): what has shipped, newest first.
+- [JOURNAL.md](docs/JOURNAL.md): how the interpreter was built and why it is shaped
   this way. Also
   [on the site](https://hansolovkarlsson.github.io/ariadne-prolog/journal.html).
-- [POSTMORTEM.md](POSTMORTEM.md) — every defect the project has found in itself,
+- [POSTMORTEM.md](docs/POSTMORTEM.md): every defect the project has found in itself,
   and, more usefully, what found it. Also
   [on the site](https://hansolovkarlsson.github.io/ariadne-prolog/postmortem.html).
 
 The last two are the source for their published pages: `tools/mdpage.py` renders
-the Markdown, and CI fails if `docs/` no longer matches it.
+the Markdown, and CI fails if `web/` no longer matches it. The four live in
+`docs/`; the generated site lives in `web/`.
 
 ## Licence
 

@@ -85,38 +85,38 @@ examples: $(BIN)
 	./$(BIN) -q examples/family.pl -g "descendants(esther,D), format('~w~n',[D])"
 
 # The documentation is generated; tools/docpage.py holds the shared shell.
-doc: docs/index.html docs/tutorial-1.html docs/tutorial-2.html \
-     docs/tutorial-3.html docs/tutorial-4.html \
-     docs/reference.html docs/internals.html \
-     docs/journal.html docs/postmortem.html
+doc: web/index.html web/tutorial-1.html web/tutorial-2.html \
+     web/tutorial-3.html web/tutorial-4.html \
+     web/reference.html web/internals.html \
+     web/journal.html web/postmortem.html
 
-docs/index.html: tools/gen_index.py tools/docpage.py
+web/index.html: tools/gen_index.py tools/docpage.py
 	python3 tools/gen_index.py
 
-docs/tutorial-1.html: tools/gen_tutorial1.py tools/docpage.py tutorial/level1.pl
+web/tutorial-1.html: tools/gen_tutorial1.py tools/docpage.py tutorial/level1.pl
 	python3 tools/gen_tutorial1.py
 
-docs/tutorial-2.html: tools/gen_tutorial2.py tools/docpage.py tutorial/level2.pl
+web/tutorial-2.html: tools/gen_tutorial2.py tools/docpage.py tutorial/level2.pl
 	python3 tools/gen_tutorial2.py
 
-docs/tutorial-3.html: tools/gen_tutorial3.py tools/docpage.py tutorial/level3.pl
+web/tutorial-3.html: tools/gen_tutorial3.py tools/docpage.py tutorial/level3.pl
 	python3 tools/gen_tutorial3.py
 
-docs/tutorial-4.html: tools/gen_tutorial4.py tools/docpage.py tutorial/level4.pl
+web/tutorial-4.html: tools/gen_tutorial4.py tools/docpage.py tutorial/level4.pl
 	python3 tools/gen_tutorial4.py
 
-docs/reference.html: tools/gen_reference.py tools/docpage.py
+web/reference.html: tools/gen_reference.py tools/docpage.py
 	python3 tools/gen_reference.py
 
-docs/internals.html: tools/gen_internals.py tools/docpage.py
+web/internals.html: tools/gen_internals.py tools/docpage.py
 	python3 tools/gen_internals.py
 
 # These two are rendered from the Markdown at the top of the tree, which stays
 # the source of truth; tools/mdpage.py is the renderer.
-docs/journal.html: tools/gen_journal.py tools/mdpage.py tools/docpage.py JOURNAL.md
+web/journal.html: tools/gen_journal.py tools/mdpage.py tools/docpage.py docs/JOURNAL.md
 	python3 tools/gen_journal.py
 
-docs/postmortem.html: tools/gen_postmortem.py tools/mdpage.py tools/docpage.py POSTMORTEM.md
+web/postmortem.html: tools/gen_postmortem.py tools/mdpage.py tools/docpage.py docs/POSTMORTEM.md
 	python3 tools/gen_postmortem.py
 
 install: $(BIN)

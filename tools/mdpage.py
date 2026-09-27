@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Renders one of the project's Markdown documents as a site page.
 
-    The Markdown file is the source of truth: JOURNAL.md and POSTMORTEM.md are
-    read in a checkout, and this module turns them into pages built from the
-    same shell as the reference and the tutorials, so the two cannot drift.
-    CI regenerates docs/ and fails on any difference, which is what enforces it.
+    The Markdown file is the source of truth: docs/JOURNAL.md and
+    docs/POSTMORTEM.md are read in a checkout, and this module turns them
+    into pages built from the same shell as the reference and the tutorials,
+    so the two cannot drift.
+    CI regenerates web/ and fails on any difference, which is what enforces it.
 
     Only the subset those two documents use is supported -- headings,
     paragraphs, bullet and numbered lists, tables, fenced code -- and anything
@@ -158,7 +159,7 @@ def slug(s):
 
 def build(mdfile, outfile, title, prompt, subtitle, rewrite=None, retitle=None,
           footer=None):
-    """Reads mdfile and writes docs/outfile. rewrite maps a link target in the
+    """Reads mdfile and writes web/outfile. rewrite maps a link target in the
        Markdown to the one the published page should use; retitle does the same
        for the link text, since a file name reads oddly once it is a page."""
     with io.open(mdfile, encoding='utf-8') as f:

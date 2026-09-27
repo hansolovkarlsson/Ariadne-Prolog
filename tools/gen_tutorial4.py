@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Generates docs/tutorial-4.html, the fourth tutorial.
+"""Generates web/tutorial-4.html, the fourth tutorial.
 
     Run from the top of the source tree:  make doc
 

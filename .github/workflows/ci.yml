@@ -60,10 +60,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # docs/ is generated from tools/. Regenerating must not change anything,
+      # web/ is generated from tools/ and docs/. Regenerating must not change anything,
       # or the published pages have drifted from their generators.
       - name: Regenerate and compare
         run: |
           make doc
-          git diff --exit-code -- docs/ \
-            || { echo "::error::docs/ is out of date -- run 'make doc' and commit the result"; exit 1; }
+          git diff --exit-code -- web/ \
+            || { echo "::error::web/ is out of date -- run 'make doc' and commit the result"; exit 1; }
