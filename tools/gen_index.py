@@ -189,7 +189,7 @@ HIGHLIGHTS = [
      "inside every test, and under the address and undefined behaviour "
      "sanitizers, and terms nested a million deep go through every walk. It "
      "builds warning-free under both clang and gcc.",
-     "312 tests · make check · make test-asan"),
+     "319 tests · make check · make test-asan"),
 ]
 
 EXAMPLES = [
@@ -286,7 +286,7 @@ def render():
   <div class="cards" style="grid-template-columns: minmax(0,1fr);">
     <div class="card">
       <p style="font-family: var(--mono); font-size: 0.82rem; color: var(--ink); line-height: 1.8;">
-make<br>./prolog<br>make check<span style="color: var(--muted)">      # 312 tests, twice</span><br>make examples</p>
+make<br>./prolog<br>make check<span style="color: var(--muted)">      # 319 tests, twice</span><br>make examples</p>
     </div>
   </div>
   <p style="margin-top: 1rem; color: var(--muted); font-size: 0.92rem; max-width: 68ch;">

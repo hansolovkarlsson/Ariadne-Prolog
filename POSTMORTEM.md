@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Thirty-four defects, in five cohorts that failed for five different reasons:
+Thirty-five defects, in five cohorts that failed for five different reasons:
 
 - **Design era** — five bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Fixed before the first
@@ -19,11 +19,11 @@ Thirty-four defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: thirteen defects in which two parts of the project did not
-  agree with each other: the code, the documentation, the flag reporting the
-  behaviour, two predicates that should have matched. Eight found while writing
-  the tutorials, two while adding the character predicates, three on
-  2026-09-27.
+- **Consistency**: fourteen defects in which two parts of the project did not
+  agree with each other: the code, the documentation, the standard, the flag
+  reporting the behaviour, two predicates that should have matched. Eight found
+  while writing the tutorials, two while adding the character predicates, four
+  on 2026-09-27.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
@@ -112,7 +112,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Thirteen defects in which two parts of the project disagreed. The first eight were
+Fourteen defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -253,6 +253,21 @@ All found on 2026-09-27, each while working on the other half of its pair:
 mechanisms that do the same job will drift apart, and the one to check is the
 one nobody is editing.
 
+### A cut that reached through a variable
+
+ISO converts a clause body when the clause is made: a variable where a goal
+stands becomes `call(V)`, so that a cut the variable is later bound to is local
+to it. `clause_make` did no conversion. A body variable ran as whatever it was
+bound to, so `p :- G = !, G, fail.` cut `p`'s other clauses and failed, where
+ISO has it succeed through the next one, and `clause/2` returned the body as a
+bare variable rather than `call(G)`. The reference described cut as opaque to
+`call/1` and said nothing about variables, and nothing tested one.
+
+Found on 2026-09-27 by reading `clause_make` while designing error contexts,
+which needed to know whether a goal a library predicate was handed arrived
+through a meta-call. Bodies are converted now, iteratively, and the cut is
+local. (`a1336d2`)
+
 ## Cohort D — the suite about itself
 
 Three defects, and they get a cohort of their own because they failed for a
@@ -369,7 +384,7 @@ is the one aimed at the neighbour of the last.
 
 | Found by | Count |
 | --- | --- |
-| Reading the code | 9 |
+| Reading the code | 10 |
 | Writing the documentation, then testing the claim | 6 |
 | Probing past what the suite tries, at a million elements or levels | 4 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
@@ -384,7 +399,7 @@ is the one aimed at the neighbour of the last.
 
 Three things stand out.
 
-**The test suite found three of thirty-four.** It is a good suite, 312 tests
+**The test suite found three of thirty-five.** It is a good suite, 319 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
@@ -402,7 +417,7 @@ productive single activity in the project was writing a tutorial for a
 beginner, because a beginner's questions have no respect for which parts were
 carefully implemented.
 
-**Reading the code now leads, and it is not one activity.** Seven of its nine
+**Reading the code now leads, and it is not one activity.** Eight of its ten
 were found on one day, each while working on something beside it: the parser
 while fixing its error path, `=@=` while fixing its crash, the toplevel while
 working on streams. Reading the path that will be touched, before touching it,
@@ -436,11 +451,10 @@ expensive ones:
 - **Nothing systematically checks the reference against the interpreter.** Every
   signature in it was verified by hand once. A predicate whose behaviour changes
   will not update its own entry.
-- **The error-context argument is unbound** except where the reader gives
-  `file(Name, Line)`, so nearly every `error/2` term the interpreter raises is
-  missing the information that would say where it came from. That is on the
-  roadmap, and until it is done, debugging anything non-trivial is harder than
-  it should be.
+- **An error's context names a predicate, not a place.** It says which
+  predicate the program called, not which clause of the program called it,
+  and an unknown procedure or a program's own throw still has none. There is
+  no backtrace.
 - **More costs grow with the square than the ones found.** Nothing measures
   cost at size, so each was found by accident, the last of them, the reader's
   scan for a clause's variables, while writing this list.

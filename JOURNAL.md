@@ -440,7 +440,7 @@ or at least ask the interpreter.
 Two days after day five, and the busiest day the interpreter has had since the
 first. It began with the standup's list and a runner pin, and ended with every
 walk in the engine rewritten, a test leg that had never done its job doing it,
-and fifteen defects in the postmortem.
+and sixteen defects in the postmortem.
 
 ### Two small things first
 
@@ -598,6 +598,31 @@ would be friendlier and would give a different answer from the system people
 learn it on. The one care the copying needs is that a `Free/` around a `\X^`
 copies once and not twice, or the free variables would be copied away too.
 
+### Where an error came from
+
+The error-context item went in after the lambdas (`a1336d2`). The obvious
+mechanism, record the builtin running and name it when it raises, was wrong in
+two directions at once. The library calls internal `$` builtins, so an error
+from `atomic_list_concat` would have named `'$join'/3`; and `sub_atom/5` calls
+the public `atom_length/2`, so its errors would have named a predicate the
+program never called. The machine now carries an owner on every goal frame and
+choice point. A public library predicate owns its body, a `$` helper passes on
+its caller's owner, and the program's own predicates own nothing; a builtin
+called by owned code names the owner, one called by the program names itself.
+
+The first version of the rule let a library predicate's body inherit its
+caller's owner, and that was wrong too: the goal a program hands to `maplist`
+would have blamed `maplist`. A goal a library predicate is given belongs to the
+program, so `call/N`, `\+`, `catch/3` and the nested runs push theirs unowned.
+Checking that every such goal does arrive through a meta-call turned up the
+day's last defect: a variable in a clause body was not converted to
+`call/1`, as ISO has it, so a cut bound to one cut the whole clause.
+
+The tests nearly proved nothing. The first versions caught
+`error(_, context(atom_length/2, _))`, and against the old binary they passed,
+because its unbound context unified with the pattern. A test that a value has
+a shape has to check first that the value exists.
+
 ### What the day was like
 
 Every defect of the day in the interpreter passed the suite, because every
@@ -632,7 +657,7 @@ Every one of these was added in response to something it would have caught.
 ## Where it stands
 
 About 7,500 lines of hand-written C, 599 lines of library written in Prolog,
-a 312-test suite with a second leg that collects and a deep-term run beside
+a 319-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, and a reference and internals
 document generated from the interpreter's own tables.
 

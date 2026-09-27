@@ -10,6 +10,15 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Errors say which predicate raised them.** The second argument of
+  `error/2` is `context(Name/Arity, _)` for the predicate the program called:
+  the builtin itself, or the library predicate whose helper raised it, so
+  `atomic_list_concat([a, f(x)], A)` names `atomic_list_concat/3`. A goal
+  passed to `maplist/2` or `findall/3` is the program's own, and names what it
+  called. The toplevel prints it: `ERROR: is/2: Arguments are not
+  sufficiently instantiated`. It stays unbound for an unknown procedure and
+  for what a program throws itself. (`a1336d2`)
+
 - **Lambdas, as SWI-Prolog's `library(yall)` has them.** `Params>>Body`,
   `Free/Lambda` and `\X^Body`, so `maplist([X,Y]>>(Y is X*2), [1,2,3], L)`
   works without a named helper. As in yall, the lambda is copied before each
@@ -78,6 +87,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   `ubuntu-24.04 / clang` and `ubuntu-24.04 / gcc`. (`c11e760`)
 
 ### Fixed
+
+- **A variable where a goal stands is `call/1` of it,** as ISO has it. A cut
+  bound to one cut the whole clause: `p :- G = !, G, fail.` never reached
+  `p`'s next clause. It is local now, and `clause/2` shows such a body as
+  `call(G)`. (`a1336d2`)
 
 - **The reader raises `representation_error(max_arity)`.** A compound of more
   than 256 arguments was a syntax error from the reader, while `=../2` and
@@ -157,7 +171,7 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Tests
 
-- 277 → 312. Seven for `open/4` and the end of stream, one changed; twelve for
+- 277 → 319. Seven for `open/4` and the end of stream, one changed; twelve for
   the fixes above. Nine were seen failing against the code before their fix;
   `tm_reader_list_tail` and `tm_variant_pairs` pass on both, and guard the
   code that was rewritten. `at_join_many` was not run against the old join,
@@ -165,8 +179,9 @@ There are no releases yet, so entries are grouped by the day they landed on
   Three for the split: `at_split_undoes_join` fails on the old code, and
   `at_split` and `at_split_many` pass on it, slowly in the second case. One
   for the reader's variables, `tm_reader_many_vars`, which passes on the old
-  code in 0.43 seconds against 0.06. One for the dialect flag, and eleven for
-  lambdas.
+  code in 0.43 seconds against 0.06. One for the dialect flag, eleven for
+  lambdas, and seven for error context and the variable goal, six of which
+  fail on the old code.
 - `tests/deep.pl`, 22 checks outside the suite. Against the code before
   `d1e3088` it dies with SIGSEGV.
 - The suite's second leg, `make test-gc`, turns out never to have collected

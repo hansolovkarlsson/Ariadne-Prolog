@@ -18,11 +18,6 @@ produced some of the entries below.
   predicate is abolished, because a choice point may still point at it. A
   reference count or a generation stamp would let the common case be freed.
 
-- **Error context.** The second argument of `error/2` is an unbound variable,
-  except where the reader gives `file(Name, Line)`. Filling in the predicate
-  indicator where the error was raised would make messages considerably more
-  useful.
-
 ## Structural
 
 These change the shape of the system rather than adding to it.
