@@ -12,13 +12,17 @@ produced some of the entries below.
 
 ## Near term
 
-- **The reader's arity limit raises the wrong thing.** `=../2` and `functor/3`
-  raise `representation_error(max_arity)` past 256 arguments, but the reader
-  reports it as a syntax error. ISO asks for the representation error. The fix
-  means giving the parser a way to raise a non-syntax exception, which its error
-  path does not currently have.
-
 ## Medium term
+
+- **Terms nested deep in an argument other than the last crash.** Every walk
+  over a term recurses on all its arguments but the last and loops on the
+  last, so a list of any length is safe, but a term nested in its first
+  argument is not: the `1+1+...+1` that a `yfx` operator builds. At 10,000
+  levels it works; at 100,000 the interpreter dies with SIGSEGV in
+  `gc_copy`, the collector, before any builtin touches the term. `unify`,
+  `copy_rec`, `compare_terms`, the writer and the walks in `builtins.c` have
+  the same shape. The fix is an explicit stack in each, the collector first.
+  Found on 2026-09-27 while fixing the list case.
 
 - **Reclaiming retracted clauses.** A retracted clause is held until its
   predicate is abolished, because a choice point may still point at it. A

@@ -35,6 +35,56 @@ There are no releases yet, so entries are grouped by the day they landed on
   workflow rather than as a failing run. The Linux jobs are now named
   `ubuntu-24.04 / clang` and `ubuntu-24.04 / gcc`. (`c11e760`)
 
+### Fixed
+
+- **The reader raises `representation_error(max_arity)`.** A compound of more
+  than 256 arguments was a syntax error from the reader, while `=../2` and
+  `functor/3` raised the representation error ISO asks for. The parser now has
+  a second way out; the error's context is `file(Name, Line)`, and the error
+  printer shows it, so `consult` still says where. (`e8a75ca`)
+
+- **A list literal may be any length.** The same "too many arguments" stopped
+  any list of more than 4096 elements, from a fixed array in the reader that
+  nothing documented. Lists are now built a cell at a time. (`e8a75ca`)
+
+- **`term_variables/2` finds every variable.** It stopped at 4096 without
+  saying so, and `bagof/3` and `setof/3`, which use it, inherited the cut-off;
+  `read_term`'s `variables(L)` stopped at 1024. A list of a million variables
+  crashed the interpreter. (`d156849`)
+
+- **`ground/1`, `numbervars/3`, `unify_with_occurs_check/2` and `=@=` survive
+  long lists.** Each recursed down list tails and died with SIGSEGV on a list
+  of a million elements. They now loop on the last argument, as `unify`
+  already did. (`4006577`)
+
+- **`=@=` tells apart more than 1024 variables.** Past that it answered false,
+  so a term of 2000 variables was not a variant of its own copy. (`4006577`)
+
+- **Copying is linear in the number of variables.** The variable map under
+  `copy_term`, `findall`, `assert` and every thrown ball scanned every
+  variable before the one it looked up: a million variables took about five
+  minutes to copy, and now take a tenth of a second. (`4006577`)
+
+- **`read/2` and `read_term/3` refuse an output stream,** with
+  `permission_error(input, stream, S)` as the character predicates do. They
+  answered `end_of_file`. (`63dccdb`)
+
+- **The prompt and `read/1` share one reader.** The prompt read standard input
+  through a reader of its own, so a character pushed back by `peek_char` was
+  missing from the next query and turned up in a later `get_char`.
+  (`a16c715`)
+
+- **A comment straight after a full stop is kept.** The reader consumed the
+  `%` of `a.% note` as the full stop's layout, and read the comment's text as
+  the next clause: a consulted file lost the clause after it. (`fcb9128`)
+
+### Tests
+
+- 277 → 295. Seven for `open/4` and the end of stream, one changed; eleven for
+  the fixes above. Nine were seen failing against the code before their fix;
+  `tm_reader_list_tail` and `tm_variant_pairs` pass on both, and guard the
+  code that was rewritten.
+
 ## 2026-09-25
 
 ### Added
