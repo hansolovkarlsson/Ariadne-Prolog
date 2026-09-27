@@ -12,12 +12,6 @@ produced some of the entries below.
 
 ## Near term
 
-- **Reading a clause is quadratic in its distinct variables.** The reader finds
-  a variable's earlier occurrence by scanning every variable of the clause so
-  far (`var_for` in `src/parser.c`): 10,000 read in 0.02 seconds, 20,000 in
-  0.07 and 40,000 in 0.26. A hash on the name, as `VarMap` has on the address,
-  would make it linear. Found at the 2026-09-27 closeout.
-
 ## Medium term
 
 - **Reclaiming retracted clauses.** A retracted clause is held until its

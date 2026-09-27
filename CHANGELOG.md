@@ -125,6 +125,12 @@ There are no releases yet, so entries are grouped by the day they landed on
   text now, as joining takes them, so `atomic_list_concat(L, 1, a1b)` gives
   `[a, b]`. (`8a5b8a3`)
 
+- **Reading a clause is linear in its distinct variables.** Each variable was
+  found by scanning every one before it in the clause: 40,000 took 0.26
+  seconds and each doubling quadrupled it. A hash on the name makes it 0.02,
+  and a million 0.40; bindings and singletons come back in the same order.
+  (`cabc0a0`)
+
 - **The front page and the internals page said what was no longer so.** The
   front page described the suite's second leg as the collector "forced every
   1024 inferences", which had never collected, and gave 6,600 lines of C and
@@ -134,13 +140,15 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Tests
 
-- 277 → 299. Seven for `open/4` and the end of stream, one changed; twelve for
+- 277 → 300. Seven for `open/4` and the end of stream, one changed; twelve for
   the fixes above. Nine were seen failing against the code before their fix;
   `tm_reader_list_tail` and `tm_variant_pairs` pass on both, and guard the
   code that was rewritten. `at_join_many` was not run against the old join,
   which took 0.7 seconds at a tenth of its size and grows with the square.
   Three for the split: `at_split_undoes_join` fails on the old code, and
-  `at_split` and `at_split_many` pass on it, slowly in the second case.
+  `at_split` and `at_split_many` pass on it, slowly in the second case. One
+  for the reader's variables, `tm_reader_many_vars`, which passes on the old
+  code in 0.43 seconds against 0.06.
 - `tests/deep.pl`, 22 checks outside the suite. Against the code before
   `d1e3088` it dies with SIGSEGV.
 - The suite's second leg, `make test-gc`, turns out never to have collected

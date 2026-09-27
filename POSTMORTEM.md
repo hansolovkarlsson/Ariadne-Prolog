@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Thirty-three defects, in five cohorts that failed for five different reasons:
+Thirty-four defects, in five cohorts that failed for five different reasons:
 
 - **Design era** — five bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Fixed before the first
@@ -28,9 +28,10 @@ Thirty-three defects, in five cohorts that failed for five different reasons:
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
   by asking what a check could reach.
-- **Scale**: nine defects that no test was large enough to meet, a fixed
+- **Scale**: ten defects that no test was large enough to meet, a fixed
   buffer, a recursion on the C stack or a cost that grew with the square, all
-  found on 2026-09-27 by probing a neighbour of the defect before.
+  found on 2026-09-27, nine of them by probing a neighbour of the defect
+  before.
 
 ## Cohort A — the design era
 
@@ -331,8 +332,8 @@ the only evidence that it can.
 
 ## Cohort E: scale
 
-Nine defects that no test was large enough to meet, all found on 2026-09-27.
-They came one from another: each fix was followed by probing the same shape a
+Ten defects that no test was large enough to meet, all found on 2026-09-27.
+The first nine came one from another: each fix was followed by probing the same shape a
 step further, at a million elements or a million levels, and the probe found
 the next.
 
@@ -347,6 +348,7 @@ the next.
 | A comment written straight after a full stop, `a.% note`, swallowed the next clause of a consulted file | The full stop consumed the character after it as layout, and when that was `%` the comment lost its opening mark | Probing the prompt's reader with a `%` case (`fcb9128`) |
 | `atomic_list_concat` of a million parts ran the machine out of memory and was killed | Joining in Prolog made a new atom at every step, and atoms are never freed | Writing the deep-nesting tests, which built their text that way (`678e501`) |
 | Splitting 20,000 parts took five seconds | Splitting interned every remainder on the way | Reading it beside the join (`8a5b8a3`) |
+| Reading a clause of 40,000 distinct variables took 0.26 seconds, quadrupling with each doubling | The reader found each variable by scanning every one before it in the clause | Reading the parser at the day's closeout, then timing it (`cabc0a0`) |
 
 Every one of these passed the suite, because every test in the suite is small.
 The deep-nesting fix touched the collector, unification, comparison, copying,
@@ -367,7 +369,7 @@ is the one aimed at the neighbour of the last.
 
 | Found by | Count |
 | --- | --- |
-| Reading the code | 8 |
+| Reading the code | 9 |
 | Writing the documentation, then testing the claim | 6 |
 | Probing past what the suite tries, at a million elements or levels | 4 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
@@ -382,7 +384,7 @@ is the one aimed at the neighbour of the last.
 
 Three things stand out.
 
-**The test suite found three of thirty-three.** It is a good suite, 299 tests
+**The test suite found three of thirty-four.** It is a good suite, 300 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
@@ -400,7 +402,7 @@ productive single activity in the project was writing a tutorial for a
 beginner, because a beginner's questions have no respect for which parts were
 carefully implemented.
 
-**Reading the code now leads, and it is not one activity.** Six of its eight
+**Reading the code now leads, and it is not one activity.** Seven of its nine
 were found on one day, each while working on something beside it: the parser
 while fixing its error path, `=@=` while fixing its crash, the toplevel while
 working on streams. Reading the path that will be touched, before touching it,
@@ -439,11 +441,9 @@ expensive ones:
   missing the information that would say where it came from. That is on the
   roadmap, and until it is done, debugging anything non-trivial is harder than
   it should be.
-- **More costs grow with the square than the nine found.** Nothing measures
-  cost at size, so each was found by accident. One more is measured and on the
-  roadmap: the reader finds a variable's earlier occurrence by scanning every
-  variable of the clause so far, so 40,000 distinct variables take 0.26
-  seconds and each doubling quadruples it.
+- **More costs grow with the square than the ones found.** Nothing measures
+  cost at size, so each was found by accident, the last of them, the reader's
+  scan for a clause's variables, while writing this list.
 - **The collector is exercised, not proven.** The second leg now collects
   inside every test, and one planted defect was caught; one is not many. A
   collector is only tested against the kinds of wrong it was tried with.

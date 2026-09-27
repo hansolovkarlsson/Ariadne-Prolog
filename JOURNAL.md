@@ -440,7 +440,7 @@ or at least ask the interpreter.
 Two days after day five, and the busiest day the interpreter has had since the
 first. It began with the standup's list and a runner pin, and ended with every
 walk in the engine rewritten, a test leg that had never done its job doing it,
-and fourteen defects in the postmortem.
+and fifteen defects in the postmortem.
 
 ### Two small things first
 
@@ -577,6 +577,13 @@ were in the checks, a leg that could not collect and a build that could not
 fail, and both were found by asking what a check could reach rather than
 whether it was green.
 
+The closeout found the fifteenth. Writing the postmortem's list of what is
+probably still wrong meant naming a cost likely to grow with the square, and
+the reader's lookup of a clause's variables was one visible from the code.
+Timed, 40,000 variables took 0.26 seconds and each doubling quadrupled it, so
+it went on the roadmap as measured work and was fixed after the closeout with
+a hash on the name (`cabc0a0`).
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -595,7 +602,7 @@ Every one of these was added in response to something it would have caught.
 ## Where it stands
 
 About 7,500 lines of hand-written C, 599 lines of library written in Prolog,
-a 299-test suite with a second leg that collects and a deep-term run beside
+a 300-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, and a reference and internals
 document generated from the interpreter's own tables.
 
