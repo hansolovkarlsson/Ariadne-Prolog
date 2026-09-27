@@ -18,10 +18,6 @@ produced some of the entries below.
   predicate is abolished, because a choice point may still point at it. A
   reference count or a generation stamp would let the common case be freed.
 
-- **Lambdas.** There is no `yall`, so `maplist([X]>>Goal, L)` does not work and
-  every partial application needs a named helper. A small `>>` implementation
-  would remove a papercut that shows up constantly in list code.
-
 - **Error context.** The second argument of `error/2` is an unbound variable,
   except where the reader gives `file(Name, Line)`. Filling in the predicate
   indicator where the error was raised would make messages considerably more

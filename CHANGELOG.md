@@ -8,6 +8,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ## 2026-09-27
 
+### Added
+
+- **Lambdas, as SWI-Prolog's `library(yall)` has them.** `Params>>Body`,
+  `Free/Lambda` and `\X^Body`, so `maplist([X,Y]>>(Y is X*2), [1,2,3], L)`
+  works without a named helper. As in yall, the lambda is copied before each
+  call, so its variables are local unless declared free with `Free/`. Eleven
+  tests. (`99ebdce`)
+
 ### Changed
 
 - **The interpreter is Ariadne Prolog.** It was called C Prolog, which is the
@@ -149,7 +157,7 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Tests
 
-- 277 → 301. Seven for `open/4` and the end of stream, one changed; twelve for
+- 277 → 312. Seven for `open/4` and the end of stream, one changed; twelve for
   the fixes above. Nine were seen failing against the code before their fix;
   `tm_reader_list_tail` and `tm_variant_pairs` pass on both, and guard the
   code that was rewritten. `at_join_many` was not run against the old join,
@@ -157,7 +165,8 @@ There are no releases yet, so entries are grouped by the day they landed on
   Three for the split: `at_split_undoes_join` fails on the old code, and
   `at_split` and `at_split_many` pass on it, slowly in the second case. One
   for the reader's variables, `tm_reader_many_vars`, which passes on the old
-  code in 0.43 seconds against 0.06. One for the dialect flag.
+  code in 0.43 seconds against 0.06. One for the dialect flag, and eleven for
+  lambdas.
 - `tests/deep.pl`, 22 checks outside the suite. Against the code before
   `d1e3088` it dies with SIGSEGV.
 - The suite's second leg, `make test-gc`, turns out never to have collected

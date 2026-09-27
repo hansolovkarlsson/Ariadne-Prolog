@@ -585,6 +585,19 @@ backing up to the last choice when one fails. That is Prolog's search, and the
 trail is the thread. The binary is still `prolog`, and the dialect flag
 answers `ariadne`.
 
+### Lambdas, with yall's gotcha kept
+
+The last item of the day was the roadmap's lambdas, written in the library
+as SWI-Prolog's `library(yall)` has them (`99ebdce`). The one decision was
+whether to keep yall's best-known surprise: the lambda is copied before each
+call, so a variable it mentions is local to that call unless declared free,
+and after `maplist([X]>>(Y = X), [1,2])` `Y` is still unbound. It was kept.
+Code written for SWI's yall runs here with the same meaning, and the reference
+says so with that very example; a lambda that quietly shared its variables
+would be friendlier and would give a different answer from the system people
+learn it on. The one care the copying needs is that a `Free/` around a `\X^`
+copies once and not twice, or the free variables would be copied away too.
+
 ### What the day was like
 
 Every defect of the day in the interpreter passed the suite, because every
@@ -619,7 +632,7 @@ Every one of these was added in response to something it would have caught.
 ## Where it stands
 
 About 7,500 lines of hand-written C, 599 lines of library written in Prolog,
-a 301-test suite with a second leg that collects and a deep-term run beside
+a 312-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, and a reference and internals
 document generated from the interpreter's own tables.
 

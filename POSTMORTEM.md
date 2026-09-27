@@ -384,7 +384,7 @@ is the one aimed at the neighbour of the last.
 
 Three things stand out.
 
-**The test suite found three of thirty-four.** It is a good suite, 301 tests
+**The test suite found three of thirty-four.** It is a good suite, 312 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
