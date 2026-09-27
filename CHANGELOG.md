@@ -119,13 +119,21 @@ There are no releases yet, so entries are grouped by the day they landed on
   with the collector in every fourth inference, building the larger list took
   46 seconds.
 
+- **`atomic_list_concat` splits in one pass,** where it interned every
+  remainder and was quadratic: 20,000 parts took 5 seconds and now take 0.01.
+  A number or a code list as the separator never matched; both are taken as
+  text now, as joining takes them, so `atomic_list_concat(L, 1, a1b)` gives
+  `[a, b]`. (`8a5b8a3`)
+
 ### Tests
 
-- 277 → 296. Seven for `open/4` and the end of stream, one changed; twelve for
+- 277 → 299. Seven for `open/4` and the end of stream, one changed; twelve for
   the fixes above. Nine were seen failing against the code before their fix;
   `tm_reader_list_tail` and `tm_variant_pairs` pass on both, and guard the
   code that was rewritten. `at_join_many` was not run against the old join,
   which took 0.7 seconds at a tenth of its size and grows with the square.
+  Three for the split: `at_split_undoes_join` fails on the old code, and
+  `at_split` and `at_split_many` pass on it, slowly in the second case.
 - `tests/deep.pl`, 22 checks outside the suite. Against the code before
   `d1e3088` it dies with SIGSEGV.
 - The suite's second leg, `make test-gc`, turns out never to have collected

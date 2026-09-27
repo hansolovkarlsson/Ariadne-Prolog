@@ -12,10 +12,6 @@ produced some of the entries below.
 
 ## Near term
 
-- **Splitting an atom is quadratic.** `atomic_list_concat/3` in split mode
-  interns every remainder on the way, as joining did until 2026-09-27; a
-  builtin as for `'$join'` would make it linear.
-
 ## Medium term
 
 - **Reclaiming retracted clauses.** A retracted clause is held until its
