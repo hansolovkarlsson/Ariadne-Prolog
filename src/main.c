@@ -18,7 +18,8 @@ static void usage(const char *prog)
     printf("  -q, --quiet       do not print the banner\n");
     printf("  -v, --version     print the version and exit\n");
     printf("  -h, --help        print this message\n\n");
-    printf("With no -g option the interactive toplevel is entered.\n");
+    printf("With no -g option the interactive toplevel is entered. A -g goal\n");
+    printf("that fails or raises an error ends the run with status 1.\n");
 }
 
 /* ------------------------------------------------------------------ */
@@ -258,8 +259,12 @@ int main(int argc, char **argv)
         if (m_halt) return m_halt_code;
     }
 
-    for (i = 0; i < ngoals && !m_halt; i++)
-        if (run_goal_string(goals[i]) == PL_ERROR) { fflush(stdout); return 1; }
+    /* A goal that fails or raises ends the run with status 1, and the goals
+       after it do not run, so that a script or a makefile sees it. */
+    for (i = 0; i < ngoals && !m_halt; i++) {
+        rc = run_goal_string(goals[i]);
+        if (rc == PL_ERROR || rc == PL_FAIL) { fflush(stdout); return 1; }
+    }
     if (m_halt) { fflush(stdout); return m_halt_code; }
 
     if (ngoals == 0 || force_top) {

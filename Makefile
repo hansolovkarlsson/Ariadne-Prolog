@@ -25,26 +25,33 @@ $(OBJS): src/prolog.h
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# The regression suite.
+# The regression suite, and the command line's exit status: a -g goal that
+# fails or raises ends the run with 1, and the goals after it do not run.
 test: $(BIN)
 	./$(BIN) -q tests/test.pl -g run_tests
+	./$(BIN) -q -g true
+	! ./$(BIN) -q -g fail 2>/dev/null
+	! ./$(BIN) -q -g "atom_length(_, _)" 2>/dev/null
+	test -z "`./$(BIN) -q -g fail -g 'write(ran)' 2>/dev/null`"
 
 # Every test again, bare, with the collector running inside each one. The
 # collector only runs when no choice point is live, and run_tests holds
 # several around every test, so run_tests_bare runs each as Goal, ! with
-# nothing around it. It stops at the first failure, and the second goal names
-# it. GC_ENV lets the collector in at every fourth inference, whatever the
-# size of the heap.
+# nothing around it. It stops at the first failure; then the verbose run names
+# the test, as the last line before the failure. GC_ENV lets the collector in
+# at every fourth inference, whatever the size of the heap.
 GC_ENV = PROLOG_GC_THRESHOLD=1 PROLOG_GC_INTERVAL=4
+BARE = $(GC_ENV) ./$(BIN) -q tests/test.pl -g run_tests_bare || \
+	{ $(GC_ENV) ./$(BIN) -q tests/test.pl -g "run_tests_bare(verbose)" 2>&1 | tail -3; exit 1; }
 test-gc: $(BIN)
-	$(GC_ENV) ./$(BIN) -q tests/test.pl -g run_tests_bare -g run_tests_bare_failed
+	$(BARE)
 
 # Terms nested a million deep through every walk, the reader and the writer,
 # run at the top level so that the collector copies them; it fails unless a
 # collection happened. The collector's ordinary threshold is enough: forced,
 # it would copy million-deep terms thousands of times to no further purpose.
 test-deep: $(BIN)
-	./$(BIN) -q tests/deep.pl -g "run, halt" -g "halt(1)"
+	./$(BIN) -q tests/deep.pl -g "run, halt"
 
 # The suite under the address and undefined behaviour sanitizers.
 # -fno-sanitize-recover makes undefined behaviour abort rather than print and
@@ -54,8 +61,8 @@ test-asan:
 	$(MAKE) CFLAGS="-std=c99 -O1 -g -fsanitize=address,undefined \
 	                -fno-sanitize-recover=undefined -fno-omit-frame-pointer"
 	./$(BIN) -q tests/test.pl -g run_tests
-	$(GC_ENV) ./$(BIN) -q tests/test.pl -g run_tests_bare -g run_tests_bare_failed
-	./$(BIN) -q tests/deep.pl -g "run, halt" -g "halt(1)"
+	$(BARE)
+	./$(BIN) -q tests/deep.pl -g "run, halt"
 	$(MAKE) clean
 
 check: test test-gc test-deep

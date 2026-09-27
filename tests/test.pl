@@ -638,15 +638,10 @@ arity_check :-
     enough that every test is collected while it runs.
 
     Nothing around a test also means nothing to report a failure and carry
-    on: the first failure ends the run. The name of the test running is kept
-    with nb_setval/2, which a failure does not undo, so a second -g goal,
-    run_tests_bare_failed, can say which one it was:
-
-        ./prolog -q tests/test.pl -g run_tests_bare -g run_tests_bare_failed
-
-    An error ends the run before that second goal, with the error and not
-    the test's name. run_tests_bare(verbose) prints each name before it runs
-    the test, so the last name printed is the one that raised.
+    on: the first failure or error ends the run, and the -g goal with it,
+    with status 1. run_tests_bare(verbose) prints each name before it runs
+    the test, so the last name printed is the one that failed; make test-gc
+    runs that when the quiet run fails.
 */
 run_tests_bare :- run_tests_bare(quiet).
 
@@ -664,7 +659,6 @@ run_tests_bare(Mode) :-
 
 run_bare([], Total, Inside, Total, Inside).
 run_bare([Name-Goal|Tests], T0, I0, Total, Inside) :-
-    nb_setval(bare_test, Name),
     (   nb_getval(bare_mode, verbose) -> format(user_error, "~w~n", [Name]) ; true ),
     statistics(garbage_collection, [A|_]),
     Goal, !,
@@ -672,8 +666,3 @@ run_bare([Name-Goal|Tests], T0, I0, Total, Inside) :-
     T1 is T0 + 1,
     (   B > A -> I1 is I0 + 1 ; I1 = I0 ),
     run_bare(Tests, T1, I1, Total, Inside).
-
-run_tests_bare_failed :-
-    nb_getval(bare_test, Name),
-    format("FAIL  ~w, run bare with the collector running~n", [Name]),
-    halt(1).

@@ -47,7 +47,9 @@ prolog [options] [file ...]
   -v, --version     print the version and exit
   -h, --help        print the usage message
 """),
-    para("Several `-g` options may be given; they run in order. A file name may omit "
+    para("Several `-g` options may be given; they run in order. If one fails or "
+         "raises an error, the run ends there with status 1 and the goals after it "
+         "do not run, so a shell script or a makefile sees the failure. A file name may omit "
          "the `.pl` extension, and may be written in path notation, so "
          "`[examples/family]` and `consult('examples/family.pl')` load the same file."),
     '<h3>The toplevel</h3>',
@@ -94,7 +96,7 @@ main :-
         ['halt(N)', 'N'],
         ['A -g goal raised an uncaught exception', '1'],
         ['A file named on the command line could not be opened', '1'],
-        ['A -g goal failed', '0, with a warning on standard error'],
+        ['A -g goal failed', '1, with a warning on standard error'],
     ]),
 ]))
 
