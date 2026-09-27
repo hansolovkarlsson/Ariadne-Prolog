@@ -173,7 +173,7 @@ HIGHLIGHTS = [
      "No abstract machine and no clause compiler: goals live in an explicit list, "
      "alternatives on a choice point stack, and cut is one integer carried in each "
      "goal frame. The whole solver is one file.",
-     "6,600 lines of C99, no dependencies beyond libc"),
+     "7,500 lines of C99, no dependencies beyond libc"),
     ("Memory that behaves",
      "Backtracking rewinds the heap to a choice point's mark, a copying collector "
      "handles what backtracking cannot, and generators retry a single choice point "
@@ -185,10 +185,11 @@ HIGHLIGHTS = [
      "UTF-8 text throughout.",
      "162 builtin predicates"),
     ("Tested like a compiler",
-     "The suite runs three times: normally, with the collector forced every 1024 "
-     "inferences, and under the address and undefined behaviour sanitizers. It "
+     "The suite runs three times: normally, again with the collector let in "
+     "inside every test, and under the address and undefined behaviour "
+     "sanitizers, and terms nested a million deep go through every walk. It "
      "builds warning-free under both clang and gcc.",
-     "277 tests · make check · make test-asan"),
+     "299 tests · make check · make test-asan"),
 ]
 
 EXAMPLES = [
@@ -285,7 +286,7 @@ def render():
   <div class="cards" style="grid-template-columns: minmax(0,1fr);">
     <div class="card">
       <p style="font-family: var(--mono); font-size: 0.82rem; color: var(--ink); line-height: 1.8;">
-make<br>./prolog<br>make check<span style="color: var(--muted)">      # 277 tests, twice</span><br>make examples</p>
+make<br>./prolog<br>make check<span style="color: var(--muted)">      # 299 tests, twice</span><br>make examples</p>
     </div>
   </div>
   <p style="margin-top: 1rem; color: var(--muted); font-size: 0.92rem; max-width: 68ch;">

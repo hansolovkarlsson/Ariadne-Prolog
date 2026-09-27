@@ -206,7 +206,7 @@ These are deliberate, and each would be a substantial piece of work:
 
 ## Testing
 
-`tests/test.pl` holds 277 tests as `test(Name, Goal)` facts covering
+`tests/test.pl` holds 299 tests as `test(Name, Goal)` facts covering
 unification and the standard order, arithmetic and its errors, control and cut,
 exceptions, all-solutions predicates, term inspection, atoms and UTF-8 text,
 sorting, the list library, the database, the reader and writer (including

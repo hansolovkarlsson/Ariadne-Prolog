@@ -435,14 +435,156 @@ postmortem. It is the day-four lesson with the sign reversed: a missing
 predicate is a claim about everywhere, and the check has to look everywhere,
 or at least ask the interpreter.
 
+## Day six: a crash, then everything underneath it
+
+Two days after day five, and the busiest day the interpreter has had since the
+first. It began with the standup's list and a runner pin, and ended with every
+walk in the engine rewritten, a test leg that had never done its job doing it,
+and fourteen defects in the postmortem.
+
+### Two small things first
+
+`ubuntu-latest` moves to Ubuntu 26 on 2026-10-19, and every CI run had said so
+in an annotation. The Linux jobs are pinned to `ubuntu-24.04` now
+(`c11e760`), so a new compiler arrives as a change to the workflow and not as
+a red run.
+
+Then `open/4`, the cheapest item on the roadmap. Its options list had been
+accepted and ignored. The one real decision was the default `eof_action`, and
+it was taken as ISO has it: a read after `end_of_file` raises
+`permission_error(input, past_end_of_stream, S)`, where every stream had
+answered `end_of_file` forever. That needed streams to know ISO's three
+positions, not at the end, at it, and past it, and a `peek_char` at the end
+leaves a stream at it rather than past. `user_input` resets instead, so a
+terminal can be read again after `^D`. `type(binary)` and `reposition(true)`
+are refused, since there is no byte input and no seeking; ISO names the error
+only for the second, so the first was a choice, and the reference says what it
+does (`22b12d0`).
+
+### Fixes, each found by the one before
+
+The reader's arity error came next: past 256 arguments it raised a syntax
+error where ISO wants `representation_error(max_arity)`, and its parser had no
+other way out. It has one now (`e8a75ca`). Reading `parse_arglist` to make that
+change showed the same "too many arguments" guarding list literals, from a
+4096-slot array, so a list of 5000 elements could not be read at all. Nothing
+had ever said so.
+
+That was the first of a chain, and the chain is the day's real subject. A
+search of the tree for other 4096s found `term_variables/2`, which stopped
+filling its array at 4096 and returned the short answer as if it were the
+whole; `bagof/3` and `setof/3` use it. Testing the fix at a million variables
+crashed the interpreter, because the walk recursed down the list's tail, and
+the same probe then crashed `ground/1`, `numbervars/3`,
+`unify_with_occurs_check/2` and `=@=`. Reading `=@=` to fix it showed a
+1024-pair array that answered false when full, so a term of 2000 variables was
+not a variant of its own copy (`d156849`, `4006577`).
+
+The probe also ran slowly, and the first diagnosis was wrong. `=@=` had just
+had its map rewritten and was blamed; timing each half of the probe separately
+showed that `=@=` cost nothing and the copy made just before it cost minutes.
+The variable map under `copy_term`, `findall`, `assert` and every thrown ball
+found each variable by scanning all the ones before it. It has a hash index
+now, and a million variables copy in a tenth of a second.
+
+Three more came out of the stream work of the morning. `read/2` took an output
+stream where `get_char/2` refused one (`63dccdb`). The prompt read standard
+input through a reader of its own, beside the one day five made `read/1` and
+`get_char/1` share, so a character pushed back by `peek_char` was lost to the
+next query and turned up in a later `get_char` (`a16c715`). And probing that
+with a `%` straight after the full stop showed the full stop consuming the `%`
+as its layout: the comment's text was read as the next clause, and a consulted
+file lost the clause after `a.% note` (`fcb9128`).
+
+### The same crash, one argument over
+
+The loop-on-the-last-argument idiom that the list fixes used is what `unify`
+already did, and it protects lists. It does not protect a term nested in its
+first argument, the `1+1+...+1` that `yfx` operators build, and a probe at
+100,000 levels died before any builtin touched the term: the backtrace was in
+`gc_copy`, the collector. Every walk in the engine had the same shape. The
+roadmap took it as a medium-term item, and it was asked for straight
+after.
+
+So every walk now keeps its pending work on a stack of its own: the collector,
+unification, comparison, both copying routines, the builtins' walks, the
+writer, the evaluator and the parser (`d1e3088`). The term walks share a
+`WorkStack`; the writer keeps print tasks, the evaluator frames and values, the
+parser continuations. The parser was worse than the roadmap knew: it held a
+256-slot array on the C stack at every level of a compound, and gave out at
+5000 levels of brackets, arguments, lists or prefix operators, which is a
+Peano numeral written to a file and consulted.
+
+The first version cost 7 to 9 percent on queens and zebra, and a profile put
+the time in `heap_instantiate` and `unify`. Two changes took it back. Leaves are
+handled in place, and only the arguments after the first compound one wait on
+the stack, so a list of constants never touches it and the order of visiting
+is unchanged. And the small leaf helpers had to be forced inline, since clang
+declined the hint. After that queens and sort ran as before and zebra 7 percent
+faster. The writer, the evaluator and the reader were each checked against the
+binary before the change, not against the suite: 72 writer cases in four modes,
+40 arithmetic results and errors, and every clause of every Prolog file in the
+tree read to the same terms, messages and lines.
+
+Writing the test for it found one more. `tests/deep.pl` built its text with
+`atomic_list_concat`, which joined in Prolog, a new atom at every step, and
+atoms are never freed; the test was killed by the system after two minutes
+with no output at all. Joining is a builtin now (`678e501`), and splitting,
+which had the same shape, followed later in the day (`8a5b8a3`).
+
+### A test leg that never ran what it tested
+
+The crash was in the collector, so the test had to make the collector run, and
+the question of whether the suite could reach `gc_copy` had an uncomfortable
+answer. The collector runs only when no choice point is live, and `run_tests`
+holds several around every test. A counter printed at exit read 0 for a whole
+run with `PROLOG_GC_THRESHOLD=1`. `make test-gc`, the leg the Makefile said
+exercised the collector on every code path, had never collected once, and
+every "both legs" in these records was one leg run twice.
+
+Moving the loop alone would only have collected between tests, since
+`catch/3` and `->` each hold a choice point, so the new leg runs every test
+bare, as `Goal, !`, and stops at its first failure. That reached 13 tests of
+296. The rest was two more brakes: the collector was considered every 1024
+inferences, which most tests never reach, and after each collection the
+threshold reset to three times the live heap, whatever the environment said.
+With `PROLOG_GC_INTERVAL=4` and the threshold held, every test is collected
+while it runs, about half a million collections in eleven seconds. One test
+had to shrink: `at_join_many` built a 200,000-element list, and collected every
+fourth inference that took 46 seconds of the 48. The proof that the leg works
+is a planted defect. A collector that stopped forwarding variables passed the
+old leg with ALL TESTS PASSED, and fails the new one (`19f42ca`).
+
+### Two questions settled
+
+The bare leg needed a failure to reach `make`, and a failed `-g` goal exited 0,
+as the reference documented. That also meant `make examples` and `make
+tutorials`, which CI runs, could not fail on a goal that failed. Three options
+were set out, and the one taken was SWI's: a goal that fails ends the run with
+status 1, and the goals after it do not run (`67b3a74`). The bare leg names a
+failing test by running itself again verbose.
+
+The question day four left open, whether the changelog should record the
+journal and postmortem pages published on 2026-08-28, was answered yes, and
+the entry is under that date (`d0ed4cb`).
+
+### What the day was like
+
+Every defect of the day in the interpreter passed the suite, because every
+test in it is small, and most were found by the same move: fix one thing, then aim the probe at its
+neighbour. The two biggest findings were not in the interpreter at all. They
+were in the checks, a leg that could not collect and a build that could not
+fail, and both were found by asking what a check could reach rather than
+whether it was green.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
 
 | Check | What it is for |
 | --- | --- |
-| `make check` | The suite, twice: normally and with the collector forced every 1024 inferences. |
-| `make test-asan` | The suite again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
+| `make check` | The suite; then every test again bare, with the collector let in every fourth inference and collecting inside each one; then `tests/deep.pl`, terms nested a million deep through 21 walks. `make test` also checks that a failed `-g` goal exits 1. |
+| `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
 | `make doc` + `git diff --exit-code` | The published pages match their generators. |
@@ -452,9 +594,10 @@ Every one of these was added in response to something it would have caught.
 
 ## Where it stands
 
-About 6,700 lines of hand-written C, 616 lines of library written in Prolog,
-a 277-test suite, five examples, four tutorial levels, and a reference and
-internals document generated from the interpreter's own tables.
+About 7,500 lines of hand-written C, 599 lines of library written in Prolog,
+a 299-test suite with a second leg that collects and a deep-term run beside
+it, five examples, four tutorial levels, and a reference and internals
+document generated from the interpreter's own tables.
 
 What it is not: fast, modular, tabled, constrained, or capable of integers
 larger than 64 bits. Those are on the roadmap or under *Not planned*, and the

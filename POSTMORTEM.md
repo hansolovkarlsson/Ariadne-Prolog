@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Nineteen defects, in four cohorts that failed for four different reasons:
+Thirty-three defects, in five cohorts that failed for five different reasons:
 
 - **Design era** — five bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Fixed before the first
@@ -19,12 +19,18 @@ Nineteen defects, in four cohorts that failed for four different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency** — ten defects in which the code, the documentation and the
-  flag reporting the behaviour did not agree with each other. Eight found while
-  writing the tutorials, two while adding the character predicates.
-- **The suite about itself**: one defect in the test file, invisible to the
-  suite because the suite was the thing that was wrong. Found by an audit that
-  counted the file against the runner.
+- **Consistency**: thirteen defects in which two parts of the project did not
+  agree with each other: the code, the documentation, the flag reporting the
+  behaviour, two predicates that should have matched. Eight found while writing
+  the tutorials, two while adding the character predicates, three on
+  2026-09-27.
+- **The suite about itself**: three defects in the checks, each invisible to the
+  check because the check was the thing that was wrong. The first found by an
+  audit that counted the file against the runner; the other two on 2026-09-27,
+  by asking what a check could reach.
+- **Scale**: nine defects that no test was large enough to meet, a fixed
+  buffer, a recursion on the C stack or a cost that grew with the square, all
+  found on 2026-09-27 by probing a neighbour of the defect before.
 
 ## Cohort A — the design era
 
@@ -105,7 +111,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Ten defects in which two parts of the project disagreed. The first eight were
+Thirteen defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -218,11 +224,39 @@ it is somebody editing the row next to it. The same goes for a one-line
 description of a predicate: it was true of what the author meant, and nothing
 compared it with what the code did.
 
+### Three pairs that should have matched
+
+All found on 2026-09-27, each while working on the other half of its pair:
+
+- **The prompt read standard input through a reader of its own.** Day five made
+  `read/1` and `get_char/1` share `user_input`'s one reader and its pushback;
+  the toplevel in `src/main.c` still built a second one on the same `FILE`.
+  They agreed until one of them held a pushed-back character: after
+  `?- peek_char(C).` the peeked `x` sat in `user_input`'s pushback, the next
+  query was read without it, and a later `get_char` answered with the stale
+  character. Found by reading the toplevel while working on `open/4`, and
+  confirmed by piping input to the prompt. It reads through `user_input`'s
+  reader now. (`a16c715`)
+- **`read/2` and `read_term/3` took an output stream** and answered
+  `end_of_file`, having read from standard output's descriptor, where
+  `get_char/2` raised `permission_error(input, stream, S)`. Found by reading
+  `read_from_stream` while adding the end-of-stream check to it. (`63dccdb`)
+- **Splitting did not undo joining for a numeric separator.**
+  `atomic_list_concat([a, b], 1, A)` gives `a1b`, but splitting `a1b` on `1`
+  gave `[a1b]`, because the split looked for the separator with `sub_atom/5`,
+  which wants an atom; a code-list separator never matched either. Found by
+  diffing the old binary's answers against the new split's on 22 cases.
+  (`8a5b8a3`)
+
+*What this says:* the day-five lesson again, from the other side. Two
+mechanisms that do the same job will drift apart, and the one to check is the
+one nobody is editing.
+
 ## Cohort D — the suite about itself
 
-One defect, and it gets a cohort of its own because it failed for a reason none
-of the three above name: the check that would have found it was the check that
-had it.
+Three defects, and they get a cohort of their own because they failed for a
+reason none of the cohorts above name: the check that would have found them was
+the check that had them.
 
 ### Thirteen tests that never ran
 
@@ -254,33 +288,123 @@ stable since the first commit is not a count that has been verified; it is one
 nobody has had a reason to look at. And the day-three lesson has a mirror
 image: green is not the same as quiet, and quiet is not the same as complete.
 
+### The collector's leg never collected
+
+`make test-gc` ran the whole suite with `PROLOG_GC_THRESHOLD=1`, and the
+Makefile said that exercised the collector "on every code path". It ran **not
+one collection**. The collector only runs when no choice point is live, and
+`run_tests` holds several around every test: `forall/2`'s for the next test,
+and the `->` and `catch/3` in `run_one/2`. The second leg of `make test-asan`
+was the same run again. Every count in these records of "both legs" was one
+leg run twice.
+
+Two more things kept it quiet. The threshold reset to three times the live heap
+after each collection, whatever `PROLOG_GC_THRESHOLD` said, so "at every
+opportunity" was one collection and then a long wait; and the collector was
+only considered every 1024 inferences, which most tests never reach.
+
+Found on 2026-09-27 while writing a test for the collector's own deep-nesting
+crash (Cohort E): the question was whether the suite could reach `gc_copy` at
+all, and a counter printed at exit answered it with 0. The second leg now runs
+every test again bare, as `Goal, !` with nothing around it, with the threshold
+held and the collector considered every fourth inference: about 575,000
+collections, inside every one of the tests. A collector planted with a bug,
+one that stopped forwarding variables, passed the old leg and fails the new
+one. (`19f42ca`)
+
+### A goal that failed exited 0
+
+A `-g` goal that failed printed a warning, ran the goals after it, and exited
+0, as the reference documented. To `make` and to CI that was success: `make
+examples` and `make tutorials` run ten goals, and any of them could have
+failed and left the build green. The tutorial programs are what the published
+pages quote, so the check that keeps them true could not fail. Found the same
+day, designing the bare leg, which stops at its first failure and needed that
+failure to reach `make`. A failed goal now ends the run with status 1, and
+`make test` checks it. (`67b3a74`)
+
+*What these two say:* a check is known to work only once it has been seen to
+fail. Neither of these ever had been. The first was measured by what it was
+supposed to do, collect, and the second by what it would do on a failure, and
+both answers were nothing. Planting a defect and watching the check catch it is
+the only evidence that it can.
+
+## Cohort E: scale
+
+Nine defects that no test was large enough to meet, all found on 2026-09-27.
+They came one from another: each fix was followed by probing the same shape a
+step further, at a million elements or a million levels, and the probe found
+the next.
+
+| Symptom | Cause | Found by |
+| --- | --- | --- |
+| A list literal of more than 4096 elements was a syntax error, "too many arguments" | `parse_list` collected elements into a fixed array; nothing documented the limit | Reading the parser while fixing its arity error (`e8a75ca`) |
+| `term_variables/2` returned 4096 variables of 100,000, without a word; `bagof/3` and `setof/3` inherited it; `read_term`'s `variables(L)` stopped at 1024 | Fixed-size arrays that stopped filling when full | Searching the tree for other 4096s after the list (`d156849`) |
+| A term of 2000 variables was not `=@=` its own copy, and `\=@=` said so | The renaming was kept in a 1024-pair array, and a full array answered false | Reading `=@=` while fixing the next row (`4006577`) |
+| `term_variables`, `ground`, `numbervars`, `unify_with_occurs_check` and `=@=` died with SIGSEGV on a list of a million elements | Each recursed on every argument, list tails included | Probing each walk with a million-element list (`d156849`, `4006577`) |
+| Copying a term of a million variables took about five minutes | The variable map under `copy_term`, `findall`, `assert` and every thrown ball found each variable by scanning all before it | Timing the probe, after first blaming `=@=` (`4006577`) |
+| `1+1+...+1` at 100,000 levels died with SIGSEGV in the collector, before any builtin saw it; the reader gave out at 5000 levels of brackets, arguments, lists or prefix operators | Every walk recursed on all arguments but the last; the reader also held a 256-slot array on the C stack at each level of a compound | Probing with terms nested in the first argument, after the list case (`d1e3088`) |
+| A comment written straight after a full stop, `a.% note`, swallowed the next clause of a consulted file | The full stop consumed the character after it as layout, and when that was `%` the comment lost its opening mark | Probing the prompt's reader with a `%` case (`fcb9128`) |
+| `atomic_list_concat` of a million parts ran the machine out of memory and was killed | Joining in Prolog made a new atom at every step, and atoms are never freed | Writing the deep-nesting tests, which built their text that way (`678e501`) |
+| Splitting 20,000 parts took five seconds | Splitting interned every remainder on the way | Reading it beside the join (`8a5b8a3`) |
+
+Every one of these passed the suite, because every test in the suite is small.
+The deep-nesting fix touched the collector, unification, comparison, copying,
+the builtins' walks, the writer, the evaluator and the parser, and each was
+checked against the binary before it: writer output over 72 cases, arithmetic
+results and errors over 40, every clause in the repository read to identical
+terms. `tests/deep.pl` now puts million-deep terms through 21 walks at the top
+level, where the collector can run, and fails unless it did.
+
+*What this says:* a limit nobody measured is a limit nobody knows, and the
+suite measures nothing about size. One wrong turn is worth keeping. The
+quadratic cost was first put down to `=@=`, whose own map had just been
+rewritten; it was `copy_term`, run just before it in the same probe, and timing
+each half separately was what showed it. The probe that finds the next defect
+is the one aimed at the neighbour of the last.
+
 ## What found what
 
 | Found by | Count |
 | --- | --- |
+| Reading the code | 8 |
 | Writing the documentation, then testing the claim | 6 |
+| Probing past what the suite tries, at a million elements or levels | 4 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 3 |
 | Rendering the pages and looking at them | 3 |
 | Address sanitizer | 1 |
-| Reading the code | 2 |
 | An audit counting the test file against the runner | 1 |
+| Searching the tree for the shape just fixed | 1 |
+| Writing a test, which the defect then killed | 1 |
+| Diffing the old binary's answers against the new | 1 |
+| Counting what a check actually did | 1 |
 
-Two things stand out.
+Three things stand out.
 
-**The test suite found three of nineteen.** It is a good suite — 277 tests,
-run twice per leg, run again under two sanitizers — and it found under a fifth
-of the defects. Everything it found was a wrong *answer*. Everything it missed
-was a wrong *limit*, a wrong *platform assumption*, a wrong *claim in the
-documentation*, or, in the last case, a wrong *count of itself*, and no
-realistic number of additional tests would have changed that.
+**The test suite found three of thirty-three.** It is a good suite, 299 tests
+run normally, again bare with the collector inside every test, and again under
+two sanitizers, and it found under a tenth of the defects. Everything it found
+was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
+*platform assumption*, a wrong *claim in the documentation*, a wrong *count of
+itself*, or, on 2026-09-27, a wrong *size*, and no realistic number of
+additional small tests would have changed that. Until that day its second leg
+had also never collected, so "twice per leg" in this paragraph was itself one
+of the claims that was not true.
 
-**Writing the documentation found the most.** Six defects, and they were the
-ones nothing else could have reached, because the question a document asks is
-"is this sentence true?" — which is a different question from "does this goal
-succeed?". The most productive single activity in the project was writing a
-tutorial for a beginner, because a beginner's questions have no respect for
-which parts were carefully implemented.
+**Writing the documentation found the most of any one activity before
+2026-09-27.** Six defects, and they were the ones nothing else could have
+reached, because the question a document asks is "is this sentence true?",
+which is a different question from "does this goal succeed?". The most
+productive single activity in the project was writing a tutorial for a
+beginner, because a beginner's questions have no respect for which parts were
+carefully implemented.
+
+**Reading the code now leads, and it is not one activity.** Six of its eight
+were found on one day, each while working on something beside it: the parser
+while fixing its error path, `=@=` while fixing its crash, the toplevel while
+working on streams. Reading the path that will be touched, before touching it,
+finds what the path next to it gets wrong.
 
 ## What changed as a result
 
@@ -291,7 +415,9 @@ Each standing check exists because of something above:
 | The build matrix, Linux and macOS, clang and gcc, `-Werror` | `strdup`, the seventeen gcc warnings |
 | `-fno-sanitize-recover=undefined` | the shift, which the sanitizer had been printing and continuing past |
 | `make test-asan` on every leg | the use-after-free class; it found one of the two directly |
-| `make check` running the suite with the collector forced | the collector, which only runs when the computation is deterministic and so is never exercised by an ordinary run |
+| `make test-gc`: every test again, bare, with the threshold held and the collector considered every fourth inference | the second leg, which ran with choice points live and never collected; it replaced a leg that forced only the threshold |
+| `make test-deep`: terms nested a million deep through 21 walks, failing unless `statistics(garbage_collection, _)` shows a collection | the collector's crash on deep terms, which no test was large enough or deterministic enough to reach |
+| A failed `-g` goal exits 1, and `make test` checks it | ten example and tutorial goals whose failure could not fail the build |
 | `make doc` + `git diff --exit-code` | pages drifting from their generators |
 | `make tutorials` | four tutorial programs that nothing was loading |
 | Tests written against `current_prolog_flag(max_arity, N)` rather than `256` | `max_arity`, so the tests stay honest if the limit moves |
@@ -308,10 +434,16 @@ expensive ones:
 - **Nothing systematically checks the reference against the interpreter.** Every
   signature in it was verified by hand once. A predicate whose behaviour changes
   will not update its own entry.
-- **The error-context argument is always unbound**, so every `error/2` term the
-  interpreter raises is missing the information that would say where it came
-  from. That is on the roadmap, and until it is done, debugging anything
-  non-trivial is harder than it should be.
-- **The reader reports the arity limit as a syntax error**, not
-  `representation_error(max_arity)`. Documented rather than fixed, because
-  fixing it means reworking the parser's error path.
+- **The error-context argument is unbound** except where the reader gives
+  `file(Name, Line)`, so nearly every `error/2` term the interpreter raises is
+  missing the information that would say where it came from. That is on the
+  roadmap, and until it is done, debugging anything non-trivial is harder than
+  it should be.
+- **More costs grow with the square than the nine found.** Nothing measures
+  cost at size, so each was found by accident. One more is measured and on the
+  roadmap: the reader finds a variable's earlier occurrence by scanning every
+  variable of the clause so far, so 40,000 distinct variables take 0.26
+  seconds and each doubling quadruples it.
+- **The collector is exercised, not proven.** The second leg now collects
+  inside every test, and one planted defect was caught; one is not many. A
+  collector is only tested against the kinds of wrong it was tried with.

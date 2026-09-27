@@ -194,25 +194,25 @@ section('shape', 'The shape of the interpreter', ''.join([
          "compiler: a clause is stored as a term, and calling it copies that term with "
          "fresh variables. That costs some speed against a compiling system and buys "
          "an engine small enough to hold in your head — the whole solver is one "
-         "606-line file."),
+         "649-line file."),
     para("Two decisions shape everything else. The solver is a flat loop over an "
          "explicit goal list rather than a recursive C function, so the depth of a "
          "Prolog computation costs heap rather than C stack. And memory is reclaimed "
          "primarily by backtracking rather than by collection, so a choice point "
          "records where the heap stood and failing rewinds to it."),
     table(['File', 'Lines', 'What lives there'], [
-        ['src/prolog.h', '358', 'the shared declarations: terms, marks, frames, choice points'],
-        ['src/term.c', '835', 'heap and arenas, atom table, unification, standard order, copying, the collector'],
-        ['src/parser.c', '938', 'tokeniser, operator table, operator-precedence reader'],
-        ['src/write.c', '328', 'the term writer'],
-        ['src/arith.c', '404', 'arithmetic evaluation'],
+        ['src/prolog.h', '395', 'the shared declarations: terms, marks, frames, choice points'],
+        ['src/term.c', '985', 'heap and arenas, atom table, unification, standard order, copying, the collector'],
+        ['src/parser.c', '1043', 'tokeniser, operator table, operator-precedence reader'],
+        ['src/write.c', '381', 'the term writer'],
+        ['src/arith.c', '483', 'arithmetic evaluation'],
         ['src/db.c', '148', 'predicate table, clause lists, first-argument indexing'],
-        ['src/machine.c', '636', 'the solver: goal frames, choice points, cut, exceptions'],
-        ['src/builtins.c', '2427', 'the builtin predicates and their dispatch table'],
-        ['src/stream.c', '173', 'streams, including in-memory sinks'],
-        ['src/consult.c', '227', 'loading programs, error messages'],
-        ['src/main.c', '269', 'command line and the interactive toplevel'],
-        ['lib/boot.pl', '616', 'the library written in Prolog, compiled into the binary'],
+        ['src/machine.c', '649', 'the solver: goal frames, choice points, cut, exceptions'],
+        ['src/builtins.c', '2652', 'the builtin predicates and their dispatch table'],
+        ['src/stream.c', '218', 'streams, including in-memory sinks'],
+        ['src/consult.c', '239', 'loading programs, error messages'],
+        ['src/main.c', '276', 'command line and the interactive toplevel'],
+        ['lib/boot.pl', '599', 'the library written in Prolog, compiled into the binary'],
     ], 'mono1'),
     para("`lib/boot.pl` is turned into a C string by `tools/pl2c.awk` at build time and "
          "consulted at start-up, so predicates that are easier to write in Prolog — "

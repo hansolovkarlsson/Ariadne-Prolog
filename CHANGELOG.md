@@ -125,6 +125,13 @@ There are no releases yet, so entries are grouped by the day they landed on
   text now, as joining takes them, so `atomic_list_concat(L, 1, a1b)` gives
   `[a, b]`. (`8a5b8a3`)
 
+- **The front page and the internals page said what was no longer so.** The
+  front page described the suite's second leg as the collector "forced every
+  1024 inferences", which had never collected, and gave 6,600 lines of C and
+  277 tests; it is about 7,500 and 299. Eleven of the internals page's twelve
+  line counts had drifted, and "the whole solver is one 606-line file" was 649.
+  Re-synced at the day's closeout.
+
 ### Tests
 
 - 277 → 299. Seven for `open/4` and the end of stream, one changed; twelve for
