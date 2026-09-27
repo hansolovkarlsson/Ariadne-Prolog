@@ -6,6 +6,15 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-09-27
+
+### Changed
+
+- **CI runs on `ubuntu-24.04`, not `ubuntu-latest`.** `ubuntu-latest` becomes
+  Ubuntu 26 on 2026-10-19. Pinned, a new compiler arrives as a change to the
+  workflow rather than as a failing run. The Linux jobs are now named
+  `ubuntu-24.04 / clang` and `ubuntu-24.04 / gcc`. (`c11e760`)
+
 ## 2026-09-25
 
 ### Added
