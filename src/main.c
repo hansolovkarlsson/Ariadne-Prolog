@@ -156,8 +156,10 @@ static void run_query(Term *goal, Term *names)
 
 static void toplevel(void)
 {
-    Reader r;
-    reader_init_file(&r, stdin, "user_input");
+    /* Queries are read through user_input's own reader, the one read/1 and
+       get_char/1 use, so a character one of them pushes back is the next
+       character the other sees. Stream 0 is user_input. */
+    Reader *r = stream_reader(stream_by_index(0));
 
     for (;;) {
         HeapMark hm;
@@ -168,7 +170,7 @@ static void toplevel(void)
         printf("?- ");
         fflush(stdout);
         hm = heap_mark();
-        rc = read_term_from(&r, &goal, &names);
+        rc = read_term_from(r, &goal, &names);
         if (rc == 0) { printf("\n"); break; }
         if (rc < 0) { report_error(); heap_release(hm); continue; }
         goal = deref(goal);
