@@ -209,6 +209,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 - **`make tutorials`** — loads each tutorial program and runs a query out of its
   page, so the published pages cannot drift away from the code they quote.
   Run by CI alongside `make examples`. (`78d43c4`)
+- **The journal and the postmortem are published pages.** `journal.html` and
+  `postmortem.html` join the site, reached from the document switcher and two
+  new cards on the front page. They are rendered from `JOURNAL.md` and
+  `POSTMORTEM.md` by `tools/mdpage.py`, which raises on any Markdown outside
+  the subset it knows rather than dropping it, and CI's docs job keeps the
+  pages and the Markdown in step. Links between the documents are rewritten
+  to the pages and labelled by title, not file name. Recorded on 2026-09-27;
+  the journal's day four had left it as a question. (`5658209`)
 
 ### Fixed
 
@@ -233,6 +241,9 @@ There are no releases yet, so entries are grouped by the day they landed on
   left alone. (`afbc1cb`)
 - A section of Level 3 said three predicates where its table listed four.
   (`ded50bd`)
+- The front page gave the line count as 5,300, as it had since the first
+  commit, where it was about 6,600, and the test count twice as 248.
+  (`5658209`)
 
 ### Documentation
 
