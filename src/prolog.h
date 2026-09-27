@@ -126,6 +126,18 @@ int  unify(Term *a, Term *b);
 int  compare_terms(Term *a, Term *b);       /* standard order: -1/0/1 */
 Term **term_variables(Term *t, int *n);   /* malloc'd; caller frees */
 
+/* A map from variable to term, in the order the variables were put, with
+   a hash index so that a lookup does not scan. */
+typedef struct {
+    Term **from, **to;
+    int    n, cap;
+    int   *index, icap;
+} VarMap;
+#define VARMAP_INIT { NULL, NULL, 0, 0, NULL, 0 }
+Term *varmap_get(const VarMap *m, Term *v);
+void  varmap_put(VarMap *m, Term *from, Term *to);
+void  varmap_free(VarMap *m);
+
 /* Copying.  A "compiled" term stores its variables as TAG_VAR cells whose
    serial number is an index in 0..nvars-1; instantiate rebuilds it with
    fresh heap variables. */

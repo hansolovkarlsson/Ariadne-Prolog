@@ -687,21 +687,26 @@ tail:
 /* Copying                                                            */
 /* ------------------------------------------------------------------ */
 
-typedef struct {
-    Term **from;
-    Term **to;
-    int n, cap;
-} VarMap;
-
-static Term *vmap_get(VarMap *m, Term *v)
+/* The index is open addressing on the variable's address and holds i+1,
+   so a lookup costs the same however many variables came before. */
+static int varmap_slot(const VarMap *m, Term *v)
 {
-    int i;
-    for (i = 0; i < m->n; i++) if (m->from[i] == v) return m->to[i];
-    return NULL;
+    int h = (int)((((size_t)v >> 3) * 2654435761u) % (size_t)m->icap);
+    while (m->index[h] && m->from[m->index[h] - 1] != v) h = (h + 1) % m->icap;
+    return h;
 }
 
-static void vmap_put(VarMap *m, Term *from, Term *to)
+Term *varmap_get(const VarMap *m, Term *v)
 {
+    int i;
+    if (!m->icap) return NULL;
+    i = m->index[varmap_slot(m, v)];
+    return i ? m->to[i - 1] : NULL;
+}
+
+void varmap_put(VarMap *m, Term *from, Term *to)
+{
+    int i;
     if (m->n == m->cap) {
         m->cap = m->cap ? m->cap * 2 : 32;
         m->from = (Term **)realloc(m->from, m->cap * sizeof(Term *));
@@ -710,7 +715,17 @@ static void vmap_put(VarMap *m, Term *from, Term *to)
     m->from[m->n] = from;
     m->to[m->n] = to;
     m->n++;
+    if (2 * m->n > m->icap) {               /* keep the index at most half full */
+        free(m->index);
+        m->icap = m->icap ? m->icap * 2 : 64;
+        m->index = (int *)calloc((size_t)m->icap, sizeof(int));
+        for (i = 0; i < m->n; i++) m->index[varmap_slot(m, m->from[i])] = i + 1;
+    } else {
+        m->index[varmap_slot(m, from)] = m->n;
+    }
 }
+
+void varmap_free(VarMap *m) { free(m->from); free(m->to); free(m->index); }
 
 static Term *copy_rec(Term *t, VarMap *m, Arena *a, int compile)
 {
@@ -722,7 +737,7 @@ tail:
     t = deref(t);
     switch (t->tag) {
     case TAG_VAR:
-        r = vmap_get(m, t);
+        r = varmap_get(m, t);
         if (!r) {
             if (a) {
                 r = (Term *)arena_alloc(a, sizeof(Term));
@@ -732,7 +747,7 @@ tail:
             } else {
                 r = mk_var();
             }
-            vmap_put(m, t, r);
+            varmap_put(m, t, r);
         }
         *slot = r;
         return result;
@@ -764,22 +779,20 @@ tail:
     }
 }
 
-static void vmap_done(VarMap *m) { free(m->from); free(m->to); }
-
 Term *heap_copy(Term *t)
 {
-    VarMap m = { NULL, NULL, 0, 0 };
+    VarMap m = VARMAP_INIT;
     Term *r = copy_rec(t, &m, NULL, 0);
-    vmap_done(&m);
+    varmap_free(&m);
     return r;
 }
 
 Term *arena_compile(Arena *a, Term *t, int *nvars)
 {
-    VarMap m = { NULL, NULL, 0, 0 };
+    VarMap m = VARMAP_INIT;
     Term *r = copy_rec(t, &m, a, 1);
     if (nvars) *nvars = m.n;
-    vmap_done(&m);
+    varmap_free(&m);
     return r;
 }
 

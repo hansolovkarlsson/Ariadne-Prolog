@@ -144,14 +144,18 @@ BI(bi_atomic)   { UNUSED; Term *t = deref(A[0]);
                   RET(t->tag == TAG_ATOM || IS_NUM(t)); }
 BI(bi_is_list)  { UNUSED; RET(list_length(A[0]) >= 0); }
 
+/* This walk and the ones below recurse on every argument but the last
+   and loop on the last, as unify does, so a long list costs no C stack. */
 static int is_ground(Term *t)
 {
     int i;
+tail:
     t = deref(t);
     if (t->tag == TAG_VAR) return 0;
-    if (t->tag != TAG_STR) return 1;
-    for (i = 0; i < AR(t); i++) if (!is_ground(ARG(t, i))) return 0;
-    return 1;
+    if (t->tag != TAG_STR || AR(t) == 0) return 1;
+    for (i = 0; i < AR(t) - 1; i++) if (!is_ground(ARG(t, i))) return 0;
+    t = ARG(t, i);
+    goto tail;
 }
 
 BI(bi_ground) { UNUSED; RET(is_ground(A[0])); }
@@ -174,16 +178,19 @@ BI(bi_not_unify)
 static int occurs_in(Term *v, Term *t)
 {
     int i;
+tail:
     t = deref(t);
     if (t == v) return 1;
-    if (t->tag != TAG_STR) return 0;
-    for (i = 0; i < AR(t); i++) if (occurs_in(v, ARG(t, i))) return 1;
-    return 0;
+    if (t->tag != TAG_STR || AR(t) == 0) return 0;
+    for (i = 0; i < AR(t) - 1; i++) if (occurs_in(v, ARG(t, i))) return 1;
+    t = ARG(t, i);
+    goto tail;
 }
 
 static int unify_oc(Term *a, Term *b)
 {
     int i;
+tail:
     a = deref(a);
     b = deref(b);
     if (a == b) return 1;
@@ -200,9 +207,12 @@ static int unify_oc(Term *a, Term *b)
     case TAG_FLT:  return FV(a) == FV(b);
     default:
         if (FN(a) != FN(b) || AR(a) != AR(b)) return 0;
-        for (i = 0; i < AR(a); i++)
+        if (AR(a) == 0) return 1;
+        for (i = 0; i < AR(a) - 1; i++)
             if (!unify_oc(ARG(a, i), ARG(b, i))) return 0;
-        return 1;
+        a = ARG(a, i);
+        b = ARG(b, i);
+        goto tail;
     }
 }
 
@@ -215,24 +225,21 @@ BI(bi_unify_oc)
     return PL_FAIL;
 }
 
-/* Structural equivalence: the terms are the same up to variable renaming. */
-typedef struct { Term *l, *r; } VPair;
-
-static int variant_rec(Term *a, Term *b, VPair *m, int *n, int max)
+/* Structural equivalence: the terms are the same up to variable renaming.
+   The renaming is kept both ways, as two variable maps. */
+static int variant_rec(Term *a, Term *b, VarMap *lr, VarMap *rl)
 {
     int i;
+tail:
     a = deref(a);
     b = deref(b);
     if (a->tag == TAG_VAR || b->tag == TAG_VAR) {
+        Term *seen;
         if (a->tag != TAG_VAR || b->tag != TAG_VAR) return 0;
-        for (i = 0; i < *n; i++) {
-            if (m[i].l == a) return m[i].r == b;
-            if (m[i].r == b) return 0;
-        }
-        if (*n >= max) return 0;
-        m[*n].l = a;
-        m[*n].r = b;
-        (*n)++;
+        if ((seen = varmap_get(lr, a)) != NULL) return seen == b;
+        if (varmap_get(rl, b)) return 0;
+        varmap_put(lr, a, b);
+        varmap_put(rl, b, a);
         return 1;
     }
     if (a->tag != b->tag) return 0;
@@ -242,17 +249,22 @@ static int variant_rec(Term *a, Term *b, VPair *m, int *n, int max)
     case TAG_FLT:  return FV(a) == FV(b);
     default:
         if (FN(a) != FN(b) || AR(a) != AR(b)) return 0;
-        for (i = 0; i < AR(a); i++)
-            if (!variant_rec(ARG(a, i), ARG(b, i), m, n, max)) return 0;
-        return 1;
+        if (AR(a) == 0) return 1;
+        for (i = 0; i < AR(a) - 1; i++)
+            if (!variant_rec(ARG(a, i), ARG(b, i), lr, rl)) return 0;
+        a = ARG(a, i);
+        b = ARG(b, i);
+        goto tail;
     }
 }
 
 static int is_variant(Term *a, Term *b)
 {
-    VPair m[1024];
-    int n = 0;
-    return variant_rec(a, b, m, &n, 1024);
+    VarMap lr = VARMAP_INIT, rl = VARMAP_INIT;
+    int ok = variant_rec(a, b, &lr, &rl);
+    varmap_free(&lr);
+    varmap_free(&rl);
+    return ok;
 }
 
 BI(bi_variant)     { UNUSED; RET(is_variant(A[0], A[1])); }
@@ -480,14 +492,16 @@ BI(bi_term_variables)
 static long long numbervars_walk(Term *t, long long n)
 {
     int i;
+tail:
     t = deref(t);
     if (t->tag == TAG_VAR) {
         bind(t, mk1(a_dollar_var, mk_int(n)));
         return n + 1;
     }
-    if (t->tag == TAG_STR)
-        for (i = 0; i < AR(t); i++) n = numbervars_walk(ARG(t, i), n);
-    return n;
+    if (t->tag != TAG_STR || AR(t) == 0) return n;
+    for (i = 0; i < AR(t) - 1; i++) n = numbervars_walk(ARG(t, i), n);
+    t = ARG(t, i);
+    goto tail;
 }
 
 BI(bi_numbervars)

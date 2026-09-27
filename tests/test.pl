@@ -195,6 +195,15 @@ test(tm_vars_unmarked,(term_variables(f(X,Y,X), _), var(X), var(Y), X \== Y,
 test(tm_vars_many,    (length(L, 5000), term_variables(L, Vs), Vs == L)).
 test(tm_vars_long,    (length(L, 1000000), term_variables(L, Vs), length(Vs, N),
                        N =:= 1000000)).
+/*  Every walk over a term must survive a long list, and none may cap the
+    number of variables it can tell apart. */
+test(tm_long_list_walks,
+     (length(L, 1000000), \+ ground(L), copy_term(L, C), L =@= C,
+      unify_with_occurs_check(L, C), numbervars(L, 0, E), E =:= 1000000,
+      ground(L))).
+test(tm_variant_many, (length(V, 2000), copy_term(V, W), V =@= W, \+ V \=@= W)).
+test(tm_variant_pairs,(f(A, B) =@= f(B, A), \+ f(A, A) =@= f(_, _),
+                       \+ f(_, _) =@= f(C, C), \+ f(D, a) =@= f(_, b), var(D))).
 test(tm_numbervars,   (T = f(_,_), numbervars(T, 0, E), E =:= 2,
                        with_output_to(atom(A), write(T)), A == 'f(A,B)')).
 test(tm_setarg,       (T = f(a), setarg(1, T, b), T == f(b))).
