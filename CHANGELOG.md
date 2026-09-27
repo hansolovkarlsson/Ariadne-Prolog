@@ -21,8 +21,7 @@ There are no releases yet, so entries are grouped by the day they landed on
   collections in 11 seconds. A collector planted with a bug, one that stopped
   forwarding variables, passed the old leg and fails this one. `make test-asan`
   runs the new leg too. `tests/deep.pl` runs once, as the forced run added
-  nothing, and a `-g "halt(1)"` after it and the bare leg turns a failed goal,
-  which exits 0, into a failed make. (`19f42ca`)
+  nothing. (`19f42ca`)
 
 - **`statistics(garbage_collection, [Collections, BytesFreed, Milliseconds])`,**
   as SWI has it, and **`make test-deep`**, which runs `tests/deep.pl`: terms
@@ -42,6 +41,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   at 284. (`22b12d0`)
 
 ### Changed
+
+- **A `-g` goal that fails ends the run with status 1,** and the goals after
+  it do not run, as for an error. It printed a warning, carried on, and exited
+  0, so `make examples` and `make tutorials`, which CI runs, could not fail on
+  a goal that failed. `make test` now checks the exit status. (`67b3a74`)
 
 - **Reading past the end of a stream is an error by default.** A read that
   answers `end_of_file` moves the stream past its end, and the next read,
