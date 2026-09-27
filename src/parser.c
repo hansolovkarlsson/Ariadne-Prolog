@@ -214,6 +214,8 @@ typedef struct {
     Token   tok;
     struct { int name; Term *var; int count; } *vars;
     int     nvars, cvars;
+    int    *vindex;      /* open addressing on the name's atom, holds i+1 */
+    int     vicap;
     char   *buf;
     size_t  buflen, bufcap;
     char    err[256];
@@ -614,12 +616,32 @@ done:
 /* Parser                                                             */
 /* ------------------------------------------------------------------ */
 
+/* The slot in p->vindex for the variable called name: the one holding it,
+   or the empty one where it would go. */
+static int var_slot(const Parser *p, int name)
+{
+    int h = (int)(((unsigned)name * 2654435761u) % (unsigned)p->vicap);
+    while (p->vindex[h] && p->vars[p->vindex[h] - 1].name != name)
+        h = (h + 1) % p->vicap;
+    return h;
+}
+
+/* The variable called name in the clause being read.  The variables are
+   kept in the order they were first met, which is the order
+   variable_names/1 and singletons/1 report, and found through a hash on the
+   name, so a clause of many distinct variables reads in linear time. */
 static Term *var_for(Parser *p, int name)
 {
-    int i;
+    int i, h;
     if (atom_len(name) == 1 && atom_name(name)[0] == '_') return mk_var();
-    for (i = 0; i < p->nvars; i++)
-        if (p->vars[i].name == name) { p->vars[i].count++; return p->vars[i].var; }
+    if (p->vicap) {
+        h = var_slot(p, name);
+        if (p->vindex[h]) {
+            i = p->vindex[h] - 1;
+            p->vars[i].count++;
+            return p->vars[i].var;
+        }
+    }
     if (p->nvars == p->cvars) {
         p->cvars = p->cvars ? p->cvars * 2 : 16;
         p->vars = realloc(p->vars, p->cvars * sizeof(*p->vars));
@@ -627,7 +649,16 @@ static Term *var_for(Parser *p, int name)
     p->vars[p->nvars].name = name;
     p->vars[p->nvars].var = mk_var();
     p->vars[p->nvars].count = 1;
-    return p->vars[p->nvars++].var;
+    p->nvars++;
+    if (2 * p->nvars > p->vicap) {           /* keep the index at most half full */
+        free(p->vindex);
+        p->vicap = p->vicap ? p->vicap * 2 : 64;
+        p->vindex = (int *)calloc((size_t)p->vicap, sizeof(int));
+        for (i = 0; i < p->nvars; i++) p->vindex[var_slot(p, p->vars[i].name)] = i + 1;
+    } else {
+        p->vindex[var_slot(p, name)] = p->nvars;
+    }
+    return p->vars[p->nvars - 1].var;
 }
 
 static int expect_punct(Parser *p, int c, const char *what)
@@ -957,6 +988,7 @@ error:
 static void parser_free(Parser *p)
 {
     free(p->vars);
+    free(p->vindex);
     free(p->buf);
     free(p->conts);
     free(p->args);

@@ -243,6 +243,13 @@ test(tm_max_arity_reader_over,
       atomic_list_concat(['f(', Args, ')'], Text),
       catch(atom_to_term(Text, _, _), error(E, _), true),
       E == representation_error(max_arity))).
+/*  Nor does it slow with the number of distinct variables in a clause. */
+test(tm_reader_many_vars,
+     (numlist(1, 50000, Ns), findall(V, (member(N, Ns), atom_concat('V', N, V)), Names),
+      atomic_list_concat(Names, ',', Inner), atomic_list_concat(['[', Inner, ']'], Text),
+      atom_to_term(Text, L, Bindings), length(L, 50000), length(Bindings, 50000),
+      Bindings = ['V1' = X|_], L = [Y|_], X == Y, last(Bindings, 'V50000' = Z),
+      last(L, W), Z == W)).
 /*  A list is not a compound in the reader's eyes: it has no length limit. */
 test(tm_reader_long_list,
      (numlist(1, 5000, L), format(atom(Text), '~w', [L]),
