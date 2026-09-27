@@ -49,6 +49,9 @@ jobs:
       - name: Tutorial programs
         run: make CC=$CC tutorials
 
+      - name: English grammar
+        run: make CC=$CC english
+
       # Left until last: this target rebuilds from clean and then cleans up
       # after itself, so anything above it would have to be built again.
       - name: Test suite under the address and undefined behaviour sanitizers

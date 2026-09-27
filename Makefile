@@ -77,6 +77,13 @@ tutorials: $(BIN)
 	./$(BIN) -q tutorial/level4.pl -g "load_orders('tutorial/orders.txt'), report, halt"
 	./$(BIN) -q tutorial/restock.pl
 
+# The English grammar checker in english/: its own checks, then one sentence
+# of each kind through check/1, as the README shows them.
+english: $(BIN)
+	./$(BIN) -q english/tests.pl -g run
+	./$(BIN) -q english/check.pl -g "check('The dogs chase a cat.'), halt"
+	./$(BIN) -q english/check.pl -g "check('The dogs chases a cat.'), halt"
+
 examples: $(BIN)
 	./$(BIN) -q examples/hanoi.pl -g "hanoi(3)"
 	./$(BIN) -q examples/queens.pl -g "queens(8,Qs), print_board(Qs)"
@@ -126,4 +133,4 @@ install: $(BIN)
 clean:
 	rm -f $(OBJS) $(BIN) src/boot_pl.c
 
-.PHONY: all test test-gc test-deep test-asan check examples tutorials doc install clean
+.PHONY: all test test-gc test-deep test-asan check examples tutorials english doc install clean

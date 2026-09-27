@@ -215,6 +215,8 @@ sorting, the list library, the database, the reader and writer (including
 round-tripping), `format/2`, grammars, streams, and deep recursion under the
 collector. `make check` runs them both normally and with the collector
 running constantly; `make test-asan` runs both under the sanitizers.
+`make english` runs the checks of the grammar checker in
+[english/](english/README.md), the first program built on the interpreter.
 
 ## Project documents
 
