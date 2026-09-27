@@ -559,6 +559,23 @@ BUILTINS = [
      "Int3 is Int1 + Int2, with any one of the three unbound."),
     ('apply(:Goal, +ExtraArgs)', "Calls Goal with the extra arguments appended."),
 
+    ('##', 'Lambdas'),
+    ('+Params>>:Body',
+     "A lambda, as in SWI-Prolog's library(yall). Called with arguments, it binds "
+     "the list Params to the first of them and calls Body with the rest, so "
+     "`maplist([X,Y]>>(Y is X*2), [1,2,3], L)` gives `L = [2,4,6]` and "
+     "`call([X]>>atom_length(X), abc, N)` gives `N = 3`. Parameters with no "
+     "argument are left unbound; a cut in Body is local to it."),
+    ('+Free/:Lambda',
+     "Declares the variables of Free shared with the context. The lambda is "
+     "copied before each call, so every other variable is local to that call: "
+     "after `maplist([X]>>(Y = X), [1,2])` Y is still unbound, while "
+     "`maplist(Y/[X]>>(Y = X), [a,a])` binds Y to `a`. A variable already bound "
+     "when the lambda is called is its value and is not affected. "
+     "`Free/[X]>>Body` reads as `(Free/[X])>>Body`, as in yall."),
+    ('\\X^:Body',
+     "A parameter written in front of the body: `maplist(\\X^Y^(Y is X+1), [1,2], L)` "
+     "gives `L = [2,3]`. Each `^` takes one argument while arguments are left."),
     ('##', 'Control (library)'),
     ('once(:Goal)', "Calls Goal and commits to its first solution."),
     ('ignore(:Goal)', "Calls Goal once; succeeds even when Goal fails."),
@@ -893,8 +910,6 @@ section('limits', 'Deviations and limits', ''.join([
     ul([
         "No modules, tabling, constraints, attributed variables, coroutining or "
         "threads.",
-        "No yall lambdas, so `maplist([X]>>Goal, L)` is not available — write a named "
-        "helper predicate instead.",
         "`discontiguous/1` is recorded but never enforced; clauses may be spread "
         "through a file regardless.",
         "No `setup_call_cleanup/3`. Write the cleanup out: catch the ball with "

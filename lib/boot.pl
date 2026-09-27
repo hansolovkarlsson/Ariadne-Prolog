@@ -226,6 +226,107 @@ foldl(G, L1, L2, V0, V) :- '$foldl2'(L1, L2, G, V0, V).
 '$foldl2'([], [], _, V, V).
 '$foldl2'([X|Xs], [Y|Ys], G, V0, V) :- call(G, X, Y, V0, V1), '$foldl2'(Xs, Ys, G, V1, V).
 
+/*  Lambdas, as SWI-Prolog's library(yall) has them.
+
+    Params>>Body     called with arguments A1..An, binds the parameters to the
+                     first arguments and calls Body with any that are left:
+                     call([X,Y]>>foo(X,Y), 1, 2) calls foo(1, 2).
+    Free/Lambda      Free is a term whose variables are shared with the
+                     context; Free/[X]>>Body parses as (Free/[X])>>Body.
+    \X^Body          a parameter written in front of the body; \X^Y^Body
+                     takes two.
+
+    The lambda is copied before each call, so its variables are local to
+    that call unless they appear in Free: after maplist([X]>>(Y = X), L), Y
+    is still unbound, as in yall. A variable already bound when the lambda
+    is called is its value, and copying does not change it. Cut in Body is
+    local to the lambda. A lambda given more parameters than arguments
+    leaves the rest unbound.
+*/
+'>>'(Ps, B) :- '$lambda_copy'(Ps>>B, L), '$lambda'(L, []).
+'>>'(Ps, B, A1) :- '$lambda_copy'(Ps>>B, L), '$lambda'(L, [A1]).
+'>>'(Ps, B, A1, A2) :- '$lambda_copy'(Ps>>B, L), '$lambda'(L, [A1,A2]).
+'>>'(Ps, B, A1, A2, A3) :- '$lambda_copy'(Ps>>B, L), '$lambda'(L, [A1,A2,A3]).
+'>>'(Ps, B, A1, A2, A3, A4) :-
+    '$lambda_copy'(Ps>>B, L), '$lambda'(L, [A1,A2,A3,A4]).
+'>>'(Ps, B, A1, A2, A3, A4, A5) :-
+    '$lambda_copy'(Ps>>B, L), '$lambda'(L, [A1,A2,A3,A4,A5]).
+'>>'(Ps, B, A1, A2, A3, A4, A5, A6) :-
+    '$lambda_copy'(Ps>>B, L), '$lambda'(L, [A1,A2,A3,A4,A5,A6]).
+'>>'(Ps, B, A1, A2, A3, A4, A5, A6, A7) :-
+    '$lambda_copy'(Ps>>B, L), '$lambda'(L, [A1,A2,A3,A4,A5,A6,A7]).
+
+'/'(F, B) :- '$lambda_copy'(F/B, _/L), '$lambda'(L, []).
+'/'(F, B, A1) :- '$lambda_copy'(F/B, _/L), '$lambda'(L, [A1]).
+'/'(F, B, A1, A2) :- '$lambda_copy'(F/B, _/L), '$lambda'(L, [A1,A2]).
+'/'(F, B, A1, A2, A3) :- '$lambda_copy'(F/B, _/L), '$lambda'(L, [A1,A2,A3]).
+'/'(F, B, A1, A2, A3, A4) :-
+    '$lambda_copy'(F/B, _/L), '$lambda'(L, [A1,A2,A3,A4]).
+'/'(F, B, A1, A2, A3, A4, A5) :-
+    '$lambda_copy'(F/B, _/L), '$lambda'(L, [A1,A2,A3,A4,A5]).
+'/'(F, B, A1, A2, A3, A4, A5, A6) :-
+    '$lambda_copy'(F/B, _/L), '$lambda'(L, [A1,A2,A3,A4,A5,A6]).
+'/'(F, B, A1, A2, A3, A4, A5, A6, A7) :-
+    '$lambda_copy'(F/B, _/L), '$lambda'(L, [A1,A2,A3,A4,A5,A6,A7]).
+
+'\\'(B) :- '$lambda_copy'(\B, L), '$lambda'(L, []).
+'\\'(B, A1) :- '$lambda_copy'(\B, L), '$lambda'(L, [A1]).
+'\\'(B, A1, A2) :- '$lambda_copy'(\B, L), '$lambda'(L, [A1,A2]).
+'\\'(B, A1, A2, A3) :- '$lambda_copy'(\B, L), '$lambda'(L, [A1,A2,A3]).
+'\\'(B, A1, A2, A3, A4) :-
+    '$lambda_copy'(\B, L), '$lambda'(L, [A1,A2,A3,A4]).
+'\\'(B, A1, A2, A3, A4, A5) :-
+    '$lambda_copy'(\B, L), '$lambda'(L, [A1,A2,A3,A4,A5]).
+'\\'(B, A1, A2, A3, A4, A5, A6) :-
+    '$lambda_copy'(\B, L), '$lambda'(L, [A1,A2,A3,A4,A5,A6]).
+'\\'(B, A1, A2, A3, A4, A5, A6, A7) :-
+    '$lambda_copy'(\B, L), '$lambda'(L, [A1,A2,A3,A4,A5,A6,A7]).
+
+% '$lambda_copy'(+Lambda, -Copy): Lambda renamed apart, except for the
+% variables of its Free, if it has one, which stay shared.
+'$lambda_copy'(Lambda, Copy) :-
+    (   '$lambda_free'(Lambda, Free)
+    ->  copy_term(Free-Lambda, Free2-Copy), Free2 = Free
+    ;   copy_term(Lambda, Copy)
+    ).
+
+'$lambda_free'(Free/_, Free).
+'$lambda_free'((Free/_)>>_, Free).
+
+% '$lambda'(+Lambda, +Args): applies a lambda that has been copied already,
+% so that a Free/ around a \X^ or a >> does not copy it a second time.
+'$lambda'(Lambda, Args) :-
+    (   var(Lambda) -> throw(error(instantiation_error, _)) ; true ),
+    '$lambda1'(Lambda, Args).
+
+'$lambda1'(Ps0>>Body, Args) :- !,
+    (   nonvar(Ps0), Ps0 = _/Ps -> true ; Ps = Ps0 ),
+    (   var(Ps) -> throw(error(instantiation_error, _))
+    ;   is_list(Ps) -> true
+    ;   throw(error(type_error(list, Ps), _))
+    ),
+    '$lambda_bind'(Ps, Args, Rest),
+    '$lambda_call'(Body, Rest).
+'$lambda1'(\X1^Body, Args) :- !,
+    '$lambda_hat'(X1^Body, Args).
+'$lambda1'(_/Lambda, Args) :- !,
+    '$lambda'(Lambda, Args).
+'$lambda1'(Goal, Args) :-
+    '$lambda_call'(Goal, Args).
+
+'$lambda_bind'([], Rest, Rest) :- !.
+'$lambda_bind'([_|_], [], []) :- !.
+'$lambda_bind'([P|Ps], [A|As], Rest) :- P = A, '$lambda_bind'(Ps, As, Rest).
+
+% \X^Y^Body: each ^ in front of the body takes one argument, while there
+% are arguments left.
+'$lambda_hat'(X^Body, [A|As]) :- !, X = A, '$lambda_hat'(Body, As).
+'$lambda_hat'(_^Body, []) :- !, call(Body).
+'$lambda_hat'(Body, Args) :- '$lambda_call'(Body, Args).
+
+'$lambda_call'(Goal, []) :- !, call(Goal).
+'$lambda_call'(Goal, Args) :- apply(Goal, Args).
+
 sum_list(List, Sum) :- '$sum_list'(List, 0, Sum).
 '$sum_list'([], S, S).
 '$sum_list'([H|T], S0, S) :- S1 is S0 + H, '$sum_list'(T, S1, S).

@@ -346,6 +346,26 @@ test(li_append_lol,   (append([[1,2],[3]], L), L == [1,2,3])).
 
 add3(X, A, B) :- B is A + X.
 
+/* ---------------- lambdas ---------------- */
+
+test(la_map,          (maplist([X,Y]>>(Y is X*2), [1,2,3], L), L == [2,4,6])).
+test(la_local,        (maplist([X]>>(Y = X), [1,2]), var(Y))).
+test(la_bound,        (N = 10, maplist([X,Y]>>(Y is X+N), [1,2], L), L == [11,12])).
+test(la_free,         (maplist(A/[X]>>(X = A), [a,a]), A == a,
+                       \+ maplist(B/[X2]>>(X2 = B), [a,b]))).
+test(la_hat,          (maplist(\X^Y^(Y is X+1), [1,2], L), L == [2,3],
+                       maplist(F/(\Z^(Z = F)), [b,b]), F == b)).
+test(la_foldl,        (foldl([X,A0,A]>>(A is A0+X), [1,2,3], 0, S), S == 6)).
+test(la_extra_args,   (call([X]>>atom_length(X), abc, N), N == 3,
+                       call([]>>atom_length(ab), M), M == 2)).
+test(la_cut_local,    (findall(X, call([Y]>>(member(Y,[1,2,3]), !), X), L), L == [1],
+                       findall(X2, call([Y2]>>member(Y2,[1,2]), X2), L2), L2 == [1,2])).
+test(la_nested,       (maplist([L1,S]>>foldl([X,A0,A]>>(A is A0+X), L1, 0, S),
+                               [[1,2],[3]], Ss), Ss == [3,3])).
+test(la_errors,       (catch(call(_>>true, 1), error(instantiation_error, _), true),
+                       catch(call(foo>>true, 1), error(type_error(list, foo), _), true))).
+test(la_arith_intact, (X is 16 >> 2, X =:= 4, Y is 12 / 4, Y =:= 3)).
+
 /* ---------------- database ---------------- */
 
 test(db_assert,       (assertz(tmp(1)), tmp(1), retract(tmp(1)), \+ tmp(_))).
