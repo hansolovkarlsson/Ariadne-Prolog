@@ -12,10 +12,6 @@ produced some of the entries below.
 
 ## Near term
 
-- **`open/4` options.** The options list is accepted and ignored; at least
-  `alias/1` and `eof_action/1` should be honoured or rejected rather than
-  silently dropped.
-
 - **The reader's arity limit raises the wrong thing.** `=../2` and `functor/3`
   raise `representation_error(max_arity)` past 256 arguments, but the reader
   reports it as a syntax error. ISO asks for the representation error. The fix

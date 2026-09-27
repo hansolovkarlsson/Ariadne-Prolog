@@ -8,7 +8,27 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ## 2026-09-27
 
+### Added
+
+- **`open/4` options.** The list was accepted and ignored; every option is
+  now checked before the file is touched. `alias(A)` names the stream wherever
+  a stream is expected, and an alias already in use is
+  `permission_error(open, source_sink, alias(A))`. `eof_action(A)` is
+  `error`, `eof_code` or `reset`. `type(text)` and `reposition(false)` are
+  accepted; `type(binary)` and `reposition(true)` are refused with a
+  permission error, as there is no byte input and no seeking. Anything else
+  is `domain_error(stream_option, O)`. Seven tests, one changed; the suite is
+  at 284. (`22b12d0`)
+
 ### Changed
+
+- **Reading past the end of a stream is an error by default.** A read that
+  answers `end_of_file` moves the stream past its end, and the next read,
+  character or term, raises `permission_error(input, past_end_of_stream, S)`.
+  Every stream used to answer `end_of_file` forever, which is now
+  `eof_action(eof_code)`. `peek_char` at the end leaves the stream at it, not
+  past it. `user_input` resets, so a terminal can be read again after ^D.
+  (`22b12d0`)
 
 - **CI runs on `ubuntu-24.04`, not `ubuntu-latest`.** `ubuntu-latest` becomes
   Ubuntu 26 on 2026-10-19. Pinned, a new compiler arrives as a change to the
