@@ -10,6 +10,13 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **`statistics(garbage_collection, [Collections, BytesFreed, Milliseconds])`,**
+  as SWI has it, and **`make test-deep`**, which runs `tests/deep.pl`: terms
+  nested a million deep put through 21 walks at the top level, where the
+  collector can run, failing unless it did. `make check` runs it twice, once
+  with the collector's threshold at its lowest, and `make test-asan` once.
+  (`d1e3088`)
+
 - **`open/4` options.** The list was accepted and ignored; every option is
   now checked before the file is touched. `alias(A)` names the stream wherever
   a stream is expected, and an alias already in use is
@@ -78,12 +85,31 @@ There are no releases yet, so entries are grouped by the day they landed on
   `%` of `a.% note` as the full stop's layout, and read the comment's text as
   the next clause: a consulted file lost the clause after it. (`fcb9128`)
 
+- **Terms nested deep in any argument no longer crash.** Every walk recursed
+  on all arguments but the last, so `1+1+...+1` at 100,000 levels died with
+  SIGSEGV in the collector, and the reader gave out at 5000 levels of
+  brackets, arguments, lists or prefix operators. The collector, unification,
+  comparison, copying, the builtins' walks, the writer, the evaluator and the
+  parser now keep their pending work on stacks of their own, and a million
+  levels cost a fraction of a second. Writer output, arithmetic errors and
+  every clause read from the repository are unchanged against the old binary;
+  queens and sort run as before and zebra 7% faster. (`d1e3088`)
+
+- **`atomic_list_concat` joins in one pass.** It made a new atom at every
+  step and atoms are never freed, so a million parts ran the machine out of
+  memory. (`678e501`)
+
 ### Tests
 
-- 277 → 295. Seven for `open/4` and the end of stream, one changed; eleven for
+- 277 → 296. Seven for `open/4` and the end of stream, one changed; twelve for
   the fixes above. Nine were seen failing against the code before their fix;
   `tm_reader_list_tail` and `tm_variant_pairs` pass on both, and guard the
-  code that was rewritten.
+  code that was rewritten. `at_join_many` was not run against the old join,
+  which took 0.7 seconds at a tenth of its size and grows with the square.
+- `tests/deep.pl`, 22 checks outside the suite. Against the code before
+  `d1e3088` it dies with SIGSEGV.
+- The suite's second leg, `make test-gc`, turns out never to have collected
+  anything; see the roadmap.
 
 ## 2026-09-25
 

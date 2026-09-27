@@ -12,17 +12,20 @@ produced some of the entries below.
 
 ## Near term
 
-## Medium term
+- **The suite never runs the collector.** The collector only runs when no
+  choice point is live, and `run_tests` holds one from its first test to its
+  last, so `make test-gc` and the second leg of `make test-asan` have run the
+  whole suite without a single collection: `statistics(garbage_collection,
+  [N|_])` is 0 at the end. `tests/deep.pl` now exercises the collector, but
+  only on deep terms. Either the harness runs each test with nothing live
+  around it, or the GC leg is dropped and the counts in the records stop
+  calling it a second leg. Found on 2026-09-27.
 
-- **Terms nested deep in an argument other than the last crash.** Every walk
-  over a term recurses on all its arguments but the last and loops on the
-  last, so a list of any length is safe, but a term nested in its first
-  argument is not: the `1+1+...+1` that a `yfx` operator builds. At 10,000
-  levels it works; at 100,000 the interpreter dies with SIGSEGV in
-  `gc_copy`, the collector, before any builtin touches the term. `unify`,
-  `copy_rec`, `compare_terms`, the writer and the walks in `builtins.c` have
-  the same shape. The fix is an explicit stack in each, the collector first.
-  Found on 2026-09-27 while fixing the list case.
+- **Splitting an atom is quadratic.** `atomic_list_concat/3` in split mode
+  interns every remainder on the way, as joining did until 2026-09-27; a
+  builtin as for `'$join'` would make it linear.
+
+## Medium term
 
 - **Reclaiming retracted clauses.** A retracted clause is held until its
   predicate is abolished, because a choice point may still point at it. A
@@ -32,9 +35,10 @@ produced some of the entries below.
   every partial application needs a named helper. A small `>>` implementation
   would remove a papercut that shows up constantly in list code.
 
-- **Error context.** The second argument of `error/2` is always an unbound
-  variable. Filling in the predicate indicator where the error was raised would
-  make messages considerably more useful.
+- **Error context.** The second argument of `error/2` is an unbound variable,
+  except where the reader gives `file(Name, Line)`. Filling in the predicate
+  indicator where the error was raised would make messages considerably more
+  useful.
 
 ## Structural
 
