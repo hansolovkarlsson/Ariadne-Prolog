@@ -458,7 +458,8 @@ BUILTINS = [
     ('atomic_list_concat(+List, -Atom)', "Concatenates a list of atomics into Atom."),
     ('atomic_list_concat(?List, +Sep, ?Atom)',
      "Joins List with Sep between the parts. With List unbound, splits Atom on Sep "
-     "instead."),
+     "instead, into atoms. Sep is taken as text either way, so splitting undoes "
+     "joining when Sep is a number."),
     ('concat_atom(?List, ?Atom)', "A synonym for atomic_list_concat/2, also with /3."),
     ('term_to_atom(?Term, ?Atom)',
      "Writes Term to Atom with quoting, or reads Atom as a term when Term is unbound."),

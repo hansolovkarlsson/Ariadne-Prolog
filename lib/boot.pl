@@ -353,16 +353,6 @@ atomic_list_concat(List, Sep, Atom) :-
 '$all_nonvar'([]).
 '$all_nonvar'([H|T]) :- nonvar(H), '$all_nonvar'(T).
 
-'$split_atom'(Atom, Sep, [Part|Parts]) :-
-    (   sub_atom(Atom, Before, _, After, Sep)
-    ->  '$sub_atom'(Atom, 0, Before, Part),
-        atom_length(Atom, N),
-        Start is N - After,
-        '$sub_atom'(Atom, Start, After, Rest),
-        '$split_atom'(Rest, Sep, Parts)
-    ;   Part = Atom, Parts = []
-    ).
-
 concat_atom(L, A) :- atomic_list_concat(L, A).
 concat_atom(L, S, A) :- atomic_list_concat(L, S, A).
 

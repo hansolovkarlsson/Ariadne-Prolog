@@ -42,7 +42,7 @@ generated into `docs/` by `make doc`.
 
 ```
 make            # build ./prolog
-make test       # run the regression suite (296 tests)
+make test       # run the regression suite (299 tests)
 make test-gc    # every test again, bare, collected while it runs
 make test-deep  # terms nested a million deep, with the collector running
 make test-asan  # the same suite under ASan + UBSan
@@ -171,7 +171,7 @@ into a fresh heap and the old one is released. Forwarding pointers keep shared
 structure shared. The collector runs only when no choice point is live, and the
 suite's own harness always holds some, so `make test-gc` runs every test again
 bare, with nothing around it and the collector let in at every fourth
-inference: each of the 296 tests is collected while it runs. `make test-deep`
+inference: each of the 299 tests is collected while it runs. `make test-deep`
 builds terms nested a million deep at the top level and fails unless they were
 collected.
 

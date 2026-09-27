@@ -845,6 +845,38 @@ BI(bi_join3)
     RET(ok);
 }
 
+/* '$split_atom'(+Atom, +Sep, -Parts): Atom cut at each occurrence of Sep,
+   leftmost first, into a list of atoms.  One pass over the text, where the
+   Prolog version interned every remainder on the way and was quadratic.
+   Both are taken as text, as '$join' takes them, so that splitting undoes
+   joining for a separator that is a number.  Sep is not ''. */
+BI(bi_split_atom3)
+{
+    UNUSED;
+    char *a, *sep;
+    size_t na, ns, i, start = 0;
+    int rc, ok;
+    Term *head = NULL, *last = NULL, *cell;
+
+    if ((rc = get_text(A[0], &a, &na, "atom")) != PL_OK) return rc;
+    if ((rc = get_text(A[1], &sep, &ns, "atom")) != PL_OK) { free(a); return rc; }
+    for (i = 0; ns && i + ns <= na; ) {
+        if (memcmp(a + i, sep, ns) == 0) {
+            cell = mk_cons(mk_atom(intern_n(a + start, i - start)), mk_atom(a_nil));
+            if (last) ARG(last, 1) = cell; else head = cell;
+            last = cell;
+            i += ns;
+            start = i;
+        } else i++;
+    }
+    cell = mk_cons(mk_atom(intern_n(a + start, na - start)), mk_atom(a_nil));
+    if (last) ARG(last, 1) = cell; else head = cell;
+    ok = unify(A[2], head);
+    free(a);
+    free(sep);
+    RET(ok);
+}
+
 /* '$sub_atom'(+Atom, +Before, +Len, -Sub) in characters. */
 BI(bi_sub_atom4)
 {
@@ -2526,7 +2558,7 @@ static const BiEntry bi_table[] = {
     { "atom_length", 2, bi_atom_length }, { "atom_codes", 2, bi_atom_codes },
     { "atom_chars", 2, bi_atom_chars }, { "char_code", 2, bi_char_code },
     { "number_codes", 2, bi_number_codes }, { "number_chars", 2, bi_number_chars },
-    { "atom_number", 2, bi_atom_number }, { "$atom_concat", 3, bi_atom_concat3 }, { "$join", 3, bi_join3 },
+    { "atom_number", 2, bi_atom_number }, { "$atom_concat", 3, bi_atom_concat3 }, { "$join", 3, bi_join3 }, { "$split_atom", 3, bi_split_atom3 },
     { "$sub_atom", 4, bi_sub_atom4 }, { "upcase_atom", 2, bi_upcase },
     { "downcase_atom", 2, bi_downcase }, { "term_to_atom", 2, bi_term_to_atom },
     { "atom_to_term", 3, bi_atom_to_term },
