@@ -15,9 +15,10 @@ There are no releases yet, so entries are grouped by the day they landed on
   it as `$(PREFIX)/bin/prolog`. The README, the tutorials and the pages
   generated from them all say `bin/prolog`. (`f2199a6`)
 
-- **Object files are compiled into `build/`,** not beside their sources in
-  `src/`, and `make clean` removes `build/` along with `bin/`. The generated
-  `src/boot_pl.c` still lives in `src/`. (`4061f1a`)
+- **Build products go to `build/`.** The object files used to sit beside
+  their sources in `src/`, and the C generated from `lib/boot.pl` lived there
+  too. Both now go to `build/`, which `make clean` removes along with `bin/`,
+  so `src/` holds only checked-in files. (`4061f1a`, `be1c84c`)
 
 ## 2026-09-27
 
