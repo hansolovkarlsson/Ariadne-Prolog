@@ -2,7 +2,7 @@
 
 Known work, roughly in the order it would pay off. Everything under the first
 three headings is a consequence of decisions described in the
-[engine internals](https://hansolovkarlsson.github.io/ariadne-prolog/internals.html)
+[engine internals](https://hansolovkarlsson.github.io/Ariadne-Prolog/internals.html)
 document; nothing is speculative. *Built on the interpreter* holds programs
 written in Prolog that live in this repository and run on it.
 

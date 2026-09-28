@@ -9,7 +9,7 @@
 import os
 from mdpage import build
 
-REPO = 'https://github.com/hansolovkarlsson/ariadne-prolog/blob/main/'
+REPO = 'https://github.com/hansolovkarlsson/Ariadne-Prolog/blob/main/'
 
 build(mdfile='docs/POSTMORTEM.md',
       outfile='postmortem.html',

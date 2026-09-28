@@ -1,6 +1,6 @@
 # Ariadne Prolog
 
-[![CI](https://github.com/hansolovkarlsson/ariadne-prolog/actions/workflows/ci.yml/badge.svg)](https://github.com/hansolovkarlsson/ariadne-prolog/actions/workflows/ci.yml)
+[![CI](https://github.com/hansolovkarlsson/Ariadne-Prolog/actions/workflows/ci.yml/badge.svg)](https://github.com/hansolovkarlsson/Ariadne-Prolog/actions/workflows/ci.yml)
 
 A Prolog interpreter written from scratch in C99 — reader, engine, garbage
 collector and library. No dependencies beyond libc and libm.
@@ -28,18 +28,18 @@ false.
 ```
 
 Documentation is published at
-**[hansolovkarlsson.github.io/ariadne-prolog](https://hansolovkarlsson.github.io/ariadne-prolog/)**:
+**[hansolovkarlsson.github.io/Ariadne-Prolog](https://hansolovkarlsson.github.io/Ariadne-Prolog/)**:
 a four-part tutorial that teaches Prolog from the beginning using this
-interpreter ([level 1](https://hansolovkarlsson.github.io/ariadne-prolog/tutorial-1.html),
-[level 2](https://hansolovkarlsson.github.io/ariadne-prolog/tutorial-2.html),
-[level 3](https://hansolovkarlsson.github.io/ariadne-prolog/tutorial-3.html),
-[level 4](https://hansolovkarlsson.github.io/ariadne-prolog/tutorial-4.html)),
-a [language reference](https://hansolovkarlsson.github.io/ariadne-prolog/reference.html)
+interpreter ([level 1](https://hansolovkarlsson.github.io/Ariadne-Prolog/tutorial-1.html),
+[level 2](https://hansolovkarlsson.github.io/Ariadne-Prolog/tutorial-2.html),
+[level 3](https://hansolovkarlsson.github.io/Ariadne-Prolog/tutorial-3.html),
+[level 4](https://hansolovkarlsson.github.io/Ariadne-Prolog/tutorial-4.html)),
+a [language reference](https://hansolovkarlsson.github.io/Ariadne-Prolog/reference.html)
 covering syntax, control, arithmetic, every builtin predicate, grammars and
-errors, and an [engine internals](https://hansolovkarlsson.github.io/ariadne-prolog/internals.html)
+errors, and an [engine internals](https://hansolovkarlsson.github.io/Ariadne-Prolog/internals.html)
 document describing how the interpreter is built and where the design costs
-something. The [journal](https://hansolovkarlsson.github.io/ariadne-prolog/journal.html)
-and the [postmortem](https://hansolovkarlsson.github.io/ariadne-prolog/postmortem.html)
+something. The [journal](https://hansolovkarlsson.github.io/Ariadne-Prolog/journal.html)
+and the [postmortem](https://hansolovkarlsson.github.io/Ariadne-Prolog/postmortem.html)
 are published there too, rendered from the Markdown below. All of it is
 generated into `web/` by `make doc`, and published from there.
 
@@ -224,10 +224,10 @@ running constantly; `make test-asan` runs both under the sanitizers.
 - [CHANGELOG.md](docs/CHANGELOG.md): what has shipped, newest first.
 - [JOURNAL.md](docs/JOURNAL.md): how the interpreter was built and why it is shaped
   this way. Also
-  [on the site](https://hansolovkarlsson.github.io/ariadne-prolog/journal.html).
+  [on the site](https://hansolovkarlsson.github.io/Ariadne-Prolog/journal.html).
 - [POSTMORTEM.md](docs/POSTMORTEM.md): every defect the project has found in itself,
   and, more usefully, what found it. Also
-  [on the site](https://hansolovkarlsson.github.io/ariadne-prolog/postmortem.html).
+  [on the site](https://hansolovkarlsson.github.io/Ariadne-Prolog/postmortem.html).
 
 The last two are the source for their published pages: `tools/mdpage.py` renders
 the Markdown, and CI fails if `web/` no longer matches it. The four live in

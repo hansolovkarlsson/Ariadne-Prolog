@@ -11,7 +11,7 @@
 import io, os
 from docpage import CSS, esc, inline, FAVICON
 
-REPO = 'https://github.com/hansolovkarlsson/ariadne-prolog'
+REPO = 'https://github.com/hansolovkarlsson/Ariadne-Prolog'
 
 EXTRA_CSS = """
 /* ---- landing page ---- */
@@ -148,8 +148,8 @@ table.plain td:first-child { font-family: var(--mono); font-size: 0.82rem; color
 """
 
 TRANSCRIPT = [
-    ('c', '$ git clone https://github.com/hansolovkarlsson/ariadne-prolog'),
-    ('c', '$ cd ariadne-prolog && make'),
+    ('c', '$ git clone https://github.com/hansolovkarlsson/Ariadne-Prolog'),
+    ('c', '$ cd Ariadne-Prolog && make'),
     ('c', '$ bin/prolog'),
     ('', 'Ariadne Prolog 1.0 -- a Prolog interpreter in C'),
     ('', 'Type help. for help, halt. to quit.'),

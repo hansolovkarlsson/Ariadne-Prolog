@@ -15,7 +15,7 @@ Thirty-seven defects, in five cohorts that failed for five different reasons:
   choice to copy structures and manage memory by hand. Five fixed before the
   first commit, and one of the same kind found on 2026-09-27; the five are
   documented in full in the [engine
-  internals](https://hansolovkarlsson.github.io/ariadne-prolog/internals.html)
+  internals](https://hansolovkarlsson.github.io/Ariadne-Prolog/internals.html)
   under *Five bugs this design produced*, and summarised here.
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
