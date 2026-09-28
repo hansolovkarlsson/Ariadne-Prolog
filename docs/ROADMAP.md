@@ -14,6 +14,21 @@ produced some of the entries below.
 
 ## Medium term
 
+- **Revise and extend the tutorials.** The four levels in `tutorial/`, and
+  the pages generated from them, were written early, before much of today's
+  library and error reporting existed. Check each against the interpreter
+  as it is now, fix what has drifted, and add material where the levels
+  leave gaps. Deferred on 2026-09-28: not before grammar stage 2 is under
+  way.
+
+- **More examples, covering the whole language.** `examples/` has five
+  programs: hanoi, queens, zebra, calc and family. Add enough that every
+  part of the language has a small, runnable example. That means
+  arithmetic, lists, cut and negation, `findall/3` and its kin, assert and
+  retract, exceptions, DCGs, streams and files, `format/2`, lambdas and
+  `char_type/2`. Each one gets a line in `make examples`. Deferred on
+  2026-09-28, like the tutorials.
+
 ## Structural
 
 These change the shape of the system rather than adding to it.
