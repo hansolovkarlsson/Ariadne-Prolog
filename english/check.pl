@@ -2,8 +2,8 @@
 
     It loads its other files from beside itself, so it runs from anywhere:
 
-        ./prolog -q english/check.pl -g "check('The dogs chase a cat.')"
-        ./prolog -q english/check.pl -g "check('The dogs chases a cat.')"
+        bin/prolog -q english/check.pl -g "check('The dogs chase a cat.')"
+        bin/prolog -q english/check.pl -g "check('The dogs chases a cat.')"
 
     check/1 takes the sentence as an atom. When the sentence is grammatical
     it prints every reading as a labelled bracketing, [S [NP the dogs] ...],

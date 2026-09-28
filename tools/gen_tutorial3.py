@@ -82,7 +82,7 @@ section('start', 'Where we left off', ''.join([
          "differently: the order of your goals starts to matter, and a program "
          "can be correct read one way and wrong read the other. That trade is "
          "the subject of this page."),
-    pre("$ ./prolog tutorial/level3.pl"),
+    pre("$ bin/prolog tutorial/level3.pl"),
 ]))
 
 section('negation', 'Negation, and what it really means', ''.join([

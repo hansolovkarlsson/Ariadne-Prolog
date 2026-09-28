@@ -1,7 +1,7 @@
 /*  A complete program: fill the orders in a file, print the report, and
     exit with a status that says whether it worked.
 
-        ./prolog -q tutorial/restock.pl
+        bin/prolog -q tutorial/restock.pl
 
     Run it from the top of the source tree. This interpreter has no argv
     flag, so the two file names are written here rather than taken from

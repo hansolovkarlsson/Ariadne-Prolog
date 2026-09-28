@@ -150,7 +150,7 @@ table.plain td:first-child { font-family: var(--mono); font-size: 0.82rem; color
 TRANSCRIPT = [
     ('c', '$ git clone https://github.com/hansolovkarlsson/ariadne-prolog'),
     ('c', '$ cd ariadne-prolog && make'),
-    ('c', '$ ./prolog'),
+    ('c', '$ bin/prolog'),
     ('', 'Ariadne Prolog 1.0 -- a Prolog interpreter in C'),
     ('', 'Type help. for help, halt. to quit.'),
     ('', ''),
@@ -286,7 +286,7 @@ def render():
   <div class="cards" style="grid-template-columns: minmax(0,1fr);">
     <div class="card">
       <p style="font-family: var(--mono); font-size: 0.82rem; color: var(--ink); line-height: 1.8;">
-make<br>./prolog<br>make check<span style="color: var(--muted)">      # 330 tests, twice</span><br>make examples</p>
+make<br>bin/prolog<br>make check<span style="color: var(--muted)">      # 330 tests, twice</span><br>make examples</p>
     </div>
   </div>
   <p style="margin-top: 1rem; color: var(--muted); font-size: 0.92rem; max-width: 68ch;">

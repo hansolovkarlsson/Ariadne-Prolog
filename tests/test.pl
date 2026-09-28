@@ -1,6 +1,6 @@
 /*  test.pl -- the regression test suite.
 
-    Run with:  make test      (or ./prolog -q tests/test.pl -g run_tests)
+    Run with:  make test      (or bin/prolog -q tests/test.pl -g run_tests)
                make test-gc   (every test again, bare, with the collector
                                running; see run_tests_bare below)
 

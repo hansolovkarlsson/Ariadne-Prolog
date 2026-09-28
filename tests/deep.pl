@@ -1,6 +1,6 @@
 /*  tests/deep.pl -- terms nested a million deep, in every walk.
 
-    Run with:  make test-deep  (or ./prolog -q tests/deep.pl -g run)
+    Run with:  make test-deep  (or bin/prolog -q tests/deep.pl -g run)
 
     Each walk over a term, and the reader and the writer, once used the C
     stack for every level of nesting outside the last argument, so a term

@@ -2,7 +2,7 @@
 
     Load it and follow along:
 
-        ./prolog tutorial/level4.pl
+        bin/prolog tutorial/level4.pl
 
     Every query in the tutorial works against this file. It picks up the
     stock room from Level 3 and turns it into something that runs: stock

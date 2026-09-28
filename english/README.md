@@ -5,13 +5,13 @@ run on this interpreter. It says whether a sentence is grammatical and, when it
 is not, which words disagree:
 
 ```
-$ ./prolog -q english/check.pl -g "check('The dogs chase a cat.'), halt"
+$ bin/prolog -q english/check.pl -g "check('The dogs chase a cat.'), halt"
 grammatical: [S [NP the dogs] [VP chase [NP a cat]]]
-$ ./prolog -q english/check.pl -g "check('The dogs chases a cat.'), halt"
+$ bin/prolog -q english/check.pl -g "check('The dogs chases a cat.'), halt"
 not grammatical: the verb 'chases' does not agree with its subject
-$ ./prolog -q english/check.pl -g "check('A apple is red.'), halt"
+$ bin/prolog -q english/check.pl -g "check('A apple is red.'), halt"
 not grammatical: 'a apple' should be 'an apple'
-$ ./prolog -q english/check.pl -g "check('The old man walks in the park with his dog.'), halt"
+$ bin/prolog -q english/check.pl -g "check('The old man walks in the park with his dog.'), halt"
 grammatical, 2 readings:
   [S [NP the old man] [VP walks [PP in [NP the park [PP with [NP his dog]]]]]]
   [S [NP the old man] [VP walks [PP in [NP the park]] [PP with [NP his dog]]]]

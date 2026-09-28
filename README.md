@@ -12,7 +12,7 @@ fails, which is how Prolog searches; here the record is the trail.
 
 ```
 $ make
-$ ./prolog
+$ bin/prolog
 Ariadne Prolog 1.0 -- a Prolog interpreter in C
 Type help. for help, halt. to quit.
 
@@ -46,7 +46,7 @@ generated into `web/` by `make doc`, and published from there.
 ## Building
 
 ```
-make            # build ./prolog
+make            # build bin/prolog
 make test       # run the regression suite (330 tests)
 make test-gc    # every test again, bare, collected while it runs
 make test-deep  # terms nested a million deep, with the collector running
@@ -77,7 +77,7 @@ toplevel; with `-g` it runs the goal and exits, which is how you write
 scripts:
 
 ```
-$ ./prolog -q examples/queens.pl -g "queens(8, Qs), write(Qs), nl"
+$ bin/prolog -q examples/queens.pl -g "queens(8, Qs), write(Qs), nl"
 [4,2,7,3,6,8,5,1]
 ```
 

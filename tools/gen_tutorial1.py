@@ -82,7 +82,7 @@ section('start', 'Before you begin', ''.join([
     para("Build it and start the toplevel:"),
     pre("""
 $ make
-$ ./prolog
+$ bin/prolog
 Ariadne Prolog 1.0 -- a Prolog interpreter in C
 Type help. for help, halt. to quit.
 
@@ -93,7 +93,7 @@ Type help. for help, halt. to quit.
          "you have finished a sentence."),
     para("The programs in this tutorial are in `tutorial/level1.pl`. Load the "
          "file when you start:"),
-    pre("$ ./prolog tutorial/level1.pl"),
+    pre("$ bin/prolog tutorial/level1.pl"),
     note('try', 'Follow along',
          "Read this page with a terminal open beside it. Prolog is quick to try "
          "things in, and the point of the language is hard to feel without "

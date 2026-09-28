@@ -2,7 +2,7 @@
 
     Load it and follow along:
 
-        ./prolog tutorial/level3.pl
+        bin/prolog tutorial/level3.pl
 
     Every query in the tutorial works against this file.
 */

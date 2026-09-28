@@ -1,6 +1,6 @@
 /*  english/tests.pl -- the grammar's own checks.
 
-    Run with:  make english      (or ./prolog -q english/tests.pl -g run)
+    Run with:  make english      (or bin/prolog -q english/tests.pl -g run)
 
     good/1 sentences must be grammatical; bad/2 sentences must not be, and
     the diagnosis, parsing again with agreement relaxed, must name the kind

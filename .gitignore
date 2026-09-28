@@ -1,5 +1,5 @@
 *.o
-/prolog
+/bin/
 src/boot_pl.c
 __pycache__/
 

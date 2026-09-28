@@ -62,7 +62,7 @@ section('start', 'Where we left off', ''.join([
          "Prolog programs are mostly made of — lists — and then answers the "
          "question Level 1 could not: how to ask about *all* the solutions at "
          "once."),
-    pre("$ ./prolog tutorial/level2.pl"),
+    pre("$ bin/prolog tutorial/level2.pl"),
     note('impl', 'Why everything here is called my_something',
          "The library already defines `length/2`, `member/2` and `append/3`. If "
          "you define them again in your own file, your clauses are **added** to "

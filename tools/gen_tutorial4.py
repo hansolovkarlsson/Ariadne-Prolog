@@ -78,7 +78,7 @@ section('start', 'Where we left off', ''.join([
          "something that runs. It has stock that goes down when you sell, "
          "errors that are raised and caught, and a report it can write to a "
          "file."),
-    pre("$ ./prolog tutorial/level4.pl"),
+    pre("$ bin/prolog tutorial/level4.pl"),
     note('impl', 'Two files, not one',
          "`tutorial/level4.pl` is the program; `tutorial/orders.txt` is a "
          "handful of orders for it to read, including three that fail on "
@@ -653,7 +653,7 @@ main :-
     halt.
 """),
     pre("""
-$ ./prolog -q tutorial/restock.pl
+$ bin/prolog -q tutorial/restock.pl
 cannot sell 1 tent: only 0 left
 no such item: unicorn
 cannot sell 99 kettle: only 3 left
@@ -674,7 +674,7 @@ written to /tmp/stock-report.txt
          "the way the toplevel would, on standard error, rather than inventing a "
          "message of its own:"),
     pre("""
-$ ./prolog -q tutorial/restock.pl        # with the orders file renamed away
+$ bin/prolog -q tutorial/restock.pl        # with the orders file renamed away
 ERROR: open/3: Unknown source_sink: 'tutorial/orders.txt'
 $ echo $?
 1
