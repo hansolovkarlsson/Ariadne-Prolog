@@ -440,7 +440,7 @@ or at least ask the interpreter.
 Two days after day five, and the busiest day the interpreter has had since the
 first. It began with the standup's list and a runner pin, and ended with every
 walk in the engine rewritten, a test leg that had never done its job doing it,
-and seventeen defects in the postmortem.
+and eighteen defects in the postmortem.
 
 ### Two small things first
 
@@ -678,7 +678,12 @@ The grammar found the interpreter's gaps, as expected, and they were small:
 there is no `char_type/2`, so the tokenizer compares character codes, and
 `consult/1` resolves a path against the current directory rather than the
 loading file's, so the checker runs from the top of the repository, as
-`tutorial/restock.pl` already did. Both went on the roadmap. None of the
+`tutorial/restock.pl` already did. Both went on the roadmap, and came off it
+the same evening (`3187426`): `char_type/2` and `code_type/2` are in the library,
+and a relative path in a file being loaded is looked for beside that file
+before the current directory, so the checker's files load one another by bare
+name. A third came from a mistake while counting the lexicon: `format/2`'s own
+errors printed as "Unhandled exception", which the postmortem has. None of the
 structural items was needed; the first of them the grammar will argue for is
 tabling, at stage 2's first left-recursive rule, and the roadmap now says a
 chart parser in Prolog is the cheaper answer to weigh against it.
@@ -717,7 +722,7 @@ Every one of these was added in response to something it would have caught.
 ## Where it stands
 
 About 7,500 lines of hand-written C, 599 lines of library written in Prolog,
-a 325-test suite with a second leg that collects and a deep-term run beside
+a 330-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, and a reference and internals
 document generated from the interpreter's own tables.
 

@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Thirty-six defects, in five cohorts that failed for five different reasons:
+Thirty-seven defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: six bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -20,10 +20,10 @@ Thirty-six defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: fourteen defects in which two parts of the project did not
+- **Consistency**: fifteen defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
-  while writing the tutorials, two while adding the character predicates, four
+  while writing the tutorials, two while adding the character predicates, five
   on 2026-09-27.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
@@ -129,7 +129,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Fourteen defects in which two parts of the project disagreed. The first eight were
+Fifteen defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -269,6 +269,21 @@ All found on 2026-09-27, each while working on the other half of its pair:
 *What this says:* the day-five lesson again, from the other side. Two
 mechanisms that do the same job will drift apart, and the one to check is the
 one nobody is editing.
+
+### An error the printer had no words for
+
+`format/2` raises `error(format(Message), _)` when its arguments do not fit its
+directives, as SWI-Prolog does, and the error printer had no case for that
+formal term, so it fell through to its last line: `ERROR: format/2: Unhandled
+exception: error(format('not enough arguments'), ...)`, the raw term, as if
+nothing had caught it. `resource_error/1` fell through the same way. The two
+halves of the error path, what is raised and what is printed, had been written
+apart, and nothing listed what the one could raise against what the other could
+say.
+
+Found on 2026-09-27 by a mistake of the author's own, a `format/2` call with
+nine directives and two arguments made while counting the grammar's lexicon.
+Both print as messages now, and `make test` checks the first. (`3187426`)
 
 ### A cut that reached through a variable
 
@@ -412,11 +427,12 @@ is the one aimed at the neighbour of the last.
 | Searching the tree for the shape just fixed | 1 |
 | Writing a test, which the defect then killed | 1 |
 | Diffing the old binary's answers against the new | 1 |
+| Using the interpreter for something else, and making a mistake | 1 |
 | Counting what a check actually did | 1 |
 
 Three things stand out.
 
-**The test suite found three of thirty-six.** It is a good suite, 325 tests
+**The test suite found three of thirty-seven.** It is a good suite, 330 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong

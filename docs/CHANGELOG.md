@@ -10,6 +10,11 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **`char_type/2` and `code_type/2`,** with SWI-Prolog's types: `alpha`,
+  `digit(W)`, `space`, `upper(L)`, `to_lower(L)`, `punct` and the rest. ASCII is
+  classified exactly, and a character past ASCII counts as a letter. Either
+  argument may be unbound. (`3187426`)
+
 - **An English grammar checker, stage 1, in `english/`.** Written as a DCG and
   run on the interpreter: 262 words, simple declarative sentences with
   determiners, adjectives, prepositional phrases, `and`, and verbs taking
@@ -102,6 +107,17 @@ There are no releases yet, so entries are grouped by the day they landed on
   `ubuntu-24.04 / clang` and `ubuntu-24.04 / gcc`. (`c11e760`)
 
 ### Fixed
+
+- **A file loads its neighbours from beside itself.** A relative path in a file
+  being loaded was resolved against the directory the interpreter was started
+  in, so a program split into files ran only from there. It is looked for
+  beside the loading file first, as SWI-Prolog does, and then where it was
+  before, so old paths still work; the grammar checker now runs from anywhere.
+  A file that loads itself stops with `resource_error(load_depth)`. (`3187426`)
+
+- **`format/2` errors and resource errors print as messages,** such as
+  `ERROR: format/2: not enough arguments`, where they printed as "Unhandled
+  exception" and the raw term. (`3187426`)
 
 - **Retracted clauses are freed once no choice point can reach them.** They
   were held until the predicate was abolished, so a counter retracted and
@@ -196,7 +212,7 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Tests
 
-- 277 → 325. Seven for `open/4` and the end of stream, one changed; twelve for
+- 277 → 330. Seven for `open/4` and the end of stream, one changed; twelve for
   the fixes above. Nine were seen failing against the code before their fix;
   `tm_reader_list_tail` and `tm_variant_pairs` pass on both, and guard the
   code that was rewritten. `at_join_many` was not run against the old join,
@@ -206,8 +222,9 @@ There are no releases yet, so entries are grouped by the day they landed on
   for the reader's variables, `tm_reader_many_vars`, which passes on the old
   code in 0.43 seconds against 0.06. One for the dialect flag, eleven for
   lambdas, seven for error context and the variable goal, six of which fail on
-  the old code, and six for retracted clauses, one of which fails and one
-  crashes on the old code.
+  the old code, six for retracted clauses, one of which fails and one crashes
+  on the old code, and five for `char_type/2` and loading from beside a file,
+  all of which fail on it. `make test` also checks two printed messages.
 - `tests/deep.pl`, 22 checks outside the suite. Against the code before
   `d1e3088` it dies with SIGSEGV.
 - The suite's second leg, `make test-gc`, turns out never to have collected

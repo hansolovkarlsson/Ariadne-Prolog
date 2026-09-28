@@ -12,20 +12,6 @@ produced some of the entries below.
 
 ## Near term
 
-- **`char_type/2` and `code_type/2`.** Neither exists, so a program that
-  splits text into words tests letters by comparing character codes, as
-  `english/check.pl` does. Found by the grammar checker on 2026-09-27; the
-  common types (`alpha`, `digit`, `space`, `upper`, `lower`, `punct`) would
-  cover it.
-
-- **`consult/1` inside a file resolves paths against the current directory.**
-  SWI-Prolog resolves them against the directory of the file being loaded, so
-  a program split into files loads from anywhere. Here it loads only from the
-  directory its paths were written for, which is why `english/check.pl` and
-  `tutorial/restock.pl` must be run from the top of the repository. Found by
-  the grammar checker on 2026-09-27. Trying the loading file's directory first
-  and the current one second would keep both working.
-
 ## Medium term
 
 ## Structural
