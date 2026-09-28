@@ -8,13 +8,13 @@ PREFIX  ?= /usr/local
 SRCS = src/term.c src/parser.c src/write.c src/arith.c src/db.c \
        src/machine.c src/stream.c src/builtins.c src/consult.c \
        src/boot_pl.c src/main.c
-OBJS = $(SRCS:.c=.o)
+OBJS = $(SRCS:src/%.c=build/%.o)
 BIN  = bin/prolog
 
 all: $(BIN)
 
 $(BIN): $(OBJS)
-	mkdir -p bin
+	@mkdir -p bin
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
 # The bootstrap library is written in Prolog and compiled into the binary.
@@ -23,7 +23,8 @@ src/boot_pl.c: lib/boot.pl tools/pl2c.awk
 
 $(OBJS): src/prolog.h
 
-.c.o:
+build/%.o: src/%.c
+	@mkdir -p build
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # The regression suite; the command line's exit status, since a -g goal that
@@ -135,7 +136,7 @@ install: $(BIN)
 	install -m 755 $(BIN) $(DESTDIR)$(PREFIX)/bin/prolog
 
 clean:
-	rm -f $(OBJS) src/boot_pl.c
-	rm -rf bin
+	rm -f src/boot_pl.c
+	rm -rf bin build
 
 .PHONY: all test test-gc test-deep test-asan check examples tutorials english doc install clean
