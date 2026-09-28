@@ -37,6 +37,16 @@ produced some of the entries below.
   `char_type/2`. Each one gets a line in `make examples`. Deferred on
   2026-09-28, like the tutorials.
 
+- **Document the source for readers learning from it.** The project began
+  as a teaching interpreter, so the code should explain itself. Each file in
+  `src/`, `lib/boot.pl` and `english/` gets a header saying what it is for,
+  what it holds, and how it fits with the other files. Today most C files
+  open with one line. Each function, and each Prolog predicate in the
+  library, gets a comment saying what it does and how it works. The
+  internals page covers the design as a whole, and these comments should
+  point to it rather than repeat it. Deferred on 2026-09-28, like the
+  tutorials.
+
 ## Structural
 
 These change the shape of the system rather than adding to it.
