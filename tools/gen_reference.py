@@ -456,6 +456,17 @@ BUILTINS = [
      "long and After characters after. Enumerates all substrings when unbound, and "
      "finds occurrences when Sub is given."),
     ('sub_string(+S, ?B, ?L, ?A, ?Sub)', "A synonym for sub_atom/5."),
+    ('char_type(?Char, ?Type)',
+     "Char is of Type, as in SWI-Prolog: `alpha`, `alnum`, `digit(Weight)`, "
+     "`space`, `white`, `end_of_line`, `upper`, `upper(Lower)`, `lower`, "
+     "`lower(Upper)`, `to_lower(L)`, `to_upper(U)`, `punct`, `graph`, `print`, "
+     "`cntrl`, `csym`, `csymf`, `ascii`, `period`, `quote` or `paren`. ASCII is "
+     "classified exactly; a character past ASCII counts as a letter, with no "
+     "case to change. Either argument may be unbound: `findall(C, "
+     "char_type(C, digit(_)), L)` gives the ten digits."),
+    ('code_type(?Code, ?Type)',
+     "As char_type/2 for character codes, which it also gives in `upper(L)` "
+     "and the other types that name a second character."),
     ('upcase_atom(+Atom, -Upper)', "Upper is Atom with ASCII letters upper-cased."),
     ('downcase_atom(+Atom, -Lower)', "Lower is Atom with ASCII letters lower-cased."),
     ('atomic_list_concat(+List, -Atom)', "Concatenates a list of atomics into Atom."),
@@ -695,7 +706,11 @@ BUILTINS = [
     ('##', 'Loading, flags and the system'),
     ('consult(+File)',
      "Loads a file, adding its clauses to the database. `[file]` and "
-     "`ensure_loaded/1` do the same; the `.pl` extension may be left off."),
+     "`ensure_loaded/1` do the same; the `.pl` extension may be left off. A "
+     "relative path met while another file is loading is looked for beside "
+     "that file first, then in the current directory, so a program split into "
+     "files loads from wherever it is run. A file that loads itself, or a ring "
+     "of them, stops with `resource_error(load_depth)` after 64 levels."),
     ('initialization(:Goal)',
      "Runs Goal once all the files named on the command line have been loaded."),
     ('listing', "Writes every user predicate; listing/1 takes a Name or Name/Arity."),
@@ -833,6 +848,7 @@ ERRORS = [
      '`context(Name/Arity, _)`. Lists have '
      'no length limit.'],
     ['representation_error(character_code)', 'A character code outside Unicode.'],
+    ['resource_error(load_depth)', 'Files loading one another more than 64 deep.'],
     ['permission_error(modify, static_procedure, PI)',
      'An attempt to assert to, retract from or inspect a predicate written in C.'],
     ['permission_error(input, past_end_of_stream, S)',

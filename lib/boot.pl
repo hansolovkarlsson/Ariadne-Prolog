@@ -454,6 +454,63 @@ atomic_list_concat(List, Sep, Atom) :-
 '$all_nonvar'([]).
 '$all_nonvar'([H|T]) :- nonvar(H), '$all_nonvar'(T).
 
+/*  char_type(?Char, ?Type) and code_type(?Code, ?Type), as SWI-Prolog and
+    the Edinburgh systems before it have them. ASCII is classified exactly.
+    A character past ASCII counts as a letter, since in text read as UTF-8
+    most of them in words are, and has no case to change. With the character
+    unbound they enumerate the ASCII characters; with the type unbound, the
+    types. code_type/2 takes a character too, and gives codes where char_type/2
+    gives characters: code_type(0'A, to_lower(L)) is L = 0'a.
+*/
+char_type(C, Type) :-
+    (   var(C) -> between(0, 127, X), char_code(C, X)
+    ;   atom(C), atom_length(C, 1) -> char_code(C, X)
+    ;   throw(error(type_error(character, C), _))
+    ),
+    '$ctype'(X, T),
+    '$ctype_chars'(T, Type).
+
+code_type(C, Type) :-
+    (   var(C) -> between(0, 127, C), X = C
+    ;   integer(C) -> X = C
+    ;   atom(C), atom_length(C, 1) -> char_code(C, X)
+    ;   throw(error(type_error(character, C), _))
+    ),
+    '$ctype'(X, Type).
+
+% The types whose argument is a character code, given as characters.
+'$ctype_chars'(upper(L), upper(C))       :- !, char_code(C, L).
+'$ctype_chars'(lower(U), lower(C))       :- !, char_code(C, U).
+'$ctype_chars'(to_lower(L), to_lower(C)) :- !, char_code(C, L).
+'$ctype_chars'(to_upper(U), to_upper(C)) :- !, char_code(C, U).
+'$ctype_chars'(T, T).
+
+'$ctype'(X, alnum)       :- ( '$ctype_letter'(X) -> true ; '$ctype_digit'(X) ).
+'$ctype'(X, alpha)       :- '$ctype_letter'(X).
+'$ctype'(X, csym)        :- ( '$ctype_letter'(X) -> true ; '$ctype_digit'(X) -> true ; X =:= 0'_ ).
+'$ctype'(X, csymf)       :- ( '$ctype_letter'(X) -> true ; X =:= 0'_ ).
+'$ctype'(X, ascii)       :- X < 128.
+'$ctype'(X, white)       :- ( X =:= 0'  -> true ; X =:= 9 ).
+'$ctype'(X, space)       :- ( X =:= 0'  -> true ; X >= 9, X =< 13 ).
+'$ctype'(X, end_of_line) :- ( X =:= 10 -> true ; X =:= 13 ).
+'$ctype'(X, cntrl)       :- ( X < 32 -> true ; X =:= 127 ).
+'$ctype'(X, digit(W))    :- '$ctype_digit'(X), W is X - 0'0.
+'$ctype'(X, upper)       :- X >= 0'A, X =< 0'Z.
+'$ctype'(X, upper(L))    :- X >= 0'A, X =< 0'Z, L is X + 32.
+'$ctype'(X, lower)       :- X >= 0'a, X =< 0'z.
+'$ctype'(X, lower(U))    :- X >= 0'a, X =< 0'z, U is X - 32.
+'$ctype'(X, punct)       :- X >= 33, X =< 126, \+ '$ctype_letter'(X), \+ '$ctype_digit'(X).
+'$ctype'(X, graph)       :- ( X >= 33, X =< 126 -> true ; X > 127 ).
+'$ctype'(X, print)       :- ( X >= 32, X =< 126 -> true ; X > 127 ).
+'$ctype'(X, period)      :- ( X =:= 0'. -> true ; X =:= 0'! -> true ; X =:= 0'? ).
+'$ctype'(X, quote)       :- ( X =:= 0'' -> true ; X =:= 0'" -> true ; X =:= 0'` ).
+'$ctype'(X, paren)       :- ( X =:= 0'( -> true ; X =:= 0') ).
+'$ctype'(X, to_lower(L)) :- ( X >= 0'A, X =< 0'Z -> L is X + 32 ; L = X ).
+'$ctype'(X, to_upper(U)) :- ( X >= 0'a, X =< 0'z -> U is X - 32 ; U = X ).
+
+'$ctype_letter'(X) :- ( X >= 0'a, X =< 0'z -> true ; X >= 0'A, X =< 0'Z -> true ; X > 127 ).
+'$ctype_digit'(X)  :- X >= 0'0, X =< 0'9.
+
 concat_atom(L, A) :- atomic_list_concat(L, A).
 concat_atom(L, S, A) :- atomic_list_concat(L, S, A).
 

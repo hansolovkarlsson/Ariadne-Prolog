@@ -104,6 +104,19 @@ void print_error_term(FILE *f, Term *ball)
             fprintf(f, "'\n");
             return;
         }
+        if (!strcmp(k, "format") && AR(formal) == 1) {
+            /* format/2,3 give the problem as text, as SWI-Prolog does. */
+            Term *m = deref(ARG(formal, 0));
+            if (m->tag == TAG_ATOM) fprintf(f, "%s\n", atom_name(AT(m)));
+            else { wr(f, m); fprintf(f, "\n"); }
+            return;
+        }
+        if (!strcmp(k, "resource_error") && AR(formal) == 1) {
+            fprintf(f, "Not enough resources: ");
+            wr(f, ARG(formal, 0));
+            fprintf(f, "\n");
+            return;
+        }
         if (!strcmp(k, "syntax_error") && AR(formal) == 1) {
             Term *m = deref(ARG(formal, 0));
             if (m->tag == TAG_ATOM) fprintf(f, "Syntax error: %s\n", atom_name(AT(m)));
@@ -220,23 +233,53 @@ int consult_reader(Reader *r)
     return PL_OK;
 }
 
+/* The files being loaded now, innermost last, so that a relative path in
+   one of them can be found beside it. */
+#define MAX_LOAD_DEPTH 64
+static char *loading[MAX_LOAD_DEPTH];
+static int nloading;
+
+/* Opens path, or path with .pl added, into buf; NULL if neither exists. */
+static FILE *open_source(const char *path, char *buf, size_t n)
+{
+    FILE *f;
+    snprintf(buf, n, "%s", path);
+    if ((f = fopen(buf, "r")) != NULL) return f;
+    snprintf(buf, n, "%s.pl", path);   /* the conventional extension */
+    return fopen(buf, "r");
+}
+
+/* Loads a file. A relative path met while another file is loading is
+   looked for in that file's directory first, as SWI-Prolog does, so that a
+   program split into files loads from wherever it is run; then in the
+   current directory, as it always was here, so that paths written for that
+   still work. */
 int consult_file(const char *path)
 {
-    FILE *f = fopen(path, "r");
+    FILE *f = NULL;
     Reader r;
     int rc;
-    char alt[1024];
+    char found[1024];
 
-    if (!f) {
-        /* Try adding the conventional .pl extension. */
-        snprintf(alt, sizeof(alt), "%s.pl", path);
-        f = fopen(alt, "r");
-        if (!f) return PL_FAIL;
-        path = alt;
+    if (path[0] != '/' && nloading > 0) {
+        const char *outer = loading[nloading - 1], *slash = strrchr(outer, '/');
+        if (slash) {
+            char joined[1024];
+            snprintf(joined, sizeof(joined), "%.*s/%s", (int)(slash - outer), outer, path);
+            f = open_source(joined, found, sizeof(found));
+        }
     }
-    reader_init_file(&r, f, path);
+    if (!f) f = open_source(path, found, sizeof(found));
+    if (!f) return PL_FAIL;
+    if (nloading == MAX_LOAD_DEPTH) {       /* a file that loads itself, say */
+        fclose(f);
+        return pl_throw(mk1(intern("resource_error"), mk_atom_str("load_depth")));
+    }
+    loading[nloading++] = pl_strdup(found);
+    reader_init_file(&r, f, loading[nloading - 1]);
     rc = consult_reader(&r);
     fclose(f);
+    free(loading[--nloading]);
     return rc;
 }
 

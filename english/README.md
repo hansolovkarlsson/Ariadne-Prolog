@@ -17,9 +17,8 @@ grammatical, 2 readings:
   [S [NP the old man] [VP walks [PP in [NP the park]] [PP with [NP his dog]]]]
 ```
 
-Run it from the top of the repository, as the tutorial programs are run, since
-`check.pl` loads the other files by their path from there. `make english` runs
-the checks in `tests.pl`.
+It runs from any directory, since `check.pl` loads the other files from beside
+itself. `make english` runs the checks in `tests.pl`.
 
 This is stage 1 of the three set out in [the roadmap](../docs/ROADMAP.md): a
 small lexicon, simple declarative sentences, and agreement carried in the

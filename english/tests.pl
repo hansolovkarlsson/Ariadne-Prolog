@@ -8,7 +8,7 @@
     so that a change which adds or loses an ambiguity is seen.
 */
 
-:- consult('english/check').
+:- consult(check).
 
 good('The dog sleeps.').
 good('Dogs bark.').

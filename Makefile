@@ -25,14 +25,17 @@ $(OBJS): src/prolog.h
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# The regression suite, and the command line's exit status: a -g goal that
-# fails or raises ends the run with 1, and the goals after it do not run.
+# The regression suite; the command line's exit status, since a -g goal that
+# fails or raises ends the run with 1 and the goals after it do not run; and
+# two error messages, which only show on standard error.
 test: $(BIN)
 	./$(BIN) -q tests/test.pl -g run_tests
 	./$(BIN) -q -g true
 	! ./$(BIN) -q -g fail 2>/dev/null
 	! ./$(BIN) -q -g "atom_length(_, _)" 2>/dev/null
 	test -z "`./$(BIN) -q -g fail -g 'write(ran)' 2>/dev/null`"
+	./$(BIN) -q -g "format('~w ~w', [a])" 2>&1 | grep -q 'format/2: not enough arguments'
+	./$(BIN) -q -g "consult(tests/load_self)" 2>&1 | grep -q 'Not enough resources: load_depth'
 
 # Every test again, bare, with the collector running inside each one. The
 # collector only runs when no choice point is live, and run_tests holds

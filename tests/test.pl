@@ -10,6 +10,9 @@
 
 :- dynamic(tmp/1).
 :- dynamic(rc/1).
+
+% A relative path in a file being loaded is found beside that file.
+:- consult(load_beside).
 :- dynamic(rc_self/0).
 :- dynamic(cnt/1).
 
@@ -306,6 +309,16 @@ test(at_split_undoes_join,
 test(at_split_many,   (numlist(1, 50000, Ns), atomic_list_concat(Ns, ',', A),
                        atomic_list_concat(Ps, ',', A), length(Ps, N), N =:= 50000,
                        last(Ps, P), P == '50000')).
+test(at_char_type,    (char_type(a, alpha), char_type('Z', upper(L)), L == z,
+                       char_type(q, to_upper(U)), U == 'Q', char_type('7', digit(W)), W == 7,
+                       \+ char_type('-', alpha), char_type('-', punct), char_type(' ', white),
+                       char_type('_', csym), char_type('_', csymf), \+ char_type('_', alpha))).
+test(at_char_type_enum,(findall(C, char_type(C, digit(_)), Ds), length(Ds, 10),
+                       findall(C2, char_type(C2, upper), Us), length(Us, 26))).
+test(at_code_type,    (code_type(0'A, to_lower(L)), L =:= 0'a, code_type(0'\n, end_of_line),
+                       code_type(a, alpha),
+                       catch(char_type(ab, alpha), error(type_error(character, ab), _), true))).
+test(at_char_type_utf8,(char_type('é', alpha), \+ char_type('é', upper))).
 test(at_join_many,    (numlist(1, 50000, L), atomic_list_concat(L, ',', A),
                        atom_length(A, N), N =:= 288893)).
 test(at_sub_atom,     (sub_atom(abcde, 1, 3, A, S), S == bcd, A =:= 1)).
@@ -428,6 +441,7 @@ test(db_current_pred, (current_predicate(p/2))).
     rc_reset/0 gives rc/1 the clauses 1 to 4. */
 rc_reset :- retractall(rc(_)), forall(member(X, [1,2,3,4]), assertz(rc(X))).
 
+test(db_load_beside,  (loaded_beside, loaded_beside_2)).
 test(db_reclaim,      (rc_reset, forall(between(1, 20000, _),
                                         (retract(rc(N)), N1 is N + 1, assertz(rc(N1)))),
                        statistics(retained_clauses, K), K =< 4, retractall(rc(_)))).

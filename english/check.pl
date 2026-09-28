@@ -1,6 +1,6 @@
 /*  english/check.pl -- says whether a sentence is grammatical, and why not.
 
-    Run from the top of the repository, as the tutorial programs are:
+    It loads its other files from beside itself, so it runs from anywhere:
 
         ./prolog -q english/check.pl -g "check('The dogs chase a cat.')"
         ./prolog -q english/check.pl -g "check('The dogs chases a cat.')"
@@ -13,8 +13,8 @@
     programs, and brackets/2 turns a tree into its bracketing.
 */
 
-:- consult('english/lexicon').
-:- consult('english/grammar').
+:- consult(lexicon).
+:- consult(grammar).
 
 % grammatical(+Text, -Tree): Text is an atom; Tree is a reading of it.
 grammatical(Text, Tree) :-
@@ -119,7 +119,8 @@ tidy(A0, A) :-
 
 % words(+Text, -Words): Text lowercased and cut into words at anything that
 % is not a letter, so punctuation falls away: 'The dog barks.' gives
-% [the, dog, barks].
+% [the, dog, barks]. A letter is what char_type/2 calls alpha, so a word
+% with an accented letter stays one word.
 words(Text, Words) :-
     downcase_atom(Text, Lower),
     atom_chars(Lower, Chars),
@@ -138,4 +139,4 @@ split_letters([C|Cs], Words) :-
 take_letters([C|Cs], [C|Ls], Rest) :- letter(C), !, take_letters(Cs, Ls, Rest).
 take_letters(Rest, [], Rest).
 
-letter(C) :- char_code(C, X), X >= 0'a, X =< 0'z.
+letter(C) :- char_type(C, alpha).
