@@ -12,6 +12,14 @@ produced some of the entries below.
 
 ## Near term
 
+- **Warn when a file redefines another file's predicate.** Consulting a file
+  whose clauses belong to a predicate another loaded file already defined
+  adds them to it silently: `p(a)` in one file and `p(b)` in a second give
+  `[a,b]`. SWI-Prolog warns and replaces. Found on 2026-09-28, when the
+  grammar checker and its tests both defined `readings/2`. The merged
+  predicate generated sentences without end, and the run was killed for
+  memory 25 seconds later with no message.
+
 ## Medium term
 
 - **Revise and extend the tutorials.** The four levels in `tutorial/`, and
@@ -64,14 +72,21 @@ These change the shape of the system rather than adding to it.
      diagnosis that names what disagrees, and, earlier than planned, what each
      verb takes after it, since simple sentences cannot be checked without it.
   2. Questions, negation, passives and relative clauses, and morphology rules
-     for words missing from the lexicon. Months, part-time.
+     for words missing from the lexicon. Months, part-time. **Under way.**
+     Auxiliaries, negation, yes/no questions and passives went in on
+     2026-09-28, in [the changelog](CHANGELOG.md). Left:
+     - relative clauses and *wh*-questions, which both need a gap threaded
+       through the rules;
+     - guessing an unknown word's class from its ending;
+     - contractions other than *n't*, such as *'s*, *'re* and *'ll*.
   3. A lexicon generated from WordNet or Wiktionary, and a record of what
      breaks. Broad coverage of real text is out of scope: rule-based grammars
      that aim for it have taken decades.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
-  it by writing such rules right-recursively. Past that, there are two
+  it by writing such rules right-recursively, and the auxiliary chain needed
+  none. Past that, there are two
   answers: a chart or left-corner parser written in Prolog, which is days, or
   *Tabling* under *Structural*, which is months. Which one is a decision for
   when stage 2 meets its first left-recursive rule, taken from what it costs

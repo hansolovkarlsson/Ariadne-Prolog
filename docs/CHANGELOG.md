@@ -8,6 +8,27 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ## 2026-09-28
 
+### Added
+
+- **The grammar checker's stage 2 has begun: auxiliaries, negation, yes/no
+  questions and passives.** A verb phrase is a chain of auxiliaries and then
+  the verb, *might have been chased*. Each word in the chain sets the next
+  word's form and admits only words ranked above it, so English's order is
+  enforced. *Not* goes after the first word of the chain, and a question
+  moves that word before the subject: *does the dog not bark*, *is the dog
+  happy*, *doesn't the dog bark*. A passive loses its first object to the
+  subject. The lexicon gains every verb's *-ing* and participle forms, the
+  modals, *have* and *do*, and seventeen *n't* contractions. The diagnosis
+  names the new faults: "after 'has' the verb should be 'eaten', not 'ate'",
+  "'barks not' should be 'does not bark'". 149 checks, up from 73.
+  (`29b45a2`)
+
+### Fixed
+
+- **The grammar checker knows *slept*.** The lexicon had no irregular past
+  for *sleep* and derived *sleeped*, which no check asked for until stage 2
+  needed the participle. (`29b45a2`)
+
 ### Changed
 
 - **The binary is `bin/prolog`,** not `prolog` at the top of the tree. `make`
