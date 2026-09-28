@@ -173,7 +173,7 @@ HIGHLIGHTS = [
      "No abstract machine and no clause compiler: goals live in an explicit list, "
      "alternatives on a choice point stack, and cut is one integer carried in each "
      "goal frame. The whole solver is one file.",
-     "7,500 lines of C99, no dependencies beyond libc"),
+     "7,700 lines of C99, no dependencies beyond libc"),
     ("Memory that behaves",
      "Backtracking rewinds the heap to a choice point's mark, a copying collector "
      "handles what backtracking cannot, and generators retry a single choice point "

@@ -691,8 +691,8 @@ chart parser in Prolog is the cheaper answer to weigh against it.
 ### What the day was like
 
 Every defect of the day in the interpreter passed the suite, because every
-test in it is small, and most were found by the same move: fix one thing, then aim the probe at its
-neighbour. The two biggest findings were not in the interpreter at all. They
+test in it is small, and most were found by the same move: fix one thing, then
+aim the probe at its neighbour. The two biggest findings were not in the interpreter at all. They
 were in the checks, a leg that could not collect and a build that could not
 fail, and both were found by asking what a check could reach rather than
 whether it was green.
@@ -704,27 +704,38 @@ Timed, 40,000 variables took 0.26 seconds and each doubling quadrupled it, so
 it went on the roadmap as measured work and was fixed after the closeout with
 a hash on the name (`cabc0a0`).
 
+After that the day turned from hardening to building: the rename, lambdas,
+error contexts, reclaimed clauses, the records moved into `docs/`, and the
+grammar's first stage with the three small gaps it found. It was closed out a
+second time at the end. By then the internals page's line counts, re-synced
+at the first closeout, had drifted in eight of their twelve rows, and the
+front page's count of C had gone from 7,500 to 7,700: a figure nothing
+regenerates goes stale within the day it is corrected.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
 
 | Check | What it is for |
 | --- | --- |
-| `make check` | The suite; then every test again bare, with the collector let in every fourth inference and collecting inside each one; then `tests/deep.pl`, terms nested a million deep through 21 walks. `make test` also checks that a failed `-g` goal exits 1. |
+| `make check` | The suite; then every test again bare, with the collector let in every fourth inference and collecting inside each one; then `tests/deep.pl`, terms nested a million deep through 21 walks. `make test` also checks that a failed `-g` goal exits 1, and that two error messages read as they should. |
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make doc` + `git diff --exit-code` | The published pages match their generators. |
+| `make english` | The grammar checker's 73 checks: good sentences pass, bad ones fail for the reason named. |
+| `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
 
-Every one of these was added in response to something it would have caught.
+Every one of these but `make english` was added in response to something it
+would have caught; that one arrived with the program it checks.
 
 ## Where it stands
 
-About 7,500 lines of hand-written C, 599 lines of library written in Prolog,
+About 7,700 lines of hand-written C, 757 lines of library written in Prolog,
 a 330-test suite with a second leg that collects and a deep-term run beside
-it, five examples, four tutorial levels, and a reference and internals
-document generated from the interpreter's own tables.
+it, five examples, four tutorial levels, an English grammar checker of about
+600 lines built on the interpreter, and a reference and internals document
+generated from the interpreter's own tables.
 
 What it is not: fast, modular, tabled, constrained, or capable of integers
 larger than 64 bits. Those are on the roadmap or under *Not planned*, and the

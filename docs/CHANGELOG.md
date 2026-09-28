@@ -208,7 +208,8 @@ There are no releases yet, so entries are grouped by the day they landed on
   1024 inferences", which had never collected, and gave 6,600 lines of C and
   277 tests; it is about 7,500 and 299. Eleven of the internals page's twelve
   line counts had drifted, and "the whole solver is one 606-line file" was 649.
-  Re-synced at the day's closeout.
+  Re-synced at the day's closeout, and again at the second closeout, when
+  eight of the twelve line counts and the front page's 7,500 had moved again.
 
 ### Tests
 
