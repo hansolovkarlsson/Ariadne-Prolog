@@ -1,9 +1,10 @@
 /*  english/lexicon.pl -- the words, with their parts of speech and features.
 
-    Stage 1 of the grammar checker described in docs/ROADMAP.md. A word is
-    known only if it is listed here, or is a regular form of a listed word:
-    the plural of a noun, the -s, past and other forms of a verb are derived
-    by the rules at the end, and irregular ones are listed beside the word.
+    The grammar checker described in docs/ROADMAP.md. A word is known only
+    if it is listed here, or is a regular form of a listed word: the plural
+    of a noun, and the -s, past, -ing and participle forms of a verb, are
+    derived by the rules at the end, and irregular ones are listed beside
+    the word.
 
     Agreement between a subject and its verb is carried in one feature term,
     agr(First, Third, SgNot2), each slot y or n:
@@ -12,15 +13,20 @@
         Third    it is third person singular                (he, the dog)
         SgNot2   it is singular and not second person       (I, he, the dog)
 
-    A subject has all three bound; a verb form binds only the slots it cares
-    about, so that every English agreement fact, the irregular forms of be
-    among them, is one unification:
+    A subject has all three bound; a finite verb form, fin(Agr), binds only
+    the slots it cares about, so that every English agreement fact, the
+    irregular forms of be among them, is one unification:
 
         I       agr(y,n,y)          chases  agr(_,y,_)      am    agr(y,n,y)
         he      agr(n,y,y)          chase   agr(_,n,_)      is    agr(_,y,_)
         you     agr(n,n,n)          chased  agr(_,_,_)      are   agr(n,n,_)
         they    agr(n,n,n)                                  was   agr(_,_,y)
                                                             were  agr(_,_,n)
+
+    A verb form is fin(Agr) when it can be a sentence's first verb, or one
+    of the forms an auxiliary asks for after it: base (can bark), ing (is
+    barking), en (has barked, was chased). Most words are several forms:
+    bark is fin(agr(_,n,_)) and base, chased is fin(_) and en.
 */
 
 % agr_of(+Number, -Agr): the agreement of a third-person noun phrase.
@@ -147,6 +153,7 @@ verb(stop,   [intrans, trans]).   verb(give,   [ditrans]).
 verb(send,   [trans, ditrans]).   verb(show,   [trans, ditrans]).
 verb(bring,  [trans, ditrans]).   verb(tell,   [ditrans]).
 verb(buy,    [trans, ditrans]).   verb(teach,  [trans, ditrans]).
+verb(have,   [trans]).
 
 % irregular_past(Base, Past).
 irregular_past(run, ran).      irregular_past(swim, swam).
@@ -160,15 +167,69 @@ irregular_past(hear, heard).   irregular_past(build, built).
 irregular_past(give, gave).    irregular_past(send, sent).
 irregular_past(bring, brought). irregular_past(tell, told).
 irregular_past(buy, bought).   irregular_past(teach, taught).
-irregular_past(stop, stopped).
+irregular_past(have, had).    irregular_past(sleep, slept).
 
-% be is the copula, and every one of its forms is irregular.
-% be_form(Word, Agr).
-be_form(am,   agr(y, n, y)).
-be_form(is,   agr(_, y, _)).
-be_form(are,  agr(n, n, _)).
-be_form(was,  agr(_, _, y)).
-be_form(were, agr(_, _, n)).
+% irregular_participle(Base, Participle): the en form, where it is not the
+% past: "has eaten", not "has ate".
+irregular_participle(run, run).       irregular_participle(swim, swum).
+irregular_participle(sing, sung).     irregular_participle(fly, flown).
+irregular_participle(eat, eaten).     irregular_participle(drink, drunk).
+irregular_participle(write, written). irregular_participle(see, seen).
+irregular_participle(know, known).    irregular_participle(bite, bitten).
+irregular_participle(give, given).    irregular_participle(show, shown).
+
+% irregular_third(Base, Form): the -s form, where the rule does not make it.
+irregular_third(have, has).
+
+% doubles(Base): the final consonant doubles before -ed and -ing.
+doubles(run). doubles(swim). doubles(stop).
+
+/* ---------------- auxiliaries ---------------- */
+
+% An auxiliary comes before the verb and decides its form: a modal or do
+% takes the base (can bark, does bark), have the participle (has barked),
+% be the -ing form (is barking) or, for a passive, the participle (was
+% chased). Each is listed with its forms, as the verbs are.
+
+% modal(Word): finite, agreeing with any subject, and with no other forms.
+modal(can). modal(could). modal(will). modal(would). modal(shall).
+modal(should). modal(may). modal(might). modal(must).
+
+% do_form(Word, Form): do supports a verb that has no auxiliary of its
+% own, in a question or with not; it has only finite forms.
+do_form(do,   fin(agr(_, n, _))).
+do_form(does, fin(agr(_, y, _))).
+do_form(did,  fin(_)).
+
+% have_form(Word, Form): have as the perfect auxiliary. It has no en form:
+% "has had eaten" is not English. Have as a verb is in verb/2.
+have_form(have,   fin(agr(_, n, _))).
+have_form(have,   base).
+have_form(has,    fin(agr(_, y, _))).
+have_form(had,    fin(_)).
+have_form(having, ing).
+
+% be_form(Word, Form): be as the copula, the progressive and the passive.
+% Every one of its forms is irregular.
+be_form(am,    fin(agr(y, n, y))).
+be_form(is,    fin(agr(_, y, _))).
+be_form(are,   fin(agr(n, n, _))).
+be_form(was,   fin(agr(_, _, y))).
+be_form(were,  fin(agr(_, _, n))).
+be_form(be,    base).
+be_form(being, ing).
+be_form(been,  en).
+
+% neg_contraction(Word, Auxiliary): an auxiliary with not joined to it.
+neg_contraction('don\'t', do).       neg_contraction('doesn\'t', does).
+neg_contraction('didn\'t', did).     neg_contraction('can\'t', can).
+neg_contraction(cannot, can).        neg_contraction('couldn\'t', could).
+neg_contraction('won\'t', will).     neg_contraction('wouldn\'t', would).
+neg_contraction('shouldn\'t', should). neg_contraction('mustn\'t', must).
+neg_contraction('isn\'t', is).       neg_contraction('aren\'t', are).
+neg_contraction('wasn\'t', was).     neg_contraction('weren\'t', were).
+neg_contraction('hasn\'t', has).     neg_contraction('haven\'t', have).
+neg_contraction('hadn\'t', had).
 
 /* ---------------- forms ---------------- */
 
@@ -179,13 +240,34 @@ noun_form(Word, Sg, pl) :- noun(Sg), plural(Sg, Word).
 plural(Sg, Pl) :- irregular_plural(Sg, Pl0), !, Pl = Pl0.
 plural(Sg, Pl) :- s_form(Sg, Pl).
 
-% verb_form(?Word, -Base, -Agr): the present forms agree with the subject,
-% the past form agrees with any.
-verb_form(Word, Base, agr(_, y, _)) :- verb(Base, _), s_form(Base, Word).
-verb_form(Word, Base, agr(_, n, _)) :- verb(Base, _), Word = Base.
-verb_form(Word, Base, agr(_, _, _)) :- verb(Base, _), past(Base, Word).
+% verb_form(?Word, -Base, -Form): the present forms agree with the subject,
+% the past form agrees with any; the others follow an auxiliary.
+verb_form(Word, Base, fin(agr(_, y, _))) :- verb(Base, _), third(Base, Word).
+verb_form(Word, Base, fin(agr(_, n, _))) :- verb(Base, _), Word = Base.
+verb_form(Word, Base, fin(_))            :- verb(Base, _), past(Base, Word).
+verb_form(Word, Base, base)              :- verb(Base, _), Word = Base.
+verb_form(Word, Base, ing)               :- verb(Base, _), ing(Base, Word).
+verb_form(Word, Base, en)                :- verb(Base, _), participle(Base, Word).
+
+third(Base, Form) :- irregular_third(Base, F), !, Form = F.
+third(Base, Form) :- s_form(Base, Form).
+
+participle(Base, P) :- irregular_participle(Base, P0), !, P = P0.
+participle(Base, P) :- past(Base, P).
+
+% ing(+Base, -Form): running, chasing, seeing, playing.
+ing(Base, Form) :-
+    doubles(Base), !, atom_chars(Base, Cs), last(Cs, C),
+    atomic_list_concat([Base, C, ing], Form).
+ing(Base, Form) :- atom_concat(_, ee, Base), !, atom_concat(Base, ing, Form).
+ing(Base, Form) :-
+    atom_concat(Stem, e, Base), !, atom_concat(Stem, ing, Form).
+ing(Base, Form) :- atom_concat(Base, ing, Form).
 
 past(Base, Past) :- irregular_past(Base, P), !, Past = P.
+past(Base, Past) :-
+    doubles(Base), !, atom_chars(Base, Cs), last(Cs, C),
+    atomic_list_concat([Base, C, ed], Past).
 past(Base, Past) :-
     atom_concat(Stem, e, Base), !, atom_concat(Stem, ed, Past).
 past(Base, Past) :-

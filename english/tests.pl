@@ -54,6 +54,56 @@ good('The teacher watches the students carefully.').
 good('Oscar is in London.').
 good('It is me.').
 
+% Stage 2: auxiliaries, negation, yes/no questions, passives.
+good('The dog does not bark.').
+good('The dog doesn\'t bark.').
+good('The dog doesn\x2019\t bark.').
+good('The dogs do not bark.').
+good('The dog did not bark yesterday.').
+good('The dog does bark.').
+good('The dog can swim.').
+good('The dog cannot swim.').
+good('The dog can\'t swim.').
+good('The birds will not sing.').
+good('The birds won\'t sing.').
+good('You must help me.').
+good('The dog is sleeping.').
+good('The dogs are chasing the cat.').
+good('I am reading a book.').
+good('The children were running in the park.').
+good('The dog has eaten the cake.').
+good('The dogs have eaten.').
+good('The dog had stopped.').
+good('The dog has been sleeping.').
+good('The dog will be happy.').
+good('The dog has been happy.').
+good('The cake was eaten.').
+good('The cat was chased by the dog.').
+good('The dog was given a bone.').
+good('The cake has been eaten by the children.').
+good('The house is being built.').
+good('The dog might have been chased.').
+good('The letter should have been written yesterday.').
+good('The dog is not happy.').
+good('The dog isn\'t happy.').
+good('I am not tired.').
+good('The dog has not eaten.').
+good('Alice has a dog.').
+good('Alice does not have a dog.').
+good('Does the dog bark?').
+good('Does Alice have a dog?').
+good('Is the dog happy?').
+good('Is the dog sleeping?').
+good('Can the birds fly?').
+good('Has the dog eaten?').
+good('Doesn\'t the dog bark?').
+good('Does the dog not bark?').
+good('Is the dog not happy?').
+good('Were the children in the garden?').
+good('Was the cat chased by the dog?').
+good('Will you help me?').
+good('Did Alice give the dog a bone?').
+
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -83,8 +133,38 @@ bad('Chases the dog.',                     no_reading).
 bad('The dog the cat.',                    no_reading).
 bad('Colorless green ideas sleep furiouslyy.', unknown).
 
+% Stage 2.
+bad('The dog can barks.',                  verb_form(can, barks, base)).
+bad('The dog does not barks.',             verb_form(does, barks, base)).
+bad('The dog doesn\'t barks.',             verb_form('doesn\'t', barks, base)).
+bad('The dogs does not bark.',             subject_verb(does)).
+bad('The dog do not bark.',                subject_verb(do)).
+bad('The dogs has eaten.',                 subject_verb(has)).
+bad('The dog has ate the cake.',           verb_form(has, ate, en)).
+bad('The dog is sleep.',                   verb_form(is, sleep, ing)).
+bad('The dog is chased the cat.',          verb_form(is, chased, ing)).
+bad('The cat was chase by the dog.',       verb_form(was, chase, en)).
+bad('The dog will sleeping.',              verb_form(will, sleeping, base)).
+bad('The dogs was chased.',                subject_verb(was)).
+bad('The dog sleeping.',                   finite(sleeping)).
+bad('The dog barks not.',                  do_support(barks)).
+bad('The dog barked not.',                 do_support(barked)).
+bad('Barks the dog?',                      question_do(barks)).
+bad('Does the dog barks?',                 verb_form(does, barks, base)).
+bad('Is the dogs happy?',                  subject_verb(is)).
+bad('Does the dogs bark?',                 subject_verb(does)).
+bad('The dog was slept.',                  verb_form(was, slept, ing)).
+bad('The dog is being sleeping.',          no_reading).
+bad('The dog does not be happy.',          no_reading).
+bad('The dog can can swim.',               no_reading).
+bad('The dog is having eaten.',            no_reading).
+bad('Does not the dog bark?',              no_reading).
+
 readings('The old man walks in the park with his dog.', 2).
 readings('The dogs chase a cat.', 1).
+readings('I read a book.', 1).
+readings('The dog has eaten.', 1).
+readings('Is the dog sleeping?', 1).
 
 % verdict(+Text, -V): grammatical, unknown (a word outside the lexicon),
 % no_reading, or the first violation of the best relaxed reading.
@@ -131,7 +211,7 @@ check_bad([S-E|Ss], F0, F) :-
 check_readings([], F, F).
 check_readings([S-N|Ss], F0, F) :-
     words(S, Words),
-    findall(T, phrase(sentence(T, [], []), Words), Ts),
+    all_readings(Words, Ts),
     length(Ts, M),
     (   M =:= N -> F1 = F0
     ;   format("FAIL  readings: ~w  expected ~d, got ~d~n", [S, N, M]), F1 is F0 + 1
