@@ -6,6 +6,15 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-09-28
+
+### Changed
+
+- **The binary is `bin/prolog`,** not `prolog` at the top of the tree. `make`
+  creates `bin/`, `make clean` removes it, and `make install` still installs
+  it as `$(PREFIX)/bin/prolog`. The README, the tutorials and the pages
+  generated from them all say `bin/prolog`. (`f2199a6`)
+
 ## 2026-09-27
 
 ### Added
