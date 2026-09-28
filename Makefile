@@ -7,8 +7,8 @@ PREFIX  ?= /usr/local
 
 SRCS = src/term.c src/parser.c src/write.c src/arith.c src/db.c \
        src/machine.c src/stream.c src/builtins.c src/consult.c \
-       src/boot_pl.c src/main.c
-OBJS = $(SRCS:src/%.c=build/%.o)
+       src/main.c
+OBJS = $(SRCS:src/%.c=build/%.o) build/boot_pl.o
 BIN  = bin/prolog
 
 all: $(BIN)
@@ -18,8 +18,13 @@ $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
 # The bootstrap library is written in Prolog and compiled into the binary.
-src/boot_pl.c: lib/boot.pl tools/pl2c.awk
+# Its C is generated into build/, so it finds prolog.h through -Isrc.
+build/boot_pl.c: lib/boot.pl tools/pl2c.awk
+	@mkdir -p build
 	awk -f tools/pl2c.awk lib/boot.pl > $@
+
+build/boot_pl.o: build/boot_pl.c
+	$(CC) $(CFLAGS) -Isrc -c build/boot_pl.c -o $@
 
 $(OBJS): src/prolog.h
 
@@ -136,7 +141,6 @@ install: $(BIN)
 	install -m 755 $(BIN) $(DESTDIR)$(PREFIX)/bin/prolog
 
 clean:
-	rm -f src/boot_pl.c
 	rm -rf bin build
 
 .PHONY: all test test-gc test-deep test-asan check examples tutorials english doc install clean

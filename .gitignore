@@ -1,6 +1,5 @@
 /bin/
 /build/
-src/boot_pl.c
 __pycache__/
 
 # scratch/ is Hans's own: notes and the daily standup, not part of the
