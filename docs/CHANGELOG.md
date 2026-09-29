@@ -37,6 +37,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   sets out why the rest fail. The lexicon's own words are never looked up,
   and `make english` and CI run without WordNet. (`9650c91`)
 
+- **`read_line_to_string/2` and `read_line_to_codes/2`**, as SWI-Prolog has
+  them: the next line without its line ending, as an atom, since there is
+  no string type, or as a code list; `end_of_file` or -1 at the end. A last
+  line with no line ending is a line. (`63ad3c9`)
+
 ### Fixed
 
 - **A clause costs memory in proportion to its size.** Each clause has an

@@ -12,11 +12,6 @@ produced some of the entries below.
 
 ## Near term
 
-- **`read_line_to_string/2` and `read_line_to_codes/2`.** There is no way to
-  read a line of text but a character at a time with `get_char/2`, which is
-  how `english/corpus.pl` reads its sentences. SWI-Prolog has both. Found on
-  2026-09-29.
-
 ## Medium term
 
 - **Revise and extend the tutorials.** The four levels in `tutorial/`, and
