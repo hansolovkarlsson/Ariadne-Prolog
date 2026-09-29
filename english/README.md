@@ -100,7 +100,7 @@ end of this file.
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
 | `wordnet_check.pl` | `check.pl` with WordNet's words loaded, from `wordnet.pl`, which `make wordnet` generates and git ignores. |
-| `corpus.txt`, `corpus.pl` | Fifty ordinary sentences, and the run over them that `make english-wordnet` does, which fails unless the counts are the ones `corpus.pl` records. |
+| `corpus.txt`, `corpus2.txt`, `corpus.pl` | Fifty ordinary sentences the grammar was built to pass; fifty from Simple English Wikipedia that it was not, with their articles in `corpus2-sources.tsv`; and the run over both that `make english-wordnet` does, which fails unless the counts are the ones `corpus.pl` records. |
 | `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, the number of readings of an ambiguous one, and how running text is cut into sentences. |
 
 ## What it checks
@@ -296,3 +296,78 @@ quiet*, an adjective.
 A corpus that passes entirely has stopped measuring anything. The fifty
 sentences were chosen before the grammar grew to meet them, but it did
 grow to meet them, and the next record needs sentences it has not seen.
+
+## The second corpus: text it was not built against
+
+`corpus2.txt` holds fifty sentences that nobody chose with the grammar in
+mind. The rule was written down before any of the text was seen: draw
+articles from Simple English Wikipedia with the API's random list, in the
+main namespace; take the first two sentences of each article's lead, as
+plain text and verbatim; skip an article whose lead has fewer than two
+sentences; stop at fifty. The draw was made on 2026-09-29 and took 25
+articles out of the first 28; three had a one-sentence lead.
+`corpus2-sources.tsv` lists each article with the revision it was taken
+from, so the text can be checked against its source. The sentences are
+Wikipedia's, under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
+The sentences were cut with the checker's own splitter, which is under test
+too, and it cut two of the fifty in the wrong place, after *lit.* in *El
+Gordo (lit. The Fat One)* and after the *U.S.* in *She was the U.S.
+Representative*. Two more of the sixty leads drawn were cut after *Vol.*
+and *N.* The file keeps the true sentences, and the four cuts are a finding
+of their own.
+
+On 2026-09-29, **none was grammatical, 19 were not, and 31 had a word in
+neither the lexicon nor WordNet**. Random articles are mostly people, places
+and works, so the text is denser in names, dates and brackets than the
+first corpus, and that is the text the checker will meet. The record, by
+cause, found by cutting each failing sentence down until it passed:
+
+**Names (most of the 31, and more of the 19).** The lexicon has twelve
+names, *Alice* to *Ingrid*, and the tokenizer lowercases every word, so the
+capital that marks a name is gone before the grammar sees it. A name
+WordNet does not have is unknown: *Konnevesi*, *Nintendo*, *Ambani*. A name
+it has as a common noun needs a determiner: *Woods was born in
+Springfield* fails as *woods* with no article, and *John sleeps* fails the
+same way. Names of more than one word, *East Coast Main Line*, are read as
+nouns and adjectives. This one cause keeps most sentences from being read
+at all, so the causes below are what the rest showed when cut down.
+
+**Joining nouns and adjectives with *or*, and lists.** *I saw cats and
+dogs* passes and *I saw cats or dogs* does not; *big or small* fails too.
+A list with commas, *a politician, author and a member of the party*,
+fails, and so does *a psychologist and businessman*, two nouns under one
+determiner.
+
+**Nouns that take no article, again.** The nineteen mass nouns were marked
+by hand, and this text needs more: *cancer*, *television*, *service*, and
+the months, *in January*.
+
+**Nouns before nouns.** *The record label*, *feature movies*, *a rock
+formation*, *Peace TV programs*, *a Spanish-language newspaper*: the
+grammar has no noun used as a modifier.
+
+**Constructions the grammar lacks.** A participle after its noun, *a movie
+directed by*, and *the dogs chased by the cat bark*; a participle before
+it, *the presiding bishop*; *a kind of*, *any kind of*; *also* after *be*,
+*it is also the capital*; a phrase before the subject, *In geology, a
+fracture is*, and *As of the census*; *about* with a number; *sworn in*;
+*for being the voice*; a place and its region with a comma, *Springfield,
+Massachusetts*; dates, *May 16, 2015*, *born 10 May 1969*; and anything in
+brackets.
+
+**Words it does not have.** Superlatives: *largest*, and *biggest*, are
+unknown, since WordNet lists *large* and the forms are not derived from
+it. An ordinal in digits, *the 27th king*, has no reading. The en dash in a range of dates is read as
+a word. *U.S.* is read as the letters *u* and *s*.
+
+**Time.** Most sentences take a tenth of a second. Five took between two and
+six seconds, and one took 116: *They would have been derived from the Class
+91 locomotives that entered service on the East Coast Main Line in 1989*,
+which is then rejected for the wrong reason, *main* with no determiner. A
+plain DCG redoes every shared sub-parse on each backtrack, and a long
+sentence full of words that WordNet lists as nouns, verbs and adjectives at
+once has a great many. That is the cost the roadmap said would decide
+between a chart parser and tabling, and it has arrived before left
+recursion did. The run over both corpora now takes two and a half minutes,
+most of it this one sentence.
