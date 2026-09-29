@@ -108,6 +108,12 @@ There are no releases yet, so entries are grouped by the day they landed on
   too. Both now go to `build/`, which `make clean` removes along with `bin/`,
   so `src/` holds only checked-in files. (`4061f1a`, `be1c84c`)
 
+- **The repository is `hansolovkarlsson/Ariadne-Prolog`, and the site
+  `hansolovkarlsson.github.io/Ariadne-Prolog/`.** The repository was renamed
+  on GitHub, and Pages follows the name, so the lowercase site address is a
+  404; git remotes are redirected. Every link in the tree now uses the new
+  names. (`b972014`)
+
 ## 2026-09-27
 
 ### Added

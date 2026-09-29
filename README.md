@@ -216,7 +216,9 @@ round-tripping), `format/2`, grammars, streams, and deep recursion under the
 collector. `make check` runs them both normally and with the collector
 running constantly; `make test-asan` runs both under the sanitizers.
 `make english` runs the checks of the grammar checker in
-[english/](english/README.md), the first program built on the interpreter.
+[english/](english/README.md), the first program built on the interpreter;
+`make english-wordnet` runs them again with WordNet's words, which
+`make wordnet` downloads, and fifty ordinary sentences beside them.
 
 ## Project documents
 

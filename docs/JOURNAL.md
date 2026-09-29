@@ -712,30 +712,210 @@ at the first closeout, had drifted in eight of their twelve rows, and the
 front page's count of C had gone from 7,500 to 7,700: a figure nothing
 regenerates goes stale within the day it is corrected.
 
+## Day seven: housekeeping, a loader, and half a grammar
+
+2026-09-28, the day after day six. It opened with tidying and ended with stage 2 of the
+grammar most of the way done and a defect in the loader that had been there
+since the first commit.
+
+### Where things are built, and a rename that moved the site
+
+The binary moved to `bin/prolog` (`f2199a6`), then the object files to
+`build/` (`4061f1a`), then the C that `lib/boot.pl` is compiled into
+(`be1c84c`), so that after a build the top of the tree and `src/` hold only
+what is checked in. The one cost is that compiling into another directory
+takes a pattern rule, so the Makefile now needs GNU make. That is what macOS
+and the CI runners have, so nothing changed in practice.
+
+The push after the first move answered that the repository had moved. It had
+been renamed on GitHub to `Ariadne-Prolog`, capitals and all, and GitHub
+Pages follows the name: the lowercase site address that every link in the
+README, the roadmap and the postmortem used had become a 404. The links went
+over to the new name and the front page's clone line with them (`b972014`).
+Nothing in the tree could have caught that. It was found because git prints
+what the server says.
+
+Three pieces of work went on the roadmap to be done later, on purpose:
+bringing the tutorials up to date, examples for every part of the language,
+and comments through the source for readers learning from it, since the
+interpreter began as a teaching one (`2025e6c`, `389243b`).
+
+### Auxiliaries, as a chain with ranks
+
+Stage 2 of the grammar began with the verb phrase, because negation,
+questions and passives all turn on auxiliaries (`29b45a2`). A verb phrase is
+now a chain: each auxiliary names the form of the verb after it, and has a
+rank, and only a word of higher rank may follow. Modal, perfect,
+progressive, passive, verb: *might have been chased* comes out, and *is
+having eaten* and *can can swim* do not, from one comparison of two numbers
+at each step. Negation goes after the first word of the chain, a question
+moves that word before the subject, and a passive is the verb with its first
+object handed to the subject.
+
+Two things in it were decided by what the diagnosis said. *The dog chase a
+cat* has two relaxed readings with one fault each, *chase* as a finite verb
+that disagrees and *chase* as a base form where a finite one belongs, and
+the tie went to the second, the worse message. A word that has a finite form
+is no longer blamed for not being one. And a check sentence meant to fail
+for want of a passive, *the dog was slept*, failed because the lexicon had
+never known *slept*; that is in the postmortem.
+
+### A slip that found the loader
+
+Writing the tests for that slice, the checker's own helper and the tests'
+expected counts were both given the name `readings/2`, in two files. The
+run was killed for memory after 25 seconds with no message. The loader had
+merged the two definitions, and the merged predicate, called with an unbound
+first argument, parsed an unbound word list and so generated English without
+end. SWI-Prolog would have warned that the second file redefined the first's
+predicate. This one said nothing.
+
+The warning went on the roadmap, and the same afternoon, trying the
+neighbours of the fault, showed it was worse than a missing warning. A
+program's own `member/2` was added to the library's, so `member(X, [a,b])`
+answered `[a,b,x,x,x]`, which in an interpreter meant to teach from is the
+first exercise of most courses giving a wrong answer. And consulting a file
+twice doubled its clauses. All three were one missing idea, which file owns a
+predicate, and the fix gives a predicate to the file and the load that first
+gave it clauses (`6a20648`). Loading that file again replaces them; another
+file replaces them with a warning naming both; a library predicate is
+replaced silently, as SWI does; and `multifile/1`, which did not exist, lets
+a predicate collect clauses from several files. One of the four new checks,
+the multifile one, passed on the old binary, because the old loader merged
+everything; it guards the new code, and disabling the multifile branch fails
+it. A file is known by the path it was found at, so one file reached by two
+paths counts as two; `realpath()` would fix that and is not C99, so the
+reference says so instead.
+
+### Gaps, and the checks that could not fail
+
+Relative clauses and *wh*-questions went in at the end of the day
+(`b9f2a0d`). Both have a gap, a noun phrase missing from where it would
+stand, and the gap is threaded through the rules beside the violations,
+waiting until a noun phrase takes it, so a clause that must have one has it
+exactly once. A missing subject needs no gap, since what follows *that* or
+*who* is then a verb phrase that agrees with the noun as a verb agrees with
+its subject, and English allows no gap inside a subject or half an *and*, so
+none is placed there.
+
+The planted faults found something in the new code rather than in the
+tests. The gap first carried a case, so that *whom* could be checked where
+it was placed, and an agreement. Dropping the case check failed nothing.
+The reason was that a gap is never a subject, so it only ever stands where
+*whom*, *who*, *that* and *which* are all allowed, and nothing agrees with
+an object. Both checks could never fail; both went, and the gap is the atom
+`gap`. The same slice needed the diagnosis to weigh its faults: *which dogs
+chases the cat* read as *chases* disagreeing and as *chases* put before its
+object without *do*, one fault each, and the tie went to the unlikely one,
+so a verb out of its place now counts twice.
+
+## Day eight: stage 2 finished, stage 3 done, and two costs found
+
+2026-09-29. The last two pieces of stage 2 in the morning, then the whole of
+stage 3, which turned out to be as much a test of the interpreter as of the
+grammar.
+
+### Guesses, then contractions
+
+A word missing from the lexicon had stopped every check. It is now placed by
+its ending (`fcb35cc`): *-ly* an adverb, *-tion* a noun, *-ful* an
+adjective, and an *-s*, *-ed* or *-ing* word taken back to a stem by undoing
+the lexicon's own spelling rules, so the guessed word's other forms and its
+agreement come from the same rules as a listed word's. The one real choice
+was what to do with a word that has no ending, *zorble*: guessing it as a
+noun would cover more, and would also read every misspelling as a new word,
+so it is reported instead. A check sentence showed the lexicon had no *of*.
+
+Contractions came next, and had to bring possessives with them (`36c8d5f`),
+because once *she's* is *she is*, *the dog's bone* reads as *the dog is
+bone*. The tokenizer cuts *'s*, *'re*, *'ll* and the rest from their word; a
+contraction heads a verb phrase as its full word does; and a possessor
+stands where a determiner would. *Alice's friend's dog* is the textbook case
+of left recursion, a noun phrase built from a smaller one, and it went in as
+a chain read left to right instead. That finished stage 2, estimated at
+months, in two days, and it never met the left recursion that the roadmap
+set as the point at which to choose between a chart parser and tabling.
+
+### WordNet, and the memory it found
+
+Stage 3 needed two decisions that were Hans's rather than the code's: the
+source, which is WordNet 3.1 for its verb frames and irregular forms, and
+where the generated lexicon lives, which is `english/wordnet.pl`, built by
+`make wordnet` and ignored by git (`9650c91`). Before designing anything
+around 89,000 facts, they were loaded and measured. They loaded in 0.17
+seconds and took 490 MB. Every clause has an arena of its own, and every
+arena's blocks were a fixed 4 KB, for facts of about a hundred bytes; blocks
+now start at 256 bytes and double, and the same load takes 52 MB
+(`99ff4bd`).
+
+The first design folded WordNet into the lexicon, and the lexicon finds a
+noun's forms by walking every noun, which is fine for 91 and not for 55,000.
+The guesser already had the better shape: look up only the sentence's
+missing words, and add what is found for one check. WordNet became a better
+source for the same step, tried before the ending, and the lexicon's own
+words are never looked up, so *can* and *will* keep their entries and do not
+become WordNet's nouns.
+
+A wrong turn came next. The grammar's checks had taken 2.0 seconds when
+relative clauses went in and now took 3.2 with the same grammar, and the
+interpreter's two changes of the day, the loader and the arenas, were the
+suspects. Four builds timed the same grammar identically: the 2.0 had been
+measured before the 41 relative-clause checks were added, so the baseline
+was stale, not the code. The same bisection found a real cost beside it:
+possessives had made every check 60 per cent slower, sentences with no *'s*
+included, because the rule was tried at every noun phrase. It now looks
+ahead for an *'s* first (`1649f0c`).
+
+The record stage 3 asked for is fifty ordinary sentences in
+`english/corpus.txt`, of which 28 pass with WordNet loaded, and the README
+sets out the 22 by cause: nouns that take no article, the small closed
+classes WordNet does not have, hand-written entries that WordNet has right
+but never overrides, and eleven constructions the grammar lacks. The corpus
+runner read its sentences a character at a time, as the interpreter had no
+way to read a line, and that became the day's last item:
+`read_line_to_string/2` and `read_line_to_codes/2` (`63ad3c9`). The first
+version marked the stream past its end after a last line with no newline,
+so the next call raised where it should have answered `end_of_file`, and it
+was caught before it went in; the first attempt to plant that fault back,
+to see a test fail, hung the suite instead, because deleting the peek had
+deleted the loop's only exit at the end.
+
+### What the two days were like
+
+Every fault of the two days that mattered was found by doing something
+larger than the suite does: a program split into files that shared a name,
+a lexicon of 89,000 facts, a timing taken at each commit. The suite passed
+throughout, and would have gone on passing. And twice the most useful
+planted fault was the one that got through, a check on a gap's case and a
+multifile check that passed on the old binary, because a check that cannot
+fail is only visible when something is planted and it stays green.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
 
 | Check | What it is for |
 | --- | --- |
-| `make check` | The suite; then every test again bare, with the collector let in every fourth inference and collecting inside each one; then `tests/deep.pl`, terms nested a million deep through 21 walks. `make test` also checks that a failed `-g` goal exits 1, and that two error messages read as they should. |
+| `make check` | The suite; then every test again bare, with the collector let in every fourth inference and collecting inside each one; then `tests/deep.pl`, terms nested a million deep through 21 walks. `make test` also checks that a failed `-g` goal exits 1, that two error messages read as they should, and what happens when two files, or a program and the library, define one predicate. |
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 73 checks: good sentences pass, bad ones fail for the reason named. |
+| `make english` | The grammar checker's 236 checks: good sentences pass, bad ones fail for the reason named. |
+| `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of `english/corpus.txt`. It needs the network once, for `make wordnet`, so CI does not run it. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
 
-Every one of these but `make english` was added in response to something it
-would have caught; that one arrived with the program it checks.
+Every one of these but the two grammar targets was added in response to
+something it would have caught; those arrived with the program they check.
 
 ## Where it stands
 
-About 7,700 lines of hand-written C, 757 lines of library written in Prolog,
-a 330-test suite with a second leg that collects and a deep-term run beside
+About 7,800 lines of hand-written C, 757 lines of library written in Prolog,
+a 334-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
-600 lines built on the interpreter, and a reference and internals document
-generated from the interpreter's own tables.
+1,450 lines built on the interpreter, through all three of its stages, and a
+reference and internals document generated from the interpreter's own
+tables.
 
 What it is not: fast, modular, tabled, constrained, or capable of integers
 larger than 64 bits. Those are on the roadmap or under *Not planned*, and the

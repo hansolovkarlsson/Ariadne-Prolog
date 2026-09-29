@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Thirty-nine defects, in five cohorts that failed for five different reasons:
+Forty-one defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: six bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -20,19 +20,19 @@ Thirty-nine defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: sixteen defects in which two parts of the project did not
+- **Consistency**: seventeen defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
-  on 2026-09-27, one on 2026-09-28.
+  on 2026-09-27, one each on 2026-09-28 and 2026-09-29.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
   by asking what a check could reach.
-- **Scale**: eleven defects that no test was large enough to meet, a fixed
+- **Scale**: twelve defects that no test was large enough to meet, a fixed
   buffer, a recursion on the C stack, a cost that grew with the square or a
   fixed allocation, ten found on 2026-09-27, nine of them by probing a
-  neighbour of the defect before, and one on 2026-09-29.
+  neighbour of the defect before, and two on 2026-09-29.
 
 ## Cohort A — the design era
 
@@ -129,7 +129,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Sixteen defects in which two parts of the project disagreed. The first eight were
+Seventeen defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -379,7 +379,7 @@ the only evidence that it can.
 
 ## Cohort E: scale
 
-Eleven defects that no test was large enough to meet, ten of them found on
+Twelve defects that no test was large enough to meet, ten of them found on
 2026-09-27. The first nine came one from another: each fix was followed by probing the same shape a
 step further, at a million elements or a million levels, and the probe found
 the next.
@@ -397,6 +397,7 @@ the next.
 | Splitting 20,000 parts took five seconds | Splitting interned every remainder on the way | Reading it beside the join (`8a5b8a3`) |
 | Reading a clause of 40,000 distinct variables took 0.26 seconds, quadrupling with each doubling | The reader found each variable by scanning every one before it in the clause | Reading the parser at the day's closeout, then timing it (`cabc0a0`) |
 | Loading WordNet's 89,000 facts took 490 MB, 5.5 KB a fact | Every clause has an arena of its own, and an arena's blocks were a fixed 4 KB, for clauses of a hundred bytes | Measuring the first large program loaded, on 2026-09-29, for grammar stage 3 (`99ff4bd`) |
+| The grammar's checks took 60 per cent longer after possessives went in, sentences with no *'s* included | The possessive rule was tried at every noun phrase, whatever the sentence held | Timing the checks at each of the day's commits, on 2026-09-29, while looking for a slowdown blamed on the interpreter (`1649f0c`) |
 
 Every one of these passed the suite, because every test in the suite is small.
 The deep-nesting fix touched the collector, unification, comparison, copying,
@@ -450,6 +451,22 @@ a wrong one. The loader had never been asked what a file owns, because
 every program loaded so far had been one file, or files with no names in
 common.
 
+### A verb the lexicon could not spell
+
+The grammar checker's lexicon derives a verb's past from its base, and
+lists the irregular ones beside it. *Sleep* was not among them, so its past
+was *sleeped*, and *the dog slept* had been a sentence with an unknown word
+since stage 1 (`7fda6d9`). No check used the past of *sleep*: the lexicon
+and English disagreed, and nothing compared them.
+
+Found on 2026-09-28 by writing a test, *the dog was slept*, meant to fail
+for want of a passive, which failed for want of the word instead. Every
+verb's five forms were then printed and read over, and the other 48 were
+right. (`29b45a2`)
+
+*What this says:* a table of exceptions is checked only where something
+reads it, and a lexicon is mostly exceptions nobody has read.
+
 ## What found what
 
 | Found by | Count |
@@ -458,20 +475,21 @@ common.
 | Writing the documentation, then testing the claim | 6 |
 | Probing past what the suite tries, at a million elements or levels | 4 |
 | Loading a large program and measuring it | 1 |
+| Timing each commit, looking for another cause | 1 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 3 |
 | Rendering the pages and looking at them | 3 |
 | Address sanitizer | 1 |
 | An audit counting the test file against the runner | 1 |
 | Searching the tree for the shape just fixed | 1 |
-| Writing a test, which the defect then killed | 1 |
+| Writing a test, which the defect then killed | 2 |
 | Diffing the old binary's answers against the new | 1 |
 | Using the interpreter for something else, and making a mistake | 2 |
 | Counting what a check actually did | 1 |
 
 Three things stand out.
 
-**The test suite found three of thirty-nine.** It is a good suite, 334 tests
+**The test suite found three of forty-one.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
