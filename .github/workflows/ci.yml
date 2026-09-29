@@ -57,6 +57,27 @@ jobs:
       - name: Test suite under the address and undefined behaviour sanitizers
         run: make CC=$CC test-asan
 
+  # The grammar with WordNet's words, which make english leaves out: it needs
+  # WordNet 3.1, fetched once and then kept in the cache, so a run needs the
+  # network only when the cache is empty. The corpus counts are pinned in
+  # english/corpus.pl, so a change to wordnet_entry/2 that moves a sentence
+  # fails here rather than showing only on a machine that has WordNet.
+  wordnet:
+    name: English grammar with WordNet
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: WordNet 3.1, from the cache when it is there
+        uses: actions/cache@v4
+        with:
+          path: build/wordnet
+          key: wordnet-3.1-${{ hashFiles('Makefile') }}
+          restore-keys: wordnet-3.1-
+
+      - name: Grammar checks and corpus with WordNet
+        run: make english-wordnet
+
   docs:
     name: documentation is in sync
     runs-on: ubuntu-24.04
