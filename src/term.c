@@ -113,15 +113,22 @@ size_t heap_in_use(void)
 typedef struct ABlock ABlock;
 struct ABlock { ABlock *next; size_t size, used; char data[1]; };
 
-struct Arena { ABlock *block; };
+struct Arena { ABlock *block; size_t next; };
 
-#define ARENA_BLOCK 4096
+/* An arena's first block is small and each one after it twice the size of
+   the last, up to a limit. Every clause has an arena of its own, and most
+   clauses are a few terms, so a fixed block of kilobytes was nearly all
+   waste: 89,000 facts took 490 MB. A large arena, findall/3 collecting a
+   million answers, still reaches big blocks in a few steps. */
+#define ARENA_FIRST 256
+#define ARENA_LIMIT 65536
 
 Arena *arena_new(void)
 {
     Arena *a = (Arena *)malloc(sizeof(Arena));
     if (!a) { fprintf(stderr, "prolog: out of memory\n"); exit(1); }
     a->block = NULL;
+    a->next = ARENA_FIRST;
     return a;
 }
 
@@ -137,7 +144,8 @@ void *arena_alloc(Arena *a, size_t n)
         return p;
     }
     {
-        size_t size = n > ARENA_BLOCK ? n : ARENA_BLOCK;
+        size_t size = n > a->next ? n : a->next;
+        if (a->next < ARENA_LIMIT) a->next *= 2;
         b = (ABlock *)malloc(sizeof(ABlock) + size);
         if (!b) { fprintf(stderr, "prolog: out of memory\n"); exit(1); }
         b->size = size;
