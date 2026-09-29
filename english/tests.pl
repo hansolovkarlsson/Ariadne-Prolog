@@ -177,6 +177,16 @@ good('The window closes.').
 good('We should arrive early.').
 good('The train arrived late.').
 
+% Stage 3: nouns that take no article.
+good('Bread is good.').
+good('Alice drinks tea.').
+good('The children ate rice.').
+good('We ate dinner in the garden.').
+good('The teacher gave the students some homework.').
+good('The boys play football in the park.').
+good('The dog wants much food.').
+good('A coffee is good.').
+
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -200,6 +210,9 @@ bad('She sees he.',                        case(he)).
 bad('Me am happy.',                        case(me)).
 bad('The dog bites they.',                 case(they)).
 bad('Dog barks.',                          bare(dog)).
+bad('Much dog barks.',                     det_noun(much, dog)).
+bad('The dog eats much apples.',           det_noun(much, apples)).
+bad('Alice drink tea.',                    subject_verb(drink)).
 bad('The cat chases mouse.',               bare(mouse)).
 bad('The dog quickly.',                    no_reading).
 bad('Chases the dog.',                     no_reading).

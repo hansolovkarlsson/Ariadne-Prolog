@@ -123,13 +123,13 @@ simple_np(Agr, _, name(W), V, V) -->
 simple_np(Agr, _, np(det(D), N), V0, V) -->
     [D], { det(D, DNum, DSound) },
     nominal(Num, First, Head, N, V0, V1),
-    { agree(det_noun(D, Head), DNum, Num, V1, V2),
+    { det_agrees(D, Head, DNum, Num, V1, V2),
       sound(First, Sound),
       agree(article(D, First), DSound, Sound, V2, V),
       agr_of(Num, Agr) }.
 simple_np(Agr, _, np(N), V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
-    { agree(bare(Head), Num, pl, V1, V),
+    { bare_ok(Head, Num, V1, V),
       agr_of(Num, Agr) }.
 simple_np(Agr, _, np(poss(P), N), V0, V) -->
     possessive_ahead,
@@ -160,12 +160,25 @@ possessor_base(name(W), V, V) --> [W], { proper(W) }.
 possessor_base(np(det(D), N), V0, V) -->
     [D], { det(D, DNum, DSound) },
     core_nominal(Num, First, Head, N),
-    { agree(det_noun(D, Head), DNum, Num, V0, V1),
+    { det_agrees(D, Head, DNum, Num, V0, V1),
       sound(First, Sound),
       agree(article(D, First), DSound, Sound, V1, V) }.
 possessor_base(np(N), V0, V) -->
     core_nominal(Num, _, Head, N),
-    { agree(bare(Head), Num, pl, V0, V) }.
+    { bare_ok(Head, Num, V0, V) }.
+
+% bare_ok(+Head, +Number, V0, V): a noun with no determiner is plural, "dogs
+% bark", or a mass noun, "water boils"; a singular count noun needs one.
+bare_ok(Head, sg, V, V) :- mass(Head), !.
+bare_ok(Head, Num, V0, V) :- agree(bare(Head), Num, pl, V0, V).
+
+% det_agrees(+Det, +Head, ?DetNumber, +Number, V0, V): the determiner and
+% the noun agree in number. A singular mass noun also takes some and much,
+% "some homework", "much bread"; much takes nothing else.
+det_agrees(D, Head, DNum, sg, V, V) :-
+    mass(Head), ( DNum == mass ; D == some ), !.
+det_agrees(D, Head, DNum, Num, V0, V) :-
+    agree(det_noun(D, Head), DNum, Num, V0, V).
 
 % core_nominal(-Number, -FirstWord, -HeadNoun, -Tree): adjectives and a noun.
 core_nominal(Num, First, Head, nom(As, n(Head), [])) -->

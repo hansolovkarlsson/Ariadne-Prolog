@@ -69,7 +69,23 @@ noun(flower). noun(tree). noun(leaf). noun(stone). noun(key). noun(clock).
 noun(hour). noun(umbrella). noun(island). noun(idea). noun(question).
 noun(answer). noun(game). noun(party). noun(dress). noun(watch).
 noun(university). noun(unicorn). noun(uniform). noun(elephant). noun(owl).
+noun(bread). noun(tea). noun(coffee). noun(rice). noun(food). noun(music).
+noun(homework). noun(advice). noun(information). noun(furniture).
+noun(football). noun(breakfast). noun(lunch). noun(dinner).
 noun(Sg) :- guessed(noun, Sg).
+
+% mass(Noun): a noun that can stand in the singular with no determiner,
+% "water boils", "we ate dinner", and take some or much there, "some
+% homework": a substance, an activity or game, a meal. Most can be counted
+% as well, "a coffee", "a big dinner", which the grammar also allows.
+% WordNet does not say which nouns these are, so they are listed, WordNet's
+% own words among them: water, milk, rain, snow and work are not in noun/1,
+% because a word listed there is never looked up in WordNet, and each of
+% them is a verb as well.
+mass(water). mass(milk). mass(rain). mass(snow). mass(work).
+mass(bread). mass(tea). mass(coffee). mass(rice). mass(food). mass(music).
+mass(homework). mass(advice). mass(information). mass(furniture).
+mass(football). mass(breakfast). mass(lunch). mass(dinner).
 
 % irregular_plural(Singular, Plural).
 irregular_plural(man, men).       irregular_plural(woman, women).
@@ -124,7 +140,9 @@ wh_adverb(where). wh_adverb(when). wh_adverb(why). wh_adverb(how).
 
 /* ---------------- determiners ---------------- */
 
-% det(Word, Number, Sound): Number is sg, pl or unbound for either; Sound is
+% det(Word, Number, Sound): Number is sg, pl or unbound for either, or mass
+% for a determiner that takes only a mass noun, much; some takes a mass
+% noun as well as a plural, and see det_agrees/6 in grammar.pl. Sound is
 % the initial sound the next word must have, vowel or consonant, or unbound.
 det(the,   _,  _).
 det(a,     sg, consonant).
@@ -133,6 +151,7 @@ det(this,  sg, _).   det(that,  sg, _).
 det(these, pl, _).   det(those, pl, _).
 det(every, sg, _).   det(each,  sg, _).
 det(some,  pl, _).   det(many,  pl, _).   det(several, pl, _).
+det(much,  mass, _).
 det(few,   pl, _).   det(no,    _,  _).
 det(my,    _,  _).   det(your,  _,  _).   det(his,     _,  _).
 det(its,   _,  _).   det(our,   _,  _).   det(their,   _,  _).

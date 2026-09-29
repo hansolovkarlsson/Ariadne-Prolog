@@ -95,7 +95,7 @@ end of this file.
 
 | | |
 |---|---|
-| `lexicon.pl` | 283 words: 91 nouns, 49 verbs, 43 adjectives, 18 adverbs, 16 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
+| `lexicon.pl` | 298 words: 105 nouns, 49 verbs, 43 adjectives, 18 adverbs, 16 prepositions, 26 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 414 noun and verb forms in all. 19 nouns are marked as mass nouns, which may stand alone in the singular. |
 | `grammar.pl` | The rules: statements, yes/no and *wh*-questions, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
@@ -111,7 +111,9 @@ end of this file.
 - **A and an**, by the sound of the next word rather than its spelling: *an
   hour*, *a university*, *an old man*.
 - **Pronoun case**: *she sees him*, not *him sleeps* or *she sees he*.
-- **A singular noun needs a determiner**: *dogs bark*, not *dog barks*.
+- **A singular noun needs a determiner**: *dogs bark*, not *dog barks*,
+  unless it is a mass noun: *water boils*, *some homework*, and *much
+  bread* but not *much dog*.
 - **What a verb takes**: *gives* two objects, *sleeps* none.
 - **The form after an auxiliary**: *can bark*, *has eaten*, *is sleeping*,
   *was chased*, not *can barks* or *has ate*.
@@ -243,7 +245,17 @@ hash, so finding one noun among 55,000 takes 0.16 ms, which is fast enough.
 **Since the record.** The three incomplete entries were completed the same
 day: *tell* takes one object or two, *open* none or one, and *early* is an
 adverb too, with *close* and *late*, which had the same gaps. That moved
-three sentences, and the corpus now gives **31 grammatical, 18 not, and one
-unknown**. `corpus.pl` records those counts and fails on any others, so a
+three sentences, and the corpus then gave **31 grammatical, 18 not, and one
+unknown**. `corpus.pl` records the current counts and fails on any others, so a
 sentence that moves, either way, is seen in CI and the record is updated
 with it.
+
+The nouns that take no article went next. Nineteen are marked as mass
+nouns in the lexicon, by hand, since WordNet does not say which nouns
+these are: a mass noun may stand alone in the singular, and takes *some*
+and the new *much*. That moved three more, and the corpus gives **34
+grammatical, 15 not, and one unknown**. One of the three is a pass for the
+wrong reason: *two cups of tea, please* is read as *two cups of tea please*,
+*please* the verb, since the checker ignores commas. Of the five sentences
+this cause held, *water boils at a hundred degrees* and *played football
+after school* still fail, for a number and a preposition.
