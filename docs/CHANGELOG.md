@@ -10,6 +10,15 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A second corpus for the grammar checker, from text it was not built
+  against.** Fifty sentences, the first two of each of 25 articles drawn at
+  random from Simple English Wikipedia, by a rule fixed before the text was
+  seen, in `english/corpus2.txt`, with each article's revision in
+  `english/corpus2-sources.tsv`. None passes: 19 are rejected and 31 have a
+  word the checker does not know, mostly names. The counts are pinned in
+  `english/corpus.pl` beside the first corpus's, and the README records the
+  causes, with the time one sentence takes, 116 seconds. (`45374ee`)
+
 - **The constructions the grammar checker lacked.** Adverbs before the
   verb, *has already eaten*; *very* and the other degree words; verbs that
   take an adjective (*tastes good*), a clause (*think that she is right*),

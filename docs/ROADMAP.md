@@ -90,9 +90,22 @@ These change the shape of the system rather than adding to it.
      ordinary sentences of which 28 passed. Broad coverage of real text is
      out of scope: rule-based grammars that aim for it have taken decades.
      Everything the record found was done the same day, and all fifty
-     sentences now pass. What is left:
-     - a second corpus, from text the grammar was not built against: the
-       first now passes entirely, so it finds nothing new;
+     sentences now pass. A second corpus, fifty sentences from Simple
+     English Wikipedia that the grammar was not built against, passes none:
+     19 are rejected and 31 have a word it does not know. Its record, by
+     cause, is in the same README. What is left, the first four from it:
+     - names: twelve are listed, and the tokenizer lowercases every word,
+       so the capital that marks one is lost; most of the second corpus
+       fails on this alone;
+     - *or* joining noun phrases and adjectives, lists with commas, and two
+       nouns under one determiner, *a psychologist and businessman*;
+     - nouns before nouns, *the record label*; more mass nouns and the
+       months; superlatives, *largest*; ordinals in digits, *27th*;
+     - constructions: a participle after its noun, *a movie directed by*,
+       and before it, *the presiding bishop*; *a kind of*; *also* after
+       *be*; a phrase before the subject, *In geology, ...* and *Last night
+       the dog barked*; *about* with a number; dates; brackets;
+     - the sentence splitter cuts after *lit.*, *U.S.*, *Vol.* and *N.*;
      - commas: *two cups of tea, please* passes with *please* read as a
        verb, since the checker ignores them.
 
@@ -103,7 +116,11 @@ These change the shape of the system rather than adding to it.
   right. Past that, there are two answers: a chart or left-corner parser
   written in Prolog, which is days, or *Tabling* under *Structural*, which is
   months. Which one is a decision for the first rule that cannot be written
-  on the right, taken from what it costs then.
+  on the right, taken from what it costs then. The second corpus brought the
+  other half of the wall first: one sentence of 23 words takes 116 seconds,
+  since every word WordNet lists as a noun, a verb and an adjective at once
+  multiplies the sub-parses that are redone. Speed may force the decision
+  before left recursion does.
 
 ## Not planned
 
