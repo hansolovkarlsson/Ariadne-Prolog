@@ -73,25 +73,29 @@ These change the shape of the system rather than adding to it.
      simple declarative sentences, agreement by unification alone, a
      diagnosis that names what disagrees, and, earlier than planned, what each
      verb takes after it, since simple sentences cannot be checked without it.
-  2. Questions, negation, passives and relative clauses, and morphology rules
-     for words missing from the lexicon. Months, part-time. **Under way.**
-     Auxiliaries, negation, yes/no questions, passives, relative clauses
-     and *wh*-questions went in on 2026-09-28, and guessing an unknown
-     word's class from its ending on 2026-09-29, in
-     [the changelog](CHANGELOG.md). Left: contractions other than *n't*,
-     such as *'s*, *'re* and *'ll*.
+  2. **Done on 2026-09-29**, in [the changelog](CHANGELOG.md), two days
+     after stage 1 against an estimate of months: auxiliaries, negation,
+     yes/no and *wh*-questions, passives, relative clauses, a guess at a
+     word missing from the lexicon from its ending, contractions and
+     possessives. What it leaves out, each a small piece of its own:
+     - *who* against *which*, which needs every noun marked as a person or
+       a thing;
+     - a preposition before its relative word, *the park in which the dog
+       walks*;
+     - a possessor with a prepositional phrase, *the king of France's dog*;
+     - punctuation: *The dog barks?* passes as a statement.
   3. A lexicon generated from WordNet or Wiktionary, and a record of what
      breaks. Broad coverage of real text is out of scope: rule-based grammars
      that aim for it have taken decades.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
-  it by writing such rules right-recursively, and neither the auxiliary chain
-  nor relative clauses needed one. Past that, there are two
-  answers: a chart or left-corner parser written in Prolog, which is days, or
-  *Tabling* under *Structural*, which is months. Which one is a decision for
-  when stage 2 meets its first left-recursive rule, taken from what it costs
-  then.
+  it by writing such rules right-recursively, and stage 2 needed none either:
+  the auxiliary chain, relative clauses and possessives all read left to
+  right. Past that, there are two answers: a chart or left-corner parser
+  written in Prolog, which is days, or *Tabling* under *Structural*, which is
+  months. Which one is a decision for the first rule that cannot be written
+  on the right, taken from what it costs then.
 
 ## Not planned
 

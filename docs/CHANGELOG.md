@@ -20,6 +20,13 @@ There are no releases yet, so entries are grouped by the day they landed on
   reported, so a misspelling is not read as a new word. *Of* joins the
   prepositions. 205 checks. (`fcb35cc`)
 
+- **The grammar checker reads contractions and possessives, which finishes
+  its stage 2.** *She's*, *they're*, *I'm*, *we've*, *I'll* and *he'd* are
+  read as the words they stand for, *'s* as *is* or *has* and *'d* as
+  *would* or *had*, so *they's sleeping* is caught. A possessive stands
+  where a determiner would, *Alice's friend's dog*, *the dogs' bones*. 236
+  checks. Stage 2 was estimated at months and took two days. (`36c8d5f`)
+
 ## 2026-09-28
 
 ### Added
