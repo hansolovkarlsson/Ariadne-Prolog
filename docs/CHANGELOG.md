@@ -27,6 +27,26 @@ There are no releases yet, so entries are grouped by the day they landed on
   where a determiner would, *Alice's friend's dog*, *the dogs' bones*. 236
   checks. Stage 2 was estimated at months and took two days. (`36c8d5f`)
 
+- **The grammar checker's stage 3: WordNet's words, and a record of what
+  they break.** `make wordnet` downloads WordNet 3.1 and generates
+  `english/wordnet.pl`, 85,000 words with verb frames and irregular forms,
+  which git ignores. `english/wordnet_check.pl` loads it, and a word missing
+  from the lexicon is then looked up there before it is guessed from its
+  ending. `make english-wordnet` runs the grammar's checks with it, all of
+  which pass, and fifty ordinary sentences, of which 28 pass. The README
+  sets out why the rest fail. The lexicon's own words are never looked up,
+  and `make english` and CI run without WordNet. (`9650c91`)
+
+### Fixed
+
+- **A clause costs memory in proportion to its size.** Each clause has an
+  arena, and an arena's blocks were a fixed 4 KB, so WordNet's 89,000 facts
+  took 490 MB. Blocks now start at 256 bytes and double: 52 MB. (`99ff4bd`)
+
+- **The grammar's checks are a third faster.** The possessive rule was tried
+  at every noun phrase, even with no *'s* in the sentence, and cost 60 per
+  cent. It now looks ahead for one first. (`1649f0c`)
+
 ## 2026-09-28
 
 ### Added

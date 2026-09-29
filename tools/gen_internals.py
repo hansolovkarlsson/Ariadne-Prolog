@@ -202,7 +202,7 @@ section('shape', 'The shape of the interpreter', ''.join([
          "records where the heap stood and failing rewinds to it."),
     table(['File', 'Lines', 'What lives there'], [
         ['src/prolog.h', '409', 'the shared declarations: terms, marks, frames, choice points'],
-        ['src/term.c', '986', 'heap and arenas, atom table, unification, standard order, copying, the collector'],
+        ['src/term.c', '994', 'heap and arenas, atom table, unification, standard order, copying, the collector'],
         ['src/parser.c', '1075', 'tokeniser, operator table, operator-precedence reader'],
         ['src/write.c', '381', 'the term writer'],
         ['src/arith.c', '483', 'arithmetic evaluation'],

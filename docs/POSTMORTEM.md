@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Thirty-eight defects, in five cohorts that failed for five different reasons:
+Thirty-nine defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: six bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -29,10 +29,10 @@ Thirty-eight defects, in five cohorts that failed for five different reasons:
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
   by asking what a check could reach.
-- **Scale**: ten defects that no test was large enough to meet, a fixed
-  buffer, a recursion on the C stack or a cost that grew with the square, all
-  found on 2026-09-27, nine of them by probing a neighbour of the defect
-  before.
+- **Scale**: eleven defects that no test was large enough to meet, a fixed
+  buffer, a recursion on the C stack, a cost that grew with the square or a
+  fixed allocation, ten found on 2026-09-27, nine of them by probing a
+  neighbour of the defect before, and one on 2026-09-29.
 
 ## Cohort A — the design era
 
@@ -379,8 +379,8 @@ the only evidence that it can.
 
 ## Cohort E: scale
 
-Ten defects that no test was large enough to meet, all found on 2026-09-27.
-The first nine came one from another: each fix was followed by probing the same shape a
+Eleven defects that no test was large enough to meet, ten of them found on
+2026-09-27. The first nine came one from another: each fix was followed by probing the same shape a
 step further, at a million elements or a million levels, and the probe found
 the next.
 
@@ -396,6 +396,7 @@ the next.
 | `atomic_list_concat` of a million parts ran the machine out of memory and was killed | Joining in Prolog made a new atom at every step, and atoms are never freed | Writing the deep-nesting tests, which built their text that way (`678e501`) |
 | Splitting 20,000 parts took five seconds | Splitting interned every remainder on the way | Reading it beside the join (`8a5b8a3`) |
 | Reading a clause of 40,000 distinct variables took 0.26 seconds, quadrupling with each doubling | The reader found each variable by scanning every one before it in the clause | Reading the parser at the day's closeout, then timing it (`cabc0a0`) |
+| Loading WordNet's 89,000 facts took 490 MB, 5.5 KB a fact | Every clause has an arena of its own, and an arena's blocks were a fixed 4 KB, for clauses of a hundred bytes | Measuring the first large program loaded, on 2026-09-29, for grammar stage 3 (`99ff4bd`) |
 
 Every one of these passed the suite, because every test in the suite is small.
 The deep-nesting fix touched the collector, unification, comparison, copying,
@@ -456,6 +457,7 @@ common.
 | Reading the code | 11 |
 | Writing the documentation, then testing the claim | 6 |
 | Probing past what the suite tries, at a million elements or levels | 4 |
+| Loading a large program and measuring it | 1 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 3 |
 | Rendering the pages and looking at them | 3 |
@@ -469,7 +471,7 @@ common.
 
 Three things stand out.
 
-**The test suite found three of thirty-eight.** It is a good suite, 331 tests
+**The test suite found three of thirty-nine.** It is a good suite, 331 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong

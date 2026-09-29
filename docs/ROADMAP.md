@@ -12,6 +12,11 @@ produced some of the entries below.
 
 ## Near term
 
+- **`read_line_to_string/2` and `read_line_to_codes/2`.** There is no way to
+  read a line of text but a character at a time with `get_char/2`, which is
+  how `english/corpus.pl` reads its sentences. SWI-Prolog has both. Found on
+  2026-09-29.
+
 ## Medium term
 
 - **Revise and extend the tutorials.** The four levels in `tutorial/`, and
@@ -84,9 +89,21 @@ These change the shape of the system rather than adding to it.
        walks*;
      - a possessor with a prepositional phrase, *the king of France's dog*;
      - punctuation: *The dog barks?* passes as a statement.
-  3. A lexicon generated from WordNet or Wiktionary, and a record of what
-     breaks. Broad coverage of real text is out of scope: rule-based grammars
-     that aim for it have taken decades.
+  3. **Done on 2026-09-29**, in [the changelog](CHANGELOG.md): WordNet 3.1's
+     words, generated at build time by `make wordnet`, and a record of what
+     they break in [english/README.md](../english/README.md), from fifty
+     ordinary sentences of which 28 passed. Broad coverage of real text is
+     out of scope: rule-based grammars that aim for it have taken decades.
+     What the record found, each a piece of its own:
+     - nouns that take no article, *water*, *bread*, which WordNet does
+       not mark and the grammar cannot tell;
+     - the closed classes WordNet lacks: conjunctions joining clauses,
+       numbers, *nobody*, and more prepositions;
+     - the hand-written lexicon's incomplete entries, *tell*, *open*,
+       *early*, which WordNet has right but never overrides;
+     - constructions: adverbs before the verb, *very*, verbs that take an
+       adjective, infinitives, clauses after a verb, imperatives, noun
+       phrases as adverbs, *such a*.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
