@@ -76,7 +76,8 @@ noun(Sg) :- guessed(noun, Sg).
 
 % mass(Noun): a noun that can stand in the singular with no determiner,
 % "water boils", "we ate dinner", and take some or much there, "some
-% homework": a substance, an activity or game, a meal. Most can be counted
+% homework": a substance, an activity or game, a meal, and a place or time
+% taken for what goes on there, "after school", "at night". Most can be counted
 % as well, "a coffee", "a big dinner", which the grammar also allows.
 % WordNet does not say which nouns these are, so they are listed, WordNet's
 % own words among them: water, milk, rain, snow and work are not in noun/1,
@@ -86,6 +87,7 @@ mass(water). mass(milk). mass(rain). mass(snow). mass(work).
 mass(bread). mass(tea). mass(coffee). mass(rice). mass(food). mass(music).
 mass(homework). mass(advice). mass(information). mass(furniture).
 mass(football). mass(breakfast). mass(lunch). mass(dinner).
+mass(school). mass(church). mass(college). mass(bed). mass(night).
 
 % irregular_plural(Singular, Plural).
 irregular_plural(man, men).       irregular_plural(woman, women).
@@ -116,6 +118,16 @@ pronoun(we,   agr(n, n, n), subj).
 pronoun(us,   agr(n, n, n), obj).
 pronoun(they, agr(n, n, n), subj).
 pronoun(them, agr(n, n, n), obj).
+
+% The indefinite pronouns are third person singular, and one form serves
+% for subject and object: "nobody answered", "I saw nobody". WordNet lists
+% some as nouns, "a nobody", which the lexicon's entry replaces.
+pronoun(W, agr(n, y, y), _) :- indefinite(W).
+
+indefinite(nobody).   indefinite(somebody).  indefinite(anybody).
+indefinite(everybody). indefinite(someone).  indefinite(anyone).
+indefinite(everyone). indefinite(nothing).   indefinite(something).
+indefinite(anything). indefinite(everything).
 
 /* ---------------- relative and question words ---------------- */
 
@@ -155,11 +167,36 @@ det(much,  mass, _).
 det(few,   pl, _).   det(no,    _,  _).
 det(my,    _,  _).   det(your,  _,  _).   det(his,     _,  _).
 det(its,   _,  _).   det(our,   _,  _).   det(their,   _,  _).
-det(one,   sg, _).   det(two,   pl, _).   det(three,   pl, _).
-det(four,  pl, _).
+det(W,     Num, _) :- number_word(W, Num).
 
 % her is both a determiner and an object pronoun: "her dog", "saw her".
 det(her,   _,  _).
+
+% number_word(Word, Number): a number, which is a determiner, "six dogs", or
+% a noun phrase of its own, "the shop closes at six". One is singular and
+% every other number plural; a number written in digits, 6 or 3.5, is a
+% word of its own, see words/2 in check.pl.
+number_word(one, sg).
+number_word(W, pl) :- number_name(W).
+number_word(W, Num) :-
+    atom(W), atom_chars(W, [C|_]), digit(C),
+    ( W == '1' -> Num = sg ; Num = pl ).
+
+number_name(two). number_name(three). number_name(four). number_name(five).
+number_name(six). number_name(seven). number_name(eight). number_name(nine).
+number_name(ten). number_name(eleven). number_name(twelve).
+number_name(thirteen). number_name(fourteen). number_name(fifteen).
+number_name(sixteen). number_name(seventeen). number_name(eighteen).
+number_name(nineteen). number_name(twenty). number_name(thirty).
+number_name(forty). number_name(fifty). number_name(sixty).
+number_name(seventy). number_name(eighty). number_name(ninety).
+
+% big_number(Word): a number that needs one before it, "a hundred", "two
+% thousand"; see determiner//3 in grammar.pl.
+big_number(hundred). big_number(thousand). big_number(million).
+big_number(dozen).
+
+digit(C) :- char_type(C, digit(_)).
 
 /* ---------------- adjectives, prepositions, adverbs ---------------- */
 
@@ -176,12 +213,38 @@ adj(A) :- guessed(adj, A).
 prep(in). prep(on). prep(under). prep(near). prep(behind). prep(with).
 prep(without). prep(from). prep(to). prep(into). prep(over). prep(by).
 prep(for). prep(at). prep(across). prep(of).
+prep(after). prep(before). prep(during). prep(through). prep(between).
+prep(around). prep(about). prep(against). prep(since). prep(until).
+prep(along). prep(among). prep(above). prep(below). prep(beside).
+prep(inside). prep(outside). prep(toward). prep(towards). prep(within).
+prep(beyond). prep(throughout). prep(underneath).
 
 adv(quickly). adv(slowly). adv(quietly). adv(loudly). adv(happily).
 adv(sadly). adv(often). adv(always). adv(never). adv(sometimes).
 adv(today). adv(yesterday). adv(again). adv(carefully). adv(well).
 adv(furiously). adv(early). adv(late).
+% Prepositions and conjunctions that WordNet has as adverbs too, "never seen
+% before", "he left, though": a listed word is never looked up there, so
+% the adverb is listed here with them.
+adv(after). adv(before). adv(through). adv(between). adv(around).
+adv(about). adv(along). adv(above). adv(below). adv(inside). adv(outside).
+adv(within). adv(beyond). adv(throughout). adv(underneath). adv(though).
 adv(A) :- guessed(adv, A).
+
+/* ---------------- conjunctions ---------------- */
+
+% coordinator(Word): joins two clauses as equals, "I like coffee but my
+% brother prefers tea". and also joins noun phrases, in grammar.pl.
+coordinator(and). coordinator(but). coordinator(or).
+
+% subordinator(Word): opens a clause that goes with another, before it or
+% after it: "he opened the window because the room was hot", "if it rains
+% we stay". so and while are left out: listing them would lose WordNet's
+% so, "so happy", and while, "a while".
+subordinator(because). subordinator(although). subordinator(though).
+subordinator(if). subordinator(unless). subordinator(since).
+subordinator(until). subordinator(before). subordinator(after).
+subordinator(when).
 
 /* ---------------- verbs ---------------- */
 

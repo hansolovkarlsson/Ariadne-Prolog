@@ -14,7 +14,7 @@
 % fails on any others, so a change to the grammar, the lexicon or
 % wordnet_entry/2 that moves a sentence is seen, whichever way it moves it,
 % and the record is brought up to date with it.
-recorded(34, 15, 1).
+recorded(40, 10, 0).
 
 corpus :-
     open('english/corpus.txt', read, In),

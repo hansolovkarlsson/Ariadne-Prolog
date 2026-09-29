@@ -47,9 +47,29 @@ violation(What, [What|V], V).
 % A statement; a yes/no question, the first verb before the subject and
 % then what that verb takes, as in the statement: "does the dog bark", "is
 % the dog happy"; and a wh-question.
-sentence(T, V0, V) --> statement(T, nogap, nogap, V0, V).
+sentence(T, V0, V) -->
+    statement(S, nogap, nogap, V0, V1),
+    clauses_after(S, T, V1, V).
 sentence(T, V0, V) --> question(T, nogap, nogap, V0, V).
 sentence(T, V0, V) --> wh_question(T, V0, V).
+sentence(sub_first(C, S1, T), V0, V) -->
+    [C], { subordinator(C) },
+    statement(S1, nogap, nogap, V0, V1),
+    statement(S2, nogap, nogap, V1, V2),
+    clauses_after(S2, T, V2, V).
+
+% clauses_after(+First, -Tree, V0, V): the statement First alone, or joined
+% to the statements after it, each by a conjunction: "I like coffee but my
+% brother prefers tea", "he opened the window because the room was hot".
+% A clause may also open with its subordinator, "because the room was hot
+% he opened the window", which is the last rule for sentence//3. The chain
+% is read left to right and nests on the right, so no rule calls itself on
+% the left.
+clauses_after(S, S, V, V) --> [].
+clauses_after(S1, joined(C, S1, T), V0, V) -->
+    [C], { coordinator(C) ; subordinator(C) },
+    statement(S2, nogap, nogap, V0, V1),
+    clauses_after(S2, T, V1, V).
 
 % statement(-Tree, G0, G, V0, V). The subject is never the gap.
 statement(s(NP, VP), G0, G, V0, V) -->
@@ -120,8 +140,10 @@ simple_np(Agr, Case, pro(W), V0, V) -->
            agree(case(W), PCase, Case, V0, V) }.
 simple_np(Agr, _, name(W), V, V) -->
     [W], { proper(W), agr_of(sg, Agr) }.
+simple_np(Agr, _, num(W), V, V) -->
+    [W], { number_word(W, Num), agr_of(Num, Agr) }.
 simple_np(Agr, _, np(det(D), N), V0, V) -->
-    [D], { det(D, DNum, DSound) },
+    determiner(D, DNum, DSound),
     nominal(Num, First, Head, N, V0, V1),
     { det_agrees(D, Head, DNum, Num, V1, V2),
       sound(First, Sound),
@@ -136,6 +158,13 @@ simple_np(Agr, _, np(poss(P), N), V0, V) -->
     possessor(P, V0, V1),
     nominal(Num, _, _, N, V1, V),
     { agr_of(Num, Agr) }.
+
+% determiner(-Det, -Number, -Sound): a determiner, or a number that takes
+% one before it, "a hundred", "two thousand", which counts as one word.
+determiner(D, DNum, DSound) --> [D], { det(D, DNum, DSound) }.
+determiner(D, pl, _) -->
+    [A, B], { ( A == a ; number_word(A, _) ), big_number(B),
+              atomic_list_concat([A, B], ' ', D) }.
 
 % possessor(-Tree, V0, V): a noun phrase and 's, standing where a
 % determiner would: "Alice's dog", "the old farmer's dog". A possessor can

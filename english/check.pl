@@ -181,7 +181,10 @@ known_word(W) :- rel_pronoun(W, _), !.
 known_word(W) :- wh_pronoun(W, _), !.
 known_word(W) :- wh_det(W), !.
 known_word(W) :- wh_adverb(W), !.
-known_word(and).
+known_word(W) :- number_word(W, _), !.
+known_word(W) :- big_number(W), !.
+known_word(W) :- coordinator(W), !.
+known_word(W) :- subordinator(W), !.
 known_word(not).
 
 /* ---------------- running text ---------------- */
@@ -348,6 +351,14 @@ brackets(Tree, Atom) :-
     tidy(Atom0, Atom).
 
 bracket(s(NP, VP))         --> ['[S'], bracket(NP), bracket(VP), [']'].
+bracket(joined(C, S1, S2)) -->
+    (   { coordinator(C) }
+    ->  ['[S'], bracket(S1), [C], bracket(S2), [']']
+    ;   ['[S'], bracket(S1), ['[SBAR', C], bracket(S2), [']', ']']
+    ).
+bracket(sub_first(C, S1, S2)) -->
+    ['[S', '[SBAR', C], bracket(S1), [']'], bracket(S2), [']'].
+bracket(num(W))            --> ['[NP', W, ']'].
 bracket(q(W, NP, Neg, Is)) --> ['[SQ', W], bracket(NP), neg(Neg), items(Is), [']'].
 bracket(wh(W, C))          --> ['[SBARQ'], bracket(W), bracket(C), [']'].
 bracket(wh_pro(W))         --> ['[WHNP', W, ']'].
@@ -386,9 +397,10 @@ tidy(A0, A) :-
 /* ---------------- words ---------------- */
 
 % words(+Text, -Words): Text lowercased and cut into words at anything that
-% is not a letter, so punctuation falls away: 'The dog barks.' gives
-% [the, dog, barks]. A letter is what char_type/2 calls alpha, so a word
-% with an accented letter stays one word. An apostrophe between letters
+% is not a letter or a digit, so punctuation falls away: 'The dog barks.'
+% gives [the, dog, barks]. A number in digits is one word, '3.5' or '1,000'.
+% A letter is what char_type/2 calls alpha, so a word with an accented
+% letter stays one word. An apostrophe between letters
 % belongs to the word, so doesn't is one word; a typographic apostrophe is
 % read as the plain one. A contraction such as 's, 're or 'll is then cut
 % from its word, as it is a word of its own: she's gives [she, 's]. So is
@@ -404,6 +416,12 @@ plain_apostrophe('\x2019\', '\'') :- !.
 plain_apostrophe(C, C).
 
 split_letters([], []).
+split_letters([C|Cs], Words) :-
+    digit(C), !,
+    take_number([C|Cs], Ds, Rest),
+    atom_chars(W, Ds),
+    Words = [W|Ws],
+    split_letters(Rest, Ws).
 split_letters([C|Cs], Words) :-
     (   letter(C)
     ->  take_letters([C|Cs], Letters, Rest0),
@@ -430,3 +448,11 @@ take_letters(['\'', C|Cs], ['\'', C|Ls], Rest) :-
 take_letters(Rest, [], Rest).
 
 letter(C) :- char_type(C, alpha).
+
+% take_number(+Chars, -Number, -Rest): a run of digits, with a point or
+% comma inside it kept when a digit follows, 3.5 or 1,000; a full stop
+% after it ends the sentence and is not part of it.
+take_number([C|Cs], [C|Ds], Rest) :- digit(C), !, take_number(Cs, Ds, Rest).
+take_number([P, D|Cs], [P, D|Ds], Rest) :-
+    ( P == '.' ; P == ',' ), digit(D), !, take_number(Cs, Ds, Rest).
+take_number(Rest, [], Rest).

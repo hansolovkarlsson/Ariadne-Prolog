@@ -95,8 +95,8 @@ end of this file.
 
 | | |
 |---|---|
-| `lexicon.pl` | 298 words: 105 nouns, 49 verbs, 43 adjectives, 18 adverbs, 16 prepositions, 26 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 414 noun and verb forms in all. 19 nouns are marked as mass nouns, which may stand alone in the singular. |
-| `grammar.pl` | The rules: statements, yes/no and *wh*-questions, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
+| `lexicon.pl` | 388 words, a word in two classes counted in each: 105 nouns, 49 verbs, 43 adjectives, 34 adverbs, 39 prepositions, 22 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names, 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 414 noun and verb forms in all. 24 nouns are marked as mass nouns, which may stand alone in the singular. |
+| `grammar.pl` | The rules: statements, alone or joined by a conjunction, yes/no and *wh*-questions, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
 | `wordnet_check.pl` | `check.pl` with WordNet's words loaded, from `wordnet.pl`, which `make wordnet` generates and git ignores. |
@@ -106,8 +106,11 @@ end of this file.
 ## What it checks
 
 - **Subject and verb**: *the dogs chase*, *the dog chases*, *I am*, *you are*,
-  *they were*; and a subject joined by *and* is plural.
-- **Determiner and noun**: *a dog*, *these dogs*, not *a dogs* or *this dogs*.
+  *they were*, *nobody sleeps*; and a subject joined by *and* is plural. Each
+  clause of a sentence joined by *and*, *but* or *because* agrees on its
+  own: *the dog barks but the cats sleep*.
+- **Determiner and noun**: *a dog*, *these dogs*, *six dogs*, *a hundred
+  dogs*, not *a dogs*, *this dogs* or *one dogs*.
 - **A and an**, by the sound of the next word rather than its spelling: *an
   hour*, *a university*, *an old man*.
 - **Pronoun case**: *she sees him*, not *him sleeps* or *she sees he*.
@@ -259,3 +262,17 @@ wrong reason: *two cups of tea, please* is read as *two cups of tea please*,
 *please* the verb, since the checker ignores commas. Of the five sentences
 this cause held, *water boils at a hundred degrees* and *played football
 after school* still fail, for a number and a preposition.
+
+The closed classes were next: *and*, *but* and *or* join two clauses, and
+*because*, *if*, *although*, *when* and six more join a clause to another,
+after it or before it; the numbers, in words and in digits, with *a
+hundred* and *two thousand*; *nobody*, *everyone* and the other indefinite
+pronouns; and 23 more prepositions, *after* among them. WordNet has some of
+these words as other classes, *before* as an adverb, *nobody* as a noun,
+and a word the lexicon lists is never looked up there, so the adverbs worth
+keeping are listed with them; *so* and *while* are left out as
+conjunctions, since listing them would lose *so happy* and *a while*. Six
+more sentences pass, and the corpus gives **40 grammatical, 10 not, and
+none unknown**. The one new ambiguity is real: in *played football after
+school*, *after school* can go with *played* or with *football*. The ten
+that fail are all constructions, the last cause in the record.

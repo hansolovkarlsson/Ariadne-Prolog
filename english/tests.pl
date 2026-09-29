@@ -187,6 +187,24 @@ good('The boys play football in the park.').
 good('The dog wants much food.').
 good('A coffee is good.').
 
+% Stage 3: the closed classes WordNet does not have.
+good('The dog barks and the cat sleeps.').
+good('The dog barks but the cat sleeps.').
+good('The dog sleeps because the cat is quiet.').
+good('Because the cat is quiet the dog sleeps.').
+good('If the dog barks the cat runs.').
+good('The cat sleeps until the dog arrives.').
+good('Nobody sleeps.').
+good('Alice sees nobody.').
+good('Everyone is happy.').
+good('Six dogs bark.').
+good('A hundred birds sang.').
+good('Two thousand birds fly.').
+good('The dog sleeps at 6.').
+good('The party is at six.').
+good('The children played football after school.').
+good('The dog slept during the party.').
+
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -213,6 +231,15 @@ bad('Dog barks.',                          bare(dog)).
 bad('Much dog barks.',                     det_noun(much, dog)).
 bad('The dog eats much apples.',           det_noun(much, apples)).
 bad('Alice drink tea.',                    subject_verb(drink)).
+bad('The dog barks but the cats sleeps.',  subject_verb(sleeps)).
+bad('Nobody sleep.',                       subject_verb(sleep)).
+bad('Six dog bark.',                       det_noun(six, dog)).
+bad('One dogs bark.',                      det_noun(one, dogs)).
+bad('A hundred dog barks.',                det_noun('a hundred', dog)).
+bad('Because the cat is quiet.',           no_reading).
+bad('The dog barks because.',              no_reading).
+bad('Hundred dogs bark.',                  no_reading).
+bad('I saw 1 dogs.',                      det_noun('1', dogs)).
 bad('The cat chases mouse.',               bare(mouse)).
 bad('The dog quickly.',                    no_reading).
 bad('Chases the dog.',                     no_reading).
@@ -279,6 +306,8 @@ readings('The cat that the dog chased sleeps.', 1).
 readings('What did the dog chase?', 1).
 readings('The dog in the garden that barks is old.', 2).
 readings('Alice\'s friend\'s dog barks.', 1).
+readings('The dog barks and the cat sleeps.', 1).
+readings('The children played football after school.', 2).
 
 % splits(Text, Sentences): Text cuts into exactly these sentences.
 splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).
