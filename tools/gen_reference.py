@@ -726,8 +726,11 @@ BUILTINS = [
      "them too, with a warning naming both files, unless it is declared "
      "`multifile/1`. A program's own definition of a library predicate, such "
      "as `member/2`, replaces the library's without a warning. A file is known "
-     "by the path it was found at, so the same file reached by two different "
-     "paths counts as two."),
+     "by the path it was found at, with `.` segments, doubled slashes and a "
+     "name followed by `..` taken out, so `tests/f` and `./tests/../tests/f` "
+     "are one file. A symbolic link, or an absolute path against a relative "
+     "one, still counts as a second file: telling those apart needs "
+     "`realpath()`, which is POSIX, not C99."),
     ('initialization(:Goal)',
      "Runs Goal once all the files named on the command line have been loaded."),
     ('listing', "Writes every user predicate; listing/1 takes a Name or Name/Arity."),
@@ -735,7 +738,8 @@ BUILTINS = [
     ('statistics(+Key, -Value)',
      "Key is runtime, cputime, process_cputime or walltime, giving "
      "`[Total, SinceLast]` in milliseconds; inferences, giving a count; memory, "
-     "giving `[InUse, 0]` in bytes; garbage_collection, giving "
+     "giving `[InUse, 0]` in bytes; program, the bytes the clause store and "
+     "the other permanent arenas hold, as `[InUse, 0]`; garbage_collection, giving "
      "`[Collections, BytesFreed, Milliseconds]` since the start; or "
      "retained_clauses, the number of retracted clauses still held because a "
      "choice point may reach them."),

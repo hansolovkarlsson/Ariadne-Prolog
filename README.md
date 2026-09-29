@@ -218,7 +218,8 @@ running constantly; `make test-asan` runs both under the sanitizers.
 `make english` runs the checks of the grammar checker in
 [english/](english/README.md), the first program built on the interpreter;
 `make english-wordnet` runs them again with WordNet's words, which
-`make wordnet` downloads, and fifty ordinary sentences beside them.
+`make wordnet` downloads, and fifty ordinary sentences beside them, whose
+counts are pinned; CI runs it too, with WordNet kept in its cache.
 
 ## Project documents
 

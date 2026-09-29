@@ -64,12 +64,12 @@ end of this file.
 
 | | |
 |---|---|
-| `lexicon.pl` | 281 words: 91 nouns, 49 verbs, 43 adjectives, 16 adverbs, 16 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
+| `lexicon.pl` | 283 words: 91 nouns, 49 verbs, 43 adjectives, 18 adverbs, 16 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
 | `grammar.pl` | The rules: statements, yes/no and *wh*-questions, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees. |
 | `wordnet_check.pl` | `check.pl` with WordNet's words loaded, from `wordnet.pl`, which `make wordnet` generates and git ignores. |
-| `corpus.txt`, `corpus.pl` | Fifty ordinary sentences, and the run over them that `make english-wordnet` does. |
+| `corpus.txt`, `corpus.pl` | Fifty ordinary sentences, and the run over them that `make english-wordnet` does, which fails unless the counts are the ones `corpus.pl` records. |
 | `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, and the number of readings of an ambiguous one. |
 
 ## What it checks
@@ -166,7 +166,8 @@ committed. A word the lexicon lacks is looked up there, as itself, as an
 inflected form of a stem, or among the irregular forms (*flung*, *oxen*,
 *grabbed*), before it is guessed from its ending. The lexicon's own words are
 never looked up, so its entries are what they were, and `make english` runs
-without WordNet and without the network.
+without WordNet and without the network. CI runs `make english-wordnet` in a
+job of its own, with WordNet kept in its cache.
 
 `make english-wordnet` runs the grammar's checks with WordNet loaded, and all
 of them pass. It then checks the fifty sentences in `corpus.txt`, every one of
@@ -207,3 +208,11 @@ first took 490 MB, because each clause had a 4 KB arena whatever its size,
 which the interpreter now sizes to the clause (52 MB). A lookup reads all of
 a predicate's clauses, as first-argument indexing here filters but does not
 hash, so finding one noun among 55,000 takes 0.16 ms, which is fast enough.
+
+**Since the record.** The three incomplete entries were completed the same
+day: *tell* takes one object or two, *open* none or one, and *early* is an
+adverb too, with *close* and *late*, which had the same gaps. That moved
+three sentences, and the corpus now gives **31 grammatical, 18 not, and one
+unknown**. `corpus.pl` records those counts and fails on any others, so a
+sentence that moves, either way, is seen in CI and the record is updated
+with it.

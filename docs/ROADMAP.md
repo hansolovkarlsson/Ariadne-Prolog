@@ -94,8 +94,6 @@ These change the shape of the system rather than adding to it.
        not mark and the grammar cannot tell;
      - the closed classes WordNet lacks: conjunctions joining clauses,
        numbers, *nobody*, and more prepositions;
-     - the hand-written lexicon's incomplete entries, *tell*, *open*,
-       *early*, which WordNet has right but never overrides;
      - constructions: adverbs before the verb, *very*, verbs that take an
        adjective, infinitives, clauses after a verb, imperatives, noun
        phrases as adverbs, *such a*.

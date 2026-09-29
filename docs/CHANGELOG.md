@@ -42,7 +42,36 @@ There are no releases yet, so entries are grouped by the day they landed on
   no string type, or as a code list; `end_of_file` or -1 at the end. A last
   line with no line ending is a line. (`63ad3c9`)
 
+- **`statistics(program, [InUse, 0])`**, the bytes the clause store and the
+  other permanent arenas hold, as SWI-Prolog names it. The suite uses it to
+  check that a small fact costs under a kilobyte, which would have caught the
+  4 KB arena blocks below; it reads the interpreter's own count, not the
+  process's resident size, which every platform reports differently.
+  (`f792715`)
+
+- **CI runs the grammar with WordNet.** A job of its own runs `make
+  english-wordnet`, with WordNet 3.1 kept in the Actions cache, and
+  `english/corpus.pl` pins the corpus counts, 31 grammatical, 18 not, one
+  unknown, so a change that moves a sentence fails there. (`2c5a76d`)
+
 ### Fixed
+
+- **The grammar lexicon's incomplete entries.** *Tell* took only two
+  objects, *open* and *close* only one, and *early* and *late* were only
+  adjectives, so *tells wonderful stories*, *the museum opens* and *leave
+  early* failed; WordNet has them right but never overrides a listed word.
+  Five checks, 241 in all; the corpus goes from 28 grammatical to 31.
+  (`d3fc401`)
+
+- **One file reached by two spellings of its path is one file.**
+  `consult(tests/f)` and then `consult('./tests/../tests/f')` warned that
+  the second file had redefined the first's predicates. A path is now
+  normalized as text before it names the file. A symbolic link or an
+  absolute path is not, since that needs `realpath()`, which is not C99.
+  (`2e774bc`)
+
+- **`retractall/1` frees what it retracted.** The last clause it removed
+  stayed allocated until the next retract on that predicate. (`f792715`)
 
 - **A clause costs memory in proportion to its size.** Each clause has an
   arena, and an arena's blocks were a fixed 4 KB, so WordNet's 89,000 facts
