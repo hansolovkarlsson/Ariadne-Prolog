@@ -890,18 +890,59 @@ planted fault was the one that got through, a check on a gap's case and a
 multifile check that passed on the old binary, because a check that cannot
 fail is only visible when something is planted and it stays green.
 
+### After the closeout: the four fixes it left
+
+The morning's standup ended with four items marked as fixes, and the rest of
+the day took them in turn. Each change came with a check, and each check was
+run against the code as it had been, to see it fail.
+
+The lexicon entries were the smallest: *tell* takes one object or two, and
+*open* none or one, and *early* is an adverb as well as an adjective
+(`d3fc401`). Trying the neighbours of the three found two more of the same
+kind, *close* with only one frame and *late* with no adverb, and they went in
+with them. The corpus went from 28 grammatical to 31, all three sentences the
+stage 3 record had put down to this cause.
+
+The loader's two paths had been left alone the day before, because
+`realpath()` is POSIX, not C99. That settled the question only for the
+complete answer. Most of the ways one file gets two names are in the
+spelling: `./`, a doubled slash, `tests/../tests`. Those can be taken out as
+text, in C99, before the path names the file (`2e774bc`). A symbolic link, or
+an absolute path against a relative one, is still a second file, and going
+past C99 in `consult.c` to catch those is left as Hans's decision.
+
+The memory check was held on a detail: resident size is read differently on
+every platform. The arena defect, though, was about the interpreter's own
+allocations, so the interpreter can count them itself. `statistics(program,
+_)`, SWI's name for the key, now reports what the arenas hold. The suite
+asserts 10,000 small facts and requires under a kilobyte each; they cost 304
+bytes, and with the old 4 KB first block the check fails (`f792715`).
+Writing it found a defect beside it. The new test cleaned up with
+`retractall/1`, and `db_reclaim`, which bounds the retained-clause count
+across every predicate, went red. `retractall/1` had kept the last clause it
+removed until the next retract on the same predicate, and it now frees it.
+
+The WordNet job was the one that needed more than a job. `make
+english-wordnet` only printed the corpus counts, so a regression that moved
+sentences from grammatical to not would have run to a green finish in CI as
+well as locally. The counts are now recorded in `english/corpus.pl`, which
+fails on any others, in either direction. The job keeps WordNet in the
+Actions cache, so it needs the network only when the cache is empty, and the
+main matrix still runs without it (`2c5a76d`). Its first run took 23
+seconds.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
 
 | Check | What it is for |
 | --- | --- |
-| `make check` | The suite; then every test again bare, with the collector let in every fourth inference and collecting inside each one; then `tests/deep.pl`, terms nested a million deep through 21 walks. `make test` also checks that a failed `-g` goal exits 1, that two error messages read as they should, and what happens when two files, or a program and the library, define one predicate. |
+| `make check` | The suite; then every test again bare, with the collector let in every fourth inference and collecting inside each one; then `tests/deep.pl`, terms nested a million deep through 21 walks. `make test` also checks that a failed `-g` goal exits 1, that two error messages read as they should, and what happens when two files, or a program and the library, define one predicate, or one file is loaded by two spellings of its path. The suite also bounds what a small clause costs, through `statistics(program, _)`. |
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 236 checks: good sentences pass, bad ones fail for the reason named. |
-| `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of `english/corpus.txt`. It needs the network once, for `make wordnet`, so CI does not run it. |
+| `make english` | The grammar checker's 241 checks: good sentences pass, bad ones fail for the reason named. |
+| `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of `english/corpus.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
 
@@ -911,7 +952,7 @@ something it would have caught; those arrived with the program they check.
 ## Where it stands
 
 About 7,800 lines of hand-written C, 757 lines of library written in Prolog,
-a 334-test suite with a second leg that collects and a deep-term run beside
+a 335-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
 1,450 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own

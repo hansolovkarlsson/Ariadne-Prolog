@@ -9,22 +9,23 @@ shipped. This is the failures.
 
 ## Scope
 
-Forty-one defects, in five cohorts that failed for five different reasons:
+Forty-three defects, in five cohorts that failed for five different reasons:
 
-- **Design era**: six bugs about memory lifetime and ordering, produced by the
+- **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
-  first commit, and one of the same kind found on 2026-09-27; the five are
+  first commit, and two of the same kind found on 2026-09-27 and 2026-09-29;
+  the five are
   documented in full in the [engine
   internals](https://hansolovkarlsson.github.io/Ariadne-Prolog/internals.html)
   under *Five bugs this design produced*, and summarised here.
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: seventeen defects in which two parts of the project did not
+- **Consistency**: eighteen defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
-  on 2026-09-27, one each on 2026-09-28 and 2026-09-29.
+  on 2026-09-27, one on 2026-09-28 and two on 2026-09-29.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
@@ -78,6 +79,19 @@ choice point refers to must outlive it. `abolish/1` now puts every clause on
 the garbage list, and each predicate counts the choice points on its clauses,
 so the list is freed only when that count is zero. (`d936ad0`)
 
+### A seventh: `retractall/1` kept the last clause it removed
+
+`retract/1` keeps the clause it has just removed, since its caller may still
+be reading it, and frees it on the next retract from the same predicate.
+`retractall/1` used the same step for every clause, and so left its last
+one allocated after it had returned, when nothing was reading it. Harmless
+alone, it was a clause held for as long as the predicate went untouched.
+
+Found on 2026-09-29 by the test suite, when a new check that asserts and
+then retracts 10,000 facts put one retained clause into the count
+`db_reclaim` bounds across every predicate, and that test failed. It now
+reclaims once it has finished. (`f792715`)
+
 ## Cohort B — portability
 
 Three bugs, all present from the first commit, none reproducible on the
@@ -129,7 +143,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Seventeen defects in which two parts of the project disagreed. The first eight were
+Eighteen defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -438,7 +452,12 @@ A predicate now belongs to the file, and the load of it, that first gave it
 clauses. Loading that file again replaces them. Another file replaces them
 with a warning naming both, and a library predicate is replaced without one.
 `multifile/1`, which did not exist, lets a predicate collect clauses from
-several files. (`6a20648`)
+several files. (`6a20648`) A file was still known by the path it was found
+at, so one file reached by two spellings of its path was two files, and
+loading it the second way warned that it redefined itself. On 2026-09-29
+the path is normalized as text first (`2e774bc`). A symbolic link, or an
+absolute path against a relative one, still makes two, since telling them
+apart needs `realpath()`, which is not C99.
 
 Found on 2026-09-28 by a naming slip while writing the grammar's stage 2,
 the first program here big enough to be split into files that share names.
@@ -467,6 +486,24 @@ right. (`29b45a2`)
 *What this says:* a table of exceptions is checked only where something
 reads it, and a lexicon is mostly exceptions nobody has read.
 
+### Entries the lexicon had short
+
+*Tell* was listed as taking two objects and never one, *open* one and never
+none, and *early* only as an adjective. So *my grandmother tells wonderful
+stories*, *the museum opens on Sundays* and *we should leave early* were
+rejected. WordNet has all three right, and is never consulted for a word
+the lexicon lists, which is deliberate: it keeps *can* and *will* from
+becoming nouns. The fix was the entries (`d3fc401`).
+
+Found on 2026-09-29 by running fifty ordinary sentences through the grammar
+for its stage 3 record, where they were three of the 22 failures. Trying
+the same question on the entries beside them found *close* with the same gap
+as *open*, and *late* with the same gap as *early*.
+
+*What this says:* the checks tested each verb in the frames it was given,
+never whether those were all the frames it has. Sentences someone else
+wrote are what ask that.
+
 ## What found what
 
 | Found by | Count |
@@ -475,9 +512,10 @@ reads it, and a lexicon is mostly exceptions nobody has read.
 | Writing the documentation, then testing the claim | 6 |
 | Probing past what the suite tries, at a million elements or levels | 4 |
 | Loading a large program and measuring it | 1 |
+| Running ordinary sentences through the grammar | 1 |
 | Timing each commit, looking for another cause | 1 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
-| The test suite | 3 |
+| The test suite | 4 |
 | Rendering the pages and looking at them | 3 |
 | Address sanitizer | 1 |
 | An audit counting the test file against the runner | 1 |
@@ -489,7 +527,7 @@ reads it, and a lexicon is mostly exceptions nobody has read.
 
 Three things stand out.
 
-**The test suite found three of forty-one.** It is a good suite, 334 tests
+**The test suite found four of forty-three.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
@@ -529,7 +567,8 @@ Each standing check exists because of something above:
 | `make tutorials` | four tutorial programs that nothing was loading |
 | Tests written against `current_prolog_flag(max_arity, N)` rather than `256` | `max_arity`, so the tests stay honest if the limit moves |
 | `run_tests` refuses to start while any arity of `test` other than 2 exists | the thirteen tests that consulted as `test/3` and were never run |
-| `make test` loads two files that define one predicate, one that defines `member/2`, and one file twice | the loader that merged clauses from every source |
+| `make test` loads two files that define one predicate, one that defines `member/2`, one file twice, and one file by two spellings of its path | the loader that merged clauses from every source |
+| `space_clause`: 10,000 small facts must cost under a kilobyte each, read from `statistics(program, _)` | the 4 KB arena blocks, which no check measured |
 
 ## What is probably still wrong
 
