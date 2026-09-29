@@ -287,6 +287,50 @@ static FILE *open_source(const char *path, char *buf, size_t n)
     return fopen(buf, "r");
 }
 
+/* Rewrites a path in place without its . segments, doubled slashes, or a
+   name followed by .., so that one file reached by two spellings of its
+   path, tests/reload.pl and ./tests/../tests/reload.pl, is known as one:
+   a predicate belongs to the file that defined it, and two names would
+   make a reload look like another file redefining it. A .. that has no
+   name before it stays. The spelling is all C99 gives: a symbolic link, or
+   an absolute path against a relative one, needs realpath(), which is
+   POSIX. */
+static void normalize_path(char *path)
+{
+    char *seg[512];
+    size_t len[512];
+    int n = 0, i, absolute = path[0] == '/';
+    char *p = path, *out;
+
+    while (*p) {
+        char *start;
+        while (*p == '/') p++;
+        if (!*p) break;
+        start = p;
+        while (*p && *p != '/') p++;
+        if (p - start == 1 && start[0] == '.') continue;
+        if (p - start == 2 && start[0] == '.' && start[1] == '.' && n > 0 &&
+            !(len[n - 1] == 2 && seg[n - 1][0] == '.' && seg[n - 1][1] == '.')) {
+            n--;
+            continue;
+        }
+        if (p - start == 2 && start[0] == '.' && start[1] == '.' && absolute)
+            continue;                           /* /.. is / */
+        if (n == 512) return;                   /* leave it as it was */
+        seg[n] = start;
+        len[n++] = (size_t)(p - start);
+    }
+    out = path;
+    if (absolute) *out++ = '/';
+    for (i = 0; i < n; i++) {
+        if (i > 0) *out++ = '/';
+        memmove(out, seg[i], len[i]);
+        out += len[i];
+    }
+    if (out == path) *out++ = '.';
+    *out = '\0';
+}
+
 /* Loads a file. A relative path met while another file is loading is
    looked for in that file's directory first, as SWI-Prolog does, so that a
    program split into files loads from wherever it is run; then in the
@@ -314,6 +358,7 @@ int consult_file(const char *path)
         fclose(f);
         return pl_throw(mk1(intern("resource_error"), mk_atom_str("load_depth")));
     }
+    normalize_path(found);
     loading[nloading++] = pl_strdup(found);
     outer_source = cur_source;
     outer_load = cur_load;

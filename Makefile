@@ -37,7 +37,8 @@ build/%.o: src/%.c
 # error messages, which only show on standard error; and what happens when
 # two files give clauses to one predicate, which prints a warning, and when
 # a program defines a library predicate, which would change it for the rest
-# of the suite.
+# of the suite; and one file loaded by two spellings of its path, which must
+# be one file and print nothing.
 test: $(BIN)
 	$(BIN) -q tests/test.pl -g run_tests
 	$(BIN) -q -g true
@@ -51,6 +52,7 @@ test: $(BIN)
 	test "`$(BIN) -q tests/redefine_1.pl tests/redefine_2.pl -g 'findall(X, mf(X), L), write(L)' 2>/dev/null`" = "[a,b]"
 	! $(BIN) -q tests/redefine_1.pl tests/redefine_2.pl -g true 2>&1 | grep -q 'mf/1'
 	test "`$(BIN) -q tests/own_member.pl -g 'findall(X, member(X, [a,b]), L), write(L)' 2>&1`" = "[x]"
+	test "`$(BIN) -q -g "consult(tests/reload), consult('./tests/../tests//reload'), findall(X, reloaded(X), L), write(L)" 2>&1`" = "[1]"
 
 # Every test again, bare, with the collector running inside each one. The
 # collector only runs when no choice point is live, and run_tests holds
