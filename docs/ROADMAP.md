@@ -90,8 +90,6 @@ These change the shape of the system rather than adding to it.
      ordinary sentences of which 28 passed. Broad coverage of real text is
      out of scope: rule-based grammars that aim for it have taken decades.
      What the record found, each a piece of its own:
-     - the closed classes WordNet lacks: conjunctions joining clauses,
-       numbers, *nobody*, and more prepositions;
      - constructions: adverbs before the verb, *very*, verbs that take an
        adjective, infinitives, clauses after a verb, imperatives, noun
        phrases as adverbs, *such a*.

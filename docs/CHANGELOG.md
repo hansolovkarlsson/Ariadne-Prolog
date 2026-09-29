@@ -10,6 +10,17 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Conjunctions, numbers, indefinite pronouns and more prepositions** in
+  the grammar checker, the small closed classes WordNet does not list.
+  *And*, *but* and *or* join two clauses, and *because*, *if*, *when* and
+  the like join one to another, before it or after it, each clause
+  agreeing on its own. Numbers are determiners or noun phrases, *six dogs*,
+  *at six*, *a hundred degrees*, and a number in digits is now a word
+  rather than dropped, so *I saw 1 dogs* is caught. *Nobody*, *everyone*
+  and nine more are pronouns, and 23 prepositions join, *after* and
+  *during* among them. 288 checks; the corpus goes from 34 grammatical to
+  40, and every sentence in it now has only known words. (`42fdaf7`)
+
 - **Nouns that take no article.** *Water boils*, *some homework*, *the price
   of bread*: nineteen nouns are marked as mass nouns, by hand, as WordNet
   does not mark them, and a mass noun may stand alone in the singular and
