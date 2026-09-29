@@ -161,7 +161,7 @@ prep(for). prep(at). prep(across). prep(of).
 adv(quickly). adv(slowly). adv(quietly). adv(loudly). adv(happily).
 adv(sadly). adv(often). adv(always). adv(never). adv(sometimes).
 adv(today). adv(yesterday). adv(again). adv(carefully). adv(well).
-adv(furiously).
+adv(furiously). adv(early). adv(late).
 adv(A) :- guessed(adv, A).
 
 /* ---------------- verbs ---------------- */
@@ -184,15 +184,15 @@ verb(like,   [trans]).            verb(love,   [trans]).
 verb(hate,   [trans]).            verb(find,   [trans]).
 verb(lose,   [trans]).            verb(carry,  [trans]).
 verb(watch,  [intrans, trans]).   verb(catch,  [trans]).
-verb(push,   [trans]).            verb(open,   [trans]).
-verb(close,  [trans]).            verb(visit,  [trans]).
+verb(push,   [trans]).            verb(open,   [intrans, trans]).
+verb(close,  [intrans, trans]).            verb(visit,  [trans]).
 verb(help,   [trans]).            verb(want,   [trans]).
 verb(need,   [trans]).            verb(know,   [trans]).
 verb(bite,   [trans]).            verb(hear,   [trans]).
 verb(build,  [trans]).            verb(paint,  [intrans, trans]).
 verb(stop,   [intrans, trans]).   verb(give,   [ditrans]).
 verb(send,   [trans, ditrans]).   verb(show,   [trans, ditrans]).
-verb(bring,  [trans, ditrans]).   verb(tell,   [ditrans]).
+verb(bring,  [trans, ditrans]).   verb(tell,   [trans, ditrans]).
 verb(buy,    [trans, ditrans]).   verb(teach,  [trans, ditrans]).
 verb(have,   [trans]).
 verb(Base, Frames) :- guessed(verb(Frames), Base).

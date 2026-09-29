@@ -169,6 +169,13 @@ good('The dogs\' bones are big.').
 good('The children\'s toys are red.').
 good('The cat chased Alice\'s dog.').
 
+% Stage 3: lexicon entries the corpus found incomplete.
+good('The teacher tells a story.').
+good('The door opens.').
+good('The window closes.').
+good('We should arrive early.').
+good('The train arrived late.').
+
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
