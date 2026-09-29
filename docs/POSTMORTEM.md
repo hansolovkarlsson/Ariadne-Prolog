@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Forty-three defects, in five cohorts that failed for five different reasons:
+Forty-four defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -21,11 +21,11 @@ Forty-three defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: eighteen defects in which two parts of the project did not
+- **Consistency**: nineteen defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
-  on 2026-09-27, one on 2026-09-28 and two on 2026-09-29.
+  on 2026-09-27, one on 2026-09-28 and three on 2026-09-29.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
@@ -143,7 +143,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Eighteen defects in which two parts of the project disagreed. The first eight were
+Nineteen defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -504,6 +504,22 @@ as *open*, and *late* with the same gap as *early*.
 never whether those were all the frames it has. Sentences someone else
 wrote are what ask that.
 
+### A checker that did not read the digits
+
+The grammar checker's tokenizer kept letters and dropped everything else,
+digits included. So *the price was 3.5 pounds* was checked as *the price
+was pounds*, which is grammatical, and the verdict said so. A sentence
+with a number in digits was judged on what was left of it, and nothing
+said that anything had been left out.
+
+Found on 2026-09-29 by running the tokenizer on a sentence with digits
+before building numbers on it, half an hour after the new text checker's
+own first sample had passed that sentence without anyone noticing. A
+number in digits is now a word (`42fdaf7`), and *I saw 1 dogs* is caught.
+
+*What this says:* a pass is a claim too. The sample was read for its
+failures, and the one wrong pass in it went by.
+
 ## What found what
 
 | Found by | Count |
@@ -513,6 +529,7 @@ wrote are what ask that.
 | Probing past what the suite tries, at a million elements or levels | 4 |
 | Loading a large program and measuring it | 1 |
 | Running ordinary sentences through the grammar | 1 |
+| Running the tokenizer on a case before building on it | 1 |
 | Timing each commit, looking for another cause | 1 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 4 |
@@ -527,7 +544,7 @@ wrote are what ask that.
 
 Three things stand out.
 
-**The test suite found four of forty-three.** It is a good suite, 334 tests
+**The test suite found four of forty-four.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong

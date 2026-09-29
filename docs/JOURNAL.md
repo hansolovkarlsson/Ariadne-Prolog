@@ -932,6 +932,57 @@ Actions cache, so it needs the network only when the cache is empty, and the
 main matrix still runs without it (`2c5a76d`). Its first run took 23
 seconds.
 
+### The rest of the morning: the corpus to fifty
+
+Hans asked how to check his own text, and the honest answer was that he
+could not: `check/1` took one sentence, and the corpus runner read one
+file. `check_file/1` cuts any text into sentences and gives a verdict for
+each (`a220dd9`). Cutting sentences is the only judgment in it: a full stop
+before a space, or a blank line so that a heading stands alone, but not
+inside *3.5* or after *Mr.*. *Etc.* and *no.* were on the first list of
+abbreviations and came off it, as each ends real sentences often enough to
+join two that should stay apart.
+
+Then the stage 3 record, cause by cause, and each cause ran into the same
+rule from the morning: a word the lexicon lists is never looked up in
+WordNet. That is what keeps *can* from being a noun, and it also means that
+listing a word takes away whatever else WordNet knew about it. Nouns that
+take no article (`94e110b`) are marked in a list of their own, so *water*,
+*rain* and *work* can be mass nouns and keep their WordNet verbs. The closed
+classes (`42fdaf7`) had to be listed, since WordNet lacks them or has them
+wrong, so each one's WordNet adverb was listed with it, *before* in *never
+seen before*, and *so* and *while* were left out as conjunctions because
+*so happy* and *a while* were worth more. Adding numbers showed that the
+tokenizer had always dropped digits: *the price was 3.5 pounds* had been
+checked as *the price was pounds*, and passed, in the text checker's own
+first sample half an hour before, where nobody looked twice at it.
+
+The constructions (`819ae98`) needed the verb frames WordNet already had
+and the generator had been throwing away, a verb that takes an adjective,
+a clause, an infinitive, since there had been no rule to use them. The
+design question was commands. With WordNet nearly every noun is also a
+verb, so *dog barks* reads as the command "dog the barks", and the first
+guard, reading a command only when nothing else could be read even with a
+fault, turned out to be too strong: *close the door* can be read as a
+faulty question, "does the door close" without its *do*, and that blocked
+it. The guard now asks only that no statement can be read, faulty or not.
+
+The corpus counts, pinned an hour before, earned their place three times:
+each change moved them, each time the run went red until the record was
+updated with it, and each time the question was asked of every sentence
+that moved. One answer was uncomfortable. *Two cups of tea, please* passes
+because the checker ignores commas and reads *please* as a verb, which is
+a pass for the wrong reason and is recorded as one. Another check was
+caught that could not fail: *I saw 3 dogs* passed on the old tokenizer,
+which had dropped the *3*, and was replaced by *I saw 1 dogs*, which the
+new one catches.
+
+By eleven all fifty sentences passed, and that is the day's real
+finding about the corpus. It was written before the grammar grew to meet
+it, and the grammar then grew to meet exactly it, so it now measures
+nothing; the roadmap's next item for the grammar is a corpus it has not
+seen.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -955,7 +1006,7 @@ something it would have caught; those arrived with the program they check.
 About 7,800 lines of hand-written C, 757 lines of library written in Prolog,
 a 335-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
-1,450 lines built on the interpreter, through all three of its stages, and a
+2,040 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own
 tables.
 
