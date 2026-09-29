@@ -908,8 +908,9 @@ The loader's two paths had been left alone the day before, because
 complete answer. Most of the ways one file gets two names are in the
 spelling: `./`, a doubled slash, `tests/../tests`. Those can be taken out as
 text, in C99, before the path names the file (`2e774bc`). A symbolic link, or
-an absolute path against a relative one, is still a second file, and going
-past C99 in `consult.c` to catch those is left as Hans's decision.
+an absolute path against a relative one, is still a second file. Hans
+chose to stay in C99 rather than call `realpath()` for those, and the
+reference states the limit.
 
 The memory check was held on a detail: resident size is read differently on
 every platform. The arena defect, though, was about the interpreter's own
