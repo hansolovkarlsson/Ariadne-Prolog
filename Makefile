@@ -105,6 +105,28 @@ english: $(BIN)
 	$(BIN) -q english/check.pl -g "check('What did the dog chase?'), halt"
 	$(BIN) -q english/check.pl -g "check('The zorbles blorfed the cat.'), halt"
 
+# Stage 3 of the grammar: WordNet 3.1's words, generated into
+# english/wordnet.pl, which is not committed. Fetching it needs the network,
+# so nothing else depends on it; english-wordnet runs the grammar's checks
+# with it loaded, and the sentences in english/corpus.txt, which record
+# what a large lexicon breaks.
+WORDNET_URL = https://wordnetcode.princeton.edu/wn3.1.dict.tar.gz
+
+build/wordnet/dict/index.noun:
+	@mkdir -p build/wordnet
+	curl -sSL -o build/wordnet/wn3.1.dict.tar.gz $(WORDNET_URL)
+	tar -xzf build/wordnet/wn3.1.dict.tar.gz -C build/wordnet
+	touch $@
+
+english/wordnet.pl: build/wordnet/dict/index.noun tools/gen_wordnet.py
+	python3 tools/gen_wordnet.py build/wordnet/dict $@
+
+wordnet: english/wordnet.pl
+
+english-wordnet: $(BIN) english/wordnet.pl
+	$(BIN) -q english/wordnet_check.pl english/tests.pl -g run
+	$(BIN) -q english/wordnet_check.pl english/corpus.pl -g "corpus, halt"
+
 examples: $(BIN)
 	$(BIN) -q examples/hanoi.pl -g "hanoi(3)"
 	$(BIN) -q examples/queens.pl -g "queens(8,Qs), print_board(Qs)"
@@ -154,4 +176,4 @@ install: $(BIN)
 clean:
 	rm -rf bin build
 
-.PHONY: all test test-gc test-deep test-asan check examples tutorials english doc install clean
+.PHONY: all test test-gc test-deep test-asan check examples tutorials english wordnet english-wordnet doc install clean

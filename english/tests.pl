@@ -265,9 +265,9 @@ readings('Alice\'s friend\'s dog barks.', 1).
 verdict(Text, V) :-
     words(Text, Words),
     unknown_words(Words, U),
-    (   member(W, U), \+ guessable(W)
+    (   member(W, U), \+ placeable(W)
     ->  V = unknown
-    ;   with_guesses(U, verdict_of(Words, V))
+    ;   with_placements(U, verdict_of(Words, V))
     ).
 
 verdict_of(Words, V) :-

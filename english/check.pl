@@ -9,9 +9,9 @@
     it prints every reading as a labelled bracketing, [S [NP the dogs] ...],
     so an ambiguous sentence shows each of its structures; otherwise it
     parses again with agreement relaxed, and names what disagreed if that
-    finds a reading. A word missing from the lexicon is placed by its
-    ending when it can be, and the verdict says so; one that cannot be is
-    reported. grammatical/2 is the check without the printing, for
+    finds a reading. A word missing from the lexicon is looked up in
+    WordNet, when wordnet_check.pl has loaded it, or else placed by its
+    ending, and the verdict says which; a word neither places is reported. grammatical/2 is the check without the printing, for
     programs, and brackets/2 turns a tree into its bracketing.
 */
 
@@ -23,7 +23,7 @@
 grammatical(Text, Tree) :-
     words(Text, Words),
     unknown_words(Words, Unknown),
-    with_guesses(Unknown, all_readings(Words, Trees)),
+    with_placements(Unknown, all_readings(Words, Trees)),
     member(Tree, Trees).
 
 % check(+Text)
@@ -31,17 +31,22 @@ check(Text) :-
     words(Text, Words),
     unknown_words(Words, Unknown0),
     sort(Unknown0, Unknown),
-    exclude(guessable, Unknown, Unplaced),
+    exclude(placeable, Unknown, Unplaced),
     (   Words == []
     ->  format("no words~n")
     ;   Unplaced \== []
     ->  format("not grammatical: not in the lexicon: ~w~n", [Unplaced])
-    ;   with_guesses(Unknown, verdict(Words)),
+    ;   with_placements(Unknown, verdict(Words)),
         forall(member(W, Unknown),
-               ( guessed_classes(W, Cs), maplist(class_name, Cs, Ns),
+               ( placed_classes(W, Source, Cs), maplist(class_name, Cs, Ns),
                  atomic_list_concat(Ns, ' or ', C),
-                 format("  (not in the lexicon: '~w' taken to be ~w, from its ending)~n", [W, C]) ))
+                 placed_note(Source, W, C) ))
     ).
+
+placed_note(wordnet, W, C) :-
+    format("  (not in the lexicon: '~w' found in WordNet as ~w)~n", [W, C]).
+placed_note(ending, W, C) :-
+    format("  (not in the lexicon: '~w' taken to be ~w, from its ending)~n", [W, C]).
 
 class_name(noun, 'a noun').
 class_name(verb, 'a verb').

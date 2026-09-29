@@ -53,11 +53,12 @@ not grammatical: the verb 's (is or has) does not agree with its subject
 It runs from any directory, since `check.pl` loads the other files from beside
 itself. `make english` runs the checks in `tests.pl`.
 
-Stages 1 and 2 of the three set out in [the roadmap](../docs/ROADMAP.md) are
-done. Stage 1 is a small lexicon, simple declarative sentences, and agreement
-carried in the rules. Stage 2 is auxiliaries, negation, yes/no and
-*wh*-questions, passives, relative clauses, a guess at unknown words,
-contractions and possessives. The roadmap lists what stage 2 leaves out.
+All three stages set out in [the roadmap](../docs/ROADMAP.md) are done. Stage 1
+is a small lexicon, simple declarative sentences, and agreement carried in the
+rules. Stage 2 is auxiliaries, negation, yes/no and *wh*-questions, passives,
+relative clauses, a guess at unknown words, contractions and possessives.
+Stage 3 is WordNet's 85,000 words, and a record of what they break, at the
+end of this file.
 
 ## The files
 
@@ -65,8 +66,10 @@ contractions and possessives. The roadmap lists what stage 2 leaves out.
 |---|---|
 | `lexicon.pl` | 281 words: 91 nouns, 49 verbs, 43 adjectives, 16 adverbs, 16 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
 | `grammar.pl` | The rules: statements, yes/no and *wh*-questions, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
-| `guess.pl` | A guess at a word the lexicon lacks, from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
+| `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees. |
+| `wordnet_check.pl` | `check.pl` with WordNet's words loaded, from `wordnet.pl`, which `make wordnet` generates and git ignores. |
+| `corpus.txt`, `corpus.pl` | Fifty ordinary sentences, and the run over them that `make english-wordnet` does. |
 | `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, and the number of readings of an ambiguous one. |
 
 ## What it checks
@@ -153,3 +156,54 @@ phrases rather than built from a smaller noun phrase, since a left-recursive
 rule such as `np --> np, pp` makes a DCG loop. Nothing in stage 2 has needed
 one either: a relative clause follows its noun, as its prepositional phrases
 do.
+
+## Stage 3: what a large lexicon breaks
+
+`make wordnet` downloads WordNet 3.1 and `tools/gen_wordnet.py` turns it into
+`english/wordnet.pl`: 55,213 nouns, 8,416 verbs with the frames WordNet gives
+them, 17,870 adjectives, 3,642 adverbs, and 4,162 irregular forms. It is not
+committed. A word the lexicon lacks is looked up there, as itself, as an
+inflected form of a stem, or among the irregular forms (*flung*, *oxen*,
+*grabbed*), before it is guessed from its ending. The lexicon's own words are
+never looked up, so its entries are what they were, and `make english` runs
+without WordNet and without the network.
+
+`make english-wordnet` runs the grammar's checks with WordNet loaded, and all
+of them pass. It then checks the fifty sentences in `corpus.txt`, every one of
+them ordinary English. On 2026-09-29, **28 were grammatical, 21 were not, and
+one had a word in neither the lexicon nor WordNet**. The 22 failures are the
+record, by cause:
+
+**Nouns that take no article (5).** *Water boils*, *some homework*, *the
+price of bread*, *two cups of tea*, *played football*. The grammar asks every
+singular noun for a determiner, which is right for *dog* and wrong for
+*water*, and WordNet does not say which nouns are which.
+
+**Words WordNet does not have (6).** WordNet lists nouns, verbs, adjectives
+and adverbs, not the small closed classes: *because* and *but* joining
+clauses, *after* as a preposition, *six* and *hundred* as numbers, *nobody*.
+
+**The lexicon's own entries, incomplete (3).** *Tell* is listed as taking two
+objects, so *tells wonderful stories* fails; *open* takes one, so *the museum
+opens on Sundays* fails; *early* is only an adjective, so *leave early*
+fails. WordNet has all three right, but never overrides a word the lexicon
+lists.
+
+**Constructions the grammar does not have (11).** A noun phrase used as an
+adverb (*last night*, *next door*); an adverb before the verb (*already
+eaten*, *never seen*); *very* before an adjective; a verb that takes an
+adjective (*tastes good*, *painting the kitchen blue*); an infinitive (*wants
+to learn*); a clause after a verb (*think that she is right*); an imperative
+(*please close the door*); *such a*; and a phrase with no verb (*two cups of
+tea, please*). Three sentences fail for two of these reasons, so the counts add
+to 25, not 22.
+
+**What passed, and what that cost.** Eight of the 28 passes have two
+readings. Six are real: a prepositional phrase that can attach to the noun or
+the verb (*kicked the ball over the fence*). Two come from WordNet listing a
+participle as an adjective as well (*the meeting was cancelled*: a state, or
+something done), which is also real. Loading WordNet takes 0.08 seconds. It
+first took 490 MB, because each clause had a 4 KB arena whatever its size,
+which the interpreter now sizes to the clause (52 MB). A lookup reads all of
+a predicate's clauses, as first-argument indexing here filters but does not
+hash, so finding one noun among 55,000 takes 0.16 ms, which is fast enough.

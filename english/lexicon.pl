@@ -29,10 +29,21 @@
     bark is fin(agr(_,n,_)) and base, chased is fin(_) and en.
 */
 
-% guessed(Class, Stem): a word missing from the lexicon, placed by its
-% ending for the length of one check; see guess.pl. Each open class below
-% ends with a clause that reads it.
+% guessed(What, Entry): a word missing from the lexicon, placed for the
+% length of one check, from WordNet when it is loaded or else by its ending;
+% see guess.pl. What is noun, verb(Frames), adj or adv, with the stem as
+% Entry, or irregular_plural, irregular_form or doubles, for WordNet's
+% irregular forms. The open classes and the spelling rules below each end
+% with a clause that reads it.
 :- dynamic(guessed/2).
+
+% WordNet, as english/wordnet.pl gives it when english/wordnet_check.pl
+% loads it; declared here so that without it these simply fail.
+:- dynamic(wn_noun/1).
+:- dynamic(wn_verb/2).
+:- dynamic(wn_adj/1).
+:- dynamic(wn_adv/1).
+:- dynamic(wn_irregular/3).
 
 % agr_of(+Number, -Agr): the agreement of a third-person noun phrase.
 agr_of(sg, agr(n, y, y)).
@@ -67,6 +78,7 @@ irregular_plural(mouse, mice).    irregular_plural(foot, feet).
 irregular_plural(tooth, teeth).   irregular_plural(goose, geese).
 irregular_plural(sheep, sheep).   irregular_plural(fish, fish).
 irregular_plural(leaf, leaves).
+irregular_plural(Sg, Pl) :- guessed(irregular_plural, Sg-Pl).
 
 % proper(Name): a name, third person singular, taking no determiner.
 proper(alice). proper(bob). proper(carol). proper(david). proper(emma).
@@ -183,7 +195,7 @@ verb(send,   [trans, ditrans]).   verb(show,   [trans, ditrans]).
 verb(bring,  [trans, ditrans]).   verb(tell,   [ditrans]).
 verb(buy,    [trans, ditrans]).   verb(teach,  [trans, ditrans]).
 verb(have,   [trans]).
-verb(Base, [intrans, trans]) :- guessed(verb, Base).
+verb(Base, Frames) :- guessed(verb(Frames), Base).
 
 % irregular_past(Base, Past).
 irregular_past(run, ran).      irregular_past(swim, swam).
@@ -198,6 +210,7 @@ irregular_past(give, gave).    irregular_past(send, sent).
 irregular_past(bring, brought). irregular_past(tell, told).
 irregular_past(buy, bought).   irregular_past(teach, taught).
 irregular_past(have, had).    irregular_past(sleep, slept).
+irregular_past(Base, Past) :- guessed(irregular_form, Base-Past).
 
 % irregular_participle(Base, Participle): the en form, where it is not the
 % past: "has eaten", not "has ate".
@@ -207,12 +220,14 @@ irregular_participle(eat, eaten).     irregular_participle(drink, drunk).
 irregular_participle(write, written). irregular_participle(see, seen).
 irregular_participle(know, known).    irregular_participle(bite, bitten).
 irregular_participle(give, given).    irregular_participle(show, shown).
+irregular_participle(Base, P) :- guessed(irregular_form, Base-P).
 
 % irregular_third(Base, Form): the -s form, where the rule does not make it.
 irregular_third(have, has).
 
 % doubles(Base): the final consonant doubles before -ed and -ing.
 doubles(run). doubles(swim). doubles(stop).
+doubles(Base) :- guessed(doubles, Base).
 
 /* ---------------- auxiliaries ---------------- */
 

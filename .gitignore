@@ -1,5 +1,6 @@
 /bin/
 /build/
+english/wordnet.pl
 __pycache__/
 
 # scratch/ is Hans's own: notes and the daily standup, not part of the
