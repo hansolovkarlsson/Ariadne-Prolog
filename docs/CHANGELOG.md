@@ -10,6 +10,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Nouns that take no article.** *Water boils*, *some homework*, *the price
+  of bread*: nineteen nouns are marked as mass nouns, by hand, as WordNet
+  does not mark them, and a mass noun may stand alone in the singular and
+  take *some*, or *much*, which is new and takes nothing else. Fourteen of
+  them join the lexicon; *water*, *milk*, *rain*, *snow* and *work* stay
+  WordNet's, since a listed word loses its WordNet verb. 261 checks; the
+  corpus goes from 31 grammatical to 34. (`94e110b`)
+
 - **The grammar checker takes running text.** `check_file/1` cuts a file,
   or standard input, into sentences and gives a verdict for each, with the
   reason when one fails, then the counts; `check_text/1` does the same for
