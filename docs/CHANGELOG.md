@@ -10,6 +10,13 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **The grammar checker takes running text.** `check_file/1` cuts a file,
+  or standard input, into sentences and gives a verdict for each, with the
+  reason when one fails, then the counts; `check_text/1` does the same for
+  an atom. A sentence ends at `.`, `?` or `!` before a space, or at a blank
+  line, but not inside a number or after *Mr.*, *Dr.* or *e.g.*. The corpus
+  runner now uses the same code. 250 checks. (`a220dd9`)
+
 - **The grammar checker guesses a word missing from its lexicon from its
   ending.** *-ly* is an adverb, *-tion* or *-ness* a noun, *-ful* or *-ous*
   an adjective, *-ize* a verb. An *-s*, *-ed* or *-ing* word is taken back
