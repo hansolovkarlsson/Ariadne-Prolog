@@ -132,6 +132,7 @@ simple_np(Agr, _, np(N), V0, V) -->
     { agree(bare(Head), Num, pl, V1, V),
       agr_of(Num, Agr) }.
 simple_np(Agr, _, np(poss(P), N), V0, V) -->
+    possessive_ahead,
     possessor(P, V0, V1),
     nominal(Num, _, _, N, V1, V),
     { agr_of(Num, Agr) }.
@@ -141,6 +142,11 @@ simple_np(Agr, _, np(poss(P), N), V0, V) -->
 % itself be possessed, "Alice's friend's dog", which is a chain read left
 % to right, each link a noun and its 's, so no rule calls itself on the
 % left. A possessor has no prepositional phrase or relative clause here.
+% possessive_ahead: an 's is somewhere in what is left to read. A possessor
+% is tried at every noun phrase, and without this a sentence with no 's in
+% it took half as long again for the search.
+possessive_ahead(S, S) :- memberchk('\'s', S).
+
 possessor(P, V0, V) -->
     possessor_base(B, V0, V1), ['\'s'],
     possessor_chain(B, P, V1, V).
