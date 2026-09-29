@@ -133,6 +133,18 @@ good('When did the children arrive?').
 good('Who did Alice give a bone?').
 good('Which book did the teacher read to the children?').
 
+% Stage 2: words missing from the lexicon, placed by their endings.
+good('The dog blorfed the cat.').
+good('The zorbles are happy.').
+good('The organization sleeps.').
+good('The organizations sleep.').
+good('Alice is wonderful.').
+good('The dog barked cheerfully.').
+good('The children were glimbing the tree.').
+good('The farmer modernized the village.').
+good('The happiness of the children is strange.').
+good('The farmers are careless.').
+
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -199,6 +211,11 @@ bad('What did the dog chase the cat?',     no_reading).
 bad('Who the dog chased?',                 no_reading).
 bad('The dog that barks.',                 no_reading).
 bad('The dog chased the cat barks.',       no_reading).
+bad('The zorbles is happy.',               subject_verb(is)).
+bad('A zorbles sleep.',                    det_noun(a, zorbles)).
+bad('The organization sleep.',             subject_verb(sleep)).
+bad('The dog xqzt the cat.',               unknown).
+bad('A zorble is happy.',                  unknown).
 
 readings('The old man walks in the park with his dog.', 2).
 readings('The dogs chase a cat.', 1).
@@ -209,13 +226,19 @@ readings('The cat that the dog chased sleeps.', 1).
 readings('What did the dog chase?', 1).
 readings('The dog in the garden that barks is old.', 2).
 
-% verdict(+Text, -V): grammatical, unknown (a word outside the lexicon),
-% no_reading, or the first violation of the best relaxed reading.
+% verdict(+Text, -V): grammatical, unknown (a word outside the lexicon that
+% its ending does not place), no_reading, or the first violation of the
+% best relaxed reading.
 verdict(Text, V) :-
     words(Text, Words),
-    (   unknown_words(Words, U), U \== []
+    unknown_words(Words, U),
+    (   member(W, U), \+ guessable(W)
     ->  V = unknown
-    ;   phrase(sentence(_, [], []), Words)
+    ;   with_guesses(U, verdict_of(Words, V))
+    ).
+
+verdict_of(Words, V) :-
+    (   phrase(sentence(_, [], []), Words)
     ->  V = grammatical
     ;   diagnosis(Words, [V0|_])
     ->  V = V0

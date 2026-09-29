@@ -9,26 +9,48 @@
     it prints every reading as a labelled bracketing, [S [NP the dogs] ...],
     so an ambiguous sentence shows each of its structures; otherwise it
     parses again with agreement relaxed, and names what disagreed if that
-    finds a reading. grammatical/2 is the check without the printing, for
+    finds a reading. A word missing from the lexicon is placed by its
+    ending when it can be, and the verdict says so; one that cannot be is
+    reported. grammatical/2 is the check without the printing, for
     programs, and brackets/2 turns a tree into its bracketing.
 */
 
 :- consult(lexicon).
 :- consult(grammar).
+:- consult(guess).
 
 % grammatical(+Text, -Tree): Text is an atom; Tree is a reading of it.
 grammatical(Text, Tree) :-
     words(Text, Words),
-    phrase(sentence(Tree, [], []), Words).
+    unknown_words(Words, Unknown),
+    with_guesses(Unknown, all_readings(Words, Trees)),
+    member(Tree, Trees).
 
 % check(+Text)
 check(Text) :-
     words(Text, Words),
+    unknown_words(Words, Unknown0),
+    sort(Unknown0, Unknown),
+    exclude(guessable, Unknown, Unplaced),
     (   Words == []
     ->  format("no words~n")
-    ;   unknown_words(Words, Unknown), Unknown \== []
-    ->  format("not grammatical: not in the lexicon: ~w~n", [Unknown])
-    ;   all_readings(Words, Trees), Trees \== []
+    ;   Unplaced \== []
+    ->  format("not grammatical: not in the lexicon: ~w~n", [Unplaced])
+    ;   with_guesses(Unknown, verdict(Words)),
+        forall(member(W, Unknown),
+               ( guessed_classes(W, Cs), maplist(class_name, Cs, Ns),
+                 atomic_list_concat(Ns, ' or ', C),
+                 format("  (not in the lexicon: '~w' taken to be ~w, from its ending)~n", [W, C]) ))
+    ).
+
+class_name(noun, 'a noun').
+class_name(verb, 'a verb').
+class_name(adj,  'an adjective').
+class_name(adv,  'an adverb').
+
+% verdict(+Words): prints whether Words are grammatical, and how or why not.
+verdict(Words) :-
+    (   all_readings(Words, Trees), Trees \== []
     ->  length(Trees, N),
         (   N =:= 1
         ->  Trees = [T1], brackets(T1, B), format("grammatical: ~w~n", [B])

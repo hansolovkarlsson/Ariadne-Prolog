@@ -30,7 +30,15 @@ not grammatical: the verb 'chases' does not agree with its subject
 ```
 
 The `_` marks the gap: the place the noun phrase is missing from, which the
-relative or question word stands for.
+relative or question word stands for. A word the lexicon does not list is
+placed by its ending when it has one:
+
+```
+$ bin/prolog -q english/check.pl -g "check('The zorbles blorfed the cat.'), halt"
+grammatical: [S [NP the zorbles] [VP blorfed [NP the cat]]]
+  (not in the lexicon: 'blorfed' taken to be a verb, from its ending)
+  (not in the lexicon: 'zorbles' taken to be a noun or a verb, from its ending)
+```
 
 It runs from any directory, since `check.pl` loads the other files from beside
 itself. `make english` runs the checks in `tests.pl`.
@@ -38,15 +46,16 @@ itself. `make english` runs the checks in `tests.pl`.
 Stage 1 of the three set out in [the roadmap](../docs/ROADMAP.md) is done: a
 small lexicon, simple declarative sentences, and agreement carried in the
 rules. Stage 2 is under way. Auxiliaries, negation, yes/no questions,
-passives, relative clauses and *wh*-questions are in; guessing at unknown
-words is not yet.
+passives, relative clauses, *wh*-questions and guessing at unknown words
+are in; contractions other than *n't* are not yet.
 
 ## The files
 
 | | |
 |---|---|
-| `lexicon.pl` | 280 words: 91 nouns, 49 verbs, 43 adjectives, 16 adverbs, 15 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; and 17 contractions with *n't*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
+| `lexicon.pl` | 281 words: 91 nouns, 49 verbs, 43 adjectives, 16 adverbs, 16 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; and 17 contractions with *n't*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
 | `grammar.pl` | The rules: statements, yes/no and *wh*-questions, noun phrases (with determiners, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
+| `guess.pl` | A guess at a word the lexicon lacks, from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, the verdict, the explanation, and the bracketed trees. |
 | `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, and the number of readings of an ambiguous one. |
 
@@ -104,6 +113,16 @@ walks in*). A missing subject needs no gap at all, since what follows the
 relative or question word is then a verb phrase, which agrees with the noun
 it stands for as it would with a subject. English allows no gap inside a
 subject or one half of an *and*, and the rules place none there.
+
+A word missing from the lexicon is **placed by its ending**. An inflected word
+is taken back to its stem by undoing the lexicon's own spelling rules (so
+*blorfed* is *blorf*, *carried* is *carry*), keeping only the stems that the
+rules turn back into the word. The stem is then placed by its own ending, or
+taken as a noun or a verb if it has none. The guess joins the lexicon for one
+check, so the word's other forms, and its agreement, come from the same rules
+as a listed word's. A word with no ending to go on, *zorble* or a misspelt
+*furiouslyy*, is reported rather than guessed, since guessing it would
+accept any typo.
 
 The diagnosis uses **the same grammar**. Each agreement point goes through
 `agree/5`, which threads a list of violations beside the words. Parsed with the

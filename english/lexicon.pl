@@ -29,6 +29,11 @@
     bark is fin(agr(_,n,_)) and base, chased is fin(_) and en.
 */
 
+% guessed(Class, Stem): a word missing from the lexicon, placed by its
+% ending for the length of one check; see guess.pl. Each open class below
+% ends with a clause that reads it.
+:- dynamic(guessed/2).
+
 % agr_of(+Number, -Agr): the agreement of a third-person noun phrase.
 agr_of(sg, agr(n, y, y)).
 agr_of(pl, agr(n, n, n)).
@@ -53,6 +58,7 @@ noun(flower). noun(tree). noun(leaf). noun(stone). noun(key). noun(clock).
 noun(hour). noun(umbrella). noun(island). noun(idea). noun(question).
 noun(answer). noun(game). noun(party). noun(dress). noun(watch).
 noun(university). noun(unicorn). noun(uniform). noun(elephant). noun(owl).
+noun(Sg) :- guessed(noun, Sg).
 
 % irregular_plural(Singular, Plural).
 irregular_plural(man, men).       irregular_plural(woman, women).
@@ -134,15 +140,17 @@ adj(brown). adj(tall). adj(short). adj(long). adj(warm). adj(cold).
 adj(clever). adj(kind). adj(brave). adj(funny). adj(strange). adj(empty).
 adj(beautiful). adj(ugly). adj(honest). adj(orange). adj(early). adj(late).
 adj(colorless).
+adj(A) :- guessed(adj, A).
 
 prep(in). prep(on). prep(under). prep(near). prep(behind). prep(with).
 prep(without). prep(from). prep(to). prep(into). prep(over). prep(by).
-prep(for). prep(at). prep(across).
+prep(for). prep(at). prep(across). prep(of).
 
 adv(quickly). adv(slowly). adv(quietly). adv(loudly). adv(happily).
 adv(sadly). adv(often). adv(always). adv(never). adv(sometimes).
 adv(today). adv(yesterday). adv(again). adv(carefully). adv(well).
 adv(furiously).
+adv(A) :- guessed(adv, A).
 
 /* ---------------- verbs ---------------- */
 
@@ -175,6 +183,7 @@ verb(send,   [trans, ditrans]).   verb(show,   [trans, ditrans]).
 verb(bring,  [trans, ditrans]).   verb(tell,   [ditrans]).
 verb(buy,    [trans, ditrans]).   verb(teach,  [trans, ditrans]).
 verb(have,   [trans]).
+verb(Base, [intrans, trans]) :- guessed(verb, Base).
 
 % irregular_past(Base, Past).
 irregular_past(run, ran).      irregular_past(swim, swam).

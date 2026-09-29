@@ -103,6 +103,7 @@ english: $(BIN)
 	$(BIN) -q english/check.pl -g "check('The dogs chases a cat.'), halt"
 	$(BIN) -q english/check.pl -g "check('Was the cat chased by the dog?'), halt"
 	$(BIN) -q english/check.pl -g "check('What did the dog chase?'), halt"
+	$(BIN) -q english/check.pl -g "check('The zorbles blorfed the cat.'), halt"
 
 examples: $(BIN)
 	$(BIN) -q examples/hanoi.pl -g "hanoi(3)"
