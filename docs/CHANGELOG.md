@@ -23,7 +23,20 @@ There are no releases yet, so entries are grouped by the day they landed on
   "'barks not' should be 'does not bark'". 149 checks, up from 73.
   (`29b45a2`)
 
+- **`multifile/1`**, so that a predicate may collect clauses from several
+  files. (`6a20648`)
+
 ### Fixed
+
+- **A predicate belongs to the file that defined it.** The loader added
+  every clause to its predicate whatever file it came from. A second file
+  that defined the same predicate was merged into the first without a word.
+  A program's own `member/2` was added to the library's, so
+  `member(X, [a,b])` gave `[a,b,x,x,x]`. Consulting a file again doubled
+  its clauses. Now loading a file again replaces its clauses, and another
+  file replaces them with a warning naming both, as SWI-Prolog does. A
+  program's definition of a library predicate replaces the library's
+  silently. (`6a20648`)
 
 - **The grammar checker knows *slept*.** The lexicon had no irregular past
   for *sleep* and derived *sleeped*, which no check asked for until stage 2

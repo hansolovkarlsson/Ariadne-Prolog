@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Thirty-seven defects, in five cohorts that failed for five different reasons:
+Thirty-eight defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: six bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -20,11 +20,11 @@ Thirty-seven defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: fifteen defects in which two parts of the project did not
+- **Consistency**: sixteen defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
-  on 2026-09-27.
+  on 2026-09-27, one on 2026-09-28.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
@@ -129,7 +129,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Fifteen defects in which two parts of the project disagreed. The first eight were
+Sixteen defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -412,6 +412,43 @@ rewritten; it was `copy_term`, run just before it in the same probe, and timing
 each half separately was what showed it. The probe that finds the next defect
 is the one aimed at the neighbour of the last.
 
+### A loader that did not know which file a clause came from
+
+`consult/1` added every clause to its predicate, whatever file it came from.
+ISO and SWI-Prolog both treat a file as defining its predicates, and three
+things went wrong because this loader did not:
+
+- **Two files that defined one predicate were merged**, silently. The
+  grammar checker's `check.pl` and its `tests.pl` both came to define
+  `readings/2`, one as a rule over a list of words and one as facts. The
+  merged predicate, called with its first argument unbound, ran the rule,
+  which parsed an unbound word list and so generated English sentences
+  without end. The run was killed for memory 25 seconds later, with no
+  message.
+- **A program's own library predicate was added to the library's.** A file
+  holding `member(x, _).` made `member(X, [a,b])` answer `[a,b,x,x,x]`: the
+  library's clauses, then the program's once for each element they had
+  walked. Writing your own `member/2` or `append/3` is the first exercise in
+  most Prolog courses, and this interpreter was written to teach from.
+- **Consulting a file again doubled its clauses.**
+
+A predicate now belongs to the file, and the load of it, that first gave it
+clauses. Loading that file again replaces them. Another file replaces them
+with a warning naming both, and a library predicate is replaced without one.
+`multifile/1`, which did not exist, lets a predicate collect clauses from
+several files. (`6a20648`)
+
+Found on 2026-09-28 by a naming slip while writing the grammar's stage 2,
+the first program here big enough to be split into files that share names.
+Once the merge was known, the other two were found by trying its
+neighbours: another source of clauses for one predicate, and the same
+source twice. Only the first was on the roadmap.
+
+*What this says:* a behaviour nothing mentions can still be a decision, and
+a wrong one. The loader had never been asked what a file owns, because
+every program loaded so far had been one file, or files with no names in
+common.
+
 ## What found what
 
 | Found by | Count |
@@ -427,12 +464,12 @@ is the one aimed at the neighbour of the last.
 | Searching the tree for the shape just fixed | 1 |
 | Writing a test, which the defect then killed | 1 |
 | Diffing the old binary's answers against the new | 1 |
-| Using the interpreter for something else, and making a mistake | 1 |
+| Using the interpreter for something else, and making a mistake | 2 |
 | Counting what a check actually did | 1 |
 
 Three things stand out.
 
-**The test suite found three of thirty-seven.** It is a good suite, 330 tests
+**The test suite found three of thirty-eight.** It is a good suite, 331 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
@@ -472,6 +509,7 @@ Each standing check exists because of something above:
 | `make tutorials` | four tutorial programs that nothing was loading |
 | Tests written against `current_prolog_flag(max_arity, N)` rather than `256` | `max_arity`, so the tests stay honest if the limit moves |
 | `run_tests` refuses to start while any arity of `test` other than 2 exists | the thirteen tests that consulted as `test/3` and were never run |
+| `make test` loads two files that define one predicate, one that defines `member/2`, and one file twice | the loader that merged clauses from every source |
 
 ## What is probably still wrong
 

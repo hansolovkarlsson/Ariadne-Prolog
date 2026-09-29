@@ -12,14 +12,6 @@ produced some of the entries below.
 
 ## Near term
 
-- **Warn when a file redefines another file's predicate.** Consulting a file
-  whose clauses belong to a predicate another loaded file already defined
-  adds them to it silently: `p(a)` in one file and `p(b)` in a second give
-  `[a,b]`. SWI-Prolog warns and replaces. Found on 2026-09-28, when the
-  grammar checker and its tests both defined `readings/2`. The merged
-  predicate generated sentences without end, and the run was killed for
-  memory 25 seconds later with no message.
-
 ## Medium term
 
 - **Revise and extend the tutorials.** The four levels in `tutorial/`, and
