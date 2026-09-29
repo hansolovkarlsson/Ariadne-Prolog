@@ -681,6 +681,12 @@ BUILTINS = [
      "`end_of_file` at the end, then as read/1 does after it. Text is read as "
      "UTF-8. get_char/2 takes a stream. Characters and terms can be read "
      "alternately from one stream."),
+    ('read_line_to_string(+Stream, -Line)',
+     "The next line of Stream, without its line ending, `\\n` or `\\r\\n`, as an "
+     "atom, since there is no string type; `end_of_file` at the end. A last line "
+     "with no line ending is a line. read_line_to_codes/2 gives the line as a code "
+     "list, and -1 at the end. As `end_of_file` is an atom, a line holding just "
+     "that text cannot be told from the end; read_line_to_codes/2 can."),
     ('peek_char(?Char)',
      "As get_char/1, but leaves the character to be read again; peek_char/2 takes a "
      "stream. Peeking at the end does not move the stream past it."),

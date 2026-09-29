@@ -1713,6 +1713,53 @@ BI(bi_peek_char2){ UNUSED; PStream *s; int rc = input_stream_arg(A[0], &s);
                    if (rc != PL_OK) return rc;
                    return read_char(s, A[0], A[1], 1); }
 
+/* read_line_to_string/2 and read_line_to_codes/2, as SWI-Prolog has them:
+   the next line without its line ending, \n or \r\n, as an atom, since
+   there is no string type, or as a code list. At the end of the stream the
+   answer is end_of_file or -1; a last line with no line ending is a line,
+   and leaves the stream at its end, not past it, so the next call answers
+   end_of_file rather than what eof_action says a read past the end does.
+   The characters come through the stream layer, as get_char's do, so the
+   two can be mixed on one stream. */
+static int read_line(Term *given, Term *out, int codes)
+{
+    PStream *s;
+    char buf[4], *line = NULL;
+    size_t len = 0, cap = 0;
+    int n, rc = input_stream_arg(given, &s);
+    Term *t;
+
+    if (rc != PL_OK) return rc;
+    rc = check_read(s, given);
+    if (rc == PL_FAIL)
+        RET(unify(out, codes ? mk_int(-1) : mk_atom(a_end_of_file)));
+    if (rc != PL_OK) return rc;
+    if (stream_peek_char(s, buf) == 0) {
+        stream_get_char(s, buf);                    /* now past the end */
+        RET(unify(out, codes ? mk_int(-1) : mk_atom(a_end_of_file)));
+    }
+    n = stream_get_char(s, buf);
+    while (!(n == 1 && buf[0] == '\n')) {
+        if (len + (size_t)n > cap) {
+            cap = cap ? cap * 2 : 128;
+            line = (char *)realloc(line, cap);
+            if (!line) { fprintf(stderr, "prolog: out of memory\n"); exit(1); }
+        }
+        memcpy(line + len, buf, (size_t)n);
+        len += (size_t)n;
+        if (stream_peek_char(s, buf) == 0) break;   /* at the end, not past */
+        n = stream_get_char(s, buf);
+    }
+    if (len > 0 && line[len - 1] == '\r') len--;
+    t = codes ? mk_codes(line ? line : "", len)
+              : mk_atom(intern_n(line ? line : "", len));
+    free(line);
+    RET(unify(out, t));
+}
+
+BI(bi_read_line_to_string) { UNUSED; return read_line(A[0], A[1], 0); }
+BI(bi_read_line_to_codes)  { UNUSED; return read_line(A[0], A[1], 1); }
+
 static int write_char(PStream *s, Term *t)
 {
     Term *c = deref(t);
@@ -2610,6 +2657,8 @@ static const BiEntry bi_table[] = {
     { "read_term", 2, bi_read_term2 }, { "read_term", 3, bi_read_term3 },
     { "get_char", 1, bi_get_char }, { "get_char", 2, bi_get_char2 },
     { "peek_char", 1, bi_peek_char }, { "peek_char", 2, bi_peek_char2 },
+    { "read_line_to_string", 2, bi_read_line_to_string },
+    { "read_line_to_codes", 2, bi_read_line_to_codes },
     { "at_end_of_stream", 0, bi_at_end_of_stream },
     { "at_end_of_stream", 1, bi_at_end_of_stream1 },
     /* flags, operators, misc */

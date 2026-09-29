@@ -208,7 +208,7 @@ section('shape', 'The shape of the interpreter', ''.join([
         ['src/arith.c', '483', 'arithmetic evaluation'],
         ['src/db.c', '213', 'predicate table, clause lists, first-argument indexing'],
         ['src/machine.c', '751', 'the solver: goal frames, choice points, cut, exceptions'],
-        ['src/builtins.c', '2659', 'the builtin predicates and their dispatch table'],
+        ['src/builtins.c', '2708', 'the builtin predicates and their dispatch table'],
         ['src/stream.c', '218', 'streams, including in-memory sinks'],
         ['src/consult.c', '337', 'loading programs, which file owns a predicate, error messages'],
         ['src/main.c', '277', 'command line and the interactive toplevel'],

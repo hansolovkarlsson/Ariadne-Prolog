@@ -581,6 +581,23 @@ test(io_peek_at_end,  (tmp_file(F), open(F, write, S), close(S),
                        get_char(S2, G), catch(peek_char(S2, _), error(E, _), true),
                        close(S2), [P1, P2, G] == [end_of_file, end_of_file, end_of_file],
                        E = permission_error(input, past_end_of_stream, _))).
+test(io_read_line,    (tmp_file(F), open(F, write, S),
+                       write(S, 'one\r\ntwo\n\nlast'), close(S),
+                       open(F, read, S2), read_line_to_string(S2, A),
+                       read_line_to_codes(S2, B), read_line_to_string(S2, C),
+                       read_line_to_string(S2, D), read_line_to_string(S2, E),
+                       catch(read_line_to_codes(S2, _), error(Err, _), true),
+                       close(S2), [A, B, C, D, E] == [one, [0't,0'w,0'o], '', last, end_of_file],
+                       Err = permission_error(input, past_end_of_stream, _))).
+test(io_read_line_eof,(tmp_file(F), open(F, write, S), write(S, 'x\n'), close(S),
+                       open(F, read, S2, [eof_action(eof_code)]),
+                       read_line_to_codes(S2, A), read_line_to_codes(S2, B),
+                       read_line_to_string(S2, C), close(S2),
+                       [A, B, C] == [[0'x], -1, end_of_file])).
+test(io_read_line_mix,(tmp_file(F), open(F, write, S), write(S, 'ab\ncd\n'), close(S),
+                       open(F, read, S2), get_char(S2, G), read_line_to_string(S2, A),
+                       peek_char(S2, P), read_line_to_string(S2, B), close(S2),
+                       [G, A, P, B] == [a, b, c, cd])).
 test(io_eof_code,     (tmp_file(F), open(F, write, S), write(S, 'a.'), close(S),
                        open(F, read, S2, [eof_action(eof_code)]), read(S2, T),
                        read(S2, E1), read(S2, E2), get_char(S2, E3), close(S2),

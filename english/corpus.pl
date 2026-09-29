@@ -19,20 +19,15 @@ corpus :-
     format("~n~d sentences: ~d grammatical, ~d not, ~d with a word neither the lexicon nor WordNet has~n",
            [All, G, N, U]).
 
-% read_lines(+Stream, -Lines): the non-empty lines, as atoms. Read a
-% character at a time, as the interpreter has no read_line_to_string/2.
+% read_lines(+Stream, -Lines): the non-empty lines, as atoms.
 read_lines(In, Lines) :-
-    get_char(In, C),
-    (   C == end_of_file
+    read_line_to_string(In, L),
+    (   L == end_of_file
     ->  Lines = []
-    ;   line_chars(In, C, Cs, More),
-        (   Cs == [] -> Lines = Ls ; atom_chars(A, Cs), Lines = [A|Ls] ),
-        (   More == yes -> read_lines(In, Ls) ; Ls = [] )
+    ;   L == ''
+    ->  read_lines(In, Lines)
+    ;   Lines = [L|Ls], read_lines(In, Ls)
     ).
-
-line_chars(_, end_of_file, [], no) :- !.
-line_chars(_, '\n', [], yes) :- !.
-line_chars(In, C, [C|Cs], More) :- get_char(In, C1), line_chars(In, C1, Cs, More).
 
 one(S, t(G0, N0, U0), t(G, N, U)) :-
     words(S, Words),
