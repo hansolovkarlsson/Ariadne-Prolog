@@ -89,10 +89,12 @@ These change the shape of the system rather than adding to it.
      they break in [english/README.md](../english/README.md), from fifty
      ordinary sentences of which 28 passed. Broad coverage of real text is
      out of scope: rule-based grammars that aim for it have taken decades.
-     What the record found, each a piece of its own:
-     - constructions: adverbs before the verb, *very*, verbs that take an
-       adjective, infinitives, clauses after a verb, imperatives, noun
-       phrases as adverbs, *such a*.
+     Everything the record found was done the same day, and all fifty
+     sentences now pass. What is left:
+     - a second corpus, from text the grammar was not built against: the
+       first now passes entirely, so it finds nothing new;
+     - commas: *two cups of tea, please* passes with *please* read as a
+       verb, since the checker ignores them.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

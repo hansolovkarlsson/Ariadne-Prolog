@@ -10,6 +10,16 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **The constructions the grammar checker lacked.** Adverbs before the
+  verb, *has already eaten*; *very* and the other degree words; verbs that
+  take an adjective (*tastes good*), a clause (*think that she is right*),
+  a *to*-infinitive (*wants to learn*), an object and an infinitive, an
+  object and an adjective (*paint the kitchen blue*), or an *-ing* form;
+  noun phrases as adverbs, *last night*; *such a*; and commands, *please
+  close the door*, read only when no statement can be. WordNet's verb
+  frames for these, which the generator dropped, are now kept. 325 checks;
+  all fifty corpus sentences pass. (`819ae98`)
+
 - **Conjunctions, numbers, indefinite pronouns and more prepositions** in
   the grammar checker, the small closed classes WordNet does not list.
   *And*, *but* and *or* join two clauses, and *because*, *if*, *when* and
