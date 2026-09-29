@@ -131,6 +131,41 @@ simple_np(Agr, _, np(N), V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
     { agree(bare(Head), Num, pl, V1, V),
       agr_of(Num, Agr) }.
+simple_np(Agr, _, np(poss(P), N), V0, V) -->
+    possessor(P, V0, V1),
+    nominal(Num, _, _, N, V1, V),
+    { agr_of(Num, Agr) }.
+
+% possessor(-Tree, V0, V): a noun phrase and 's, standing where a
+% determiner would: "Alice's dog", "the old farmer's dog". A possessor can
+% itself be possessed, "Alice's friend's dog", which is a chain read left
+% to right, each link a noun and its 's, so no rule calls itself on the
+% left. A possessor has no prepositional phrase or relative clause here.
+possessor(P, V0, V) -->
+    possessor_base(B, V0, V1), ['\'s'],
+    possessor_chain(B, P, V1, V).
+
+possessor_chain(P, P, V, V) --> [].
+possessor_chain(B, P, V0, V) -->
+    core_nominal(_, _, _, N), ['\'s'],
+    possessor_chain(np(poss(B), N), P, V0, V).
+
+possessor_base(name(W), V, V) --> [W], { proper(W) }.
+possessor_base(np(det(D), N), V0, V) -->
+    [D], { det(D, DNum, DSound) },
+    core_nominal(Num, First, Head, N),
+    { agree(det_noun(D, Head), DNum, Num, V0, V1),
+      sound(First, Sound),
+      agree(article(D, First), DSound, Sound, V1, V) }.
+possessor_base(np(N), V0, V) -->
+    core_nominal(Num, _, Head, N),
+    { agree(bare(Head), Num, pl, V0, V) }.
+
+% core_nominal(-Number, -FirstWord, -HeadNoun, -Tree): adjectives and a noun.
+core_nominal(Num, First, Head, nom(As, n(Head), [])) -->
+    adjectives(As),
+    [Head], { noun_form(Head, _, Num) },
+    { As = [adj(First)|_] -> true ; First = Head }.
 
 % nominal(-Number, -FirstWord, -HeadNoun, -Tree, V0, V): adjectives, the
 % noun, the prepositional phrases after it, and a relative clause.
@@ -184,9 +219,11 @@ verb_phrase(Form, Min, Prev, vp(Tok, Neg, Items), G0, G, V0, V) -->
     negation(Form, Kind, Tok, Neg0, Neg, V1, V2),
     rest(Kind, Base, Tok, Form, Items, G0, G, V2, V).
 
-% head_word(+Token, -Word, -Neg): a contraction is its auxiliary, negated.
+% head_word(+Token, -Word, -Neg): a contraction is its auxiliary, negated
+% if it has n't, as doesn't is does; a cut-off one such as 's is its word.
 head_word(Tok, Tok, none).
 head_word(Tok, W, contracted) :- neg_contraction(Tok, W).
+head_word(Tok, W, none) :- clitic(Tok, W).
 
 % head(+Word, -Kind, -Base, -Form): what a word can head. be is three kinds,
 % told apart by what follows: the progressive, the passive and the copula.

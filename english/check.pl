@@ -94,7 +94,8 @@ explain_rest([]).
 explain_rest([V|Vs]) :- message(V, M), format("  and ~w~n", [M]), explain_rest(Vs).
 
 message(subject_verb(W), M) :-
-    format(atom(M), "the verb '~w' does not agree with its subject", [W]).
+    shown(W, S),
+    format(atom(M), "the verb ~w does not agree with its subject", [S]).
 message(det_noun(D, N), M) :-
     format(atom(M), "'~w' does not agree in number with '~w'", [D, N]).
 message(article(D, W), M) :-
@@ -105,10 +106,19 @@ message(case(W), M) :-
 message(bare(N), M) :-
     format(atom(M), "the singular noun '~w' needs a determiner, such as 'the' or 'a'", [N]).
 message(verb_form(Prev, W, Form), M) :-
+    shown(Prev, P),
     (   lemma(W, Base), form_of(Base, Form, Right)
-    ->  format(atom(M), "after '~w' the verb should be '~w', not '~w'", [Prev, Right, W])
-    ;   format(atom(M), "'~w' cannot follow '~w'", [W, Prev])
+    ->  format(atom(M), "after ~w the verb should be '~w', not '~w'", [P, Right, W])
+    ;   format(atom(M), "'~w' cannot follow ~w", [W, P])
     ).
+
+% shown(+Word, -Shown): a word quoted for a message; a contraction with the
+% words it stands for, since 's alone does not say whether it is is or has.
+shown(W, S) :-
+    clitic(W, _), !,
+    findall(A, clitic(W, A), As), atomic_list_concat(As, ' or ', Alt),
+    format(atom(S), "~w (~w)", [W, Alt]).
+shown(W, S) :- format(atom(S), "'~w'", [W]).
 message(finite(W), M) :-
     format(atom(M), "'~w' cannot be the first verb after its subject; it needs one such as 'is' or 'has' before it", [W]).
 message(do_support(W), M) :-
@@ -120,6 +130,7 @@ message(question_do(W), M) :-
 
 % lemma(+Word, -Base): the verb a form belongs to.
 lemma(W, Base) :- neg_contraction(W, Aux), !, lemma(Aux, Base).
+lemma(W, Base) :- clitic(W, Aux), !, lemma(Aux, Base).
 lemma(W, W)    :- modal(W), !.
 lemma(W, do)   :- do_form(W, _), !.
 lemma(W, be)   :- be_form(W, _), !.
@@ -153,6 +164,7 @@ known_word(W) :- det(W, _, _), !.
 known_word(W) :- adj(W), !.
 known_word(W) :- prep(W), !.
 known_word(W) :- adv(W), !.
+known_word(W) :- clitic(W, _), !.
 known_word(W) :- rel_pronoun(W, _), !.
 known_word(W) :- wh_pronoun(W, _), !.
 known_word(W) :- wh_det(W), !.
@@ -183,6 +195,7 @@ bracket(pro(W))            --> ['[NP', W, ']'].
 bracket(name(W))           --> ['[NP', W, ']'].
 bracket(np(det(D), Nom))   --> ['[NP', D], nom(Nom), [']'].
 bracket(np(Nom))           --> ['[NP'], nom(Nom), [']'].
+bracket(np(poss(P), Nom))  --> ['[NP'], bracket(P), ['\'s'], nom(Nom), [']'].
 bracket(pp(P, NP))         --> ['[PP', P], bracket(NP), [']'].
 bracket(vp(W, Neg, Is))    --> ['[VP', W], neg(Neg), items(Is), [']'].
 bracket(adj(A))            --> ['[AP', A, ']'].
@@ -211,7 +224,10 @@ tidy(A0, A) :-
 % [the, dog, barks]. A letter is what char_type/2 calls alpha, so a word
 % with an accented letter stays one word. An apostrophe between letters
 % belongs to the word, so doesn't is one word; a typographic apostrophe is
-% read as the plain one.
+% read as the plain one. A contraction such as 's, 're or 'll is then cut
+% from its word, as it is a word of its own: she's gives [she, 's]. So is
+% the apostrophe after a plural, dogs' giving [dogs, 's], since it marks a
+% possessive as 's does.
 words(Text, Words) :-
     downcase_atom(Text, Lower),
     atom_chars(Lower, Chars0),
@@ -224,12 +240,23 @@ plain_apostrophe(C, C).
 split_letters([], []).
 split_letters([C|Cs], Words) :-
     (   letter(C)
-    ->  take_letters([C|Cs], Letters, Rest),
-        atom_chars(W, Letters),
-        Words = [W|Ws],
+    ->  take_letters([C|Cs], Letters, Rest0),
+        atom_chars(W0, Letters),
+        clitic_split(W0, Ws0),
+        (   Rest0 = ['\''|Rest], last(Letters, s), \+ ( Rest = [N|_], letter(N) )
+        ->  append(Ws0, ['\'s'], Ws1)
+        ;   Rest = Rest0, Ws1 = Ws0
+        ),
+        append(Ws1, Ws, Words),
         split_letters(Rest, Ws)
     ;   split_letters(Cs, Words)
     ).
+
+% clitic_split(+Word, -Words): she's as [she, 's]; a word with no clitic,
+% or a negative contraction such as doesn't, as itself.
+clitic_split(W, [Stem, Clitic]) :-
+    clitic(Clitic, _), atom_concat(Stem, Clitic, W), Stem \== '', !.
+clitic_split(W, [W]).
 
 take_letters([C|Cs], [C|Ls], Rest) :- letter(C), !, take_letters(Cs, Ls, Rest).
 take_letters(['\'', C|Cs], ['\'', C|Ls], Rest) :-

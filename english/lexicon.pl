@@ -261,6 +261,13 @@ neg_contraction('wasn\'t', was).     neg_contraction('weren\'t', were).
 neg_contraction('hasn\'t', has).     neg_contraction('haven\'t', have).
 neg_contraction('hadn\'t', had).
 
+% clitic(Word, Auxiliary): a contraction cut from the word before it, "she's"
+% as she and 's; see words/2 in check.pl. 's is is or has, 'd would or had,
+% and 's is also the possessive, which the grammar reads for itself.
+clitic('\'s', is).    clitic('\'s', has).   clitic('\'re', are).
+clitic('\'m', am).    clitic('\'ve', have). clitic('\'ll', will).
+clitic('\'d', would). clitic('\'d', had).
+
 /* ---------------- forms ---------------- */
 
 % noun_form(?Word, -Singular, -Number)

@@ -40,23 +40,33 @@ grammatical: [S [NP the zorbles] [VP blorfed [NP the cat]]]
   (not in the lexicon: 'zorbles' taken to be a noun or a verb, from its ending)
 ```
 
+Contractions are cut from their word and read as the words they stand for,
+and a possessive stands where a determiner would:
+
+```
+$ bin/prolog -q english/check.pl -g "check('Alice''s friend''s dog''s sleeping.'), halt"
+grammatical: [S [NP [NP [NP alice] 's friend] 's dog] [VP 's [VP sleeping]]]
+$ bin/prolog -q english/check.pl -g "check('They''s sleeping.'), halt"
+not grammatical: the verb 's (is or has) does not agree with its subject
+```
+
 It runs from any directory, since `check.pl` loads the other files from beside
 itself. `make english` runs the checks in `tests.pl`.
 
-Stage 1 of the three set out in [the roadmap](../docs/ROADMAP.md) is done: a
-small lexicon, simple declarative sentences, and agreement carried in the
-rules. Stage 2 is under way. Auxiliaries, negation, yes/no questions,
-passives, relative clauses, *wh*-questions and guessing at unknown words
-are in; contractions other than *n't* are not yet.
+Stages 1 and 2 of the three set out in [the roadmap](../docs/ROADMAP.md) are
+done. Stage 1 is a small lexicon, simple declarative sentences, and agreement
+carried in the rules. Stage 2 is auxiliaries, negation, yes/no and
+*wh*-questions, passives, relative clauses, a guess at unknown words,
+contractions and possessives. The roadmap lists what stage 2 leaves out.
 
 ## The files
 
 | | |
 |---|---|
-| `lexicon.pl` | 281 words: 91 nouns, 49 verbs, 43 adjectives, 16 adverbs, 16 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; and 17 contractions with *n't*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
-| `grammar.pl` | The rules: statements, yes/no and *wh*-questions, noun phrases (with determiners, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
+| `lexicon.pl` | 281 words: 91 nouns, 49 verbs, 43 adjectives, 16 adverbs, 16 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
+| `grammar.pl` | The rules: statements, yes/no and *wh*-questions, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A guess at a word the lexicon lacks, from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
-| `check.pl` | Text into words, the verdict, the explanation, and the bracketed trees. |
+| `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees. |
 | `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, and the number of readings of an ambiguous one. |
 
 ## What it checks
@@ -78,6 +88,9 @@ are in; contractions other than *n't* are not yet.
   not happy*, *is the dog happy*.
 - **Passives** lose an object to the subject: *the cat was chased*, *the dog
   was given a bone*, not *the dog was slept*.
+- **Contractions agree as their words do**: *they're*, not *they's*; and
+  *'s* after a noun is *is*, *has* or the possessive, whichever fits: *the
+  dog's sleeping*, *the dog's eaten*, *the dog's bone*.
 - **Relative clauses and *wh*-questions have exactly one gap**: *the cat that
   the dog chased*, *what did the dog chase*, not *the cat that the dog chased
   the mouse*. The verb of a relative clause with no subject agrees with the
@@ -113,6 +126,12 @@ walks in*). A missing subject needs no gap at all, since what follows the
 relative or question word is then a verb phrase, which agrees with the noun
 it stands for as it would with a subject. English allows no gap inside a
 subject or one half of an *and*, and the rules place none there.
+
+A **possessive** is a determiner made of a noun phrase and *'s*: *Alice's
+dog*. A possessor may itself be possessed, *Alice's friend's dog*, which
+would be a rule calling itself on the left if written as English grammars
+usually write it. Here it is a chain read left to right instead, each link a
+noun and its *'s*.
 
 A word missing from the lexicon is **placed by its ending**. An inflected word
 is taken back to its stem by undoing the lexicon's own spelling rules (so

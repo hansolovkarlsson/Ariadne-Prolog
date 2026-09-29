@@ -145,6 +145,30 @@ good('The farmer modernized the village.').
 good('The happiness of the children is strange.').
 good('The farmers are careless.').
 
+% Stage 2: contractions cut from their word, and possessives.
+good('She\'s happy.').
+good('It\'s a dog.').
+good('I\'m tired.').
+good('You\'re kind.').
+good('They\'re sleeping.').
+good('We\'ve eaten.').
+good('I\'ll help you.').
+good('She\'d help you.').
+good('He\'d eaten the cake.').
+good('The dog\'s sleeping.').
+good('The dog\'s eaten the cake.').
+good('She\'s not happy.').
+good('She\x2019\s happy.').
+good('What\'s the dog eating?').
+good('Who\'s sleeping?').
+good('Alice\'s dog barks.').
+good('The dog\'s bone is big.').
+good('The farmer\'s old dog sleeps.').
+good('Alice\'s friend\'s dog barks.').
+good('The dogs\' bones are big.').
+good('The children\'s toys are red.').
+good('The cat chased Alice\'s dog.').
+
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -216,6 +240,14 @@ bad('A zorbles sleep.',                    det_noun(a, zorbles)).
 bad('The organization sleep.',             subject_verb(sleep)).
 bad('The dog xqzt the cat.',               unknown).
 bad('A zorble is happy.',                  unknown).
+bad('They\'s sleeping.',                   subject_verb('\'s')).
+bad('I\'s happy.',                         subject_verb('\'s')).
+bad('She\'re happy.',                      subject_verb('\'re')).
+bad('She\'ll eats.',                       verb_form('\'ll', eats, base)).
+bad('Alice\'s dogs barks.',                subject_verb(barks)).
+bad('An dog\'s bone is big.',              article(an, dog)).
+bad('A old man\'s dog barks.',             article(a, old)).
+bad('Dog\'s bone is big.',                 bare(dog)).
 
 readings('The old man walks in the park with his dog.', 2).
 readings('The dogs chase a cat.', 1).
@@ -225,6 +257,7 @@ readings('Is the dog sleeping?', 1).
 readings('The cat that the dog chased sleeps.', 1).
 readings('What did the dog chase?', 1).
 readings('The dog in the garden that barks is old.', 2).
+readings('Alice\'s friend\'s dog barks.', 1).
 
 % verdict(+Text, -V): grammatical, unknown (a word outside the lexicon that
 % its ending does not place), no_reading, or the first violation of the
