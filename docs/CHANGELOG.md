@@ -6,6 +6,20 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-09-29
+
+### Added
+
+- **The grammar checker guesses a word missing from its lexicon from its
+  ending.** *-ly* is an adverb, *-tion* or *-ness* a noun, *-ful* or *-ous*
+  an adjective, *-ize* a verb. An *-s*, *-ed* or *-ing* word is taken back
+  to its stem by undoing the lexicon's spelling rules, and the stem is placed
+  by its own ending or taken as a noun or a verb. The guessed word agrees as
+  a listed one does, so *the zorbles is happy* is still caught, and the
+  verdict says what was guessed. A word with no ending to go on is still
+  reported, so a misspelling is not read as a new word. *Of* joins the
+  prepositions. 205 checks. (`fcb35cc`)
+
 ## 2026-09-28
 
 ### Added

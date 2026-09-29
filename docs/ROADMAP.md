@@ -76,10 +76,10 @@ These change the shape of the system rather than adding to it.
   2. Questions, negation, passives and relative clauses, and morphology rules
      for words missing from the lexicon. Months, part-time. **Under way.**
      Auxiliaries, negation, yes/no questions, passives, relative clauses
-     and *wh*-questions went in on 2026-09-28, in
-     [the changelog](CHANGELOG.md). Left:
-     - guessing an unknown word's class from its ending;
-     - contractions other than *n't*, such as *'s*, *'re* and *'ll*.
+     and *wh*-questions went in on 2026-09-28, and guessing an unknown
+     word's class from its ending on 2026-09-29, in
+     [the changelog](CHANGELOG.md). Left: contractions other than *n't*,
+     such as *'s*, *'re* and *'ll*.
   3. A lexicon generated from WordNet or Wiktionary, and a record of what
      breaks. Broad coverage of real text is out of scope: rule-based grammars
      that aim for it have taken decades.
