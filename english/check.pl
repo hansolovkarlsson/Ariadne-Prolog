@@ -48,12 +48,22 @@ all_readings(Words, Trees) :-
     findall(T, phrase(sentence(T, [], []), Words), Trees0),
     sort(Trees0, Trees).
 
-% diagnosis(+Words, -Violations): the reading with the fewest violations, if
-% the grammar can read Words at all once agreement is relaxed.
+% diagnosis(+Words, -Violations): the reading with the least wrong, if the
+% grammar can read Words at all once agreement is relaxed. A verb out of
+% its place counts twice, since it is a bigger departure than a wrong
+% ending: "which dogs chases the cat" is chases disagreeing with which
+% dogs, not chases put before the cat without do.
 diagnosis(Words, Violations) :-
-    findall(N-Vs, ( phrase(sentence(_, Vs, []), Words), length(Vs, N) ), Readings),
+    findall(N-Vs, ( phrase(sentence(_, Vs, []), Words), cost(Vs, N) ), Readings),
     Readings \== [],
     msort(Readings, [_-Violations|_]).
+
+cost([], 0).
+cost([V|Vs], N) :- cost(Vs, N0), weight(V, W), N is N0 + W.
+
+weight(question_do(_), 2) :- !.
+weight(do_support(_), 2) :- !.
+weight(_, 1).
 
 explain([]).
 explain([V|Vs]) :- message(V, M), format("~w~n", [M]), explain_rest(Vs).
@@ -121,6 +131,10 @@ known_word(W) :- det(W, _, _), !.
 known_word(W) :- adj(W), !.
 known_word(W) :- prep(W), !.
 known_word(W) :- adv(W), !.
+known_word(W) :- rel_pronoun(W, _), !.
+known_word(W) :- wh_pronoun(W, _), !.
+known_word(W) :- wh_det(W), !.
+known_word(W) :- wh_adverb(W), !.
 known_word(and).
 known_word(not).
 
@@ -135,6 +149,13 @@ brackets(Tree, Atom) :-
 
 bracket(s(NP, VP))         --> ['[S'], bracket(NP), bracket(VP), [']'].
 bracket(q(W, NP, Neg, Is)) --> ['[SQ', W], bracket(NP), neg(Neg), items(Is), [']'].
+bracket(wh(W, C))          --> ['[SBARQ'], bracket(W), bracket(C), [']'].
+bracket(wh_pro(W))         --> ['[WHNP', W, ']'].
+bracket(wh_np(D, Nom))     --> ['[WHNP', D], nom(Nom), [']'].
+bracket(whadv(A))          --> ['[WHADVP', A, ']'].
+bracket(rel(none, S))      --> ['[SBAR'], bracket(S), [']'].
+bracket(rel(W, C))         --> { W \== none }, ['[SBAR', W], bracket(C), [']'].
+bracket(gap)               --> ['_'].
 bracket(and(A, B))         --> ['[NP'], bracket(A), [and], bracket(B), [']'].
 bracket(pro(W))            --> ['[NP', W, ']'].
 bracket(name(W))           --> ['[NP', W, ']'].

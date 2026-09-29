@@ -83,6 +83,27 @@ pronoun(us,   agr(n, n, n), obj).
 pronoun(they, agr(n, n, n), subj).
 pronoun(them, agr(n, n, n), obj).
 
+/* ---------------- relative and question words ---------------- */
+
+% rel_pronoun(Word, Case): a word that opens a relative clause, "the dog
+% that barks", with the case of the noun phrase it stands for. which and who
+% are not told apart by the noun, since that is a matter of meaning.
+rel_pronoun(that,  _).
+rel_pronoun(which, _).
+rel_pronoun(who,   _).
+rel_pronoun(whom,  obj).
+
+% wh_pronoun(Word, Case): a word that asks for a noun phrase.
+wh_pronoun(who,  _).
+wh_pronoun(whom, obj).
+wh_pronoun(what, _).
+
+% wh_det(Word): a word that asks, before a noun: "which dog".
+wh_det(which). wh_det(what).
+
+% wh_adverb(Word): a word that asks for a place, time, reason or manner.
+wh_adverb(where). wh_adverb(when). wh_adverb(why). wh_adverb(how).
+
 /* ---------------- determiners ---------------- */
 
 % det(Word, Number, Sound): Number is sg, pl or unbound for either; Sound is

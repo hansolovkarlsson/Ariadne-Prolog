@@ -104,6 +104,35 @@ good('Was the cat chased by the dog?').
 good('Will you help me?').
 good('Did Alice give the dog a bone?').
 
+% Stage 2: relative clauses and wh-questions.
+good('The dog that chased the cat barks.').
+good('The dogs that chase the cat bark.').
+good('The cat that the dog chased sleeps.').
+good('The cat the dog chased sleeps.').
+good('The man who sleeps is old.').
+good('The man whom Alice saw sleeps.').
+good('Alice likes the book which Bob wrote.').
+good('The park that the dog walks in is big.').
+good('The cake that was eaten by the children was big.').
+good('I know the man who gave the dog a bone.').
+good('The dog that the cat that the mouse saw chased barks.').
+good('The dog in the garden that barks is old.').
+good('Who chased the cat?').
+good('What did the dog chase?').
+good('Which dog chased the cat?').
+good('Which dogs chase the cat?').
+good('Who does Alice like?').
+good('Whom did Alice see?').
+good('What is the dog eating?').
+good('Who is happy?').
+good('What was eaten?').
+good('Who was the cake eaten by?').
+good('Where does the dog sleep?').
+good('Why is the dog happy?').
+good('When did the children arrive?').
+good('Who did Alice give a bone?').
+good('Which book did the teacher read to the children?').
+
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -159,12 +188,26 @@ bad('The dog does not be happy.',          no_reading).
 bad('The dog can can swim.',               no_reading).
 bad('The dog is having eaten.',            no_reading).
 bad('Does not the dog bark?',              no_reading).
+bad('The dogs that chases the cat bark.',  subject_verb(chases)).
+bad('The dog that chase the cat barks.',   subject_verb(chase)).
+bad('The man whom sleeps is old.',         case(whom)).
+bad('Which dogs chases the cat?',          subject_verb(chases)).
+bad('Whom chased the cat?',                case(whom)).
+bad('What does the dog chases?',           verb_form(does, chases, base)).
+bad('The cat that the dog chased the mouse sleeps.', no_reading).
+bad('What did the dog chase the cat?',     no_reading).
+bad('Who the dog chased?',                 no_reading).
+bad('The dog that barks.',                 no_reading).
+bad('The dog chased the cat barks.',       no_reading).
 
 readings('The old man walks in the park with his dog.', 2).
 readings('The dogs chase a cat.', 1).
 readings('I read a book.', 1).
 readings('The dog has eaten.', 1).
 readings('Is the dog sleeping?', 1).
+readings('The cat that the dog chased sleeps.', 1).
+readings('What did the dog chase?', 1).
+readings('The dog in the garden that barks is old.', 2).
 
 % verdict(+Text, -V): grammatical, unknown (a word outside the lexicon),
 % no_reading, or the first violation of the best relaxed reading.

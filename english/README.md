@@ -21,23 +21,32 @@ $ bin/prolog -q english/check.pl -g "check('The dog has ate the cake.'), halt"
 not grammatical: after 'has' the verb should be 'eaten', not 'ate'
 $ bin/prolog -q english/check.pl -g "check('The dog barks not.'), halt"
 not grammatical: 'barks not' should be 'does not bark'
+$ bin/prolog -q english/check.pl -g "check('The cat that the dog chased sleeps.'), halt"
+grammatical: [S [NP the cat [SBAR that [S [NP the dog] [VP chased _]]]] [VP sleeps]]
+$ bin/prolog -q english/check.pl -g "check('What did the dog chase?'), halt"
+grammatical: [SBARQ [WHNP what] [SQ did [NP the dog] [VP chase _]]]
+$ bin/prolog -q english/check.pl -g "check('The dogs that chases the cat bark.'), halt"
+not grammatical: the verb 'chases' does not agree with its subject
 ```
+
+The `_` marks the gap: the place the noun phrase is missing from, which the
+relative or question word stands for.
 
 It runs from any directory, since `check.pl` loads the other files from beside
 itself. `make english` runs the checks in `tests.pl`.
 
 Stage 1 of the three set out in [the roadmap](../docs/ROADMAP.md) is done: a
 small lexicon, simple declarative sentences, and agreement carried in the
-rules. Stage 2 is under way. Auxiliaries, negation, yes/no questions and
-passives are in; relative clauses, *wh*-questions and guessing at unknown
-words are not yet.
+rules. Stage 2 is under way. Auxiliaries, negation, yes/no questions,
+passives, relative clauses and *wh*-questions are in; guessing at unknown
+words is not yet.
 
 ## The files
 
 | | |
 |---|---|
-| `lexicon.pl` | 272 words: 91 nouns, 49 verbs, 43 adjectives, 16 adverbs, 15 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals; the forms of *be*, *have* and *do*; and 17 contractions with *n't*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
-| `grammar.pl` | The rules: statements and yes/no questions, noun phrases (with determiners, adjectives, prepositional phrases and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
+| `lexicon.pl` | 280 words: 91 nouns, 49 verbs, 43 adjectives, 16 adverbs, 15 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; and 17 contractions with *n't*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
+| `grammar.pl` | The rules: statements, yes/no and *wh*-questions, noun phrases (with determiners, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `check.pl` | Text into words, the verdict, the explanation, and the bracketed trees. |
 | `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, and the number of readings of an ambiguous one. |
 
@@ -60,6 +69,11 @@ words are not yet.
   not happy*, *is the dog happy*.
 - **Passives** lose an object to the subject: *the cat was chased*, *the dog
   was given a bone*, not *the dog was slept*.
+- **Relative clauses and *wh*-questions have exactly one gap**: *the cat that
+  the dog chased*, *what did the dog chase*, not *the cat that the dog chased
+  the mouse*. The verb of a relative clause with no subject agrees with the
+  noun: *the dogs that chase*, not *the dogs that chases*. *Whom* stands only
+  for an object: *whom did Alice see*, not *whom chased the cat*.
 
 It says nothing about meaning. *Colorless green ideas sleep furiously* is
 grammatical here, as it is in English.
@@ -82,6 +96,15 @@ a yes/no question moves that word before the subject and parses the rest of
 the chain as the statement would. A passive is the verb with its first
 object taken away, since that object is now the subject.
 
+A relative clause or a *wh*-question has **a gap**, threaded through the rules
+beside the violations: it is waiting to be placed until a noun phrase takes
+it, and a clause that must have one parses only if it was placed exactly
+once. It may be an object, or a preposition's object (*the park that the dog
+walks in*). A missing subject needs no gap at all, since what follows the
+relative or question word is then a verb phrase, which agrees with the noun
+it stands for as it would with a subject. English allows no gap inside a
+subject or one half of an *and*, and the rules place none there.
+
 The diagnosis uses **the same grammar**. Each agreement point goes through
 `agree/5`, which threads a list of violations beside the words. Parsed with the
 list closed, a violation cannot be recorded, and the grammar is strict; parsed
@@ -89,5 +112,6 @@ with it open, it finds the reading with the fewest violations and names them.
 
 Recursion is **on the right**. A noun phrase is followed by its prepositional
 phrases rather than built from a smaller noun phrase, since a left-recursive
-rule such as `np --> np, pp` makes a DCG loop. Nothing in stage 2 so far has
-needed one. That is the wall relative clauses may meet.
+rule such as `np --> np, pp` makes a DCG loop. Nothing in stage 2 has needed
+one either: a relative clause follows its noun, as its prepositional phrases
+do.

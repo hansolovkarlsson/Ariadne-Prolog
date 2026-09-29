@@ -18,9 +18,19 @@
     order and no other; negation goes after the first, and a yes/no question
     puts the first before the subject.
 
+    A relative clause or a wh-question has a gap: a noun phrase missing from
+    where it would stand, "the cat that the dog chased _", "what did the dog
+    chase _". The gap is threaded through the rules as G0 and G, gap
+    while it is still to be placed and nogap once it has been, so a clause
+    that must have one has it exactly once. It may stand for an object, or
+    the object of a preposition; a missing subject is simpler, since the
+    rest is only a verb phrase, and has rules of its own. No gap is placed
+    inside a subject or in either half of an and, as English allows neither.
+
     Recursion is on the right throughout: a noun phrase is followed by its
-    prepositional phrases, never built from a smaller noun phrase, since a
-    rule such as np --> np, pp would make a DCG loop. See docs/ROADMAP.md.
+    prepositional phrases and relative clause, never built from a smaller
+    noun phrase, since a rule such as np --> np, pp would make a DCG loop.
+    See docs/ROADMAP.md.
 */
 
 % agree(+What, ?X, ?Y, ?V0, ?V): X and Y agree, or, when the violation list
@@ -34,19 +44,26 @@ violation(What, [What|V], V).
 
 /* ---------------- sentences ---------------- */
 
-% A statement, and a yes/no question: the first verb before the subject,
-% then what that verb takes, as in the statement. "Does the dog bark",
-% "is the dog happy", "has the dog not eaten".
-sentence(s(NP, VP), V0, V) -->
-    noun_phrase(Agr, subj, NP, V0, V1),
-    verb_phrase(fin(Agr), 1, subject, VP, V1, V).
-sentence(q(Tok, NP, Neg, Items), V0, V) -->
+% A statement; a yes/no question, the first verb before the subject and
+% then what that verb takes, as in the statement: "does the dog bark", "is
+% the dog happy"; and a wh-question.
+sentence(T, V0, V) --> statement(T, nogap, nogap, V0, V).
+sentence(T, V0, V) --> question(T, nogap, nogap, V0, V).
+sentence(T, V0, V) --> wh_question(T, V0, V).
+
+% statement(-Tree, G0, G, V0, V). The subject is never the gap.
+statement(s(NP, VP), G0, G, V0, V) -->
+    noun_phrase(Agr, subj, NP, nogap, nogap, V0, V1),
+    verb_phrase(fin(Agr), 1, subject, VP, G0, G, V1, V).
+
+% question(-Tree, G0, G, V0, V): a yes/no question.
+question(q(Tok, NP, Neg, Items), G0, G, V0, V) -->
     [Tok], { head_word(Tok, W, Neg0), head(W, Kind, Base, F),
              inverts(Kind, Tok, V0, V1) },
-    noun_phrase(Agr, subj, NP, V1, V2),
+    noun_phrase(Agr, subj, NP, nogap, nogap, V1, V2),
     { form_ok(fin(Agr), subject, Tok, F, V2, V3) },
     after_subject(Neg0, Neg),
-    rest(Kind, Base, Tok, fin(Agr), Items, V3, V).
+    rest(Kind, Base, Tok, fin(Agr), Items, G0, G, V3, V).
 
 % Only an auxiliary, or be, goes before the subject; a verb needs do:
 % "does the dog bark", not "barks the dog".
@@ -58,13 +75,44 @@ inverts(lex, Tok, V0, V) :- violation(question_do(Tok), V0, V).
 after_subject(none, not) --> [not].
 after_subject(_, none) --> [].
 
+% A wh-question asks for a noun phrase, or for a place, time, reason or
+% manner. When it asks for the subject the rest is a verb phrase, "who
+% chased the cat"; otherwise it is a yes/no question with the gap in it,
+% "what did the dog chase _". Asking for a place needs no gap: "where does
+% the dog sleep".
+wh_question(wh(W, VP), V0, V) -->
+    wh_phrase(W, Agr, Word, Case, V0, V1),
+    { agree(case(Word), Case, subj, V1, V2) },
+    verb_phrase(fin(Agr), 1, subject, VP, nogap, nogap, V2, V).
+wh_question(wh(W, Q), V0, V) -->
+    wh_phrase(W, _, _, _, V0, V1),
+    question(Q, gap, nogap, V1, V).
+wh_question(wh(whadv(A), Q), V0, V) -->
+    [A], { wh_adverb(A) },
+    question(Q, nogap, nogap, V0, V).
+
+% wh_phrase(-Tree, -Agr, -Word, -Case, V0, V): who, whom, what, or which or
+% what before a noun, "which dogs".
+wh_phrase(wh_pro(W), Agr, W, Case, V, V) -->
+    [W], { wh_pronoun(W, Case), agr_of(sg, Agr) }.
+wh_phrase(wh_np(D, N), Agr, D, _, V0, V) -->
+    [D], { wh_det(D) },
+    nominal(Num, _, _, N, V0, V),
+    { agr_of(Num, Agr) }.
+
 /* ---------------- noun phrases ---------------- */
 
-% noun_phrase(-Agr, +Case, -Tree, V0, V). Two noun phrases joined by and
-% are plural: "the dog and the cat chase".
-noun_phrase(agr(n, n, n), Case, and(T1, T2), V0, V) -->
-    simple_np(_, Case, T1, V0, V1), [and], noun_phrase(_, Case, T2, V1, V).
-noun_phrase(Agr, Case, T, V0, V) -->
+% noun_phrase(-Agr, +Case, -Tree, G0, G, V0, V). Two noun phrases joined by
+% and are plural: "the dog and the cat chase". A noun phrase can be the gap
+% itself, taking no words, when one is waiting to be placed. A gap is never
+% a subject, so it stands only where nothing agrees with it and any
+% relative or question word may stand: whom in a subject's place is caught
+% by the rules for a missing subject.
+noun_phrase(_, _, gap, gap, nogap, V, V) --> [].
+noun_phrase(agr(n, n, n), Case, and(T1, T2), G, G, V0, V) -->
+    simple_np(_, Case, T1, V0, V1), [and],
+    noun_phrase(_, Case, T2, nogap, nogap, V1, V).
+noun_phrase(Agr, Case, T, G, G, V0, V) -->
     simple_np(Agr, Case, T, V0, V).
 
 simple_np(Agr, Case, pro(W), V0, V) -->
@@ -85,35 +133,56 @@ simple_np(Agr, _, np(N), V0, V) -->
       agr_of(Num, Agr) }.
 
 % nominal(-Number, -FirstWord, -HeadNoun, -Tree, V0, V): adjectives, the
-% noun, and the prepositional phrases after it.
-nominal(Num, First, Head, nom(As, n(Head), PPs), V0, V) -->
+% noun, the prepositional phrases after it, and a relative clause.
+nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
     adjectives(As),
     [Head], { noun_form(Head, _, Num) },
     { As = [adj(First)|_] -> true ; First = Head },
-    pps(PPs, V0, V).
+    pps(PPs, V0, V1),
+    { agr_of(Num, Agr) },
+    relative(Agr, Rels, V1, V),
+    { append(PPs, Rels, Posts) }.
 
 adjectives([adj(A)|As]) --> [A], { adj(A) }, adjectives(As).
 adjectives([]) --> [].
 
-pps([PP|PPs], V0, V) --> pp(PP, V0, V1), pps(PPs, V1, V).
+pps([PP|PPs], V0, V) --> pp(PP, nogap, nogap, V0, V1), pps(PPs, V1, V).
 pps([], V, V) --> [].
 
-pp(pp(P, NP), V0, V) --> [P], { prep(P) }, noun_phrase(_, obj, NP, V0, V).
+pp(pp(P, NP), G0, G, V0, V) -->
+    [P], { prep(P) }, noun_phrase(_, obj, NP, G0, G, V0, V).
+
+% relative(+Agr, -Rels, V0, V): no relative clause, or one, for a noun
+% whose agreement is Agr. When the relative word stands for the subject,
+% the verb agrees with the noun: "the dogs that chase", "the dog that
+% chases". When it stands for an object, the clause is a statement with
+% the gap in it: "the cat that the dog chased _". The word may then be
+% left out, "the cat the dog chased", but not for a subject.
+relative(_, [], V, V) --> [].
+relative(Agr, [rel(W, VP)], V0, V) -->
+    [W], { rel_pronoun(W, Case),
+           agree(case(W), Case, subj, V0, V1) },
+    verb_phrase(fin(Agr), 1, subject, VP, nogap, nogap, V1, V).
+relative(_, [rel(W, S)], V0, V) -->
+    [W], { rel_pronoun(W, _) },
+    statement(S, gap, nogap, V0, V).
+relative(_, [rel(none, S)], V0, V) -->
+    statement(S, gap, nogap, V0, V).
 
 /* ---------------- verb phrases ---------------- */
 
-% verb_phrase(+Form, +Rank, +Prev, -Tree, V0, V): a verb phrase whose first
-% word is in Form: fin(Agr) at the start of a sentence, where it agrees
-% with the subject, or the base, ing, en or passive form the auxiliary
-% before it asks for. Prev is that auxiliary, for the diagnosis. Rank is
-% the lowest rank the first word may have: an auxiliary is followed only by
-% ones ranked above it, which is English's order.
-verb_phrase(Form, Min, Prev, vp(Tok, Neg, Items), V0, V) -->
+% verb_phrase(+Form, +Rank, +Prev, -Tree, G0, G, V0, V): a verb phrase whose
+% first word is in Form: fin(Agr) at the start of a sentence, where it
+% agrees with the subject, or the base, ing, en or passive form the
+% auxiliary before it asks for. Prev is that auxiliary, for the diagnosis.
+% Rank is the lowest rank the first word may have: an auxiliary is followed
+% only by ones ranked above it, which is English's order.
+verb_phrase(Form, Min, Prev, vp(Tok, Neg, Items), G0, G, V0, V) -->
     [Tok], { head_word(Tok, W, Neg0), head(W, Kind, Base, F),
              rank(Kind, R), R >= Min,
              form_ok(Form, Prev, Tok, F, V0, V1) },
     negation(Form, Kind, Tok, Neg0, Neg, V1, V2),
-    rest(Kind, Base, Tok, Form, Items, V2, V).
+    rest(Kind, Base, Tok, Form, Items, G0, G, V2, V).
 
 % head_word(+Token, -Word, -Neg): a contraction is its auxiliary, negated.
 head_word(Tok, Tok, none).
@@ -158,19 +227,20 @@ negation(fin(_), lex, Tok, none, not, V0, V) -->
     [not], { violation(do_support(Tok), V0, V) }.
 negation(_, _, _, _, none, V, V) --> [].
 
-% rest(+Kind, +Base, +Token, +Form, -Items, V0, V): what follows the word.
-rest(modal, _, Tok, _, [VP], V0, V) --> verb_phrase(base, 2, Tok, VP, V0, V).
-rest(do,    _, Tok, _, [VP], V0, V) --> verb_phrase(base, 6, Tok, VP, V0, V).
-rest(perf,  _, Tok, _, [VP], V0, V) --> verb_phrase(en, 3, Tok, VP, V0, V).
-rest(prog,  _, Tok, _, [VP], V0, V) --> verb_phrase(ing, 4, Tok, VP, V0, V).
-rest(pass,  _, Tok, _, [VP], V0, V) --> verb_phrase(pass, 6, Tok, VP, V0, V).
-rest(cop,   _, _, _, [C|Ms], V0, V) -->
-    predicate(C, V0, V1),
-    modifiers(Ms, V1, V).
-rest(lex, Base, _, Form, Items, V0, V) -->
+% rest(+Kind, +Base, +Token, +Form, -Items, G0, G, V0, V): what follows the
+% word.
+rest(modal, _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(base, 2, Tok, VP, G0, G, V0, V).
+rest(do,    _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(base, 6, Tok, VP, G0, G, V0, V).
+rest(perf,  _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(en, 3, Tok, VP, G0, G, V0, V).
+rest(prog,  _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(ing, 4, Tok, VP, G0, G, V0, V).
+rest(pass,  _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(pass, 6, Tok, VP, G0, G, V0, V).
+rest(cop,   _, _, _, [C|Ms], G0, G, V0, V) -->
+    predicate(C, G0, G1, V0, V1),
+    modifiers(Ms, G1, G, V1, V).
+rest(lex, Base, _, Form, Items, G0, G, V0, V) -->
     { verb(Base, Frames), member(Frame0, Frames), frame(Form, Frame0, Frame) },
-    complements(Frame, Cs, V0, V1),
-    modifiers(Ms, V1, V),
+    complements(Frame, Cs, G0, G1, V0, V1),
+    modifiers(Ms, G1, G, V1, V),
     { append(Cs, Ms, Items) }.
 
 % A passive has lost its first object to the subject: "the cat was chased",
@@ -179,17 +249,19 @@ frame(Form, F, F) :- Form \== pass.
 frame(pass, trans, intrans).
 frame(pass, ditrans, trans).
 
-complements(intrans, [], V, V) --> [].
-complements(trans, [O], V0, V) --> noun_phrase(_, obj, O, V0, V).
-complements(ditrans, [O1, O2], V0, V) -->
-    noun_phrase(_, obj, O1, V0, V1), noun_phrase(_, obj, O2, V1, V).
+complements(intrans, [], G, G, V, V) --> [].
+complements(trans, [O], G0, G, V0, V) --> noun_phrase(_, obj, O, G0, G, V0, V).
+complements(ditrans, [O1, O2], G0, G, V0, V) -->
+    noun_phrase(_, obj, O1, G0, G1, V0, V1),
+    noun_phrase(_, obj, O2, G1, G, V1, V).
 
 % What follows be: an adjective, a noun phrase, or a place.
-predicate(adj(A), V, V) --> [A], { adj(A) }.
-predicate(NP, V0, V) --> noun_phrase(_, _, NP, V0, V).
-predicate(PP, V0, V) --> pp(PP, V0, V).
+predicate(adj(A), G, G, V, V) --> [A], { adj(A) }.
+predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
+predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
 
-% Adverbs and prepositional phrases after the verb and what it takes.
-modifiers([adv(A)|Ms], V0, V) --> [A], { adv(A) }, modifiers(Ms, V0, V).
-modifiers([PP|Ms], V0, V) --> pp(PP, V0, V1), modifiers(Ms, V1, V).
-modifiers([], V, V) --> [].
+% Adverbs and prepositional phrases after the verb and what it takes. The
+% gap may be a preposition's object: "the park that the dog walks in _".
+modifiers([adv(A)|Ms], G0, G, V0, V) --> [A], { adv(A) }, modifiers(Ms, G0, G, V0, V).
+modifiers([PP|Ms], G0, G, V0, V) --> pp(PP, G0, G1, V0, V1), modifiers(Ms, G1, G, V1, V).
+modifiers([], G, G, V, V) --> [].
