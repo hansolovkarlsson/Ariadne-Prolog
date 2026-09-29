@@ -23,6 +23,14 @@ There are no releases yet, so entries are grouped by the day they landed on
   "'barks not' should be 'does not bark'". 149 checks, up from 73.
   (`29b45a2`)
 
+- **The grammar checker reads relative clauses and *wh*-questions.** *The
+  cat that the dog chased sleeps*, *the park that the dog walks in*, *the
+  cat the dog chased*; *who chased the cat*, *what did the dog chase*,
+  *which dogs chase the cat*, *where does the dog sleep*. The missing noun
+  phrase is a gap threaded through the rules, placed exactly once, and
+  shown as `_` in the bracketing. A relative clause's verb agrees with its
+  noun, and *whom* stands only for an object. 190 checks. (`b9f2a0d`)
+
 - **`multifile/1`**, so that a predicate may collect clauses from several
   files. (`6a20648`)
 
