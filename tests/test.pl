@@ -15,6 +15,7 @@
 :- consult(load_beside).
 :- dynamic(rc_self/0).
 :- dynamic(cnt/1).
+:- dynamic(small_fact/1).
 
 /* ---------------- unification and comparison ---------------- */
 
@@ -440,6 +441,15 @@ test(db_current_pred, (current_predicate(p/2))).
     predicate, and kept while one is: the choice point may still walk to it.
     rc_reset/0 gives rc/1 the clauses 1 to 4. */
 rc_reset :- retractall(rc(_)), forall(member(X, [1,2,3,4]), assertz(rc(X))).
+
+/*  A small fact must cost a few hundred bytes of clause store, not the
+    kilobytes that one arena block used to take whatever the clause's size:
+    89,000 WordNet facts took 490 MB that way, and nothing here noticed. */
+test(space_clause,    (statistics(program, [P0,_]),
+                       forall(between(1, 10000, I), assertz(small_fact(I))),
+                       statistics(program, [P1,_]),
+                       retractall(small_fact(_)),
+                       (P1 - P0) / 10000 < 1024)).
 
 test(db_load_beside,  (loaded_beside, loaded_beside_2)).
 test(db_reload,       (consult(tests/reload), consult(tests/reload),

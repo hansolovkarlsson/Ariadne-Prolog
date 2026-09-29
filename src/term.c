@@ -123,12 +123,19 @@ struct Arena { ABlock *block; size_t next; };
 #define ARENA_FIRST 256
 #define ARENA_LIMIT 65536
 
+/* The bytes every arena holds, blocks and headers, for statistics(program,
+   _): the suite reads it to see what a clause costs. */
+static size_t arena_bytes;
+
+size_t arena_in_use(void) { return arena_bytes; }
+
 Arena *arena_new(void)
 {
     Arena *a = (Arena *)malloc(sizeof(Arena));
     if (!a) { fprintf(stderr, "prolog: out of memory\n"); exit(1); }
     a->block = NULL;
     a->next = ARENA_FIRST;
+    arena_bytes += sizeof(Arena);
     return a;
 }
 
@@ -151,6 +158,7 @@ void *arena_alloc(Arena *a, size_t n)
         b->size = size;
         b->used = n;
         b->next = a->block;
+        arena_bytes += sizeof(ABlock) + size;
         a->block = b;
         return b->data;
     }
@@ -160,7 +168,12 @@ void arena_free(Arena *a)
 {
     ABlock *b, *nx;
     if (!a) return;
-    for (b = a->block; b; b = nx) { nx = b->next; free(b); }
+    for (b = a->block; b; b = nx) {
+        nx = b->next;
+        arena_bytes -= sizeof(ABlock) + b->size;
+        free(b);
+    }
+    arena_bytes -= sizeof(Arena);
     free(a);
 }
 

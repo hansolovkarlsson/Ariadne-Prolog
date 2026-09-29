@@ -92,6 +92,7 @@ typedef struct Arena Arena;
 Arena *arena_new(void);
 void  *arena_alloc(Arena *a, size_t n);
 void   arena_free(Arena *a);
+size_t arena_in_use(void);
 
 /* ------------------------------------------------------------------ */
 /* Term construction                                                  */

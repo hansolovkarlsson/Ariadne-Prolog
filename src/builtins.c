@@ -1329,6 +1329,9 @@ BI(bi_retractall)
         if (unify(head, h)) clause_retract(p, c);
         trail_undo(tm);
     }
+    /* clause_retract keeps the clause it was given, which its caller may
+       still be reading; this one has finished with them all. */
+    pred_reclaim(p);
     return PL_OK;
 }
 
@@ -2493,6 +2496,13 @@ BI(bi_statistics)
     }
     if (!strcmp(nm, "memory") || !strcmp(nm, "heap")) {
         Term *l = mk_cons(mk_int((long long)heap_in_use()),
+                          mk_cons(mk_int(0), mk_atom(a_nil)));
+        RET(unify(A[1], l));
+    }
+    if (!strcmp(nm, "program")) {
+        /* [InUse, Free], as SWI has it: the permanent arenas, which hold
+           the clauses. Nothing is kept free, so Free is 0. */
+        Term *l = mk_cons(mk_int((long long)arena_in_use()),
                           mk_cons(mk_int(0), mk_atom(a_nil)));
         RET(unify(A[1], l));
     }
