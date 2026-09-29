@@ -42,19 +42,7 @@ read_lines(In, Lines) :-
     ;   Lines = [L|Ls], read_lines(In, Ls)
     ).
 
-one(S, t(G0, N0, U0), t(G, N, U)) :-
-    words(S, Words),
-    unknown_words(Words, Unknown),
-    (   member(W, Unknown), \+ placeable(W)
-    ->  G = G0, N = N0, U is U0 + 1,
-        exclude(placeable, Unknown, Un),
-        format("unknown   ~w  ~w~n", [S, Un])
-    ;   with_placements(Unknown, all_readings(Words, Trees)), Trees \== []
-    ->  G is G0 + 1, N = N0, U = U0,
-        length(Trees, R), format("yes (~d)   ~w~n", [R, S])
-    ;   G = G0, N is N0 + 1, U = U0,
-        (   with_placements(Unknown, diagnosis(Words, [V|_]))
-        ->  message(V, M), format("no        ~w  (~w)~n", [S, M])
-        ;   format("no        ~w  (no reading)~n", [S])
-        )
-    ).
+one(S, T0, T) :-
+    sentence_result(S, R),
+    result_line(R, S),
+    count_result(R, T0, T).

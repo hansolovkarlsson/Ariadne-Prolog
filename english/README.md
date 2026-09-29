@@ -53,6 +53,37 @@ not grammatical: the verb 's (is or has) does not agree with its subject
 It runs from any directory, since `check.pl` loads the other files from beside
 itself. `make english` runs the checks in `tests.pl`.
 
+## Checking your own text
+
+`check_file/1` takes a file of running text, cuts it into sentences, and
+gives a line for each, then the counts. Load `wordnet_check.pl` rather than
+`check.pl` for WordNet's words, after `make wordnet`:
+
+```
+$ bin/prolog -q english/wordnet_check.pl -g "check_file('story.txt'), halt"
+yes (1)   The old farmer walked to the market.
+yes (1)   Did his wife like the hat?
+no        The dogs chases the cat.  (the verb 'chases' does not agree with its subject)
+no        He sold three cows and bought a new hat!  (no reading)
+unknown   Everyone was happy.  [everyone]
+
+5 sentences: 2 grammatical, 2 not, 1 with a word the checker does not know
+```
+
+`check_file(user_input)` reads standard input instead, so text can be piped
+or pasted in, `pbpaste | bin/prolog -q english/wordnet_check.pl -g
+"check_file(user_input), halt"`, and `check_text/1` takes the text as an
+atom. The number after *yes* is how many readings the sentence has. *No
+reading* means the grammar has no rule for the sentence's shape, rather
+than that some word disagrees: the stage 3 record below says which shapes
+it lacks, and on ordinary English about three sentences in five pass.
+
+A sentence ends at a full stop, question mark or exclamation mark followed
+by a space, and at a blank line, so a heading is a sentence of its own. A
+full stop inside a number does not end one, and nor does one after *Mr.*,
+*Dr.*, *e.g.* and a few other common abbreviations; any other abbreviation
+does. Punctuation inside a sentence is ignored, commas included.
+
 All three stages set out in [the roadmap](../docs/ROADMAP.md) are done. Stage 1
 is a small lexicon, simple declarative sentences, and agreement carried in the
 rules. Stage 2 is auxiliaries, negation, yes/no and *wh*-questions, passives,
@@ -67,10 +98,10 @@ end of this file.
 | `lexicon.pl` | 283 words: 91 nouns, 49 verbs, 43 adjectives, 18 adverbs, 16 prepositions, 25 determiners, 12 names, 12 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner); the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 386 noun and verb forms in all. |
 | `grammar.pl` | The rules: statements, yes/no and *wh*-questions, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
-| `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees. |
+| `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
 | `wordnet_check.pl` | `check.pl` with WordNet's words loaded, from `wordnet.pl`, which `make wordnet` generates and git ignores. |
 | `corpus.txt`, `corpus.pl` | Fifty ordinary sentences, and the run over them that `make english-wordnet` does, which fails unless the counts are the ones `corpus.pl` records. |
-| `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, and the number of readings of an ambiguous one. |
+| `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, the number of readings of an ambiguous one, and how running text is cut into sentences. |
 
 ## What it checks
 

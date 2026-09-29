@@ -5,7 +5,8 @@
     good/1 sentences must be grammatical; bad/2 sentences must not be, and
     the diagnosis, parsing again with agreement relaxed, must name the kind
     of violation given. readings/2 pins how many structures a sentence has,
-    so that a change which adds or loses an ambiguity is seen.
+    so that a change which adds or loses an ambiguity is seen. splits/2
+    pins how check_text/1 cuts running text into sentences.
 */
 
 :- consult(check).
@@ -266,6 +267,18 @@ readings('What did the dog chase?', 1).
 readings('The dog in the garden that barks is old.', 2).
 readings('Alice\'s friend\'s dog barks.', 1).
 
+% splits(Text, Sentences): Text cuts into exactly these sentences.
+splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).
+splits('Does it bark?  It does!', ['Does it bark?', 'It does!']).
+splits('The price was 3.5 pounds.', ['The price was 3.5 pounds.']).
+splits('She said "It is ugly." Then she left.',
+       ['She said "It is ugly."', 'Then she left.']).
+splits('A Heading\n\nThe dog\nbarks.', ['A Heading', 'The dog barks.']).
+splits('A line\nthat goes on.', ['A line that goes on.']).
+splits('Mr. Smith met Dr. Jones.', ['Mr. Smith met Dr. Jones.']).
+splits('... 42. -- !', []).
+splits('', []).
+
 % verdict(+Text, -V): grammatical, unknown (a word outside the lexicon that
 % its ending does not place), no_reading, or the first violation of the
 % best relaxed reading.
@@ -289,11 +302,13 @@ run :-
     findall(S, good(S), Good),
     findall(S-E, bad(S, E), Bad),
     findall(S-N, readings(S, N), Readings),
+    findall(T-Ss, splits(T, Ss), Splits),
     check_good(Good, 0, F1),
     check_bad(Bad, F1, F2),
-    check_readings(Readings, F2, F),
-    length(Good, G), length(Bad, D), length(Readings, R),
-    Total is G + D + R,
+    check_readings(Readings, F2, F3),
+    check_splits(Splits, F3, F),
+    length(Good, G), length(Bad, D), length(Readings, R), length(Splits, P),
+    Total is G + D + R + P,
     Passed is Total - F,
     format("~d grammar checks, ~d passed, ~d failed~n", [Total, Passed, F]),
     (   F =:= 0 -> halt ; halt(1) ).
@@ -323,3 +338,11 @@ check_readings([S-N|Ss], F0, F) :-
     ;   format("FAIL  readings: ~w  expected ~d, got ~d~n", [S, N, M]), F1 is F0 + 1
     ),
     check_readings(Ss, F1, F).
+
+check_splits([], F, F).
+check_splits([T-Ss|Ts], F0, F) :-
+    text_sentences(T, Got),
+    (   Got == Ss -> F1 = F0
+    ;   format("FAIL  splits: ~q  expected ~q, got ~q~n", [T, Ss, Got]), F1 is F0 + 1
+    ),
+    check_splits(Ts, F1, F).

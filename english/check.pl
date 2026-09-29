@@ -11,8 +11,15 @@
     parses again with agreement relaxed, and names what disagreed if that
     finds a reading. A word missing from the lexicon is looked up in
     WordNet, when wordnet_check.pl has loaded it, or else placed by its
-    ending, and the verdict says which; a word neither places is reported. grammatical/2 is the check without the printing, for
-    programs, and brackets/2 turns a tree into its bracketing.
+    ending, and the verdict says which; a word neither places is reported.
+    grammatical/2 is the check without the printing, for programs, and
+    brackets/2 turns a tree into its bracketing.
+
+    check_text/1 and check_file/1 take running text instead, cut it into
+    sentences, and give a line for each:
+
+        bin/prolog -q english/wordnet_check.pl -g "check_file('essay.txt'), halt"
+        pbpaste | bin/prolog -q english/wordnet_check.pl -g "check_file(user_input), halt"
 */
 
 :- consult(lexicon).
@@ -176,6 +183,160 @@ known_word(W) :- wh_det(W), !.
 known_word(W) :- wh_adverb(W), !.
 known_word(and).
 known_word(not).
+
+/* ---------------- running text ---------------- */
+
+% check_text(+Text): Text is any amount of prose. It is cut into sentences,
+% each is checked, and one line is printed for each, then the counts:
+%
+%     yes (1)   The dog barks.
+%     no        The dog bark.  (the verb 'bark' does not agree with its subject)
+%     unknown   The dog zorbles.  [zorbles]
+%
+% check_file(+File) does the same for a file, or for standard input when
+% File is user_input, so text can be piped in.
+check_text(Text) :-
+    text_sentences(Text, Ss),
+    foldl(check_sentence, Ss, t(0, 0, 0), t(G, N, U)),
+    length(Ss, All),
+    format("~n~d sentences: ~d grammatical, ~d not, ~d with a word the checker does not know~n",
+           [All, G, N, U]).
+
+check_file(File) :-
+    read_text(File, Text),
+    check_text(Text).
+
+check_sentence(S, t(G0, N0, U0), t(G, N, U)) :-
+    sentence_result(S, R),
+    result_line(R, S),
+    count_result(R, t(G0, N0, U0), t(G, N, U)).
+
+% sentence_result(+Sentence, -Result): yes(Readings), no(Why), or
+% unknown(Words) when a word is in neither the lexicon nor WordNet and its
+% ending does not place it.
+sentence_result(S, R) :-
+    words(S, Words),
+    unknown_words(Words, Unknown0),
+    sort(Unknown0, Unknown),
+    exclude(placeable, Unknown, Unplaced),
+    (   Unplaced \== []
+    ->  R = unknown(Unplaced)
+    ;   with_placements(Unknown, all_readings(Words, Trees)), Trees \== []
+    ->  length(Trees, N), R = yes(N)
+    ;   with_placements(Unknown, diagnosis(Words, [V|_]))
+    ->  message(V, M), R = no(M)
+    ;   R = no('no reading')
+    ).
+
+result_line(yes(N), S)      :- format("yes (~d)   ~w~n", [N, S]).
+result_line(no(M), S)       :- format("no        ~w  (~w)~n", [S, M]).
+result_line(unknown(Ws), S) :- format("unknown   ~w  ~w~n", [S, Ws]).
+
+count_result(yes(_),     t(G0, N, U), t(G, N, U)) :- G is G0 + 1.
+count_result(no(_),      t(G, N0, U), t(G, N, U)) :- N is N0 + 1.
+count_result(unknown(_), t(G, N, U0), t(G, N, U)) :- U is U0 + 1.
+
+% read_text(+File, -Text): the whole of a file, or of standard input, as
+% one atom, its lines joined by newlines so that a blank line survives.
+read_text(user_input, Text) :- !, text_lines(user_input, Text).
+read_text(File, Text) :-
+    open(File, read, In),
+    text_lines(In, Text),
+    close(In).
+
+text_lines(In, Text) :-
+    stream_lines(In, Lines),
+    atomic_list_concat(Lines, '\n', Text).
+
+stream_lines(In, Lines) :-
+    read_line_to_string(In, L),
+    (   L == end_of_file
+    ->  Lines = []
+    ;   Lines = [L|Ls], stream_lines(In, Ls)
+    ).
+
+% text_sentences(+Text, -Sentences): Text cut into sentences, each an atom
+% with its spaces and line breaks run together. A sentence ends at a full
+% stop, question mark or exclamation mark followed by a space or the end,
+% with any closing quotes or brackets after it, so 3.5 does not end one;
+% and at a blank line, so that a heading with no full stop is a sentence of
+% its own. A piece with no letter in it is left out. A piece that ends in
+% one of the common abbreviations below, Mr. or e.g., is joined to the next;
+% any other abbreviation ends a sentence.
+text_sentences(Text, Ss) :-
+    atom_chars(Text, Cs),
+    split_sentences(Cs, Ss0),
+    join_abbreviations(Ss0, Ss).
+
+join_abbreviations([S1, S2|Ss], Out) :-
+    ends_in_abbreviation(S1), !,
+    atomic_list_concat([S1, ' ', S2], S),
+    join_abbreviations([S|Ss], Out).
+join_abbreviations([S|Ss], [S|Out]) :- !, join_abbreviations(Ss, Out).
+join_abbreviations([], []).
+
+ends_in_abbreviation(S) :-
+    atomic_list_concat(Parts, ' ', S), last(Parts, W0),
+    downcase_atom(W0, W), abbreviation(W).
+
+abbreviation('mr.'). abbreviation('mrs.'). abbreviation('ms.').
+abbreviation('dr.'). abbreviation('prof.'). abbreviation('st.').
+abbreviation('jr.'). abbreviation('sr.'). abbreviation('vs.').
+abbreviation('e.g.'). abbreviation('i.e.').
+abbreviation('cf.').
+
+split_sentences([], []) :- !.
+split_sentences(Cs, Ss) :-
+    sentence_chars(Cs, S, Rest),
+    (   tidy_sentence(S, A)
+    ->  Ss = [A|Ss1]
+    ;   Ss = Ss1
+    ),
+    split_sentences(Rest, Ss1).
+
+sentence_chars([], [], []).
+sentence_chars([C|Cs0], [C|Cl], Rest) :-
+    sentence_end(C), closers(Cs0, Cl, Rest), ends_here(Rest), !.
+sentence_chars(['\n'|Cs0], [], Rest) :- blank_line(Cs0, Rest), !.
+sentence_chars([C|Cs], [C|S], Rest) :- sentence_chars(Cs, S, Rest).
+
+sentence_end('.'). sentence_end('?'). sentence_end('!').
+
+closers([C|Cs], [C|Cl], R) :- closer(C), !, closers(Cs, Cl, R).
+closers(R, [], R).
+
+closer(')'). closer(']'). closer('"'). closer('\''). closer('\x201D\').
+closer('\x2019\').
+
+ends_here([]).
+ends_here([C|_]) :- layout(C).
+
+blank_line([C|Cs], R) :- layout(C), C \== '\n', !, blank_line(Cs, R).
+blank_line(['\n'|R], R).
+
+layout(' '). layout('\t'). layout('\n'). layout('\r').
+
+% tidy_sentence(+Chars, -Atom): Chars with each run of layout made one
+% space and none at either end; fails if there is no letter in it.
+tidy_sentence(Cs, A) :-
+    member(C, Cs), letter(C), !,
+    squeeze(Cs, Sq),
+    atom_chars(A, Sq).
+
+squeeze(Cs, Out) :-
+    skip_layout(Cs, Cs1),
+    squeeze_words(Cs1, Out).
+
+squeeze_words([], []).
+squeeze_words([C|Cs], Out) :-
+    (   layout(C)
+    ->  skip_layout(Cs, Cs1),
+        (   Cs1 == [] -> Out = [] ; Out = [' '|Out1], squeeze_words(Cs1, Out1) )
+    ;   Out = [C|Out1], squeeze_words(Cs, Out1)
+    ).
+
+skip_layout([C|Cs], R) :- layout(C), !, skip_layout(Cs, R).
+skip_layout(R, R).
 
 /* ---------------- brackets ---------------- */
 
