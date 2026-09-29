@@ -47,16 +47,44 @@ violation(What, [What|V], V).
 % A statement; a yes/no question, the first verb before the subject and
 % then what that verb takes, as in the statement: "does the dog bark", "is
 % the dog happy"; and a wh-question.
-sentence(T, V0, V) -->
-    statement(S, nogap, nogap, V0, V1),
-    clauses_after(S, T, V1, V).
+sentence(T, V0, V) --> declarative(T, V0, V).
 sentence(T, V0, V) --> question(T, nogap, nogap, V0, V).
 sentence(T, V0, V) --> wh_question(T, V0, V).
-sentence(sub_first(C, S1, T), V0, V) -->
+
+% declarative(-Tree, V0, V): a statement, alone or joined to others.
+declarative(T, V0, V) -->
+    statement(S, nogap, nogap, V0, V1),
+    clauses_after(S, T, V1, V).
+declarative(sub_first(C, S1, T), V0, V) -->
     [C], { subordinator(C) },
     statement(S1, nogap, nogap, V0, V1),
     statement(S2, nogap, nogap, V1, V2),
     clauses_after(S2, T, V2, V).
+
+% imperative(-Tree, V0, V): a command, its verb in the base form and no
+% subject: "close the door", "please be quiet", "don't bark". check.pl reads
+% a sentence this way only when it has no other reading, and cannot be read
+% as a statement even with a word that disagrees, since with WordNet nearly
+% every noun is a verb as well: "dog barks" is a singular noun without its
+% determiner, not the command "dog the barks". A question with a fault
+% does not count: "close the door" is not "does the door close" gone
+% wrong.
+imperative(imp(P1, Neg, VP, P2), V0, V) -->
+    please(P1), imperative_not(Neg),
+    base_ahead,
+    verb_phrase(base, 5, imperative, VP, nogap, nogap, V0, V),
+    please(P2).
+
+please(please) --> [please].
+please(none) --> [].
+
+imperative_not(not) --> [do, not].
+imperative_not(not) --> ['don\'t'].
+imperative_not(none) --> [].
+
+% base_ahead: the next word has a base form, so the verb is not blamed for
+% being in another: "chases the dog" is no command at all.
+base_ahead([W|S], [W|S]) :- ( verb_form(W, _, base) ; be_form(W, base) ), !.
 
 % clauses_after(+First, -Tree, V0, V): the statement First alone, or joined
 % to the statements after it, each by a conjunction: "I like coffee but my
@@ -159,9 +187,13 @@ simple_np(Agr, _, np(poss(P), N), V0, V) -->
     nominal(Num, _, _, N, V1, V),
     { agr_of(Num, Agr) }.
 
-% determiner(-Det, -Number, -Sound): a determiner, or a number that takes
-% one before it, "a hundred", "two thousand", which counts as one word.
+% determiner(-Det, -Number, -Sound): a determiner; such before a or an,
+% "such a sunset"; or a number that takes one before it, "a hundred", "two
+% thousand". Each two-word one counts as one word.
 determiner(D, DNum, DSound) --> [D], { det(D, DNum, DSound) }.
+determiner(D, sg, S) -->
+    [such, A], { ( A == a ; A == an ), det(A, sg, S),
+                 atomic_list_concat([such, A], ' ', D) }.
 determiner(D, pl, _) -->
     [A, B], { ( A == a ; number_word(A, _) ), big_number(B),
               atomic_list_concat([A, B], ' ', D) }.
@@ -213,21 +245,35 @@ det_agrees(D, Head, DNum, Num, V0, V) :-
 core_nominal(Num, First, Head, nom(As, n(Head), [])) -->
     adjectives(As),
     [Head], { noun_form(Head, _, Num) },
-    { As = [adj(First)|_] -> true ; First = Head }.
+    { first_word(As, Head, First) }.
 
 % nominal(-Number, -FirstWord, -HeadNoun, -Tree, V0, V): adjectives, the
 % noun, the prepositional phrases after it, and a relative clause.
 nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
     adjectives(As),
     [Head], { noun_form(Head, _, Num) },
-    { As = [adj(First)|_] -> true ; First = Head },
+    { first_word(As, Head, First) },
     pps(PPs, V0, V1),
     { agr_of(Num, Agr) },
     relative(Agr, Rels, V1, V),
     { append(PPs, Rels, Posts) }.
 
-adjectives([adj(A)|As]) --> [A], { adj(A) }, adjectives(As).
+adjectives([AP|As]) --> adj_phrase(AP), adjectives(As).
 adjectives([]) --> [].
+
+% adj_phrase(-Tree): an adjective, with the degree words before it: "old",
+% "very old", "really quite old".
+adj_phrase(T) --> degrees(Ds), [A], { adj(A) }, { Ds == [] -> T = adj(A) ; T = adjp(Ds, A) }.
+
+degrees([D|Ds]) --> [D], { degree(D) }, degrees(Ds).
+degrees([]) --> [].
+
+% first_word(+Adjectives, +Head, -First): the word the noun phrase's
+% determiner stands before, which chooses between a and an: "an old man",
+% "a very old man".
+first_word([adj(A)|_], _, A) :- !.
+first_word([adjp([D|_], _)|_], _, D) :- !.
+first_word([], Head, Head).
 
 pps([PP|PPs], V0, V) --> pp(PP, nogap, nogap, V0, V1), pps(PPs, V1, V).
 pps([], V, V) --> [].
@@ -260,7 +306,22 @@ relative(_, [rel(none, S)], V0, V) -->
 % auxiliary before it asks for. Prev is that auxiliary, for the diagnosis.
 % Rank is the lowest rank the first word may have: an auxiliary is followed
 % only by ones ranked above it, which is English's order.
-verb_phrase(Form, Min, Prev, vp(Tok, Neg, Items), G0, G, V0, V) -->
+verb_phrase(Form, Min, Prev, T, G0, G, V0, V) -->
+    pre_adverbs(As),
+    verb_head(Form, Min, Prev, VP, G0, G, V0, V),
+    { As == [] -> T = VP ; T = pre(As, VP) }.
+
+% pre_adverbs(-Adverbs): the adverbs that may stand before a verb, "has
+% already eaten", "never sleeps": those of time and frequency listed in
+% lexicon.pl, and any in -ly, "quickly ran". Others, "yesterday", "well",
+% go after it, in modifiers//5.
+pre_adverbs([adv(A)|As]) --> [A], { adv(A), before_verb(A) }, pre_adverbs(As).
+pre_adverbs([]) --> [].
+
+before_verb(A) :- frequency(A), !.
+before_verb(A) :- atom_concat(_, ly, A).
+
+verb_head(Form, Min, Prev, vp(Tok, Neg, Items), G0, G, V0, V) -->
     [Tok], { head_word(Tok, W, Neg0), head(W, Kind, Base, F),
              rank(Kind, R), R >= Min,
              form_ok(Form, Prev, Tok, F, V0, V1) },
@@ -322,9 +383,9 @@ rest(pass,  _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(pass, 6, Tok, VP, G0,
 rest(cop,   _, _, _, [C|Ms], G0, G, V0, V) -->
     predicate(C, G0, G1, V0, V1),
     modifiers(Ms, G1, G, V1, V).
-rest(lex, Base, _, Form, Items, G0, G, V0, V) -->
+rest(lex, Base, Tok, Form, Items, G0, G, V0, V) -->
     { verb(Base, Frames), member(Frame0, Frames), frame(Form, Frame0, Frame) },
-    complements(Frame, Cs, G0, G1, V0, V1),
+    complements(Frame, Tok, Cs, G0, G1, V0, V1),
     modifiers(Ms, G1, G, V1, V),
     { append(Cs, Ms, Items) }.
 
@@ -333,15 +394,43 @@ rest(lex, Base, _, Form, Items, G0, G, V0, V) -->
 frame(Form, F, F) :- Form \== pass.
 frame(pass, trans, intrans).
 frame(pass, ditrans, trans).
+frame(pass, obj_pred, pred).
+frame(pass, obj_inf, inf).
 
-complements(intrans, [], G, G, V, V) --> [].
-complements(trans, [O], G0, G, V0, V) --> noun_phrase(_, obj, O, G0, G, V0, V).
-complements(ditrans, [O1, O2], G0, G, V0, V) -->
+% complements(+Frame, +Verb, -Items, G0, G, V0, V): what the verb takes, by
+% the frame chosen from its entry:
+%   intrans    nothing                      the dog sleeps
+%   trans      a noun phrase                the dog chases a cat
+%   ditrans    two noun phrases             alice gives the dog a bone
+%   pred       an adjective                 the soup tastes good
+%   obj_pred   a noun phrase and one        they paint the kitchen blue
+%   clause     a statement, that or not     i think (that) she is right
+%   inf        to and a verb phrase         she wants to learn french
+%   obj_inf    a noun phrase, then one      she told him to go
+%   ing        an -ing verb phrase          the dog stopped barking
+complements(intrans, _, [], G, G, V, V) --> [].
+complements(trans, _, [O], G0, G, V0, V) --> noun_phrase(_, obj, O, G0, G, V0, V).
+complements(ditrans, _, [O1, O2], G0, G, V0, V) -->
     noun_phrase(_, obj, O1, G0, G1, V0, V1),
     noun_phrase(_, obj, O2, G1, G, V1, V).
+complements(pred, _, [A], G, G, V, V) --> adj_phrase(A).
+complements(obj_pred, _, [O, A], G0, G, V0, V) -->
+    noun_phrase(_, obj, O, G0, G, V0, V), adj_phrase(A).
+complements(clause, _, [sbar(C, S)], G0, G, V0, V) -->
+    complementizer(C), statement(S, G0, G, V0, V).
+complements(inf, _, [inf(VP)], G0, G, V0, V) -->
+    [to], verb_phrase(base, 2, to, VP, G0, G, V0, V).
+complements(obj_inf, _, [O, inf(VP)], G0, G, V0, V) -->
+    noun_phrase(_, obj, O, G0, G1, V0, V1),
+    [to], verb_phrase(base, 2, to, VP, G1, G, V1, V).
+complements(ing, Tok, [VP], G0, G, V0, V) -->
+    verb_phrase(ing, 3, Tok, VP, G0, G, V0, V).
+
+complementizer(that) --> [that].
+complementizer(none) --> [].
 
 % What follows be: an adjective, a noun phrase, or a place.
-predicate(adj(A), G, G, V, V) --> [A], { adj(A) }.
+predicate(AP, G, G, V, V) --> adj_phrase(AP).
 predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
 predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
 
@@ -349,4 +438,15 @@ predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
 % gap may be a preposition's object: "the park that the dog walks in _".
 modifiers([adv(A)|Ms], G0, G, V0, V) --> [A], { adv(A) }, modifiers(Ms, G0, G, V0, V).
 modifiers([PP|Ms], G0, G, V0, V) --> pp(PP, G0, G1, V0, V1), modifiers(Ms, G1, G, V1, V).
+modifiers([npadv(D, N)|Ms], G0, G, V0, V) -->
+    [D, N], { adverbial_np(D, N) }, modifiers(Ms, G0, G, V0, V).
 modifiers([], G, G, V, V) --> [].
+
+% adverbial_np(?Word, ?Noun): a noun phrase that is an adverb of time or
+% place, "last night", "every day", "next door". last and next are not
+% determiners anywhere else, so they are only read here.
+adverbial_np(D, N) :- time_det(D), time_noun(N).
+adverbial_np(next, door).
+
+time_det(last). time_det(next). time_det(this). time_det(that).
+time_det(every). time_det(each).

@@ -72,6 +72,8 @@ noun(university). noun(unicorn). noun(uniform). noun(elephant). noun(owl).
 noun(bread). noun(tea). noun(coffee). noun(rice). noun(food). noun(music).
 noun(homework). noun(advice). noun(information). noun(furniture).
 noun(football). noun(breakfast). noun(lunch). noun(dinner).
+noun(night). noun(day). noun(week). noun(month). noun(year). noun(morning).
+noun(evening). noun(afternoon).
 noun(Sg) :- guessed(noun, Sg).
 
 % mass(Noun): a noun that can stand in the singular with no determiner,
@@ -88,6 +90,17 @@ mass(bread). mass(tea). mass(coffee). mass(rice). mass(food). mass(music).
 mass(homework). mass(advice). mass(information). mass(furniture).
 mass(football). mass(breakfast). mass(lunch). mass(dinner).
 mass(school). mass(church). mass(college). mass(bed). mass(night).
+mass(english). mass(french). mass(german). mass(spanish). mass(italian).
+mass(latin). mass(greek). mass(russian). mass(chinese). mass(japanese).
+
+% time_noun(Noun): a noun that makes an adverb of time with last, next,
+% this, every or each before it, "last night", "every day"; see
+% adverbial_np/2 in grammar.pl. time, summer, winter, spring and autumn are
+% WordNet's, as each is a verb there too.
+time_noun(night). time_noun(day). time_noun(week). time_noun(month).
+time_noun(year). time_noun(morning). time_noun(evening).
+time_noun(afternoon). time_noun(weekend). time_noun(time).
+time_noun(summer). time_noun(winter). time_noun(spring). time_noun(autumn).
 
 % irregular_plural(Singular, Plural).
 irregular_plural(man, men).       irregular_plural(woman, women).
@@ -163,7 +176,7 @@ det(this,  sg, _).   det(that,  sg, _).
 det(these, pl, _).   det(those, pl, _).
 det(every, sg, _).   det(each,  sg, _).
 det(some,  pl, _).   det(many,  pl, _).   det(several, pl, _).
-det(much,  mass, _).
+det(much,  mass, _).  det(such,  pl, _).
 det(few,   pl, _).   det(no,    _,  _).
 det(my,    _,  _).   det(your,  _,  _).   det(his,     _,  _).
 det(its,   _,  _).   det(our,   _,  _).   det(their,   _,  _).
@@ -229,6 +242,22 @@ adv(furiously). adv(early). adv(late).
 adv(after). adv(before). adv(through). adv(between). adv(around).
 adv(about). adv(along). adv(above). adv(below). adv(inside). adv(outside).
 adv(within). adv(beyond). adv(throughout). adv(underneath). adv(though).
+adv(quite). adv(rather). adv(too). adv(really). adv(fairly).
+adv(extremely).
+
+% degree(Word): a word that goes before an adjective and says how much,
+% "very old", "quite happy". Those that are adverbs as well are listed as
+% adverbs above, since a word listed here is never looked up in WordNet.
+degree(very). degree(quite). degree(rather). degree(too).
+degree(really). degree(fairly). degree(extremely).
+
+% frequency(Word): an adverb of time or frequency, which may stand before
+% the verb, "has already eaten", "never sleeps"; see pre_adverbs//1 in
+% grammar.pl. Any adverb in -ly may too. Most are WordNet's.
+frequency(never). frequency(always). frequency(often).
+frequency(sometimes). frequency(already). frequency(just).
+frequency(still). frequency(also). frequency(ever). frequency(even).
+frequency(only). frequency(seldom). frequency(rarely). frequency(usually).
 adv(A) :- guessed(adv, A).
 
 /* ---------------- conjunctions ---------------- */
@@ -252,31 +281,33 @@ subordinator(when).
 %   intrans   nothing            the dog sleeps
 %   trans     one noun phrase    the dog chases a cat
 %   ditrans   two noun phrases   alice gives the dog a bone
-verb(sleep,  [intrans]).          verb(bark,   [intrans]).
-verb(run,    [intrans]).          verb(walk,   [intrans, trans]).
-verb(swim,   [intrans]).          verb(laugh,  [intrans]).
-verb(cry,    [intrans]).          verb(smile,  [intrans]).
-verb(sing,   [intrans, trans]).   verb(dance,  [intrans]).
-verb(fly,    [intrans]).          verb(arrive, [intrans]).
-verb(wait,   [intrans]).          verb(play,   [intrans, trans]).
-verb(eat,    [intrans, trans]).   verb(drink,  [intrans, trans]).
-verb(read,   [intrans, trans]).   verb(write,  [intrans, trans, ditrans]).
-verb(chase,  [trans]).            verb(see,    [trans]).
-verb(like,   [trans]).            verb(love,   [trans]).
-verb(hate,   [trans]).            verb(find,   [trans]).
-verb(lose,   [trans]).            verb(carry,  [trans]).
-verb(watch,  [intrans, trans]).   verb(catch,  [trans]).
-verb(push,   [trans]).            verb(open,   [intrans, trans]).
-verb(close,  [intrans, trans]).            verb(visit,  [trans]).
-verb(help,   [trans]).            verb(want,   [trans]).
-verb(need,   [trans]).            verb(know,   [trans]).
-verb(bite,   [trans]).            verb(hear,   [trans]).
-verb(build,  [trans]).            verb(paint,  [intrans, trans]).
-verb(stop,   [intrans, trans]).   verb(give,   [ditrans]).
-verb(send,   [trans, ditrans]).   verb(show,   [trans, ditrans]).
-verb(bring,  [trans, ditrans]).   verb(tell,   [trans, ditrans]).
-verb(buy,    [trans, ditrans]).   verb(teach,  [trans, ditrans]).
-verb(have,   [trans]).
+% and pred, obj_pred, clause, inf, obj_inf and ing, which complements//7
+% in grammar.pl sets out.
+verb(sleep,  [intrans]).               verb(bark,   [intrans]).
+verb(run,    [intrans]).               verb(walk,   [intrans, trans]).
+verb(swim,   [intrans]).               verb(laugh,  [intrans]).
+verb(cry,    [intrans]).               verb(smile,  [intrans]).
+verb(sing,   [intrans, trans]).        verb(dance,  [intrans]).
+verb(fly,    [intrans]).               verb(arrive, [intrans]).
+verb(wait,   [intrans]).               verb(play,   [intrans, trans]).
+verb(eat,    [intrans, trans]).        verb(drink,  [intrans, trans]).
+verb(read,   [intrans, trans]).        verb(write,  [intrans, trans, ditrans]).
+verb(chase,  [trans]).                 verb(see,    [trans, clause]).
+verb(like,   [trans, inf, ing]).       verb(love,   [trans, inf, ing]).
+verb(hate,   [trans, inf, ing]).       verb(find,   [trans, obj_pred, clause]).
+verb(lose,   [trans]).                 verb(carry,  [trans]).
+verb(watch,  [intrans, trans]).        verb(catch,  [trans]).
+verb(push,   [trans]).                 verb(open,   [intrans, trans]).
+verb(close,  [intrans, trans]).        verb(visit,  [trans]).
+verb(help,   [trans, obj_inf]).        verb(want,   [trans, inf, obj_inf]).
+verb(need,   [trans, inf, obj_inf]).   verb(know,   [trans, clause]).
+verb(bite,   [trans]).                 verb(hear,   [trans, clause]).
+verb(build,  [trans]).                 verb(paint,  [intrans, trans, obj_pred]).
+verb(stop,   [intrans, trans, ing]).   verb(give,   [ditrans]).
+verb(send,   [trans, ditrans]).        verb(show,   [trans, ditrans]).
+verb(bring,  [trans, ditrans]).        verb(tell,   [trans, ditrans, obj_inf]).
+verb(buy,    [trans, ditrans]).        verb(teach,  [trans, ditrans, obj_inf]).
+verb(have,   [trans]).                 verb(please, [intrans, trans]).
 verb(Base, Frames) :- guessed(verb(Frames), Base).
 
 % irregular_past(Base, Past).

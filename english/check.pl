@@ -77,18 +77,30 @@ verdict(Words) :-
 
 % all_readings(+Words, -Trees): every distinct reading. A word can be one form
 % twice over, as read is both present and past, and the tree does not say
-% which, so the same tree is found twice and counted once.
+% which, so the same tree is found twice and counted once. A command is
+% read only when nothing else can be, and no statement can be even with a
+% word that disagrees; see imperative//3 in grammar.pl.
 all_readings(Words, Trees) :-
     findall(T, phrase(sentence(T, [], []), Words), Trees0),
-    sort(Trees0, Trees).
+    (   Trees0 == [], \+ phrase(declarative(_, _, []), Words)
+    ->  findall(T, phrase(imperative(T, [], []), Words), Trees1)
+    ;   Trees1 = Trees0
+    ),
+    sort(Trees1, Trees).
 
 % diagnosis(+Words, -Violations): the reading with the least wrong, if the
 % grammar can read Words at all once agreement is relaxed. A verb out of
 % its place counts twice, since it is a bigger departure than a wrong
 % ending: "which dogs chases the cat" is chases disagreeing with which
-% dogs, not chases put before the cat without do.
+% dogs, not chases put before the cat without do. A command is a reading
+% here on the terms all_readings/2 gives it.
 diagnosis(Words, Violations) :-
-    findall(N-Vs, ( phrase(sentence(_, Vs, []), Words), cost(Vs, N) ), Readings),
+    findall(N-Vs, ( phrase(sentence(_, Vs, []), Words), cost(Vs, N) ), Readings0),
+    (   phrase(declarative(_, _, []), Words)
+    ->  Readings = Readings0
+    ;   findall(N-Vs, ( phrase(imperative(_, Vs, []), Words), cost(Vs, N) ), Readings1),
+        append(Readings0, Readings1, Readings)
+    ),
     Readings \== [],
     msort(Readings, [_-Violations|_]).
 
@@ -111,7 +123,9 @@ message(subject_verb(W), M) :-
 message(det_noun(D, N), M) :-
     format(atom(M), "'~w' does not agree in number with '~w'", [D, N]).
 message(article(D, W), M) :-
-    ( D == a -> Other = an ; Other = a ),
+    atomic_list_concat(Ws, ' ', D), append(Before, [A], Ws),
+    ( A == a -> B = an ; B = a ),
+    append(Before, [B], Ws1), atomic_list_concat(Ws1, ' ', Other),
     format(atom(M), "'~w ~w' should be '~w ~w'", [D, W, Other, W]).
 message(case(W), M) :-
     format(atom(M), "the pronoun '~w' is in the wrong case for where it stands", [W]).
@@ -184,6 +198,7 @@ known_word(W) :- wh_adverb(W), !.
 known_word(W) :- number_word(W, _), !.
 known_word(W) :- big_number(W), !.
 known_word(W) :- coordinator(W), !.
+known_word(W) :- degree(W), !.
 known_word(W) :- subordinator(W), !.
 known_word(not).
 
@@ -359,6 +374,14 @@ bracket(joined(C, S1, S2)) -->
 bracket(sub_first(C, S1, S2)) -->
     ['[S', '[SBAR', C], bracket(S1), [']'], bracket(S2), [']'].
 bracket(num(W))            --> ['[NP', W, ']'].
+bracket(imp(P1, Neg, VP, P2)) -->
+    ['[S'], please_word(P1), imp_neg(Neg), bracket(VP), please_word(P2), [']'].
+bracket(pre(As, VP))       --> ['[VP'], items(As), bracket(VP), [']'].
+bracket(adjp(Ds, A))       --> ['[AP'], Ds, [A, ']'].
+bracket(sbar(that, S))     --> ['[SBAR', that], bracket(S), [']'].
+bracket(sbar(none, S))     --> ['[SBAR'], bracket(S), [']'].
+bracket(inf(VP))           --> ['[VP', to], bracket(VP), [']'].
+bracket(npadv(D, N))       --> ['[NP', D, N, ']'].
 bracket(q(W, NP, Neg, Is)) --> ['[SQ', W], bracket(NP), neg(Neg), items(Is), [']'].
 bracket(wh(W, C))          --> ['[SBARQ'], bracket(W), bracket(C), [']'].
 bracket(wh_pro(W))         --> ['[WHNP', W, ']'].
@@ -382,9 +405,16 @@ nom(nom(As, n(H), PPs)) --> adjective_words(As), [H], items(PPs).
 
 adjective_words([]) --> [].
 adjective_words([adj(A)|As]) --> [A], adjective_words(As).
+adjective_words([adjp(Ds, A)|As]) --> Ds, [A], adjective_words(As).
 
 neg(not)  --> [not].
 neg(none) --> [].
+
+imp_neg(not)  --> [do, not].
+imp_neg(none) --> [].
+
+please_word(please) --> [please].
+please_word(none)   --> [].
 
 items([]) --> [].
 items([T|Ts]) --> bracket(T), items(Ts).

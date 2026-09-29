@@ -95,8 +95,8 @@ end of this file.
 
 | | |
 |---|---|
-| `lexicon.pl` | 388 words, a word in two classes counted in each: 105 nouns, 49 verbs, 43 adjectives, 34 adverbs, 39 prepositions, 22 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names, 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 414 noun and verb forms in all. 24 nouns are marked as mass nouns, which may stand alone in the singular. |
-| `grammar.pl` | The rules: statements, alone or joined by a conjunction, yes/no and *wh*-questions, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
+| `lexicon.pl` | 411 words, a word in two classes counted in each: 113 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 39 prepositions, 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names, 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 34 nouns are marked as mass nouns, which may stand alone in the singular, 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
+| `grammar.pl` | The rules: statements, alone or joined by a conjunction, yes/no and *wh*-questions, commands, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
 | `wordnet_check.pl` | `check.pl` with WordNet's words loaded, from `wordnet.pl`, which `make wordnet` generates and git ignores. |
@@ -117,7 +117,9 @@ end of this file.
 - **A singular noun needs a determiner**: *dogs bark*, not *dog barks*,
   unless it is a mass noun: *water boils*, *some homework*, and *much
   bread* but not *much dog*.
-- **What a verb takes**: *gives* two objects, *sleeps* none.
+- **What a verb takes**: *gives* two objects, *sleeps* none, *tastes* an
+  adjective, *wants* a *to*-infinitive, *thinks* a clause, *stops* an *-ing*
+  form, *paints* an object and an adjective, *paint it blue*.
 - **The form after an auxiliary**: *can bark*, *has eaten*, *is sleeping*,
   *was chased*, not *can barks* or *has ate*.
 - **The order of auxiliaries**: *might have been chased*, not *is having
@@ -196,7 +198,7 @@ do.
 ## Stage 3: what a large lexicon breaks
 
 `make wordnet` downloads WordNet 3.1 and `tools/gen_wordnet.py` turns it into
-`english/wordnet.pl`: 55,213 nouns, 8,416 verbs with the frames WordNet gives
+`english/wordnet.pl`: 55,213 nouns, 8,431 verbs with the frames WordNet gives
 them, 17,870 adjectives, 3,642 adverbs, and 4,162 irregular forms. It is not
 committed. A word the lexicon lacks is looked up there, as itself, as an
 inflected form of a stem, or among the irregular forms (*flung*, *oxen*,
@@ -276,3 +278,21 @@ more sentences pass, and the corpus gives **40 grammatical, 10 not, and
 none unknown**. The one new ambiguity is real: in *played football after
 school*, *after school* can go with *played* or with *football*. The ten
 that fail are all constructions, the last cause in the record.
+
+The constructions went in last: adverbs before the verb, *has already
+eaten*; degree words before an adjective, *very funny*; verbs that take an
+adjective, a clause, a *to*-infinitive, an object and an infinitive, an
+object and an adjective, or an *-ing* form, read from WordNet's own verb
+frames, which the generator had been dropping; noun phrases as adverbs,
+*last night*, *next door*; *such a*; and commands, *please close the
+door*. A command is read only when nothing else can be, and no statement
+can be even with a word that disagrees, because with WordNet nearly every
+noun is also a verb, and *dog barks* would otherwise be the command "dog
+the barks" instead of a noun missing its determiner. **All fifty sentences
+now pass**, ten of them with two readings. One more of those is new, *the
+lights went out*, where *out* is an adverb or, after *went* as in *went
+quiet*, an adjective.
+
+A corpus that passes entirely has stopped measuring anything. The fifty
+sentences were chosen before the grammar grew to meet them, but it did
+grow to meet them, and the next record needs sentences it has not seen.

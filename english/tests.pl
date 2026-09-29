@@ -205,6 +205,32 @@ good('The party is at six.').
 good('The children played football after school.').
 good('The dog slept during the party.').
 
+% Stage 3: the constructions the corpus found missing.
+good('The dog is very happy.').
+good('A very old man walks.').
+good('An extremely old man walks.').
+good('The cat is too big.').
+good('The dog has never eaten the cake.').
+good('The dog always sleeps.').
+good('Does the dog often bark?').
+good('The dog barks every night.').
+good('The cat slept this morning.').
+good('Alice wants to swim.').
+good('Alice wants the dog to swim.').
+good('The dog likes swimming.').
+good('The dog stopped barking.').
+good('I know that the dog sleeps.').
+good('I know the dog sleeps.').
+good('They paint the house red.').
+good('The house was painted red.').
+good('She found the box empty.').
+good('I have never seen such a big dog.').
+good('Close the door.').
+good('Please close the door.').
+good('Close the door please.').
+good('Don\'t bark.').
+good('Be quiet.').
+
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -239,6 +265,16 @@ bad('A hundred dog barks.',                det_noun('a hundred', dog)).
 bad('Because the cat is quiet.',           no_reading).
 bad('The dog barks because.',              no_reading).
 bad('Hundred dogs bark.',                  no_reading).
+bad('The dog is very.',                    no_reading).
+bad('Alice wants swim.',                   no_reading).
+bad('Alice wants to swims.',               verb_form(to, swims, base)).
+bad('I know that the dogs barks.',         subject_verb(barks)).
+bad('Such a dogs bark.',                   det_noun('such a', dogs)).
+bad('Such an dog barks.',                  article('such an', dog)).
+bad('The dog always bark.',                subject_verb(bark)).
+bad('The dog has never ate the cake.',     verb_form(has, ate, en)).
+bad('Closes the door.',                    question_do(closes)).
+bad('Don\'t barks.',                       no_reading).
 bad('I saw 1 dogs.',                      det_noun('1', dogs)).
 bad('The cat chases mouse.',               bare(mouse)).
 bad('The dog quickly.',                    no_reading).
@@ -308,6 +344,9 @@ readings('The dog in the garden that barks is old.', 2).
 readings('Alice\'s friend\'s dog barks.', 1).
 readings('The dog barks and the cat sleeps.', 1).
 readings('The children played football after school.', 2).
+readings('Close the door.', 1).
+readings('I know the dog sleeps.', 1).
+readings('The dog barks every night.', 1).
 
 % splits(Text, Sentences): Text cuts into exactly these sentences.
 splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).
@@ -333,7 +372,7 @@ verdict(Text, V) :-
     ).
 
 verdict_of(Words, V) :-
-    (   phrase(sentence(_, [], []), Words)
+    (   all_readings(Words, [_|_])
     ->  V = grammatical
     ;   diagnosis(Words, [V0|_])
     ->  V = V0
