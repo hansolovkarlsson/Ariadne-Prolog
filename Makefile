@@ -33,8 +33,11 @@ build/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # The regression suite; the command line's exit status, since a -g goal that
-# fails or raises ends the run with 1 and the goals after it do not run; and
-# two error messages, which only show on standard error.
+# fails or raises ends the run with 1 and the goals after it do not run; two
+# error messages, which only show on standard error; and what happens when
+# two files give clauses to one predicate, which prints a warning, and when
+# a program defines a library predicate, which would change it for the rest
+# of the suite.
 test: $(BIN)
 	$(BIN) -q tests/test.pl -g run_tests
 	$(BIN) -q -g true
@@ -43,6 +46,11 @@ test: $(BIN)
 	test -z "`$(BIN) -q -g fail -g 'write(ran)' 2>/dev/null`"
 	$(BIN) -q -g "format('~w ~w', [a])" 2>&1 | grep -q 'format/2: not enough arguments'
 	$(BIN) -q -g "consult(tests/load_self)" 2>&1 | grep -q 'Not enough resources: load_depth'
+	test "`$(BIN) -q tests/redefine_1.pl tests/redefine_2.pl -g 'findall(X, redef(X), L), write(L)' 2>/dev/null`" = "[b]"
+	$(BIN) -q tests/redefine_1.pl tests/redefine_2.pl -g true 2>&1 | grep -q 'redefined redef/1, which was defined in tests/redefine_1.pl'
+	test "`$(BIN) -q tests/redefine_1.pl tests/redefine_2.pl -g 'findall(X, mf(X), L), write(L)' 2>/dev/null`" = "[a,b]"
+	! $(BIN) -q tests/redefine_1.pl tests/redefine_2.pl -g true 2>&1 | grep -q 'mf/1'
+	test "`$(BIN) -q tests/own_member.pl -g 'findall(X, member(X, [a,b]), L), write(L)' 2>&1`" = "[x]"
 
 # Every test again, bare, with the collector running inside each one. The
 # collector only runs when no choice point is live, and run_tests holds

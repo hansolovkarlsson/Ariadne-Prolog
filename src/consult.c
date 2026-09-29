@@ -163,6 +163,43 @@ int run_directive(Term *goal)
     return rc;
 }
 
+/* The file being loaded now, as an interned name, and a number that is
+   new for every load, so that loading a file a second time can be told
+   from going on with the first. */
+static const char *cur_source;
+static int cur_load, nloads;
+
+/* A predicate belongs to the file that first gave it clauses. When a file
+   is loaded again, its predicates start empty, so their clauses are
+   replaced rather than added to; when another file gives clauses to one,
+   that file takes it over, with a warning, as SWI-Prolog does. A library
+   predicate is taken over without one, so that a program may define its
+   own member/2. A predicate declared multifile collects clauses from
+   every file. Clauses added outside a file, by boot or by assert, are
+   kept. */
+static void claim(Pred *p)
+{
+    if (!cur_source) return;
+    if (p->multifile) {
+        if (!p->source) { p->source = cur_source; p->load = cur_load; }
+        return;
+    }
+    if (p->source == cur_source) {
+        if (p->load != cur_load) { pred_abolish(p); p->load = cur_load; }
+        return;
+    }
+    if (p->source) {
+        fprintf(stderr, "Warning: %s: redefined %s/%d, which was defined in %s\n",
+                cur_source, atom_name(p->functor), p->arity, p->source);
+        pred_abolish(p);
+    } else if (p->library) {
+        pred_abolish(p);
+        p->library = 0;
+    }
+    p->source = cur_source;
+    p->load = cur_load;
+}
+
 static int add_clause(Term *t)
 {
     Term *head, *body;
@@ -187,6 +224,7 @@ static int add_clause(Term *t)
         return PL_ERROR;
     }
     p = pred_lookup(f, n, 1);
+    claim(p);
     pred_add_clause(p, clause_make(head, body), 1);
     return PL_OK;
 }
@@ -258,7 +296,8 @@ int consult_file(const char *path)
 {
     FILE *f = NULL;
     Reader r;
-    int rc;
+    int rc, outer_load;
+    const char *outer_source;
     char found[1024];
 
     if (path[0] != '/' && nloading > 0) {
@@ -276,10 +315,16 @@ int consult_file(const char *path)
         return pl_throw(mk1(intern("resource_error"), mk_atom_str("load_depth")));
     }
     loading[nloading++] = pl_strdup(found);
+    outer_source = cur_source;
+    outer_load = cur_load;
+    cur_source = atom_name(intern(found));
+    cur_load = ++nloads;
     reader_init_file(&r, f, loading[nloading - 1]);
     rc = consult_reader(&r);
     fclose(f);
     free(loading[--nloading]);
+    cur_source = outer_source;
+    cur_load = outer_load;
     return rc;
 }
 

@@ -620,6 +620,10 @@ BUILTINS = [
      "Declares predicates dynamic, so calling them fails instead of raising an "
      "existence error. Spec is a `Name/Arity`, a comma sequence, or a list."),
     ('discontiguous(+Spec)', "Accepted and recorded; clauses may be spread out anyway."),
+    ('multifile(+Spec)',
+     "Declares predicates whose clauses may come from several files: each file "
+     "loaded adds to them, where otherwise the second file would replace the "
+     "first's clauses. Declare it in every file that gives it clauses."),
     ('current_predicate(?Name/?Arity)',
      "Enumerates the predicates that have been defined."),
     ('predicate_property(+Head, ?Prop)', "Currently only the property `defined`."),
@@ -710,7 +714,14 @@ BUILTINS = [
      "relative path met while another file is loading is looked for beside "
      "that file first, then in the current directory, so a program split into "
      "files loads from wherever it is run. A file that loads itself, or a ring "
-     "of them, stops with `resource_error(load_depth)` after 64 levels."),
+     "of them, stops with `resource_error(load_depth)` after 64 levels. "
+     "A predicate belongs to the file that first gave it clauses. Loading that "
+     "file again replaces them; a second file that gives it clauses replaces "
+     "them too, with a warning naming both files, unless it is declared "
+     "`multifile/1`. A program's own definition of a library predicate, such "
+     "as `member/2`, replaces the library's without a warning. A file is known "
+     "by the path it was found at, so the same file reached by two different "
+     "paths counts as two."),
     ('initialization(:Goal)',
      "Runs Goal once all the files named on the command line have been loaded."),
     ('listing', "Writes every user predicate; listing/1 takes a Name or Name/Arity."),
@@ -945,7 +956,7 @@ section('limits', 'Deviations and limits', ''.join([
         "through a file regardless.",
         "No `setup_call_cleanup/3`. Write the cleanup out: catch the ball with "
         "`catch(Goal, E, true)`, clean up, then re-throw `E` if it was bound.",
-        "`dynamic/1` and `discontiguous/1` are predicates, not prefix operators, so "
+        "`dynamic/1`, `discontiguous/1` and `multifile/1` are predicates, not prefix operators, so "
         "a directive needs the brackets: `:- dynamic(counter/1).`",
     ]),
     '<h3>Behaviour worth knowing</h3>',

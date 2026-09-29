@@ -253,6 +253,10 @@ struct Pred {
     int     discontiguous;
     Clause *garbage;         /* retracted clauses, freed on abolish */
     int     library;         /* defined by lib/boot.pl */
+    int     multifile;       /* clauses may come from several files */
+    const char *source;      /* the file its clauses were loaded from, an
+                                interned name, or NULL */
+    int     load;            /* which load of that file, see consult.c */
     int     cprefs;          /* live choice points on its clauses */
 };
 

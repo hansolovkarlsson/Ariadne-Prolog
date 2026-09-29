@@ -442,6 +442,8 @@ test(db_current_pred, (current_predicate(p/2))).
 rc_reset :- retractall(rc(_)), forall(member(X, [1,2,3,4]), assertz(rc(X))).
 
 test(db_load_beside,  (loaded_beside, loaded_beside_2)).
+test(db_reload,       (consult(tests/reload), consult(tests/reload),
+                       findall(X, reloaded(X), L), L == [1])).
 test(db_reclaim,      (rc_reset, forall(between(1, 20000, _),
                                         (retract(rc(N)), N1 is N + 1, assertz(rc(N1)))),
                        statistics(retained_clauses, K), K =< 4, retractall(rc(_)))).

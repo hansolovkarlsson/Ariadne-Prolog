@@ -1332,7 +1332,7 @@ BI(bi_retractall)
     return PL_OK;
 }
 
-static int decl_each(Term *spec, int what)   /* 1 = dynamic, 2 = discontiguous */
+static int decl_each(Term *spec, int what)   /* 1 = dynamic, 2 = discontiguous, 3 = multifile */
 {
     Term *t = deref(spec);
     int rc;
@@ -1358,7 +1358,8 @@ static int decl_each(Term *spec, int what)   /* 1 = dynamic, 2 = discontiguous *
             return permission_error("modify", "static_procedure", t);
         p = pred_lookup(AT(nm), (int)IV(ar), 1);
         if (what == 1) { p->dynamic = 1; p->defined = 1; }
-        else p->discontiguous = 1;
+        else if (what == 2) p->discontiguous = 1;
+        else p->multifile = 1;
         return PL_OK;
     }
     return type_error("predicate_indicator", t);
@@ -1366,6 +1367,7 @@ static int decl_each(Term *spec, int what)   /* 1 = dynamic, 2 = discontiguous *
 
 BI(bi_dynamic)        { UNUSED; return decl_each(A[0], 1); }
 BI(bi_discontiguous)  { UNUSED; return decl_each(A[0], 2); }
+BI(bi_multifile)      { UNUSED; return decl_each(A[0], 3); }
 
 BI(bi_abolish)
 {
@@ -2577,6 +2579,7 @@ static const BiEntry bi_table[] = {
     { "asserta", 1, bi_asserta }, { "retract", 1, bi_retract },
     { "retractall", 1, bi_retractall }, { "clause", 2, bi_clause },
     { "dynamic", 1, bi_dynamic }, { "discontiguous", 1, bi_discontiguous },
+    { "multifile", 1, bi_multifile },
     { "abolish", 1, bi_abolish },
     { "$defined", 1, bi_predicate_defined }, { "$predicates", 1, bi_predicates },
     { "$clauses", 2, bi_clauses },
