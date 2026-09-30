@@ -186,6 +186,9 @@ good('The teacher gave the students some homework.').
 good('The boys play football in the park.').
 good('The dog wants much food.').
 good('A coffee is good.').
+good('Alice likes happiness.').
+good('Alice wants education.').
+bad('Alice wants station.',               bare(station)).
 
 % Stage 3: the closed classes WordNet does not have.
 good('The dog barks and the cat sleeps.').

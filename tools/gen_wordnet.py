@@ -14,7 +14,13 @@ and the irregular forms in noun.exc and verb.exc. The index files are all
 lowercase, so the names among the nouns are also read from data.noun, which
 writes a name with its capital: Springfield, Michael, January. Each is kept
 lowercased, as wn_name/1, which the checker reads as a name when the word
-is capitalized in the text; the noun stays a noun too. What each verb takes after
+is capitalized in the text; the noun stays a noun too.
+
+A noun whose first sense, WordNet's most frequent, is in its substance
+category (lexicographer file 27, noun.substance) is kept as wn_mass/1:
+water, iron, sand, glass. That category is nearly all uncountable, and the
+food category beside it is not (apple, pizza), so food is left out. Words
+of two letters are left out too, as most are chemical symbols. What each verb takes after
 it is read from the sentence frames WordNet gives every verb sense, mapped to
 the grammar's frames:
 
@@ -117,6 +123,32 @@ def names(path):
     return sorted(out)
 
 
+def substances(index_path, data_path):
+    """The nouns whose first sense is in noun.substance."""
+    lexfile = {}
+    with open(data_path, encoding='utf-8') as f:
+        for line in f:
+            if line.startswith('  '):
+                continue
+            fields = line.split()
+            lexfile[fields[0]] = int(fields[1])
+    out = []
+    with open(index_path, encoding='utf-8') as f:
+        for line in f:
+            if line.startswith('  '):
+                continue
+            fields = line.split()
+            w = fields[0]
+            if not WORD.match(w) or len(w) < 3:
+                continue
+            # lemma pos synset_cnt p_cnt [ptr_symbol...] sense_cnt tagsense_cnt offsets
+            p_cnt = int(fields[3])
+            offsets = fields[6 + p_cnt:]
+            if offsets and lexfile.get(offsets[0]) == 27:
+                out.append(w)
+    return out
+
+
 def exceptions(path):
     """(form, base) pairs from an exception list, single words only."""
     out = []
@@ -154,6 +186,9 @@ def main():
             f.write("wn_adj('%s').\n" % w)
         for w in advs:
             f.write("wn_adv('%s').\n" % w)
+        for w in substances(os.path.join(d, 'index.noun'),
+                            os.path.join(d, 'data.noun')):
+            f.write("wn_mass('%s').\n" % w)
         for w in names(os.path.join(d, 'data.noun')):
             f.write("wn_name('%s').\n" % w)
         for form, base in exceptions(os.path.join(d, 'noun.exc')):

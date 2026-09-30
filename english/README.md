@@ -101,7 +101,7 @@ end of this file.
 
 | | |
 |---|---|
-| `lexicon.pl` | 411 words, a word in two classes counted in each: 113 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 39 prepositions, 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 34 nouns are marked as mass nouns, which may stand alone in the singular, 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
+| `lexicon.pl` | 411 words, a word in two classes counted in each: 113 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 39 prepositions, 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 147 nouns are marked as mass nouns, which may stand alone in the singular, and with WordNet loaded so is any noun whose most frequent sense is a substance; 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
 | `grammar.pl` | The rules: statements, alone or joined by a conjunction, yes/no and *wh*-questions, commands, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
@@ -138,7 +138,10 @@ end of this file.
   and so does *Dog barks*.
 - **A singular noun needs a determiner**: *dogs bark*, not *dog barks*,
   unless it is a mass noun: *water boils*, *some homework*, and *much
-  bread* but not *much dog*.
+  bread* but not *much dog*. 147 are listed by kind (drinks,
+  qualities and feelings, fields of study, sports, illnesses, *knowledge*,
+  *television*, *cancer*), and a noun WordNet gives a substance as its
+  most frequent sense is one too: *iron*, *sand*, *glass*.
 - **What a verb takes**: *gives* two objects, *sleeps* none, *tastes* an
   adjective, *wants* a *to*-infinitive, *thinks* a clause, *stops* an *-ing*
   form, *paints* an object and an adjective, *paint it blue*.
@@ -500,4 +503,20 @@ Val-d'Oise department in north France* had *Île* as an unknown word, and
 now fails on what follows it instead. The Cyrillic title in *Zigzag of
 Success (Russian: Зигзаг удачи)* now has one unknown word, *удачи*, where
 it had two. The corpus gives **7 grammatical, 34 not, and 9 unknown**.
+
+Mass nouns came next, and the rule of the day before held: a word is not
+added because a corpus sentence needs it. They were added by kind, 113 of them
+chosen from what a learner's dictionary marks uncountable, and three of them, *cancer*, *television* and *service*, were
+the corpus's; the rest of each kind came with them. WordNet gave the rest:
+a noun whose most frequent sense is in its substance category is a mass
+noun, 2,354 of them. That category is nearly all uncountable, with some
+noise the other way, *log* and *crystal*, which may now stand bare
+unchallenged; the food category beside it holds *apple* and *pizza*, and
+was left out. The months needed nothing, since a capital already makes
+*January* a name. The corpus gives **8 grammatical, 33 not, and 9 unknown**,
+*he has worked in feature movies and television* the new pass. The *Class
+91* sentence now passes for the right reason as well as the wrong one: of
+its 36 readings, 18 read *the Class 91 locomotives that entered service*,
+and 18 still read *the Class that 91 locomotives service*, since nothing
+in the grammar prefers one reading to another.
 

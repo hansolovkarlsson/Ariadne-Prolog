@@ -47,6 +47,7 @@
 :- dynamic(wn_adv/1).
 :- dynamic(wn_irregular/3).
 :- dynamic(wn_name/1).
+:- dynamic(wn_mass/1).
 
 % agr_of(+Number, -Agr): the agreement of a third-person noun phrase.
 agr_of(sg, agr(n, y, y)).
@@ -95,6 +96,50 @@ mass(football). mass(breakfast). mass(lunch). mass(dinner).
 mass(school). mass(church). mass(college). mass(bed). mass(night).
 mass(english). mass(french). mass(german). mass(spanish). mass(italian).
 mass(latin). mass(greek). mass(russian). mass(chinese). mass(japanese).
+
+% The rest by kind, each kind listed whole. They were chosen on 2026-09-30,
+% after the second corpus had shown cancer, television and service standing
+% bare; the kinds are what a learner's dictionary marks uncountable, and
+% the corpus's words are three of 113.
+%
+% Drinks, and foods mostly eaten as a substance:
+mass(beer). mass(wine). mass(juice). mass(lemonade). mass(soup).
+mass(meat). mass(cheese). mass(butter). mass(pasta). mass(flour).
+mass(honey). mass(jam). mass(chocolate). mass(fruit). mass(salad).
+% Qualities, feelings and states:
+mass(knowledge). mass(wisdom). mass(love). mass(hate). mass(fear).
+mass(anger). mass(joy). mass(happiness). mass(sadness). mass(beauty).
+mass(courage). mass(freedom). mass(peace). mass(justice). mass(health).
+mass(wealth). mass(luck). mass(fun). mass(safety). mass(violence).
+mass(poverty). mass(pollution). mass(weather). mass(traffic).
+% What is done or had, named as a whole:
+mass(help). mass(progress). mass(research). mass(evidence). mass(news).
+mass(money). mass(energy). mass(power). mass(space). mass(time).
+mass(life). mass(death). mass(education). mass(service). mass(experience).
+mass(history). mass(nature). mass(travel). mass(transport).
+mass(equipment). mass(luggage). mass(baggage). mass(clothing).
+mass(software). mass(housework). mass(employment). mass(unemployment).
+% Fields of study and work:
+mass(science). mass(art). mass(mathematics). mass(physics).
+mass(chemistry). mass(biology). mass(geology). mass(geography).
+mass(medicine). mass(law). mass(literature). mass(poetry).
+mass(philosophy). mass(economics). mass(politics). mass(business).
+mass(industry). mass(agriculture). mass(engineering). mass(architecture).
+mass(religion). mass(technology).
+% Sports and games:
+mass(tennis). mass(golf). mass(chess). mass(baseball). mass(basketball).
+mass(cricket). mass(rugby). mass(soccer). mass(hockey). mass(polo).
+mass(volleyball). mass(swimming).
+% Broadcasting:
+mass(television). mass(radio).
+% Illnesses:
+mass(cancer). mass(flu). mass(influenza). mass(malaria). mass(diabetes).
+mass(pneumonia). mass(tuberculosis). mass(measles). mass(cholera).
+mass(asthma). mass(arthritis).
+% And a noun WordNet places whose most frequent sense is a substance, which
+% tools/gen_wordnet.py writes as wn_mass/1: iron, sand, glass, oxygen. A
+% word the lexicon lists is never one of these, as it is not guessed.
+mass(W) :- guessed(noun, W), wn_mass(W).
 
 % time_noun(Noun): a noun that makes an adverb of time with last, next,
 % this, every or each before it, "last night", "every day"; see
