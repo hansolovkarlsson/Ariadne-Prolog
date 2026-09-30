@@ -467,6 +467,7 @@ splits('', []).
 % its ending does not place), no_reading, or the first violation of the
 % best relaxed reading.
 verdict(Text, V) :-
+    forget_faults,
     words(Text, Words, Names),
     end_mark(Text, Mark),
     unknown_words(Words, U),

@@ -28,6 +28,7 @@
 
 % grammatical(+Text, -Tree): Text is an atom; Tree is a reading of it.
 grammatical(Text, Tree) :-
+    forget_faults,
     words(Text, Words, Names),
     end_mark(Text, Mark),
     unknown_words(Words, Unknown),
@@ -36,6 +37,7 @@ grammatical(Text, Tree) :-
 
 % check(+Text)
 check(Text) :-
+    forget_faults,
     words(Text, Words, Names),
     end_mark(Text, Mark),
     unknown_words(Words, Unknown0),
@@ -150,18 +152,35 @@ max_faults(3).
 % on its own, so the statements found say whether a command is to be tried,
 % and the statement is not searched for twice.
 diagnosis(Words, Violations) :-
-    findall(G-(C-Vs),
-            ( member(G, [declarative, question, wh_question]),
-              fault_parse(G, Words, Vs), cost(Vs, C) ),
-            Tagged),
-    pairs_values(Tagged, Readings0),
-    (   memberchk(declarative-_, Tagged)
+    fault_readings(declarative, Words, Ds),
+    fault_readings(question, Words, Qs),
+    fault_readings(wh_question, Words, Ws),
+    append([Ds, Qs, Ws], Readings0),
+    (   Ds \== []
     ->  Readings = Readings0
-    ;   findall(C-Vs, ( fault_parse(imperative, Words, Vs), cost(Vs, C) ), Readings1),
-        append(Readings0, Readings1, Readings)
+    ;   fault_readings(imperative, Words, Is),
+        append(Readings0, Is, Readings)
     ),
     Readings \== [],
     msort(Readings, [_-Violations|_]).
+
+% fault_readings(+Goal, +Words, -Readings): the Cost-Violations of each
+% reading of Words as Goal with at most max_faults/1 faults. They are kept
+% for the rest of the sentence's check, since the statements are asked for
+% twice, once to know whether a command may be tried and once for the
+% diagnosis, and on a long sentence each search took minutes. Each entry
+% point clears them first, with forget_faults/0.
+:- dynamic(fault_memo/3).
+
+fault_readings(G, Words, Rs) :-
+    (   fault_memo(G, Words, Rs0)
+    ->  Rs = Rs0
+    ;   findall(C-Vs, ( fault_parse(G, Words, Vs), cost(Vs, C) ), Rs0),
+        assertz(fault_memo(G, Words, Rs0)),
+        Rs = Rs0
+    ).
+
+forget_faults :- retractall(fault_memo(_, _, _)).
 
 % fault_parse(+Goal, +Words, -Violations): Words read as Goal, one of the
 % kinds of sentence or a command, with at most max_faults/1 faults.
@@ -181,10 +200,7 @@ fault_phrase(imperative, V0, V, Words)  :- phrase(imperative(_, V0, V), Words).
 
 % faulty_statement(+Words): Words are a statement with at most max_faults/1
 % faults.
-faulty_statement(Words) :-
-    max_faults(Max),
-    length(Slots, Max),
-    phrase(declarative(_, Slots, _), Words), !.
+faulty_statement(Words) :- fault_readings(declarative, Words, [_|_]).
 
 cost([], 0).
 cost([V|Vs], N) :- cost(Vs, N0), weight(V, W), N is N0 + W.
@@ -329,6 +345,7 @@ check_sentence(S, t(G0, N0, U0), t(G, N, U)) :-
 % unknown(Words) when a word is in neither the lexicon nor WordNet and its
 % ending does not place it.
 sentence_result(S, R) :-
+    forget_faults,
     words(S, Words, Names),
     end_mark(S, Mark),
     unknown_words(Words, Unknown0),
