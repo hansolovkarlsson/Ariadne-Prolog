@@ -560,8 +560,11 @@ word is on a short list of abbreviations. *Lit.*, *U.S.*, *Vol.* and *N.*
 are not on it, so *El Gordo (lit. The Fat One) is ...* was cut in two,
 and so were three more of the sixty leads drawn for the second corpus. The
 corpus keeps the true sentences, and the four cuts are recorded beside it.
-Still open: a longer list moves the problem rather than ending it, since
+A longer list would have moved the problem rather than ended it, since
 *no.* and *etc.* came off the list that morning for ending real sentences.
+On 2026-09-30 the splitter learned the shape of an abbreviation instead:
+initials, and a short word before a number, with *lit.* added to the list
+for what shape cannot tell (`b58529a`).
 
 Found on 2026-09-29 by cutting the second corpus's text with the checker's
 own splitter, which was chosen for the purpose so that its faults would

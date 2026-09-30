@@ -8,6 +8,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ## 2026-09-30
 
+### Fixed
+
+- **The sentence splitter no longer cuts after an abbreviation it does
+  not list**, when the text shows what it is: initials, *N.* or *U.S.*,
+  and a short word before a number, *Vol. 3*, *No. 5*. *Lit.* joins the
+  list. The four leads of the second corpus's draw that were cut wrongly
+  are now cut right. 395 checks. (`b58529a`)
+
 ### Added
 
 - **The mark at the end of a sentence is checked.** A question ends with a

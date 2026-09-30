@@ -112,8 +112,7 @@ These change the shape of the system rather than adding to it.
      - constructions: a participle after its noun, *a movie directed by*,
        and before it, *the presiding bishop*; *a kind of*; *also* after
        *be*; a phrase before the subject, *In geology, ...* and *Last night
-       the dog barked*; *about* with a number; dates; brackets;
-     - the sentence splitter cuts after *lit.*, *U.S.*, *Vol.* and *N.*
+       the dog barked*; *about* with a number; dates; brackets.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
