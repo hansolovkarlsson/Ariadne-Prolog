@@ -337,20 +337,33 @@ det_agrees(D, Head, DNum, Num, V0, V) :-
 
 % core_nominal(-Number, -FirstWord, -HeadNoun, -Tree): adjectives and a noun.
 core_nominal(Num, First, Head, nom(As, n(Head), [])) -->
-    adjectives(As),
+    modifiers(As),
     [Head], { noun_form(Head, _, Num) },
     { first_word(As, Head, First) }.
 
 % nominal(-Number, -FirstWord, -HeadNoun, -Tree, V0, V): adjectives, the
 % noun, the prepositional phrases after it, and a relative clause.
 nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
-    adjectives(As),
+    modifiers(As),
     [Head], { noun_form(Head, _, Num) },
     { first_word(As, Head, First) },
     pps(PPs, V0, V1),
     { agr_of(Num, Agr) },
     relative(Agr, Rels, V1, V),
     { append(PPs, Rels, Posts) }.
+
+% modifiers(-Trees): what goes before the noun: its adjectives and names,
+% then the nouns that modify it, "the old stone bridge", "the NBC
+% television network", "water polo player". A noun there is in the
+% singular, "record label" and not "records label". It is not a name or
+% an adjective, which are read as those already: WordNet has "stone" and
+% "last" as adjectives and nouns, and "the stone bridge" or "the film last
+% night" would otherwise have a reading for each.
+modifiers(Ms) --> adjectives(As), noun_modifiers(Ns), { append(As, Ns, Ms) }.
+
+noun_modifiers([nmod(W)|Ns]) -->
+    [W], { noun_form(W, _, sg), \+ proper(W), \+ adj(W) }, noun_modifiers(Ns).
+noun_modifiers([]) --> [].
 
 % adjectives(-Trees): the adjectives before a noun, and any name, which
 % stands there as an adjective does: "the Congress Party", "Peace TV
@@ -396,6 +409,7 @@ degrees([]) --> [].
 first_word([adj(A)|_], _, A) :- !.
 first_word([adjp([D|_], _)|_], _, D) :- !.
 first_word([name(W)|_], _, W) :- !.
+first_word([nmod(W)|_], _, W) :- !.
 first_word([], Head, Head).
 
 pps([PP|PPs], V0, V) --> pp(PP, nogap, nogap, V0, V1), pps(PPs, V1, V).

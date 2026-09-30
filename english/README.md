@@ -118,6 +118,9 @@ end of this file.
   sleeps*, *if it rains, the dog sleeps*) and before a last *please*;
   anywhere else it leaves the sentence with no reading, so *Alice, Bob
   sing* and *the dog, barks* fail.
+- **Nouns before nouns**: *the record label*, *a water polo player*, *an
+  apple tree*, the modifying nouns in the singular and after any
+  adjectives, and *a* or *an* by the first of them.
 - **Determiner and noun**: *a dog*, *these dogs*, *six dogs*, *a hundred
   dogs*, not *a dogs*, *this dogs* or *one dogs*.
 - **A and an**, by the sound of the next word rather than its spelling: *an
@@ -461,4 +464,19 @@ as it should, but *entered service* then needs *service* to stand without
 an article, which it may not yet, so the sentence still passes only as *the
 Class that 91 locomotives service*: English in form, and not what it says.
 With *the service* it has the right reading.
+
+Nouns before nouns came next: a noun in the singular may stand between the
+adjectives and the noun they go with, *a platform video game*, *the NBC
+television network*. With WordNet nearly every word is a noun, so a word
+that is an adjective or a name there is read as that and not again as a
+noun, or *the nineteenth century* and *the film last night* would each
+have gained a reading; the first corpus's counts of readings did not move.
+The second corpus gains one sentence, *Donkey Kong Country Returns is a
+platform video game for the Nintendo Wii game console*, and gives **7
+grammatical, 33 not, and 10 unknown**. Cut down, *the owner of the record
+label*, *a break in a rock formation*, *comedy routines* and *a French
+record producer, DJ and remixer* all pass; the sentences they come from
+still fail on dates, brackets, *any kind of* and the rest. The run takes
+three minutes, from two and a half, since every noun can now be tried as
+the start of a longer one.
 

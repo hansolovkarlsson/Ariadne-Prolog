@@ -262,6 +262,13 @@ good('A small but happy dog barks.').
 good('The dog barks, but the cat sleeps.').
 good('If it rains, the dog sleeps.').
 good('Close the door, please.').
+
+% Nouns before nouns.
+good('The dog house is big.').
+good('I read the picture book.').
+good('The school bus stopped at the train station.').
+good('An apple tree grows in the garden.').
+good('The old stone house is big.').
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -374,6 +381,8 @@ bad('Alice, Bob sing.',                    no_reading).
 bad('The dog, barks.',                     no_reading).
 bad('The dog, and the cat sleep.',         no_reading).
 bad('Two cups of tea, please.',            no_reading).
+bad('A apple tree grows.',                  article(a, apple)).
+bad('The dog house are big.',              subject_verb(are)).
 
 readings('The old man walks in the park with his dog.', 2).
 readings('The dogs chase a cat.', 1).
@@ -397,6 +406,8 @@ readings('Alice gave Bob 3 dogs.', 2).
 readings('The dogs and cats sleep.', 2).
 readings('Alice, Bob, and Carol sing.', 1).
 readings('The dog is big, old and happy.', 1).
+% Orange is an adjective and a noun, and before a noun it is read once.
+readings('The orange box is big.', 1).
 
 % splits(Text, Sentences): Text cuts into exactly these sentences.
 splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).
