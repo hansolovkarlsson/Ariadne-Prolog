@@ -249,6 +249,7 @@ known_word(W) :- coordinator(W), !.
 known_word(W) :- degree(W), !.
 known_word(W) :- subordinator(W), !.
 known_word(not).
+known_word(',').
 
 /* ---------------- running text ---------------- */
 
@@ -438,7 +439,8 @@ bracket(whadv(A))          --> ['[WHADVP', A, ']'].
 bracket(rel(none, S))      --> ['[SBAR'], bracket(S), [']'].
 bracket(rel(W, C))         --> { W \== none }, ['[SBAR', W], bracket(C), [']'].
 bracket(gap)               --> ['_'].
-bracket(and(A, B))         --> ['[NP'], bracket(A), [and], bracket(B), [']'].
+bracket(coord(C, Ts))      --> ['[NP'], joined_out(bracket, C, Ts), [']'].
+bracket(adj_coord(C, As))  --> ['[AP'], joined_out(bracket, C, As), [']'].
 bracket(pro(W))            --> ['[NP', W, ']'].
 bracket(name(W))           --> ['[NP', W, ']'].
 bracket(np(det(D), Nom))   --> ['[NP', D], nom(Nom), [']'].
@@ -450,11 +452,18 @@ bracket(adj(A))            --> ['[AP', A, ']'].
 bracket(adv(A))            --> ['[AdvP', A, ']'].
 
 nom(nom(As, n(H), PPs)) --> adjective_words(As), [H], items(PPs).
+nom(coord(C, Ns))        --> joined_out(nom, C, Ns).
+
+% joined_out(:Show, +Conjunction, +Items): a list as it is written, "A and
+% B", "A , B and C"; a comma before the conjunction is not kept.
+joined_out(Show, C, [X, Y]) --> !, call(Show, X), [C], call(Show, Y).
+joined_out(Show, C, [X|Xs]) --> call(Show, X), [','], joined_out(Show, C, Xs).
 
 adjective_words([]) --> [].
 adjective_words([adj(A)|As]) --> [A], adjective_words(As).
 adjective_words([adjp(Ds, A)|As]) --> Ds, [A], adjective_words(As).
 adjective_words([name(W)|As]) --> [W], adjective_words(As).
+adjective_words([sep(S)|As]) --> S, adjective_words(As).
 
 neg(not)  --> [not].
 neg(none) --> [].
@@ -477,7 +486,9 @@ tidy(A0, A) :-
 
 % words(+Text, -Words): Text lowercased and cut into words at anything that
 % is not a letter or a digit, so punctuation falls away: 'The dog barks.'
-% gives [the, dog, barks]. A number in digits is one word, '3.5' or '1,000'.
+% gives [the, dog, barks]. A comma is kept, as a word of its own, since a
+% list is "the dog, the cat and the mouse" and not three noun phrases in a
+% row; the grammar reads one only where a rule places it. A number in digits is one word, '3.5' or '1,000'.
 % A letter is what char_type/2 calls alpha, so a word with an accented
 % letter stays one word. An apostrophe between letters
 % belongs to the word, so doesn't is one word; a typographic apostrophe is
@@ -547,6 +558,7 @@ plain_apostrophe('\x2019\', '\'') :- !.
 plain_apostrophe(C, C).
 
 split_letters([], []).
+split_letters([','|Cs], [','|Ws]) :- !, split_letters(Cs, Ws).
 split_letters([C|Cs], Words) :-
     digit(C), !,
     take_number([C|Cs], Ds, Rest),

@@ -109,6 +109,15 @@ end of this file.
   *they were*, *nobody sleeps*; and a subject joined by *and* is plural. Each
   clause of a sentence joined by *and*, *but* or *because* agrees on its
   own: *the dog barks but the cats sleep*.
+- **Lists, with *and* or *or***: *Alice, Bob and Carol sing*, with the
+  comma before *and* or without it; *the dog or the cats bark*, *or*
+  agreeing with the nearest; *a doctor and teacher* under one determiner,
+  which agrees with each noun, so not *these cat and dogs*; *big, old and
+  happy* after a verb and *a big, old dog* before a noun. A comma is read
+  only in a list, between two clauses (*the dog barks, but the cat
+  sleeps*, *if it rains, the dog sleeps*) and before a last *please*;
+  anywhere else it leaves the sentence with no reading, so *Alice, Bob
+  sing* and *the dog, barks* fail.
 - **Determiner and noun**: *a dog*, *these dogs*, *six dogs*, *a hundred
   dogs*, not *a dogs*, *this dogs* or *one dogs*.
 - **A and an**, by the sound of the next word rather than its spelling: *an
@@ -201,6 +210,20 @@ knows it at all (*Konnevesi*). Otherwise *Dog barks* would pass. A run of
 names is one name, and names stand before a noun as adjectives do, *Peace
 TV programs*. Only ASCII capitals are seen: the interpreter's
 `downcase_atom/2` leaves *Île* as it is.
+
+A **list** is one rule, shared by noun phrases, nouns under one
+determiner and adjectives: the items after the first are separated by
+commas, and the last is joined by a conjunction, with a comma before it
+or none. The comma is a word of its own, so a rule has to place it. Until
+lists, the tokenizer threw commas away with the rest of the punctuation,
+and a sentence could pass because of it: *two cups of tea, please* read
+*please* as a verb, and *Alice, Bob and Carol* read *Alice Bob* as one
+name. Joined by *and*, noun phrases are plural. Joined by *or*, they agree
+with the last, which is the nearest to the verb, as English has it. Nouns
+under one determiner may be one thing or several, *a doctor and teacher*
+against *the cat and dog are hungry*, so the number is left to the verb
+unless the determiner decides it. *The dogs and cats* has two readings,
+*the* over both nouns or over the first alone, and the grammar keeps both.
 
 The diagnosis uses **the same grammar**. Each agreement point goes through
 `agree/5`, which threads a list of violations beside the words. Parsed with the
@@ -408,3 +431,22 @@ locomotives that entered*, with *service* as its verb: there is no rule yet
 for a name followed by a number. The sentence that took 116 seconds takes
 25 now, as its name is read as one, and the whole run takes a little under
 three minutes.
+
+Lists and *or* went next. The corpus counts stayed at **6, 34 and 10**, but
+two sentences moved. *Examples are joints or faults* now passes, and *Leroy
+is a city in McLennan County, Texas, United States* now fails: its commas
+set a place beside its region, which is a construction the grammar does not
+have, and the pass had come from the commas being dropped. *It stars
+Yevgeny Leonov, Irina Skobtseva, and Valentina Talyzina* still passes, now
+as three people. The first corpus loses one: *two cups of tea, please* has
+no verb, and with its comma read it is refused, as it should be, since the
+grammar has no rule for a request without one. It records 49 grammatical
+and 1 not. The run over both corpora takes two minutes, a minute less than
+before, since a comma now ends readings that ran on past it.
+
+Most of the second corpus's lists sit in sentences that fail for another
+cause first. Cut down, *he is an Irish psychologist and businessman* and *he
+was a pianist, singer and composer* pass. *A French record producer, DJ and
+remixer* waits for nouns before nouns, and *an Indian politician, author and
+a member of the Congress Party* for a list that mixes nouns under one
+determiner with a noun phrase of its own.

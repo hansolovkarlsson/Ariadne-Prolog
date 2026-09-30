@@ -6,7 +6,9 @@
 
     corpus.txt is fifty ordinary sentences, every one of them English, of
     the kind a beginner's reader holds. The grammar was then built to pass
-    them, and it does, so they now guard what it has and measure nothing.
+    them, so they now guard what it has and measure nothing. It passes all
+    but "Two cups of tea, please", which has no verb, and which passed only
+    while commas were thrown away.
 
     corpus2.txt is fifty sentences the grammar was not built against: the
     first two sentences of 25 articles drawn at random from Simple English
@@ -23,7 +25,7 @@
 % corpus fails on any others, so a change to the grammar, the lexicon or
 % wordnet_entry/2 that moves a sentence is seen, whichever way it moves it,
 % and the record is brought up to date with it.
-recorded('english/corpus.txt', 50, 0, 0).
+recorded('english/corpus.txt', 49, 1, 0).
 recorded('english/corpus2.txt', 6, 34, 10).
 
 corpus :-

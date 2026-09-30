@@ -240,6 +240,25 @@ good('Alice saw Stanley Ralph Ross.').
 good('Leroy\'s dog barks.').
 good('The Congress Party is big.').
 good('I read the Leroy book.').
+
+% Lists and or: noun phrases, nouns under one determiner, adjectives, and
+% the commas between clauses.
+good('I saw cats or dogs.').
+good('The dog or the cat barks.').
+good('The dog or the cats bark.').
+good('The dogs or the cat barks.').
+good('Alice, Bob and Carol sing.').
+good('Alice, Bob, and Carol sing.').
+good('I saw a dog, a cat and a mouse.').
+good('She is a doctor and teacher.').
+good('The cat and dog are hungry.').
+good('The dog is big or small.').
+good('The dog is big, old and happy.').
+good('A big, old dog barks.').
+good('A small but happy dog barks.').
+good('The dog barks, but the cat sleeps.').
+good('If it rains, the dog sleeps.').
+good('Close the door, please.').
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -344,6 +363,13 @@ bad('Dog\'s bone is big.',                 bare(dog)).
 bad('The dog sees leroy.',                unknown).
 bad('Leroy sleep.',                        subject_verb(sleep)).
 bad('The dog sees Leroy Ross the cat.',    no_reading).
+bad('The dog or the cat bark.',            subject_verb(bark)).
+bad('The dogs or the cat bark.',           subject_verb(bark)).
+bad('These cat and dogs sleep.',           det_noun(these, cat)).
+bad('Alice, Bob sing.',                    no_reading).
+bad('The dog, barks.',                     no_reading).
+bad('The dog, and the cat sleep.',         no_reading).
+bad('Two cups of tea, please.',            no_reading).
 
 readings('The old man walks in the park with his dog.', 2).
 readings('The dogs chase a cat.', 1).
@@ -361,6 +387,9 @@ readings('I know the dog sleeps.', 1).
 readings('The dog barks every night.', 1).
 readings('The Old house is big.', 1).
 readings('Alice saw Leroy Dogs.', 1).
+readings('The dogs and cats sleep.', 2).
+readings('Alice, Bob, and Carol sing.', 1).
+readings('The dog is big, old and happy.', 1).
 
 % splits(Text, Sentences): Text cuts into exactly these sentences.
 splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).

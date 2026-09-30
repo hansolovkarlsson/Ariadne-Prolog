@@ -58,6 +58,7 @@ declarative(T, V0, V) -->
 declarative(sub_first(C, S1, T), V0, V) -->
     [C], { subordinator(C) },
     statement(S1, nogap, nogap, V0, V1),
+    optional_comma,
     statement(S2, nogap, nogap, V1, V2),
     clauses_after(S2, T, V2, V).
 
@@ -76,7 +77,15 @@ imperative(imp(P1, Neg, VP, P2), V0, V) -->
     please(P2).
 
 please(please) --> [please].
+please(please) --> [',', please].
 please(none) --> [].
+
+% optional_comma: the comma English often puts between two clauses: "the
+% dog barks, but the cat sleeps", "if it rains, the dog sleeps", "close the
+% door, please". It is read only where a rule allows one; anywhere else a
+% comma leaves the sentence with no reading.
+optional_comma --> [','].
+optional_comma --> [].
 
 imperative_not(not) --> [do, not].
 imperative_not(not) --> ['don\'t'].
@@ -95,6 +104,7 @@ base_ahead([W|S], [W|S]) :- ( verb_form(W, _, base) ; be_form(W, base) ), !.
 % the left.
 clauses_after(S, S, V, V) --> [].
 clauses_after(S1, joined(C, S1, T), V0, V) -->
+    optional_comma,
     [C], { coordinator(C) ; subordinator(C) },
     statement(S2, nogap, nogap, V0, V1),
     clauses_after(S2, T, V1, V).
@@ -150,16 +160,44 @@ wh_phrase(wh_np(D, N), Agr, D, _, V0, V) -->
 
 /* ---------------- noun phrases ---------------- */
 
-% noun_phrase(-Agr, +Case, -Tree, G0, G, V0, V). Two noun phrases joined by
-% and are plural: "the dog and the cat chase". A noun phrase can be the gap
+% noun_phrase(-Agr, +Case, -Tree, G0, G, V0, V). Noun phrases joined by and
+% are plural: "the dog and the cat chase", "Alice, Bob and Carol sing".
+% Joined by or they agree with the last, as English does with the nearest:
+% "the dog or the cats bark", "the dogs or the cat barks". A noun phrase can be the gap
 % itself, taking no words, when one is waiting to be placed. A gap is never
 % a subject, so it stands only where nothing agrees with it and any
 % relative or question word may stand: whom in a subject's place is caught
 % by the rules for a missing subject.
 noun_phrase(_, _, gap, gap, nogap, V, V) --> [].
-noun_phrase(agr(n, n, n), Case, and(T1, T2), G, G, V0, V) -->
-    simple_np(_, Case, T1, V0, V1), [and],
-    noun_phrase(_, Case, T2, nogap, nogap, V1, V).
+noun_phrase(Agr, Case, coord(C, [T1|Ts]), G, G, V0, V) -->
+    simple_np(_, Case, T1, V0, V1),
+    joined(np_item(Case), np_last(Case), [and, or], Items, C, V1, V),
+    { last(Items, Last-_), coord_agr(C, Last, Agr), pairs_values(Items, Ts) }.
+
+np_item(Case, A-T, V0, V) --> simple_np(A, Case, T, V0, V).
+np_last(Case, A-T, V0, V) --> noun_phrase(A, Case, T, nogap, nogap, V0, V).
+
+coord_agr(and, _, agr(n, n, n)).
+coord_agr(or, Agr, Agr).
+
+% joined(:Item, :Last, +Conjunctions, -Items, -Conjunction, V0, V): what
+% follows the first of a list: "and B", ", B and C", ", B, and C". Items
+% after the first are separated by commas and the last is joined by the
+% conjunction, with a comma before it or none, once there has been a
+% comma. Item reads each but the last, and Last the last, which for a noun
+% phrase may itself be a list: "the dog and the cat and the mouse". A
+% comma is read only in a list, so "the dog, the cat" alone is no noun
+% phrase. The rule is shared by noun phrases, nouns under one determiner
+% and adjectives.
+joined(Item, Last, Cs, [X], C, V0, V) -->
+    [C], { memberchk(C, Cs) }, call(Last, X, V0, V).
+joined(Item, Last, Cs, [X|Xs], C, V0, V) -->
+    [','], call(Item, X, V0, V1),
+    after_comma(Item, Last, Cs, Xs, C, V1, V).
+
+after_comma(Item, Last, Cs, Xs, C, V0, V) --> joined(Item, Last, Cs, Xs, C, V0, V).
+after_comma(_, Last, Cs, [X], C, V0, V) -->
+    [',', C], { memberchk(C, Cs) }, call(Last, X, V0, V).
 noun_phrase(Agr, Case, T, G, G, V0, V) -->
     simple_np(Agr, Case, T, V0, V).
 
@@ -176,6 +214,17 @@ simple_np(Agr, _, np(det(D), N), V0, V) -->
     { det_agrees(D, Head, DNum, Num, V1, V2),
       sound(First, Sound),
       agree(article(D, First), DSound, Sound, V2, V),
+      agr_of(Num, Agr) }.
+simple_np(Agr, _, np(det(D), coord(C, [N1|Ns])), V0, V) -->
+    determiner(D, DNum, DSound),
+    core_nominal(Num1, First, Head1, N1),
+    joined(nom_item, nom_last, [and, or], Items, C, V0, V1),
+    { pairs_keys_values(Items, NumHeads, Ns),
+      det_agrees_each([Num1-Head1|NumHeads], D, DNum, V1, V2),
+      sound(First, Sound),
+      agree(article(D, First), DSound, Sound, V2, V),
+      pairs_keys([Num1-Head1|NumHeads], Nums),
+      coord_num(C, DNum, Nums, Num),
       agr_of(Num, Agr) }.
 simple_np(Agr, _, np(N), V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
@@ -246,6 +295,30 @@ possessor_base(np(N), V0, V) -->
     core_nominal(Num, _, Head, N),
     { bare_ok(Head, Num, V0, V) }.
 
+% Nouns joined under one determiner: "a doctor and teacher", "the bishop
+% and primate of the church", "these cats and dogs". The determiner agrees
+% with each noun, and what follows the last, a prepositional phrase or a
+% relative clause, belongs to it. Joined by or, the phrase takes the
+% number of the last noun. Joined by and, singular nouns are one thing
+% or several: "a doctor and teacher" is one person, "the cat and dog
+% are hungry" two animals, so after a determiner that allows either the
+% phrase may be either.
+nom_item(Num-Head-N, V, V) --> core_nominal(Num, _, Head, N).
+nom_last(Num-Head-N, V0, V) --> nominal(Num, _, Head, N, V0, V).
+
+det_agrees_each([], _, _, V, V).
+det_agrees_each([Num-Head|NHs], D, DNum, V0, V) :-
+    copy_term(DNum, DNum1),
+    det_agrees(D, Head, DNum1, Num, V0, V1),
+    det_agrees_each(NHs, D, DNum, V1, V).
+
+coord_num(or, _, Nums, Num) :- last(Nums, Num).
+coord_num(and, DNum, Nums, Num) :-
+    (   memberchk(pl, Nums) -> Num = pl
+    ;   DNum == sg -> Num = sg
+    ;   member(Num, [sg, pl])
+    ).
+
 % bare_ok(+Head, +Number, V0, V): a noun with no determiner is plural, "dogs
 % bark", or a mass noun, "water boils"; a singular count noun needs one.
 bare_ok(Head, sg, V, V) :- mass(Head), !.
@@ -281,8 +354,29 @@ nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
 % programs". A name that is also an adjective is read as the adjective
 % only, so "the Indian politician" has one reading and not two.
 adjectives([AP|As]) --> adj_phrase(AP), adjectives(As).
+adjectives([AP, sep(S)|As]) -->
+    adj_phrase(AP), adj_sep(S), adjectives(As), { As = [A|_], A \= name(_) }.
 adjectives([name(W)|As]) --> [W], { proper(W), \+ adj(W) }, adjectives(As).
 adjectives([]) --> [].
+
+% adj_sep(-Words): between two adjectives before a noun, a comma, a
+% conjunction, or both: "a big, old dog", "a big and old dog", "a small
+% but strong dog".
+adj_sep([',']) --> [','].
+adj_sep([C]) --> [C], { adj_coordinator(C) }.
+adj_sep([',', C]) --> [',', C], { adj_coordinator(C) }.
+
+adj_coordinator(and). adj_coordinator(or). adj_coordinator(but).
+
+% adj_group(-Tree): an adjective after a verb, alone or in a list: "big",
+% "big or small", "big, old and happy".
+adj_group(T) --> adj_phrase(A), adj_group_rest(A, T).
+
+adj_group_rest(A, A) --> [].
+adj_group_rest(A, adj_coord(C, [A|As])) -->
+    joined(adj_item, adj_item, [and, or, but], As, C, _, _).
+
+adj_item(A, V, V) --> adj_phrase(A).
 
 % adj_phrase(-Tree): an adjective, with the degree words before it: "old",
 % "very old", "really quite old".
@@ -437,9 +531,9 @@ complements(trans, _, [O], G0, G, V0, V) --> noun_phrase(_, obj, O, G0, G, V0, V
 complements(ditrans, _, [O1, O2], G0, G, V0, V) -->
     noun_phrase(_, obj, O1, G0, G1, V0, V1),
     noun_phrase(_, obj, O2, G1, G, V1, V).
-complements(pred, _, [A], G, G, V, V) --> adj_phrase(A).
+complements(pred, _, [A], G, G, V, V) --> adj_group(A).
 complements(obj_pred, _, [O, A], G0, G, V0, V) -->
-    noun_phrase(_, obj, O, G0, G, V0, V), adj_phrase(A).
+    noun_phrase(_, obj, O, G0, G, V0, V), adj_group(A).
 complements(clause, _, [sbar(C, S)], G0, G, V0, V) -->
     complementizer(C), statement(S, G0, G, V0, V).
 complements(inf, _, [inf(VP)], G0, G, V0, V) -->
@@ -454,7 +548,7 @@ complementizer(that) --> [that].
 complementizer(none) --> [].
 
 % What follows be: an adjective, a noun phrase, or a place.
-predicate(AP, G, G, V, V) --> adj_phrase(AP).
+predicate(AP, G, G, V, V) --> adj_group(AP).
 predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
 predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
 
