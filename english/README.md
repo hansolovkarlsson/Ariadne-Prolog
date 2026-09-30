@@ -450,3 +450,15 @@ was a pianist, singer and composer* pass. *A French record producer, DJ and
 remixer* waits for nouns before nouns, and *an Indian politician, author and
 a member of the Congress Party* for a list that mixes nouns under one
 determiner with a noun phrase of its own.
+
+A name followed by a number was next, *Class 91*, *Apollo 11*: the number
+may belong to the name before it, and a first word followed by a number
+may be a name, *Class 93 is*. It may also not belong, so *Alice gave Bob 3
+dogs* has two readings, one giving dogs to someone called Bob 3. No
+sentence of the corpus moved. *They would have been derived from the Class
+91 locomotives that entered service* now reads *the Class 91 locomotives*
+as it should, but *entered service* then needs *service* to stand without
+an article, which it may not yet, so the sentence still passes only as *the
+Class that 91 locomotives service*: English in form, and not what it says.
+With *the service* it has the right reading.
+

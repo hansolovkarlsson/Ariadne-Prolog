@@ -505,7 +505,8 @@ words(Text, Words) :- words(Text, Words, _).
 % preposition, a conjunction or a form of be, have or do: "the Congress
 % Party", but not "The" in "The Episcopal Church". The first word is
 % capitalized whatever it is, so it is a name only with more to go on: the
-% word after it is a name too, "Michael Bruce Curry"; the lexicon lists it
+% word after it is a name too, "Michael Bruce Curry", or a number, "Class
+% 93"; the lexicon lists it
 % as one, or WordNet writes it with a capital, "Springfield"; or nothing
 % knows the word at all, "Konnevesi". So "Dog barks" is still a noun with
 % no determiner, and "Woods was born" is too, since WordNet has woods only
@@ -525,7 +526,7 @@ names([C|Cs], [W|Ws], Names) :-
     maplist(later_name, Cs, Ws, Ns0),
     exclude(==(none), Ns0, Ns),
     (   capital(C), \+ closed_class(W),
-        (   Ws = [W2|_], memberchk(W2, Ns)
+        (   Ws = [W2|_], ( memberchk(W2, Ns) ; digits(W2) )
         ;   proper(W)
         ;   wn_name(W)
         ;   \+ known_word(W), \+ placement(W, wordnet, _)

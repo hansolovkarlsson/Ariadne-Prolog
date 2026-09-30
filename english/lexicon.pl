@@ -196,8 +196,11 @@ det(her,   _,  _).
 number_word(one, sg).
 number_word(W, pl) :- number_name(W).
 number_word(W, Num) :-
-    atom(W), atom_chars(W, [C|_]), digit(C),
+    digits(W),
     ( W == '1' -> Num = sg ; Num = pl ).
+
+% digits(Word): a number written in digits, 91 or 3.5.
+digits(W) :- atom(W), atom_chars(W, [C|_]), digit(C).
 
 number_name(two). number_name(three). number_name(four). number_name(five).
 number_name(six). number_name(seven). number_name(eight). number_name(nine).

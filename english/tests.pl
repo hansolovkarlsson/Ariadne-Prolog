@@ -240,6 +240,9 @@ good('Alice saw Stanley Ralph Ross.').
 good('Leroy\'s dog barks.').
 good('The Congress Party is big.').
 good('I read the Leroy book.').
+good('Apollo 11 sleeps.').
+good('The dog sees Apollo 11.').
+good('I read the Apollo 11 book.').
 
 % Lists and or: noun phrases, nouns under one determiner, adjectives, and
 % the commas between clauses.
@@ -363,6 +366,7 @@ bad('Dog\'s bone is big.',                 bare(dog)).
 bad('The dog sees leroy.',                unknown).
 bad('Leroy sleep.',                        subject_verb(sleep)).
 bad('The dog sees Leroy Ross the cat.',    no_reading).
+bad('Apollo 11 sleep.',                    subject_verb(sleep)).
 bad('The dog or the cat bark.',            subject_verb(bark)).
 bad('The dogs or the cat bark.',           subject_verb(bark)).
 bad('These cat and dogs sleep.',           det_noun(these, cat)).
@@ -387,6 +391,9 @@ readings('I know the dog sleeps.', 1).
 readings('The dog barks every night.', 1).
 readings('The Old house is big.', 1).
 readings('Alice saw Leroy Dogs.', 1).
+% A number after a name may be part of it, so Bob 3 is a name as well as
+% Bob and three dogs.
+readings('Alice gave Bob 3 dogs.', 2).
 readings('The dogs and cats sleep.', 2).
 readings('Alice, Bob, and Carol sing.', 1).
 readings('The dog is big, old and happy.', 1).

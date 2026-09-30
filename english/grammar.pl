@@ -240,10 +240,13 @@ simple_np(Agr, _, np(poss(P), N), V0, V) -->
 % name(-Name): a name of one word or more, each a name: "Alice", "Stanley
 % Ralph Ross", "East Coast Main Line". Name is the words joined by spaces.
 % A name takes every name that follows it, so a run of them is one name
-% and is not tried again split in two at each place it could be.
+% and is not tried again split in two at each place it could be. A number
+% in digits after a name may be part of it, "Class 91", "Apollo 11", but
+% need not be, since in "he gave Bob 3 apples" it is the next phrase's.
 name(N) --> [W], { proper(W) }, name_rest(Ws), { atomic_list_concat([W|Ws], ' ', N) }.
 
 name_rest([W|Ws]) --> [W], { proper(W) }, !, name_rest(Ws).
+name_rest([D|Ws]) --> [D], { digits(D) }, name_rest(Ws).
 name_rest([]) --> [].
 
 % names_only(+Nominal): names before a noun that is a name too, "Samsung
@@ -357,6 +360,8 @@ adjectives([AP|As]) --> adj_phrase(AP), adjectives(As).
 adjectives([AP, sep(S)|As]) -->
     adj_phrase(AP), adj_sep(S), adjectives(As), { As = [A|_], A \= name(_) }.
 adjectives([name(W)|As]) --> [W], { proper(W), \+ adj(W) }, adjectives(As).
+adjectives([name(W), name(D)|As]) -->
+    [W, D], { proper(W), digits(D) }, adjectives(As).
 adjectives([]) --> [].
 
 % adj_sep(-Words): between two adjectives before a noun, a comma, a
