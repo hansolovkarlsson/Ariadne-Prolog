@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Forty-four defects, in five cohorts that failed for five different reasons:
+Forty-eight defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -25,15 +25,15 @@ Forty-four defects, in five cohorts that failed for five different reasons:
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
-  on 2026-09-27, one on 2026-09-28 and three on 2026-09-29.
+  on 2026-09-27, one on 2026-09-28 and six on 2026-09-29.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
   by asking what a check could reach.
-- **Scale**: twelve defects that no test was large enough to meet, a fixed
+- **Scale**: thirteen defects that no test was large enough to meet, a fixed
   buffer, a recursion on the C stack, a cost that grew with the square or a
   fixed allocation, ten found on 2026-09-27, nine of them by probing a
-  neighbour of the defect before, and two on 2026-09-29.
+  neighbour of the defect before, and three on 2026-09-29.
 
 ## Cohort A — the design era
 
@@ -393,7 +393,7 @@ the only evidence that it can.
 
 ## Cohort E: scale
 
-Twelve defects that no test was large enough to meet, ten of them found on
+Thirteen defects that no test was large enough to meet, ten of them found on
 2026-09-27. The first nine came one from another: each fix was followed by probing the same shape a
 step further, at a million elements or a million levels, and the probe found
 the next.
@@ -412,6 +412,7 @@ the next.
 | Reading a clause of 40,000 distinct variables took 0.26 seconds, quadrupling with each doubling | The reader found each variable by scanning every one before it in the clause | Reading the parser at the day's closeout, then timing it (`cabc0a0`) |
 | Loading WordNet's 89,000 facts took 490 MB, 5.5 KB a fact | Every clause has an arena of its own, and an arena's blocks were a fixed 4 KB, for clauses of a hundred bytes | Measuring the first large program loaded, on 2026-09-29, for grammar stage 3 (`99ff4bd`) |
 | The grammar's checks took 60 per cent longer after possessives went in, sentences with no *'s* included | The possessive rule was tried at every noun phrase, whatever the sentence held | Timing the checks at each of the day's commits, on 2026-09-29, while looking for a slowdown blamed on the interpreter (`1649f0c`) |
+| Refusing one sentence of 28 words took more than six minutes, and the corpus run went from two and a half minutes to twelve and a half | The diagnosis parsed with its violation list open, and with WordNet nearly every noun can stand bare at the cost of one more violation | Timing each sentence of the second corpus after names let long sentences be parsed to the end, then each stage of one, on 2026-09-29 (`39d2965`) |
 
 Every one of these passed the suite, because every test in the suite is small.
 The deep-nesting fix touched the collector, unification, comparison, copying,
@@ -520,6 +521,52 @@ number in digits is now a word (`42fdaf7`), and *I saw 1 dogs* is caught.
 *What this says:* a pass is a claim too. The sample was read for its
 failures, and the one wrong pass in it went by.
 
+### A checker that did not read the commas
+
+The same tokenizer dropped commas with the rest of the punctuation, so a
+sentence was checked without them. *Two cups of tea, please* passed, as
+*two cups of tea please* with *please* the verb, and *Alice, Bob and Carol
+sing* passed as a name, *Alice Bob*, and *Carol*: two people. The verdict
+was right and the reading was not, and nothing showed which. The first was
+seen on the morning of 2026-09-29 and recorded as a pass for the wrong
+reason; the second was made by the names added that afternoon, and seen in
+the second corpus as *Yevgeny Leonov, Irina Skobtseva, and Valentina
+Talyzina*, read as two people. A comma is now a word the grammar must
+place (`f4b8c6c`), and the first corpus records the request that has no
+verb as not grammatical.
+
+Found by reading the passes of the second corpus with their brackets, on
+the morning's advice, rather than counting them.
+
+*What this says:* the digits were the same defect, found the same morning.
+Fixing the one piece of punctuation that had bitten left the others to be
+found the same way.
+
+### A downcase that knew only ASCII
+
+`downcase_atom/2` lowercases A to Z and leaves every other letter as it is,
+so *Île* stays *Île*. The grammar checker lowercases each word before it
+looks it up, and *Île-de-France* came out unknown with its capital still
+on. SWI-Prolog lowercases every letter Unicode gives a lowercase for.
+Still open: it is on the roadmap with the grammar's other limits.
+
+Found on 2026-09-29 by the second corpus, the first text here drawn from
+outside, with names in French, German, Turkish and Russian.
+
+### A sentence splitter that stopped at abbreviations it did not list
+
+`check_text/1` ends a sentence at a full stop before a space, unless the
+word is on a short list of abbreviations. *Lit.*, *U.S.*, *Vol.* and *N.*
+are not on it, so *El Gordo (lit. The Fat One) is ...* was cut in two,
+and so were three more of the sixty leads drawn for the second corpus. The
+corpus keeps the true sentences, and the four cuts are recorded beside it.
+Still open: a longer list moves the problem rather than ending it, since
+*no.* and *etc.* came off the list that morning for ending real sentences.
+
+Found on 2026-09-29 by cutting the second corpus's text with the checker's
+own splitter, which was chosen for the purpose so that its faults would
+show.
+
 ## What found what
 
 | Found by | Count |
@@ -528,9 +575,11 @@ failures, and the one wrong pass in it went by.
 | Writing the documentation, then testing the claim | 6 |
 | Probing past what the suite tries, at a million elements or levels | 4 |
 | Loading a large program and measuring it | 1 |
-| Running ordinary sentences through the grammar | 1 |
+| Running ordinary sentences through the grammar | 3 |
+| Reading a corpus's passes with their brackets | 1 |
 | Running the tokenizer on a case before building on it | 1 |
 | Timing each commit, looking for another cause | 1 |
+| Timing each sentence of a corpus, then each stage of one | 1 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 4 |
 | Rendering the pages and looking at them | 3 |
@@ -544,7 +593,7 @@ failures, and the one wrong pass in it went by.
 
 Three things stand out.
 
-**The test suite found four of forty-four.** It is a good suite, 334 tests
+**The test suite found four of forty-eight.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong

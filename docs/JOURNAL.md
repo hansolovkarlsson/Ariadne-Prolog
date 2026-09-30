@@ -983,6 +983,65 @@ it, and the grammar then grew to meet exactly it, so it now measures
 nothing; the roadmap's next item for the grammar is a corpus it has not
 seen.
 
+### The afternoon: a second corpus, and what it asked for
+
+The second corpus had one requirement, that nobody choose its sentences
+with the grammar in mind, and so the rule came before the text
+(`45374ee`). Hans chose Simple English Wikipedia; the rule was to draw
+articles at random, take the first two sentences of each lead verbatim,
+skip a lead of one sentence, and stop at fifty. The draw was mostly
+people, places and films, full of names, dates and brackets, and it was
+kept, since redrawing for friendlier text would have been choosing the
+sentences after all. It passed none: 19 rejected, 31 with an unknown word.
+One sentence took 116 seconds and was then rejected for the wrong reason.
+
+Names were most of it (`39d2965`). The tokenizer lowercased every word
+before the grammar saw it, so the capital that marks a name was gone. The
+fix keeps the capital long enough to note it, and each capitalized word is
+a name beside whatever else it is. The first word needed a rule of its
+own, or *Dog barks* would pass: it is a name when the next word is one,
+when WordNet writes it with a capital, which it does for 14,783 nouns the
+generator had been reading only in lowercase, or when nothing knows it.
+The first version dropped a name from the list of unknown words before
+WordNet was asked about it, and *The Episcopal Church* failed because
+*Church*, which the lexicon does not list, had become a name and nothing
+else. A probe of that phrase caught it before it went in.
+
+With names, the corpus run went from two and a half minutes to twelve and
+a half, and one sentence ran past six. Taking a run of names as one name,
+the obvious suspect, changed almost nothing. Timing each stage of a
+shortened version of the sentence did: the strict parse took 0.07 seconds and the diagnosis's relaxed parse 28, since
+with the violation list open every noun WordNet has can stand bare at the
+cost of one violation. The first bound tried one violation, then two, then
+three, and made most sentences slower, three searches in place of one. The
+second gives the list three places and searches once, and the statement
+that decides whether a command is tried is no longer parsed a second time.
+Every verdict in the second corpus was compared before and after, and
+none moved; the first corpus's counts held. Then the passes were read, which the morning had said to do. Two of
+the six were wrong: three people read as two, since the commas were gone,
+and the *Class 91* sentence, whose ten readings were all nonsense.
+
+Lists could not be done without the commas, so the comma became a word the
+grammar has to place (`f4b8c6c`). That was the larger change, and it cost
+two passes that had leaned on commas being dropped: *two cups of tea,
+please*, which has no verb and is now refused, taking the first corpus to
+49, and *McLennan County, Texas, United States*. Eight of the new checks
+passed on the old code for the same reason, and each was shown to guard
+something by taking the comma rule out and watching two of them fail. The
+number after a name (`5263460`) fixed the *Class 91* reading and still
+left the sentence passing the wrong way, because *entered service* needs
+*service* to stand bare. Adding it to the mass nouns would have made the
+count go up, and it is exactly the tuning against the corpus that emptied
+the first one, so it went on the roadmap instead. Nouns before nouns
+(`fca8565`) came last, with the rule every modifier has needed today: a
+word that is already read as an adjective or a name there is not read
+again as a noun, or *the nineteenth century* has two readings.
+
+By the evening the second corpus passed 7 of 50, and the run took three
+minutes. That is the useful number: four features that each fixed a cause
+cleanly moved it by seven, because most of its sentences fail on three or
+four causes at once, and a sentence passes only when the last goes.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1006,7 +1065,7 @@ something it would have caught; those arrived with the program they check.
 About 7,800 lines of hand-written C, 757 lines of library written in Prolog,
 a 335-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
-2,040 lines built on the interpreter, through all three of its stages, and a
+2,380 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own
 tables.
 
