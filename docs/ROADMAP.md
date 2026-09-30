@@ -93,10 +93,13 @@ These change the shape of the system rather than adding to it.
      sentences now pass. A second corpus, fifty sentences from Simple
      English Wikipedia that the grammar was not built against, passes none:
      19 are rejected and 31 have a word it does not know. Its record, by
-     cause, is in the same README. What is left, the first four from it:
-     - names: twelve are listed, and the tokenizer lowercases every word,
-       so the capital that marks one is lost; most of the second corpus
-       fails on this alone;
+     cause, is in the same README. Names, its largest cause, were done
+     the same day, and it now passes 6. What is left, the first four from
+     it:
+     - a name followed by a number, *Class 91*, which now makes a pass for
+       the wrong reason; a name at the start of a sentence that WordNet
+       has only in lowercase, *Woods was born*; capitals outside ASCII,
+       *Île*, which `downcase_atom/2` leaves as they are;
      - *or* joining noun phrases and adjectives, lists with commas, and two
        nouns under one determiner, *a psychologist and businessman*;
      - nouns before nouns, *the record label*; more mass nouns and the

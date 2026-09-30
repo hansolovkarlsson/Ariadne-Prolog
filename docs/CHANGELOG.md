@@ -10,6 +10,17 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Names, known by their capital.** The tokenizer notes which words a
+  sentence capitalizes, and each is a name there beside its other
+  readings; the first word only when the next is a name too, when WordNet
+  writes it with a capital, or when nothing knows it, so *Dog barks* is
+  still refused. A run of names is one name, *Stanley Ralph Ross*, and a
+  name stands before a noun, *the Congress Party*. `make wordnet` now
+  keeps WordNet's 14,783 capitalized nouns as names. The diagnosis
+  searches with at most three violations, as a sentence of 28 words took
+  over six minutes to be refused with any number. 337 checks; the second
+  corpus goes from 0 grammatical to 6, 34 not, 10 unknown. (`39d2965`)
+
 - **A second corpus for the grammar checker, from text it was not built
   against.** Fifty sentences, the first two of each of 25 articles drawn at
   random from Simple English Wikipedia, by a rule fixed before the text was
