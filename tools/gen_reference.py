@@ -461,14 +461,21 @@ BUILTINS = [
      "`space`, `white`, `end_of_line`, `upper`, `upper(Lower)`, `lower`, "
      "`lower(Upper)`, `to_lower(L)`, `to_upper(U)`, `punct`, `graph`, `print`, "
      "`cntrl`, `csym`, `csymf`, `ascii`, `period`, `quote` or `paren`. ASCII is "
-     "classified exactly; a character past ASCII counts as a letter, with no "
-     "case to change. Either argument may be unbound: `findall(C, "
+     "classified exactly; a character past ASCII counts as a letter. Case is "
+     "read from the table `upcase_atom/2` uses, so `char_type('Î', upper(L))` "
+     "gives `L = 'î'`. Either argument may be unbound: `findall(C, "
      "char_type(C, digit(_)), L)` gives the ten digits."),
     ('code_type(?Code, ?Type)',
      "As char_type/2 for character codes, which it also gives in `upper(L)` "
      "and the other types that name a second character."),
-    ('upcase_atom(+Atom, -Upper)', "Upper is Atom with ASCII letters upper-cased."),
-    ('downcase_atom(+Atom, -Lower)', "Lower is Atom with ASCII letters lower-cased."),
+    ('upcase_atom(+Atom, -Upper)',
+     "Upper is Atom with its letters upper-cased, by Unicode's one-to-one "
+     "mappings for ASCII, Latin-1, Latin Extended-A, Greek and Cyrillic "
+     "U+0400 to U+045F; any other character is left as it is. A letter whose "
+     "upper case is two, `ß`, stays itself, as in SWI-Prolog."),
+    ('downcase_atom(+Atom, -Lower)',
+     "Lower is Atom with its letters lower-cased, by the same table as "
+     "`upcase_atom/2`: `downcase_atom('ÎLE', X)` gives `X = 'île'`."),
     ('atomic_list_concat(+List, -Atom)', "Concatenates a list of atomics into Atom."),
     ('atomic_list_concat(?List, +Sep, ?Atom)',
      "Joins List with Sep between the parts. With List unbound, splits Atom on Sep "
@@ -957,6 +964,11 @@ section('limits', 'Deviations and limits', ''.join([
         "other two `representation_error(max_arity)`.",
         "Unification has no occurs check by default, so a cyclic term can be built; "
         "printing or copying one will not terminate.",
+        "Letters have case in ASCII, Latin-1, Latin Extended-A, Greek and "
+        "Cyrillic U+0400 to U+045F only, the table `upcase_atom/2`, "
+        "`downcase_atom/2` and `char_type/2` share; SWI-Prolog cases every "
+        "script Unicode does. A character past ASCII is a letter for "
+        "`char_type/2` whatever it is.",
     ]),
     '<h3>Predicates that are absent</h3>',
     ul([

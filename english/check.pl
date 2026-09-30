@@ -592,8 +592,9 @@ words(Text, Words) :- words(Text, Words, _).
 % knows the word at all, "Konnevesi". So "Dog barks" is still a noun with
 % no determiner, and "Woods was born" is too, since WordNet has woods only
 % in lowercase. A name keeps the other readings its word has: "Indian" is
-% a name and an adjective, and the grammar decides. Only the ASCII capitals
-% are seen, as downcase_atom/2 leaves others as they are.
+% a name and an adjective, and the grammar decides. A capital past ASCII,
+% "Île" or "Çorlu", is seen as one where the interpreter's case table has
+% it: Latin-1, Latin Extended-A, Greek and basic Cyrillic.
 words(Text, Words, Names) :-
     atom_chars(Text, Chars0),
     maplist(plain_apostrophe, Chars0, Chars),

@@ -242,6 +242,7 @@ good('The Congress Party is big.').
 good('I read the Leroy book.').
 good('Apollo 11 sleeps.').
 good('The dog sees Apollo 11.').
+good('The dog sees Çorlu.').
 good('I read the Apollo 11 book.').
 
 % Lists and or: noun phrases, nouns under one determiner, adjectives, and

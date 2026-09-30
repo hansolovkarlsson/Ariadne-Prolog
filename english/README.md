@@ -221,8 +221,9 @@ after it is one too (*Michael Bruce Curry*), when the lexicon lists it or
 WordNet writes it with a capital (*Springfield*, *John*), or when nothing
 knows it at all (*Konnevesi*). Otherwise *Dog barks* would pass. A run of
 names is one name, and names stand before a noun as adjectives do, *Peace
-TV programs*. Only ASCII capitals are seen: the interpreter's
-`downcase_atom/2` leaves *Île* as it is.
+TV programs*. Capitals past ASCII count where the interpreter's case table
+has them, Latin-1, Latin Extended-A, Greek and basic Cyrillic: *Île*,
+*Çorlu*, *Αθήνα*, *Москва*.
 
 A **list** is one rule, shared by noun phrases, nouns under one
 determiner and adjectives: the items after the first are separated by
@@ -491,4 +492,12 @@ record producer, DJ and remixer* all pass; the sentences they come from
 still fail on dates, brackets, *any kind of* and the rest. The run takes
 three minutes, from two and a half, since every noun can now be tried as
 the start of a longer one.
+
+On 2026-09-30 the interpreter learned case past ASCII, for Latin-1, Latin
+Extended-A, Greek and basic Cyrillic, and a capital there marks a name
+like any other. One sentence moved: *It is in Île-de-France in the
+Val-d'Oise department in north France* had *Île* as an unknown word, and
+now fails on what follows it instead. The Cyrillic title in *Zigzag of
+Success (Russian: Зигзаг удачи)* now has one unknown word, *удачи*, where
+it had two. The corpus gives **7 grammatical, 34 not, and 9 unknown**.
 

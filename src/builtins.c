@@ -898,30 +898,100 @@ BI(bi_sub_atom4)
     RET(ok);
 }
 
+/* Case. The simple one-to-one mappings of Unicode for ASCII, Latin-1,
+   Latin Extended-A, Greek and basic Cyrillic (U+0400 to U+045F), from
+   UnicodeData.txt; every other character has no case here. A mapping to
+   more than one character, as the upper case of ß is SS, is left out, as
+   SWI-Prolog leaves it out. The table is written out rather than taken
+   from towlower(), which in the C locale knows ASCII only on some of the
+   platforms the build matrix runs on. upcase_atom/2, downcase_atom/2 and
+   char_type/2 all read it, so they cannot disagree. */
+static long case_lower(long c)
+{
+    if (c >= 'A' && c <= 'Z') return c + 32;
+    if (c < 0xC0) return c;
+    if (c <= 0xDE) return c == 0xD7 ? c : c + 0x20;
+    if (c == 0x130) return 'i';
+    if ((c >= 0x100 && c <= 0x12F) || (c >= 0x132 && c <= 0x137)
+        || (c >= 0x14A && c <= 0x177))
+        return c % 2 == 0 ? c + 1 : c;
+    if ((c >= 0x139 && c <= 0x148) || (c >= 0x179 && c <= 0x17E))
+        return c % 2 == 1 ? c + 1 : c;
+    if (c == 0x178) return 0xFF;
+    if (c == 0x386) return 0x3AC;
+    if (c >= 0x388 && c <= 0x38A) return c + 0x25;
+    if (c == 0x38C) return 0x3CC;
+    if (c == 0x38E || c == 0x38F) return c + 0x3F;
+    if (c >= 0x391 && c <= 0x3A9 && c != 0x3A2) return c + 0x20;
+    if (c >= 0x400 && c <= 0x40F) return c + 0x50;
+    if (c >= 0x410 && c <= 0x42F) return c + 0x20;
+    return c;
+}
+
+static long case_upper(long c)
+{
+    if (c >= 'a' && c <= 'z') return c - 32;
+    if (c < 0xB5) return c;
+    if (c == 0xB5) return 0x39C;
+    if (c >= 0xE0 && c <= 0xFE) return c == 0xF7 ? c : c - 0x20;
+    if (c == 0xFF) return 0x178;
+    if (c == 0x131) return 'I';
+    if (c == 0x17F) return 'S';
+    if ((c >= 0x101 && c <= 0x12F) || (c >= 0x133 && c <= 0x137)
+        || (c >= 0x14B && c <= 0x177))
+        return c % 2 == 1 ? c - 1 : c;
+    if ((c >= 0x13A && c <= 0x148) || (c >= 0x17A && c <= 0x17E))
+        return c % 2 == 0 ? c - 1 : c;
+    if (c == 0x3AC) return 0x386;
+    if (c >= 0x3AD && c <= 0x3AF) return c - 0x25;
+    if (c == 0x3CC) return 0x38C;
+    if (c == 0x3CD || c == 0x3CE) return c - 0x3F;
+    if (c == 0x3C2) return 0x3A3;
+    if (c >= 0x3B1 && c <= 0x3C9) return c - 0x20;
+    if (c >= 0x430 && c <= 0x44F) return c - 0x20;
+    if (c >= 0x450 && c <= 0x45F) return c - 0x50;
+    return c;
+}
+
+/* The atom's characters, each mapped by f. A mapped character can take a
+   byte more or fewer than it did, as dotless i (two bytes) goes up to I
+   (one), so the result is built in a buffer of its own. */
+static int map_case(Term **A, long (*f)(long))
+{
+    char *s, *out;
+    size_t n, i = 0, k = 0;
+    int rc = get_text(A[0], &s, &n, "atom"), ok;
+    if (rc != PL_OK) return rc;
+    out = (char *)malloc(4 * n + 1);
+    while (i < n) k += utf8_encode(f(utf8_decode(s, n, &i)), out + k);
+    ok = unify(A[1], mk_atom(intern_n(out, k)));
+    free(out);
+    free(s);
+    return ok ? PL_OK : PL_FAIL;
+}
+
 BI(bi_upcase)
 {
     UNUSED;
-    char *s;
-    size_t n, i;
-    int rc = get_text(A[0], &s, &n, "atom"), ok;
-    if (rc != PL_OK) return rc;
-    for (i = 0; i < n; i++) s[i] = (char)toupper((unsigned char)s[i]);
-    ok = unify(A[1], mk_atom(intern_n(s, n)));
-    free(s);
-    RET(ok);
+    return map_case(A, case_upper);
 }
 
 BI(bi_downcase)
 {
     UNUSED;
-    char *s;
-    size_t n, i;
-    int rc = get_text(A[0], &s, &n, "atom"), ok;
+    return map_case(A, case_lower);
+}
+
+/* '$code_case'(+Code, -Lower, -Upper): the table above, for char_type/2
+   and code_type/2 in lib/boot.pl. */
+BI(bi_code_case)
+{
+    UNUSED;
+    long long c;
+    int rc = get_int(A[0], &c);
     if (rc != PL_OK) return rc;
-    for (i = 0; i < n; i++) s[i] = (char)tolower((unsigned char)s[i]);
-    ok = unify(A[1], mk_atom(intern_n(s, n)));
-    free(s);
-    RET(ok);
+    RET(unify(A[1], mk_int(case_lower((long)c)))
+        && unify(A[2], mk_int(case_upper((long)c))));
 }
 
 BI(bi_term_to_atom)
@@ -2623,7 +2693,7 @@ static const BiEntry bi_table[] = {
     { "number_codes", 2, bi_number_codes }, { "number_chars", 2, bi_number_chars },
     { "atom_number", 2, bi_atom_number }, { "$atom_concat", 3, bi_atom_concat3 }, { "$join", 3, bi_join3 }, { "$split_atom", 3, bi_split_atom3 },
     { "$sub_atom", 4, bi_sub_atom4 }, { "upcase_atom", 2, bi_upcase },
-    { "downcase_atom", 2, bi_downcase }, { "term_to_atom", 2, bi_term_to_atom },
+    { "downcase_atom", 2, bi_downcase }, { "$code_case", 3, bi_code_case }, { "term_to_atom", 2, bi_term_to_atom },
     { "atom_to_term", 3, bi_atom_to_term },
     /* findall and sorting */
     { "findall", 3, bi_findall }, { "findall", 4, bi_findall4 },

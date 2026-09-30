@@ -327,6 +327,23 @@ test(at_sub_find,     (sub_atom(hello_world, B, _, _, world), B =:= 6)).
 test(at_sub_all,      (findall(S, sub_atom(abc, _, 1, _, S), [a,b,c]))).
 test(at_upcase,       (upcase_atom(hello, X), X == 'HELLO')).
 test(at_downcase,     (downcase_atom('HELLO', X), X == hello)).
+test(at_case_utf8,     (downcase_atom('ÎLE-DE-FRANCE', A), A == 'île-de-france',
+                       upcase_atom('çorlu ÿ', B), B == 'ÇORLU Ÿ',
+                       upcase_atom('straße', C), C == 'STRAßE',
+                       downcase_atom('ΑΘΉΝΑ', D), D == 'αθήνα',
+                       upcase_atom('москва ёж', E), E == 'МОСКВА ЁЖ',
+                       upcase_atom('ı', F), F == 'I', downcase_atom('İ', G), G == i)).
+test(at_char_type_case_utf8,
+                      (char_type('Î', upper(L)), L == 'î', char_type('î', lower(U)), U == 'Î',
+                       char_type('é', lower), \+ char_type('ß', upper), \+ char_type('ß', lower),
+                       code_type(0'Σ, to_lower(S)), S =:= 0'σ)).
+% Every mapping in the case table goes back where it came from, but for the
+% five that Unicode makes one-way: İ to i, and ı, ſ, µ and final ς up.
+test(at_case_table,   forall(between(0, 0x45F, X),
+                          ( '$code_case'(X, L, U),
+                            ( L =:= X -> true ; '$code_case'(L, _, B1), ( B1 =:= X ; X =:= 0x130 ) ),
+                            ( U =:= X -> true ; '$code_case'(U, B2, _),
+                              ( B2 =:= X ; memberchk(X, [0x131, 0x17F, 0xB5, 0x3C2]) ) ) ))).
 test(at_list_concat,  (atomic_list_concat([a,b,c], X), X == abc)).
 test(at_list_sep,     (atomic_list_concat([a,b,c], '-', X), X == 'a-b-c')).
 test(at_list_split,   (atomic_list_concat(L, '-', 'x-y-z'), L == [x,y,z])).

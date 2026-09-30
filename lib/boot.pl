@@ -457,7 +457,10 @@ atomic_list_concat(List, Sep, Atom) :-
 /*  char_type(?Char, ?Type) and code_type(?Code, ?Type), as SWI-Prolog and
     the Edinburgh systems before it have them. ASCII is classified exactly.
     A character past ASCII counts as a letter, since in text read as UTF-8
-    most of them in words are, and has no case to change. With the character
+    most of them in words are. Case comes from the interpreter's table,
+    '$code_case'/3, which upcase_atom/2 and downcase_atom/2 read too: ASCII,
+    Latin-1, Latin Extended-A, Greek and basic Cyrillic. A character is
+    upper or lower when the table maps it to another. With the character
     unbound they enumerate the ASCII characters; with the type unbound, the
     types. code_type/2 takes a character too, and gives codes where char_type/2
     gives characters: code_type(0'A, to_lower(L)) is L = 0'a.
@@ -495,18 +498,18 @@ code_type(C, Type) :-
 '$ctype'(X, end_of_line) :- ( X =:= 10 -> true ; X =:= 13 ).
 '$ctype'(X, cntrl)       :- ( X < 32 -> true ; X =:= 127 ).
 '$ctype'(X, digit(W))    :- '$ctype_digit'(X), W is X - 0'0.
-'$ctype'(X, upper)       :- X >= 0'A, X =< 0'Z.
-'$ctype'(X, upper(L))    :- X >= 0'A, X =< 0'Z, L is X + 32.
-'$ctype'(X, lower)       :- X >= 0'a, X =< 0'z.
-'$ctype'(X, lower(U))    :- X >= 0'a, X =< 0'z, U is X - 32.
+'$ctype'(X, upper)       :- '$code_case'(X, L, _), L =\= X.
+'$ctype'(X, upper(L))    :- '$code_case'(X, L0, _), L0 =\= X, L = L0.
+'$ctype'(X, lower)       :- '$code_case'(X, _, U), U =\= X.
+'$ctype'(X, lower(U))    :- '$code_case'(X, _, U0), U0 =\= X, U = U0.
 '$ctype'(X, punct)       :- X >= 33, X =< 126, \+ '$ctype_letter'(X), \+ '$ctype_digit'(X).
 '$ctype'(X, graph)       :- ( X >= 33, X =< 126 -> true ; X > 127 ).
 '$ctype'(X, print)       :- ( X >= 32, X =< 126 -> true ; X > 127 ).
 '$ctype'(X, period)      :- ( X =:= 0'. -> true ; X =:= 0'! -> true ; X =:= 0'? ).
 '$ctype'(X, quote)       :- ( X =:= 0'' -> true ; X =:= 0'" -> true ; X =:= 0'` ).
 '$ctype'(X, paren)       :- ( X =:= 0'( -> true ; X =:= 0') ).
-'$ctype'(X, to_lower(L)) :- ( X >= 0'A, X =< 0'Z -> L is X + 32 ; L = X ).
-'$ctype'(X, to_upper(U)) :- ( X >= 0'a, X =< 0'z -> U is X - 32 ; U = X ).
+'$ctype'(X, to_lower(L)) :- '$code_case'(X, L, _).
+'$ctype'(X, to_upper(U)) :- '$code_case'(X, _, U).
 
 '$ctype_letter'(X) :- ( X >= 0'a, X =< 0'z -> true ; X >= 0'A, X =< 0'Z -> true ; X > 127 ).
 '$ctype_digit'(X)  :- X >= 0'0, X =< 0'9.
