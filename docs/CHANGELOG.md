@@ -10,6 +10,13 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Nouns before nouns.** *The record label*, *a water polo player*, *the
+  NBC television network*: singular nouns may stand between the
+  adjectives and the noun, and *a* or *an* goes by the first word, *an
+  apple tree*. A word that is an adjective or a name there is read as
+  that only, so the first corpus's readings do not grow. 376 checks; the
+  second corpus goes to 7 grammatical. (`fca8565`)
+
 - **A number after a name.** *Class 91*, *Apollo 11*, *the InterCity 250
   project*: a number in digits may belong to the name before it, and a
   first word followed by one may be a name, *Class 93 is*. 368 checks; no

@@ -94,8 +94,9 @@ These change the shape of the system rather than adding to it.
      English Wikipedia that the grammar was not built against, passes none:
      19 are rejected and 31 have a word it does not know. Its record, by
      cause, is in the same README. Names, its largest cause, were done
-     the same day, and lists with *and* and *or*, with the commas they
-     need, after them; it passes 6. What is left, the first four from it:
+     the same day, then lists with *and* and *or* and the commas they
+     need, a number after a name, and nouns before nouns; it passes 7.
+     What is left:
      - a name at the start of a sentence that WordNet has only in
        lowercase, *Woods was born*; capitals outside ASCII,
        *Île*, which `downcase_atom/2` leaves as they are;
@@ -106,9 +107,9 @@ These change the shape of the system rather than adding to it.
        phrase beside another, *Springfield, Massachusetts*, *Mukesh Ambani,
        chairman of ...*; a request without a verb, *two cups of tea,
        please*, which the first corpus now refuses;
-     - nouns before nouns, *the record label*; more mass nouns and the
-       months, *entered service*, which leaves the *Class 91* sentence a
-       pass for the wrong reason; superlatives, *largest*; ordinals in digits, *27th*;
+     - more mass nouns and the months, *entered service*, which leaves
+       the *Class 91* sentence a pass for the wrong reason; superlatives,
+       *largest*; ordinals in digits, *27th*;
      - constructions: a participle after its noun, *a movie directed by*,
        and before it, *the presiding bishop*; *a kind of*; *also* after
        *be*; a phrase before the subject, *In geology, ...* and *Last night
