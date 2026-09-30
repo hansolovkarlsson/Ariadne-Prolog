@@ -8,6 +8,13 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ## 2026-09-30
 
+### Changed
+
+- **The grammar checker searches a failing sentence's statements once.**
+  They were searched twice, to know whether a command could be tried and
+  again for the diagnosis. `make english-wordnet` takes 2:09, from 2:52,
+  with every verdict unchanged. (`9947d09`)
+
 ### Fixed
 
 - **Letters past ASCII have case.** `upcase_atom/2` and `downcase_atom/2`

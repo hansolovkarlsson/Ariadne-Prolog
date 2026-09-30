@@ -108,9 +108,14 @@ These change the shape of the system rather than adding to it.
        chairman of ...*; a request without a verb, *two cups of tea,
        please*, which the first corpus now refuses;
      - superlatives, *largest*; ordinals in digits, *27th*;
-     - constructions: a participle after its noun, *a movie directed by*,
-       and before it, *the presiding bishop*; *a kind of*; *also* after
-       *be*; dates; brackets.
+     - constructions: *a kind of*; *also* after *be*; dates; brackets;
+     - participles, after a noun, *a movie directed by*, and before it,
+       *the presiding bishop*: written on 2026-09-30 and held behind the
+       parser, below. They were correct, 417 checks passing, but the
+       corpus run went from 172 to 397 seconds of CPU for no corpus
+       sentence gained, and to 366 even with them kept out of the
+       diagnosis. The change is in `scratch/participles.patch` on the
+       machine it was written on, and is a short one to write again.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
@@ -123,7 +128,10 @@ These change the shape of the system rather than adding to it.
   other half of the wall first: one sentence of 23 words takes 116 seconds,
   since every word WordNet lists as a noun, a verb and an adjective at once
   multiplies the sub-parses that are redone. Speed may force the decision
-  before left recursion does.
+  before left recursion does. Participles were the first feature whose
+  cost the parser could not absorb: each noun opens a whole verb phrase,
+  and the corpus's two slowest sentences went from 36 seconds and under
+  12 to 117 and 328.
 
 ## Not planned
 
