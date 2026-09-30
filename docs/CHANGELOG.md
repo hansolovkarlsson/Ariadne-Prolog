@@ -6,6 +6,16 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-09-30
+
+### Added
+
+- **The mark at the end of a sentence is checked.** A question ends with a
+  question mark, and a statement or a command with a full stop or an
+  exclamation mark: *The dog barks?* and *Does the dog bark.* are refused,
+  and the verdict names the mark. Text with no mark at the end is taken as
+  it is. 387 checks. (`d27c836`)
+
 ## 2026-09-29
 
 ### Added
