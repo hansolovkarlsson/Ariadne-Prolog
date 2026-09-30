@@ -80,9 +80,15 @@ it lacks, and on ordinary English about three sentences in five pass.
 
 A sentence ends at a full stop, question mark or exclamation mark followed
 by a space, and at a blank line, so a heading is a sentence of its own. A
-full stop inside a number does not end one, and nor does one after *Mr.*,
-*Dr.*, *e.g.* and a few other common abbreviations; any other abbreviation
-does. Punctuation inside a sentence is ignored, commas included.
+full stop inside a number does not end one, and nor does one that the text
+shows to be an abbreviation's: after initials, *N.* or *U.S.*; after a
+short word before a number, *Vol. 3* or *No. 5*; or after *Mr.*, *Dr.*,
+*e.g.*, *lit.* and a few others that are listed, since nothing in their
+shape tells them from the last word of a sentence. Any other abbreviation
+ends one. Inside a sentence a comma is read, and the grammar has to place
+it; other punctuation is ignored. The mark at the end has to fit: a
+question mark for a question, a full stop or an exclamation mark for the
+rest.
 
 All three stages set out in [the roadmap](../docs/ROADMAP.md) are done. Stage 1
 is a small lexicon, simple declarative sentences, and agreement carried in the
@@ -368,7 +374,9 @@ too, and it cut two of the fifty in the wrong place, after *lit.* in *El
 Gordo (lit. The Fat One)* and after the *U.S.* in *She was the U.S.
 Representative*. Two more of the sixty leads drawn were cut after *Vol.*
 and *N.* The file keeps the true sentences, and the four cuts are a finding
-of their own.
+of their own. Since 2026-09-30 the splitter cuts all four right, and none
+of the other 56 leads differently: initials and a short word before a
+number are known by their shape, and *lit.* is listed.
 
 On 2026-09-29, **none was grammatical, 19 were not, and 31 had a word in
 neither the lexicon nor WordNet**. Random articles are mostly people, places

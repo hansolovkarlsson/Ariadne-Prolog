@@ -379,29 +379,57 @@ stream_lines(In, Lines) :-
 % stop, question mark or exclamation mark followed by a space or the end,
 % with any closing quotes or brackets after it, so 3.5 does not end one;
 % and at a blank line, so that a heading with no full stop is a sentence of
-% its own. A piece with no letter in it is left out. A piece that ends in
-% one of the common abbreviations below, Mr. or e.g., is joined to the next;
-% any other abbreviation ends a sentence.
+% its own. A piece with no letter in it is left out.
+%
+% A full stop after an abbreviation is joined to what follows, when the
+% text shows it is one: after initials, "N." or "U.S."; after a short word
+% before a number, "Vol. 3", "No. 5", "Vol. #8"; or after one of the abbreviations
+% listed below, "Mr." or "lit.", which shape alone cannot tell from the
+% last word of a sentence. A list alone had to choose for "no." and
+% "etc.", and each ends real sentences often enough to join two that
+% should stay apart; "no." before a number is now caught by its shape.
 text_sentences(Text, Ss) :-
     atom_chars(Text, Cs),
     split_sentences(Cs, Ss0),
     join_abbreviations(Ss0, Ss).
 
 join_abbreviations([S1, S2|Ss], Out) :-
-    ends_in_abbreviation(S1), !,
+    joins(S1, S2), !,
     atomic_list_concat([S1, ' ', S2], S),
     join_abbreviations([S|Ss], Out).
 join_abbreviations([S|Ss], [S|Out]) :- !, join_abbreviations(Ss, Out).
 join_abbreviations([], []).
 
-ends_in_abbreviation(S) :-
-    atomic_list_concat(Parts, ' ', S), last(Parts, W0),
-    downcase_atom(W0, W), abbreviation(W).
+% joins(+Piece, +Next): Piece ends in an abbreviation, and Next goes on
+% the same sentence.
+joins(S1, S2) :-
+    atomic_list_concat(Parts, ' ', S1), last(Parts, W0),
+    atom_chars(W0, Cs0), exclude(opener, Cs0, Cs),
+    atom_chars(W1, Cs), downcase_atom(W1, W),
+    (   abbreviation(W)
+    ->  true
+    ;   initials(Cs)
+    ->  true
+    ;   append(Letters, ['.'], Cs), length(Letters, N), N =< 4,
+        maplist(letter, Letters),
+        atom_chars(S2, Next), starts_number(Next)
+    ).
+
+% starts_number(+Chars): a number comes first, "5" or "#8".
+starts_number([D|_]) :- digit(D).
+starts_number(['#', D|_]) :- digit(D).
+
+opener('('). opener('['). opener('"'). opener('\x201C\').
+
+% initials(+Chars): one letter or more, each with a full stop after it,
+% "N." or "U.S.".
+initials([L, '.']) :- letter(L).
+initials([L, '.'|Cs]) :- letter(L), initials(Cs).
 
 abbreviation('mr.'). abbreviation('mrs.'). abbreviation('ms.').
 abbreviation('dr.'). abbreviation('prof.'). abbreviation('st.').
 abbreviation('jr.'). abbreviation('sr.'). abbreviation('vs.').
-abbreviation('e.g.'). abbreviation('i.e.').
+abbreviation('e.g.'). abbreviation('i.e.'). abbreviation('lit.').
 abbreviation('cf.').
 
 split_sentences([], []) :- !.

@@ -432,6 +432,15 @@ splits('She said "It is ugly." Then she left.',
 splits('A Heading\n\nThe dog\nbarks.', ['A Heading', 'The dog barks.']).
 splits('A line\nthat goes on.', ['A line that goes on.']).
 splits('Mr. Smith met Dr. Jones.', ['Mr. Smith met Dr. Jones.']).
+splits('It is (lit. The Fat One) big. It is far.',
+       ['It is (lit. The Fat One) big.', 'It is far.']).
+splits('She was the U.S. Representative.', ['She was the U.S. Representative.']).
+splits('John F. Kennedy spoke.', ['John F. Kennedy spoke.']).
+splits('It is in Vol. 3 of the set.', ['It is in Vol. 3 of the set.']).
+splits('It is in Vol. #8 of the set.', ['It is in Vol. #8 of the set.']).
+splits('It is No. 5 on the list.', ['It is No. 5 on the list.']).
+splits('I said no. Then she left.', ['I said no.', 'Then she left.']).
+splits('The dog barks. 3 cats sleep.', ['The dog barks.', '3 cats sleep.']).
 splits('... 42. -- !', []).
 splits('', []).
 
