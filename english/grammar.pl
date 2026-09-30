@@ -166,8 +166,8 @@ noun_phrase(Agr, Case, T, G, G, V0, V) -->
 simple_np(Agr, Case, pro(W), V0, V) -->
     [W], { pronoun(W, Agr, PCase),
            agree(case(W), PCase, Case, V0, V) }.
-simple_np(Agr, _, name(W), V, V) -->
-    [W], { proper(W), agr_of(sg, Agr) }.
+simple_np(Agr, _, name(N), V, V) -->
+    name(N), { agr_of(sg, Agr) }.
 simple_np(Agr, _, num(W), V, V) -->
     [W], { number_word(W, Num), agr_of(Num, Agr) }.
 simple_np(Agr, _, np(det(D), N), V0, V) -->
@@ -179,13 +179,31 @@ simple_np(Agr, _, np(det(D), N), V0, V) -->
       agr_of(Num, Agr) }.
 simple_np(Agr, _, np(N), V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
-    { bare_ok(Head, Num, V1, V),
+    { \+ names_only(N),
+      bare_ok(Head, Num, V1, V),
       agr_of(Num, Agr) }.
 simple_np(Agr, _, np(poss(P), N), V0, V) -->
     possessive_ahead,
     possessor(P, V0, V1),
     nominal(Num, _, _, N, V1, V),
     { agr_of(Num, Agr) }.
+
+% name(-Name): a name of one word or more, each a name: "Alice", "Stanley
+% Ralph Ross", "East Coast Main Line". Name is the words joined by spaces.
+% A name takes every name that follows it, so a run of them is one name
+% and is not tried again split in two at each place it could be.
+name(N) --> [W], { proper(W) }, name_rest(Ws), { atomic_list_concat([W|Ws], ' ', N) }.
+
+name_rest([W|Ws]) --> [W], { proper(W) }, !, name_rest(Ws).
+name_rest([]) --> [].
+
+% names_only(+Nominal): names before a noun that is a name too, "Samsung
+% Bluewings", "Texas United States", where United is an adjective as well.
+% With no determiner that is the name read as one, and reading it again as
+% names before a noun would count the same words twice.
+names_only(nom([A|As], n(H), _)) :-
+    proper(H),
+    forall(member(X, [A|As]), ( X = name(_) ; X = adj(W), proper(W) )).
 
 % determiner(-Det, -Number, -Sound): a determiner; such before a or an,
 % "such a sunset"; or a number that takes one before it, "a hundred", "two
@@ -217,7 +235,7 @@ possessor_chain(B, P, V0, V) -->
     core_nominal(_, _, _, N), ['\'s'],
     possessor_chain(np(poss(B), N), P, V0, V).
 
-possessor_base(name(W), V, V) --> [W], { proper(W) }.
+possessor_base(name(N), V, V) --> name(N).
 possessor_base(np(det(D), N), V0, V) -->
     [D], { det(D, DNum, DSound) },
     core_nominal(Num, First, Head, N),
@@ -258,7 +276,12 @@ nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
     relative(Agr, Rels, V1, V),
     { append(PPs, Rels, Posts) }.
 
+% adjectives(-Trees): the adjectives before a noun, and any name, which
+% stands there as an adjective does: "the Congress Party", "Peace TV
+% programs". A name that is also an adjective is read as the adjective
+% only, so "the Indian politician" has one reading and not two.
 adjectives([AP|As]) --> adj_phrase(AP), adjectives(As).
+adjectives([name(W)|As]) --> [W], { proper(W), \+ adj(W) }, adjectives(As).
 adjectives([]) --> [].
 
 % adj_phrase(-Tree): an adjective, with the degree words before it: "old",
@@ -273,6 +296,7 @@ degrees([]) --> [].
 % "a very old man".
 first_word([adj(A)|_], _, A) :- !.
 first_word([adjp([D|_], _)|_], _, D) :- !.
+first_word([name(W)|_], _, W) :- !.
 first_word([], Head, Head).
 
 pps([PP|PPs], V0, V) --> pp(PP, nogap, nogap, V0, V1), pps(PPs, V1, V).

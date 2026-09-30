@@ -10,7 +10,11 @@ grammar in docs/ROADMAP.md. `make wordnet` downloads WordNet and runs this;
 the output is not committed, as it is generated, large, and WordNet's.
 
 What is kept: single words of lowercase letters, from the four index files,
-and the irregular forms in noun.exc and verb.exc. What each verb takes after
+and the irregular forms in noun.exc and verb.exc. The index files are all
+lowercase, so the names among the nouns are also read from data.noun, which
+writes a name with its capital: Springfield, Michael, January. Each is kept
+lowercased, as wn_name/1, which the checker reads as a name when the word
+is capitalized in the text; the noun stays a noun too. What each verb takes after
 it is read from the sentence frames WordNet gives every verb sense, mapped to
 the grammar's frames:
 
@@ -97,6 +101,22 @@ def verb_frames(path):
     return frames
 
 
+def names(path):
+    """The single-word noun lemmas that data.noun writes with a capital."""
+    out = set()
+    with open(path, encoding='utf-8') as f:
+        for line in f:
+            if line.startswith('  '):
+                continue
+            fields = line.split()
+            w_cnt = int(fields[3], 16)
+            for i in range(w_cnt):
+                w = fields[4 + 2 * i]
+                if w[0].isupper() and WORD.match(w.lower()):
+                    out.add(w.lower())
+    return sorted(out)
+
+
 def exceptions(path):
     """(form, base) pairs from an exception list, single words only."""
     out = []
@@ -134,6 +154,8 @@ def main():
             f.write("wn_adj('%s').\n" % w)
         for w in advs:
             f.write("wn_adv('%s').\n" % w)
+        for w in names(os.path.join(d, 'data.noun')):
+            f.write("wn_name('%s').\n" % w)
         for form, base in exceptions(os.path.join(d, 'noun.exc')):
             f.write("wn_irregular(noun, '%s', '%s').\n" % (form, base))
         for form, base in exceptions(os.path.join(d, 'verb.exc')):

@@ -36,11 +36,15 @@ guessed_frames(E, E).
 
 placeable(W) :- placement(W, _, _), !.
 
-% with_placements(+Words, :Goal): Goal, with every entry for each of Words
-% in the lexicon while it runs, and none after. Goal is run once.
-with_placements(Words, Goal) :-
+% with_placements(+Words, +Names, :Goal): Goal, with every entry for each
+% of Words in the lexicon while it runs, and each of Names a name, and none
+% of them after. Goal is run once. with_placements/2 places no names.
+with_placements(Words, Goal) :- with_placements(Words, [], Goal).
+
+with_placements(Words, Names, Goal) :-
     forall(( member(W, Words), placement(W, _, Es), member(What-E, Es) ),
            assertz(guessed(What, E))),
+    forall(member(N, Names), assertz(guessed(name, N))),
     (   catch(Goal, Ball, (retractall(guessed(_, _)), throw(Ball)))
     ->  retractall(guessed(_, _))
     ;   retractall(guessed(_, _)), fail

@@ -95,7 +95,7 @@ end of this file.
 
 | | |
 |---|---|
-| `lexicon.pl` | 411 words, a word in two classes counted in each: 113 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 39 prepositions, 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names, 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 34 nouns are marked as mass nouns, which may stand alone in the singular, 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
+| `lexicon.pl` | 411 words, a word in two classes counted in each: 113 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 39 prepositions, 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 34 nouns are marked as mass nouns, which may stand alone in the singular, 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
 | `grammar.pl` | The rules: statements, alone or joined by a conjunction, yes/no and *wh*-questions, commands, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
@@ -114,6 +114,10 @@ end of this file.
 - **A and an**, by the sound of the next word rather than its spelling: *an
   hour*, *a university*, *an old man*.
 - **Pronoun case**: *she sees him*, not *him sleeps* or *she sees he*.
+- **Names are capitalized**: *John sleeps* and *the dog sees Leroy*, a name
+  of several words, *Stanley Ralph Ross*, and a name before a noun, *the
+  Congress Party*; but *the dog sees john* has a noun with no determiner,
+  and so does *Dog barks*.
 - **A singular noun needs a determiner**: *dogs bark*, not *dog barks*,
   unless it is a mass noun: *water boils*, *some homework*, and *much
   bread* but not *much dog*.
@@ -184,10 +188,29 @@ as a listed word's. A word with no ending to go on, *zorble* or a misspelt
 *furiouslyy*, is reported rather than guessed, since guessing it would
 accept any typo.
 
+A **name** is known by its capital. The tokenizer cuts the words before it
+lowercases them and notes which were capitalized, and each of those is a
+name for that check, beside whatever else the word is: *Indian* is a name
+and an adjective, and the grammar decides. A capitalized determiner,
+pronoun, preposition, conjunction or form of *be*, *have* or *do* is not a
+name, so *The Episcopal Church* is *the* and a name. The first word of a
+sentence is capitalized whatever it is, so it is a name only when the word
+after it is one too (*Michael Bruce Curry*), when the lexicon lists it or
+WordNet writes it with a capital (*Springfield*, *John*), or when nothing
+knows it at all (*Konnevesi*). Otherwise *Dog barks* would pass. A run of
+names is one name, and names stand before a noun as adjectives do, *Peace
+TV programs*. Only ASCII capitals are seen: the interpreter's
+`downcase_atom/2` leaves *Île* as it is.
+
 The diagnosis uses **the same grammar**. Each agreement point goes through
 `agree/5`, which threads a list of violations beside the words. Parsed with the
 list closed, a violation cannot be recorded, and the grammar is strict; parsed
-with it open, it finds the reading with the fewest violations and names them.
+with three places in it, it finds the reading with the fewest violations and
+names them. The list was open until names let long sentences be parsed to
+the end: with WordNet nearly every noun can stand bare, a violation each,
+and a sentence of 28 words that no reading fits took more than six
+minutes to be refused. With three places it takes one. A sentence more
+than three violations from English gets no diagnosis, only *no reading*.
 
 Recursion is **on the right**. A noun phrase is followed by its prepositional
 phrases rather than built from a smaller noun phrase, since a left-recursive
@@ -198,7 +221,7 @@ do.
 ## Stage 3: what a large lexicon breaks
 
 `make wordnet` downloads WordNet 3.1 and `tools/gen_wordnet.py` turns it into
-`english/wordnet.pl`: 55,213 nouns, 8,431 verbs with the frames WordNet gives
+`english/wordnet.pl`: 55,213 nouns, 14,783 names (the nouns WordNet writes with a capital), 8,431 verbs with the frames WordNet gives
 them, 17,870 adjectives, 3,642 adverbs, and 4,162 irregular forms. It is not
 committed. A word the lexicon lacks is looked up there, as itself, as an
 inflected form of a stem, or among the irregular forms (*flung*, *oxen*,
@@ -371,3 +394,17 @@ once has a great many. That is the cost the roadmap said would decide
 between a chart parser and tabling, and it has arrived before left
 recursion did. The run over both corpora now takes two and a half minutes,
 most of it this one sentence.
+
+Names went first, as the largest cause (above, under *How it works*).
+The corpus then gives **6 grammatical, 34 not, and 10 unknown**. Of the ten,
+four are the en dash in a range of dates, two are superlatives, and the rest
+are *foley*, an IPA transcription, Cyrillic, and *Île*. The passes were read,
+and two of the six are passes for the wrong reason. *It stars Yevgeny
+Leonov, Irina Skobtseva, and Valentina Talyzina* is two people, not three,
+since without its commas the first two names run together. And all ten
+readings of *They would have been derived from the Class 91 locomotives that
+entered service* read *the Class* followed by a relative clause, *91
+locomotives that entered*, with *service* as its verb: there is no rule yet
+for a name followed by a number. The sentence that took 116 seconds takes
+25 now, as its name is read as one, and the whole run takes a little under
+three minutes.

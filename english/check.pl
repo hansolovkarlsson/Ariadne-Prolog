@@ -28,23 +28,23 @@
 
 % grammatical(+Text, -Tree): Text is an atom; Tree is a reading of it.
 grammatical(Text, Tree) :-
-    words(Text, Words),
+    words(Text, Words, Names),
     unknown_words(Words, Unknown),
-    with_placements(Unknown, all_readings(Words, Trees)),
+    with_placements(Unknown, Names, all_readings(Words, Trees)),
     member(Tree, Trees).
 
 % check(+Text)
 check(Text) :-
-    words(Text, Words),
+    words(Text, Words, Names),
     unknown_words(Words, Unknown0),
     sort(Unknown0, Unknown),
-    exclude(placeable, Unknown, Unplaced),
+    unplaced(Unknown, Names, Unplaced),
     (   Words == []
     ->  format("no words~n")
     ;   Unplaced \== []
     ->  format("not grammatical: not in the lexicon: ~w~n", [Unplaced])
-    ;   with_placements(Unknown, verdict(Words)),
-        forall(member(W, Unknown),
+    ;   with_placements(Unknown, Names, verdict(Words)),
+        forall(( member(W, Unknown), placeable(W) ),
                ( placed_classes(W, Source, Cs), maplist(class_name, Cs, Ns),
                  atomic_list_concat(Ns, ' or ', C),
                  placed_note(Source, W, C) ))
@@ -82,7 +82,7 @@ verdict(Words) :-
 % word that disagrees; see imperative//3 in grammar.pl.
 all_readings(Words, Trees) :-
     findall(T, phrase(sentence(T, [], []), Words), Trees0),
-    (   Trees0 == [], \+ phrase(declarative(_, _, []), Words)
+    (   Trees0 == [], \+ faulty_statement(Words)
     ->  findall(T, phrase(imperative(T, [], []), Words), Trees1)
     ;   Trees1 = Trees0
     ),
@@ -94,15 +94,55 @@ all_readings(Words, Trees) :-
 % ending: "which dogs chases the cat" is chases disagreeing with which
 % dogs, not chases put before the cat without do. A command is a reading
 % here on the terms all_readings/2 gives it.
+%
+% The fault list is passed with max_faults/1 places, so a reading that
+% would record one more fails where it stands, and the places it leaves
+% unused are dropped. With the list open, every word WordNet lists as a
+% noun could be a bare noun, a fault, and a sentence of 25 words that no
+% reading fits took minutes to be refused; a sentence more than three
+% faults from English now gets no diagnosis.
+max_faults(3).
+
+%
+% A sentence is a statement or one of the two questions, and each is parsed
+% on its own, so the statements found say whether a command is to be tried,
+% and the statement is not searched for twice.
 diagnosis(Words, Violations) :-
-    findall(N-Vs, ( phrase(sentence(_, Vs, []), Words), cost(Vs, N) ), Readings0),
-    (   phrase(declarative(_, _, []), Words)
+    findall(G-(C-Vs),
+            ( member(G, [declarative, question, wh_question]),
+              fault_parse(G, Words, Vs), cost(Vs, C) ),
+            Tagged),
+    pairs_values(Tagged, Readings0),
+    (   memberchk(declarative-_, Tagged)
     ->  Readings = Readings0
-    ;   findall(N-Vs, ( phrase(imperative(_, Vs, []), Words), cost(Vs, N) ), Readings1),
+    ;   findall(C-Vs, ( fault_parse(imperative, Words, Vs), cost(Vs, C) ), Readings1),
         append(Readings0, Readings1, Readings)
     ),
     Readings \== [],
     msort(Readings, [_-Violations|_]).
+
+% fault_parse(+Goal, +Words, -Violations): Words read as Goal, one of the
+% kinds of sentence or a command, with at most max_faults/1 faults.
+fault_parse(G, Words, Vs) :-
+    max_faults(Max),
+    length(Slots, Max),
+    fault_phrase(G, Slots, Rest, Words),
+    length(Rest, Left),
+    Used is Max - Left,
+    length(Vs, Used),
+    append(Vs, _, Slots).
+
+fault_phrase(declarative, V0, V, Words) :- phrase(declarative(_, V0, V), Words).
+fault_phrase(question, V0, V, Words)    :- phrase(question(_, nogap, nogap, V0, V), Words).
+fault_phrase(wh_question, V0, V, Words) :- phrase(wh_question(_, V0, V), Words).
+fault_phrase(imperative, V0, V, Words)  :- phrase(imperative(_, V0, V), Words).
+
+% faulty_statement(+Words): Words are a statement with at most max_faults/1
+% faults.
+faulty_statement(Words) :-
+    max_faults(Max),
+    length(Slots, Max),
+    phrase(declarative(_, Slots, _), Words), !.
 
 cost([], 0).
 cost([V|Vs], N) :- cost(Vs, N0), weight(V, W), N is N0 + W.
@@ -177,6 +217,14 @@ do_for(W, Do, Base) :-
 
 unknown_words(Words, Unknown) :- exclude(known_word, Words, Unknown).
 
+% unplaced(+Unknown, +Names, -Unplaced): the unknown words that neither
+% WordNet nor an ending places, and that are not a name the sentence gives.
+% A name that WordNet places is looked up all the same, so "Church" in "The
+% Episcopal Church" is a noun as well as a name.
+unplaced(Unknown, Names, Unplaced) :-
+    exclude(placeable, Unknown, Unplaced0),
+    exclude([W]>>memberchk(W, Names), Unplaced0, Unplaced).
+
 known_word(W) :- noun_form(W, _, _), !.
 known_word(W) :- verb_form(W, _, _), !.
 known_word(W) :- be_form(W, _), !.
@@ -233,15 +281,15 @@ check_sentence(S, t(G0, N0, U0), t(G, N, U)) :-
 % unknown(Words) when a word is in neither the lexicon nor WordNet and its
 % ending does not place it.
 sentence_result(S, R) :-
-    words(S, Words),
+    words(S, Words, Names),
     unknown_words(Words, Unknown0),
     sort(Unknown0, Unknown),
-    exclude(placeable, Unknown, Unplaced),
+    unplaced(Unknown, Names, Unplaced),
     (   Unplaced \== []
     ->  R = unknown(Unplaced)
-    ;   with_placements(Unknown, all_readings(Words, Trees)), Trees \== []
+    ;   with_placements(Unknown, Names, all_readings(Words, Trees)), Trees \== []
     ->  length(Trees, N), R = yes(N)
-    ;   with_placements(Unknown, diagnosis(Words, [V|_]))
+    ;   with_placements(Unknown, Names, diagnosis(Words, [V|_]))
     ->  message(V, M), R = no(M)
     ;   R = no('no reading')
     ).
@@ -406,6 +454,7 @@ nom(nom(As, n(H), PPs)) --> adjective_words(As), [H], items(PPs).
 adjective_words([]) --> [].
 adjective_words([adj(A)|As]) --> [A], adjective_words(As).
 adjective_words([adjp(Ds, A)|As]) --> Ds, [A], adjective_words(As).
+adjective_words([name(W)|As]) --> [W], adjective_words(As).
 
 neg(not)  --> [not].
 neg(none) --> [].
@@ -436,11 +485,63 @@ tidy(A0, A) :-
 % from its word, as it is a word of its own: she's gives [she, 's]. So is
 % the apostrophe after a plural, dogs' giving [dogs, 's], since it marks a
 % possessive as 's does.
-words(Text, Words) :-
-    downcase_atom(Text, Lower),
-    atom_chars(Lower, Chars0),
+words(Text, Words) :- words(Text, Words, _).
+
+% words(+Text, -Words, -Names): Words as words/2 gives them, and Names, the
+% words that Text writes with a capital where a name can stand, lowercased
+% as Words has them. A capitalized word after the first is a name, unless
+% it is one of the small closed classes, a determiner, a pronoun, a
+% preposition, a conjunction or a form of be, have or do: "the Congress
+% Party", but not "The" in "The Episcopal Church". The first word is
+% capitalized whatever it is, so it is a name only with more to go on: the
+% word after it is a name too, "Michael Bruce Curry"; the lexicon lists it
+% as one, or WordNet writes it with a capital, "Springfield"; or nothing
+% knows the word at all, "Konnevesi". So "Dog barks" is still a noun with
+% no determiner, and "Woods was born" is too, since WordNet has woods only
+% in lowercase. A name keeps the other readings its word has: "Indian" is
+% a name and an adjective, and the grammar decides. Only the ASCII capitals
+% are seen, as downcase_atom/2 leaves others as they are.
+words(Text, Words, Names) :-
+    atom_chars(Text, Chars0),
     maplist(plain_apostrophe, Chars0, Chars),
-    split_letters(Chars, Words).
+    split_letters(Chars, Cased),
+    maplist(downcase_atom, Cased, Words),
+    names(Cased, Words, Names0),
+    sort(Names0, Names).
+
+names([], [], []).
+names([C|Cs], [W|Ws], Names) :-
+    maplist(later_name, Cs, Ws, Ns0),
+    exclude(==(none), Ns0, Ns),
+    (   capital(C), \+ closed_class(W),
+        (   Ws = [W2|_], memberchk(W2, Ns)
+        ;   proper(W)
+        ;   wn_name(W)
+        ;   \+ known_word(W), \+ placement(W, wordnet, _)
+        )
+    ->  Names = [W|Ns]
+    ;   Names = Ns
+    ).
+
+later_name(C, W, W)    :- capital(C), \+ closed_class(W), !.
+later_name(_, _, none).
+
+capital(C) :- atom_chars(C, [F|_]), char_type(F, upper(_)).
+
+closed_class(W) :- det(W, _, _), !.
+closed_class(W) :- pronoun(W, _, _), !.
+closed_class(W) :- prep(W), !.
+closed_class(W) :- coordinator(W), !.
+closed_class(W) :- subordinator(W), !.
+closed_class(W) :- be_form(W, _), !.
+closed_class(W) :- have_form(W, _), !.
+closed_class(W) :- do_form(W, _), !.
+closed_class(W) :- rel_pronoun(W, _), !.
+closed_class(W) :- wh_pronoun(W, _), !.
+closed_class(W) :- wh_det(W), !.
+closed_class(W) :- wh_adverb(W), !.
+closed_class(W) :- clitic(W, _), !.
+closed_class(W) :- neg_contraction(W, _), !.
 
 plain_apostrophe('\x2019\', '\'') :- !.
 plain_apostrophe(C, C).

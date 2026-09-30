@@ -231,6 +231,15 @@ good('Close the door please.').
 good('Don\'t bark.').
 good('Be quiet.').
 
+
+% Names: a capitalized word, a run of them, and a name before a noun.
+good('Leroy sleeps.').
+good('The dog sees Leroy.').
+good('Stanley Ralph Ross sleeps.').
+good('Alice saw Stanley Ralph Ross.').
+good('Leroy\'s dog barks.').
+good('The Congress Party is big.').
+good('I read the Leroy book.').
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -332,6 +341,9 @@ bad('Alice\'s dogs barks.',                subject_verb(barks)).
 bad('An dog\'s bone is big.',              article(an, dog)).
 bad('A old man\'s dog barks.',             article(a, old)).
 bad('Dog\'s bone is big.',                 bare(dog)).
+bad('The dog sees leroy.',                unknown).
+bad('Leroy sleep.',                        subject_verb(sleep)).
+bad('The dog sees Leroy Ross the cat.',    no_reading).
 
 readings('The old man walks in the park with his dog.', 2).
 readings('The dogs chase a cat.', 1).
@@ -347,6 +359,8 @@ readings('The children played football after school.', 2).
 readings('Close the door.', 1).
 readings('I know the dog sleeps.', 1).
 readings('The dog barks every night.', 1).
+readings('The Old house is big.', 1).
+readings('Alice saw Leroy Dogs.', 1).
 
 % splits(Text, Sentences): Text cuts into exactly these sentences.
 splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).
@@ -364,11 +378,11 @@ splits('', []).
 % its ending does not place), no_reading, or the first violation of the
 % best relaxed reading.
 verdict(Text, V) :-
-    words(Text, Words),
+    words(Text, Words, Names),
     unknown_words(Words, U),
-    (   member(W, U), \+ placeable(W)
+    (   unplaced(U, Names, [_|_])
     ->  V = unknown
-    ;   with_placements(U, verdict_of(Words, V))
+    ;   with_placements(U, Names, verdict_of(Words, V))
     ).
 
 verdict_of(Words, V) :-
@@ -412,8 +426,8 @@ check_bad([S-E|Ss], F0, F) :-
 
 check_readings([], F, F).
 check_readings([S-N|Ss], F0, F) :-
-    words(S, Words),
-    all_readings(Words, Ts),
+    words(S, Words, Names),
+    with_placements([], Names, all_readings(Words, Ts)),
     length(Ts, M),
     (   M =:= N -> F1 = F0
     ;   format("FAIL  readings: ~w  expected ~d, got ~d~n", [S, N, M]), F1 is F0 + 1

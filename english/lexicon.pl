@@ -33,7 +33,9 @@
 % length of one check, from WordNet when it is loaded or else by its ending;
 % see guess.pl. What is noun, verb(Frames), adj or adv, with the stem as
 % Entry, or irregular_plural, irregular_form or doubles, for WordNet's
-% irregular forms. The open classes and the spelling rules below each end
+% irregular forms; or name, for a word the sentence capitalizes, which is a
+% name for that check whether the lexicon lists it or not; see names/3 in
+% check.pl. The open classes and the spelling rules below each end
 % with a clause that reads it.
 :- dynamic(guessed/2).
 
@@ -44,6 +46,7 @@
 :- dynamic(wn_adj/1).
 :- dynamic(wn_adv/1).
 :- dynamic(wn_irregular/3).
+:- dynamic(wn_name/1).
 
 % agr_of(+Number, -Agr): the agreement of a third-person noun phrase.
 agr_of(sg, agr(n, y, y)).
@@ -115,6 +118,7 @@ irregular_plural(Sg, Pl) :- guessed(irregular_plural, Sg-Pl).
 proper(alice). proper(bob). proper(carol). proper(david). proper(emma).
 proper(frank). proper(london). proper(paris). proper(tom). proper(anna).
 proper(oscar). proper(ingrid).
+proper(W) :- guessed(name, W).
 
 /* ---------------- pronouns ---------------- */
 
