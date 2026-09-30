@@ -10,6 +10,12 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A number after a name.** *Class 91*, *Apollo 11*, *the InterCity 250
+  project*: a number in digits may belong to the name before it, and a
+  first word followed by one may be a name, *Class 93 is*. 368 checks; no
+  corpus sentence moved, as the *Class 91* sentence now stops at *entered
+  service*. (`5263460`)
+
 - **Lists, with *and* or *or*, and the commas they need.** A comma is
   now a word, read only where a rule places it: in a list, between two
   clauses, and before a last *please*. One list rule serves noun phrases,
