@@ -544,11 +544,18 @@ found the same way.
 
 ### A downcase that knew only ASCII
 
-`downcase_atom/2` lowercases A to Z and leaves every other letter as it is,
-so *Île* stays *Île*. The grammar checker lowercases each word before it
+`downcase_atom/2` lowercased each byte with C's `tolower()`, so A to Z and
+nothing else: a letter written in two bytes of UTF-8 kept its case, and
+*Île* stayed *Île*. The grammar checker lowercases each word before it
 looks it up, and *Île-de-France* came out unknown with its capital still
-on. SWI-Prolog lowercases every letter Unicode gives a lowercase for.
-Still open: it is on the roadmap with the grammar's other limits.
+on. `char_type/2` had case for A to Z only, so the two agreed with each
+other and with nothing past ASCII. SWI-Prolog lowercases every letter
+Unicode gives a lowercase for.
+
+On 2026-09-30 all three came to read one table in C, Unicode's one-to-one
+mappings for Latin-1, Latin Extended-A, Greek and basic Cyrillic, and the
+reference lists the table's reach as a deviation (`f80b1b7`). A test walks the
+table and checks that every mapping goes back where it came from.
 
 Found on 2026-09-29 by the second corpus, the first text here drawn from
 outside, with names in French, German, Turkish and Russian.

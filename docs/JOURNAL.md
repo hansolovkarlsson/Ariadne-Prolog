@@ -1052,7 +1052,7 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 395 checks: good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. |
+| `make english` | The grammar checker's 396 checks: good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. |
 | `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of `english/corpus.txt` and the fifty of `english/corpus2.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
@@ -1063,7 +1063,7 @@ something it would have caught; those arrived with the program they check.
 ## Where it stands
 
 About 7,800 lines of hand-written C, 757 lines of library written in Prolog,
-a 335-test suite with a second leg that collects and a deep-term run beside
+a 338-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
 2,380 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own

@@ -10,6 +10,13 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Fixed
 
+- **Letters past ASCII have case.** `upcase_atom/2` and `downcase_atom/2`
+  changed bytes, so *Île* kept its capital; `char_type/2` knew the case of
+  A to Z only. All three now read one table, Unicode's one-to-one mappings
+  for Latin-1, Latin Extended-A, Greek and basic Cyrillic; the reference
+  lists its reach under deviations. In the grammar checker a capital past
+  ASCII marks a name. 338 tests, 396 grammar checks. (`f80b1b7`)
+
 - **The sentence splitter no longer cuts after an abbreviation it does
   not list**, when the text shows what it is: initials, *N.* or *U.S.*,
   and a short word before a number, *Vol. 3*, *No. 5*. *Lit.* joins the

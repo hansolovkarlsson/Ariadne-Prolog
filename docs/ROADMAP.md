@@ -97,8 +97,7 @@ These change the shape of the system rather than adding to it.
      need, a number after a name, and nouns before nouns; it passes 7.
      What is left:
      - a name at the start of a sentence that WordNet has only in
-       lowercase, *Woods was born*; capitals outside ASCII,
-       *Île*, which `downcase_atom/2` leaves as they are;
+       lowercase, *Woods was born*;
      - what lists leave: a list that mixes nouns under one determiner with
        a noun phrase, *an Indian politician, author and a member*; verb
        phrases joined, *made by Retro Studios and published by Nintendo*;
