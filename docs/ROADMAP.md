@@ -95,8 +95,8 @@ These change the shape of the system rather than adding to it.
      cause, is in the same README. Names, its largest cause, were done
      the same day, then lists with *and* and *or* and the commas they
      need, a number after a name, nouns before nouns, and on 2026-09-30
-     mass nouns, a phrase before the subject and a rough number; it
-     passes 9.
+     mass nouns, a phrase before the subject, a rough number, *a kind of*
+     and adverbs after *be*; it passes 10.
      What is left:
      - a name at the start of a sentence that WordNet has only in
        lowercase, *Woods was born*;
@@ -108,7 +108,7 @@ These change the shape of the system rather than adding to it.
        chairman of ...*; a request without a verb, *two cups of tea,
        please*, which the first corpus now refuses;
      - superlatives, *largest*; ordinals in digits, *27th*;
-     - constructions: *a kind of*; *also* after *be*; dates; brackets;
+     - constructions: dates; brackets;
      - participles, after a noun, *a movie directed by*, and before it,
        *the presiding bishop*: written on 2026-09-30 and held behind the
        parser, below. They were correct, 417 checks passing, but the

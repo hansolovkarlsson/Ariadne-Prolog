@@ -32,6 +32,13 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A kind of, and adverbs after be.** *It is a kind of rock*, *some sort
+  of animal*, *any kind of separation or break*: after *kind*, *sort* or
+  *type*, *of* takes a singular noun with no determiner. *It is also the
+  capital*: the copula takes the adverbs a verb may have before it. *Any*
+  is a determiner. 418 checks; the second corpus goes to 10 grammatical.
+  (`0d773ba`)
+
 - **A phrase before the subject, and a rough number.** *Last night the dog
   barked*, *in 2019, 978 people lived there*: a statement may open with an
   adverb, a prepositional phrase or a time phrase, with a comma or none.
