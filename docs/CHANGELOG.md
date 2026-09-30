@@ -10,6 +10,17 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Lists, with *and* or *or*, and the commas they need.** A comma is
+  now a word, read only where a rule places it: in a list, between two
+  clauses, and before a last *please*. One list rule serves noun phrases,
+  *Alice, Bob and Carol sing*, nouns under one determiner, *a doctor and
+  teacher*, and adjectives, *big, old and happy*, *a big, old dog*. *Or*
+  agrees with the nearest, *the dog or the cats bark*. Dropping commas had
+  made passes for the wrong reason, and the first corpus loses one: *two
+  cups of tea, please* has no verb. 363 checks; the first corpus 49 of 50,
+  the second still 6, and `make english-wordnet` a minute faster.
+  (`f4b8c6c`)
+
 - **Names, known by their capital.** The tokenizer notes which words a
   sentence capitalizes, and each is a name there beside its other
   readings; the first word only when the next is a name too, when WordNet
