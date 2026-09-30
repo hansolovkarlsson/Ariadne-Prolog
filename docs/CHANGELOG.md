@@ -25,6 +25,12 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A phrase before the subject, and a rough number.** *Last night the dog
+  barked*, *in 2019, 978 people lived there*: a statement may open with an
+  adverb, a prepositional phrase or a time phrase, with a comma or none.
+  *About 2,850 people*, *nearly six dogs*: a number may be made rough. 411
+  checks; the second corpus goes to 9 grammatical. (`092b4cd`)
+
 - **Mass nouns by kind, and WordNet's substances.** 113 more nouns may
   stand in the singular with no article, listed by kind: drinks,
   qualities and feelings, fields of study, sports, broadcasting,

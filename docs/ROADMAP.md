@@ -95,7 +95,8 @@ These change the shape of the system rather than adding to it.
      cause, is in the same README. Names, its largest cause, were done
      the same day, then lists with *and* and *or* and the commas they
      need, a number after a name, nouns before nouns, and on 2026-09-30
-     mass nouns; it passes 8.
+     mass nouns, a phrase before the subject and a rough number; it
+     passes 9.
      What is left:
      - a name at the start of a sentence that WordNet has only in
        lowercase, *Woods was born*;
@@ -109,8 +110,7 @@ These change the shape of the system rather than adding to it.
      - superlatives, *largest*; ordinals in digits, *27th*;
      - constructions: a participle after its noun, *a movie directed by*,
        and before it, *the presiding bishop*; *a kind of*; *also* after
-       *be*; a phrase before the subject, *In geology, ...* and *Last night
-       the dog barked*; *about* with a number; dates; brackets.
+       *be*; dates; brackets.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
