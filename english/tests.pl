@@ -189,6 +189,11 @@ good('A coffee is good.').
 good('Alice likes happiness.').
 good('Alice wants education.').
 bad('Alice wants station.',               bare(station)).
+bad('Yesterday the dog bark.',             subject_verb(bark)).
+bad('Yesterday dog barked.',               bare(dog)).
+bad('In the garden, sleeps.',              no_reading).
+bad('About the dog barked.',               no_reading).
+bad('Quite the dog barked.',               no_reading).
 
 % Stage 3: the closed classes WordNet does not have.
 good('The dog barks and the cat sleeps.').
@@ -266,6 +271,14 @@ good('A small but happy dog barks.').
 good('The dog barks, but the cat sleeps.').
 good('If it rains, the dog sleeps.').
 good('Close the door, please.').
+
+% A phrase before the subject.
+good('Yesterday the dog barked.').
+good('Last night the dog barked.').
+good('In the garden, the children played.').
+good('Every day the dog sleeps in the kitchen.').
+good('About six dogs barked.').
+good('Really, the dog barked.').
 
 % Nouns before nouns.
 good('The dog house is big.').
@@ -421,6 +434,8 @@ readings('Alice saw Leroy Dogs.', 1).
 % A number after a name may be part of it, so Bob 3 is a name as well as
 % Bob and three dogs.
 readings('Alice gave Bob 3 dogs.', 2).
+% A rough number, and about six as a phrase before the subject.
+readings('About six dogs barked.', 2).
 readings('The dogs and cats sleep.', 2).
 readings('Alice, Bob, and Carol sing.', 1).
 readings('The dog is big, old and happy.', 1).

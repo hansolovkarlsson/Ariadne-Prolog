@@ -62,6 +62,27 @@ declarative(sub_first(C, S1, T), V0, V) -->
     statement(S2, nogap, nogap, V1, V2),
     clauses_after(S2, T, V2, V).
 
+% A statement may open with a phrase of the kind that can follow the verb,
+% an adverb, a prepositional phrase or a noun phrase of time, with a comma
+% after it or none: "yesterday the dog barked", "in 2019, 978 people lived
+% there", "last night the dog barked". The phrase goes with the statement
+% after it, which may open with another. A word that only makes a number
+% rough, "about", "nearly", is no adverb there, nor are "too" and "quite":
+% "about the dog barked" is no sentence.
+declarative(fronted(A, T), V0, V) -->
+    fronted(A, V0, V1),
+    optional_comma,
+    declarative(T, V1, V).
+
+fronted(adv(A), V, V) --> [A], { adv(A), \+ approximator(A), \+ inner_adverb(A) }.
+
+% inner_adverb(Word): an adverb that qualifies a word inside the sentence
+% and never opens one, "too", "quite". Other degree words can: "really,
+% the dog barked", "rather, the dog slept".
+inner_adverb(too). inner_adverb(quite).
+fronted(PP, V0, V) --> pp(PP, nogap, nogap, V0, V).
+fronted(npadv(D, N), V, V) --> [D, N], { adverbial_np(D, N) }.
+
 % imperative(-Tree, V0, V): a command, its verb in the base form and no
 % subject: "close the door", "please be quiet", "don't bark". check.pl reads
 % a sentence this way only when it has no other reading, and cannot be read
@@ -258,8 +279,9 @@ names_only(nom([A|As], n(H), _)) :-
     forall(member(X, [A|As]), ( X = name(_) ; X = adj(W), proper(W) )).
 
 % determiner(-Det, -Number, -Sound): a determiner; such before a or an,
-% "such a sunset"; or a number that takes one before it, "a hundred", "two
-% thousand". Each two-word one counts as one word.
+% "such a sunset"; a number that takes one before it, "a hundred", "two
+% thousand"; or a number with a word before it that makes it rough,
+% "about six". Each two-word one counts as one word.
 determiner(D, DNum, DSound) --> [D], { det(D, DNum, DSound) }.
 determiner(D, sg, S) -->
     [such, A], { ( A == a ; A == an ), det(A, sg, S),
@@ -267,6 +289,16 @@ determiner(D, sg, S) -->
 determiner(D, pl, _) -->
     [A, B], { ( A == a ; number_word(A, _) ), big_number(B),
               atomic_list_concat([A, B], ' ', D) }.
+determiner(D, Num, _) -->
+    [A, N], { approximator(A), number_word(N, Num),
+              atomic_list_concat([A, N], ' ', D) }.
+
+% approximator(Word): a word that goes before a number to say it is not
+% exact, "about 2,850 people", "nearly six years", "over a thousand" not
+% among them, as the number must be one word.
+approximator(about). approximator(around). approximator(nearly).
+approximator(almost). approximator(approximately). approximator(roughly).
+approximator(over). approximator(under).
 
 % possessor(-Tree, V0, V): a noun phrase and 's, standing where a
 % determiner would: "Alice's dog", "the old farmer's dog". A possessor can

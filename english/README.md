@@ -124,6 +124,10 @@ end of this file.
   sleeps*, *if it rains, the dog sleeps*) and before a last *please*;
   anywhere else it leaves the sentence with no reading, so *Alice, Bob
   sing* and *the dog, barks* fail.
+- **A phrase before the subject**: *yesterday the dog barked*, *in 2019,
+  978 people lived there*, *last night the dog barked*, with a comma or
+  none; but not *about the dog barked*.
+- **A rough number**: *about 2,850 people*, *nearly six years*.
 - **Nouns before nouns**: *the record label*, *a water polo player*, *an
   apple tree*, the modifying nouns in the singular and after any
   adjectives, and *a* or *an* by the first of them.
@@ -519,4 +523,16 @@ was left out. The months needed nothing, since a capital already makes
 its 36 readings, 18 read *the Class 91 locomotives that entered service*,
 and 18 still read *the Class that 91 locomotives service*, since nothing
 in the grammar prefers one reading to another.
+
+A phrase before the subject came next, of the kinds that can follow the
+verb: an adverb, a prepositional phrase, or a time phrase such as *last
+night*. The one sentence it moved was a pass for the wrong reason at
+first: *About 2,850 people lived there in January 2014* passed with
+*about* as an adverb over the whole sentence, or as *[about 2,850]* standing
+before *people lived there*, and neither is what it says. A rough number,
+*about 2,850 people*, *nearly six dogs*, gave it the reading it means, and
+*about* and *nearly*, with *too* and *quite*, stopped opening sentences as
+adverbs; *really* and *rather* still do. It keeps one reading it does not
+mean, *[about 2,850] people lived there*, which is English in form. The
+corpus gives **9 grammatical, 32 not, and 9 unknown**.
 
