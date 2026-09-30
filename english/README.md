@@ -140,6 +140,10 @@ end of this file.
   *was chased*, not *can barks* or *has ate*.
 - **The order of auxiliaries**: *might have been chased*, not *is having
   eaten* or *can can swim*.
+- **The mark at the end fits the sentence**: a question ends with a
+  question mark, and a statement or a command with a full stop or an
+  exclamation mark, so *The dog barks?* and *Does the dog bark.* are both
+  refused. Text with no mark at the end is taken as it is.
 - **Negation and questions need an auxiliary**: *does not bark* and *does
   the dog bark*, not *barks not* or *barks the dog*. *Be* needs none: *is
   not happy*, *is the dog happy*.

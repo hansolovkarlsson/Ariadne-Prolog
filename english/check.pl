@@ -29,13 +29,15 @@
 % grammatical(+Text, -Tree): Text is an atom; Tree is a reading of it.
 grammatical(Text, Tree) :-
     words(Text, Words, Names),
+    end_mark(Text, Mark),
     unknown_words(Words, Unknown),
-    with_placements(Unknown, Names, all_readings(Words, Trees)),
+    with_placements(Unknown, Names, marked_readings(Words, Mark, readings(Trees))),
     member(Tree, Trees).
 
 % check(+Text)
 check(Text) :-
     words(Text, Words, Names),
+    end_mark(Text, Mark),
     unknown_words(Words, Unknown0),
     sort(Unknown0, Unknown),
     unplaced(Unknown, Names, Unplaced),
@@ -43,7 +45,7 @@ check(Text) :-
     ->  format("no words~n")
     ;   Unplaced \== []
     ->  format("not grammatical: not in the lexicon: ~w~n", [Unplaced])
-    ;   with_placements(Unknown, Names, verdict(Words)),
+    ;   with_placements(Unknown, Names, verdict(Words, Mark)),
         forall(( member(W, Unknown), placeable(W) ),
                ( placed_classes(W, Source, Cs), maplist(class_name, Cs, Ns),
                  atomic_list_concat(Ns, ' or ', C),
@@ -60,20 +62,60 @@ class_name(verb, 'a verb').
 class_name(adj,  'an adjective').
 class_name(adv,  'an adverb').
 
-% verdict(+Words): prints whether Words are grammatical, and how or why not.
-verdict(Words) :-
-    (   all_readings(Words, Trees), Trees \== []
+% verdict(+Words, +Mark): prints whether Words, ending in Mark, are
+% grammatical, and how or why not.
+verdict(Words, Mark) :-
+    marked_readings(Words, Mark, Out),
+    (   Out = readings(Trees)
     ->  length(Trees, N),
         (   N =:= 1
         ->  Trees = [T1], brackets(T1, B), format("grammatical: ~w~n", [B])
         ;   format("grammatical, ~d readings:~n", [N]),
             forall(member(T, Trees), (brackets(T, B), format("  ~w~n", [B])))
         )
+    ;   Out = wrong_mark(V)
+    ->  format("not grammatical: "),
+        explain([V])
     ;   diagnosis(Words, Violations)
     ->  format("not grammatical: "),
         explain(Violations)
     ;   format("not grammatical: the words do not make a sentence this grammar knows~n")
     ).
+
+% end_mark(+Text, -Mark): the full stop, question mark or exclamation mark
+% that ends Text, past any closing quotes or brackets, or none.
+end_mark(Text, Mark) :-
+    atom_chars(Text, Cs0),
+    reverse(Cs0, Cs),
+    last_mark(Cs, Mark).
+
+last_mark([C|Cs], Mark) :- ( layout(C) ; closer(C) ), !, last_mark(Cs, Mark).
+last_mark([C|_], C) :- sentence_end(C), !.
+last_mark(_, none).
+
+% marked_readings(+Words, +Mark, -Outcome): the readings of Words that its
+% end mark allows, readings(Trees); or, when it has readings and the mark
+% allows none of them, wrong_mark(punctuation(Mark)); or none. A question
+% ends with a question mark, and a statement or a command with a full stop
+% or an exclamation mark, so "The dog barks?" and "Does the dog bark." are
+% each refused. Text with no mark at the end, a heading or a fragment
+% checked on its own, is taken as it is.
+marked_readings(Words, Mark, Out) :-
+    all_readings(Words, Trees0),
+    (   Trees0 == []
+    ->  Out = none
+    ;   include(fits_mark(Mark), Trees0, Trees), Trees \== []
+    ->  Out = readings(Trees)
+    ;   Out = wrong_mark(punctuation(Mark))
+    ).
+
+fits_mark(none, _).
+fits_mark('?', T) :- question_tree(T).
+fits_mark('.', T) :- \+ question_tree(T).
+fits_mark('!', T) :- \+ question_tree(T).
+
+question_tree(q(_, _, _, _)).
+question_tree(wh(_, _)).
 
 % all_readings(+Words, -Trees): every distinct reading. A word can be one form
 % twice over, as read is both present and past, and the tree does not say
@@ -169,6 +211,11 @@ message(article(D, W), M) :-
     format(atom(M), "'~w ~w' should be '~w ~w'", [D, W, Other, W]).
 message(case(W), M) :-
     format(atom(M), "the pronoun '~w' is in the wrong case for where it stands", [W]).
+message(punctuation('?'), M) :-
+    format(atom(M), "a question mark ends a question, and this is not one", []).
+message(punctuation(P), M) :-
+    P \== '?',
+    format(atom(M), "a question ends with a question mark, not '~w'", [P]).
 message(bare(N), M) :-
     format(atom(M), "the singular noun '~w' needs a determiner, such as 'the' or 'a'", [N]).
 message(verb_form(Prev, W, Form), M) :-
@@ -283,13 +330,18 @@ check_sentence(S, t(G0, N0, U0), t(G, N, U)) :-
 % ending does not place it.
 sentence_result(S, R) :-
     words(S, Words, Names),
+    end_mark(S, Mark),
     unknown_words(Words, Unknown0),
     sort(Unknown0, Unknown),
     unplaced(Unknown, Names, Unplaced),
     (   Unplaced \== []
     ->  R = unknown(Unplaced)
-    ;   with_placements(Unknown, Names, all_readings(Words, Trees)), Trees \== []
-    ->  length(Trees, N), R = yes(N)
+    ;   with_placements(Unknown, Names, marked_readings(Words, Mark, Out)),
+        Out \== none
+    ->  (   Out = readings(Trees)
+        ->  length(Trees, N), R = yes(N)
+        ;   Out = wrong_mark(V), message(V, M), R = no(M)
+        )
     ;   with_placements(Unknown, Names, diagnosis(Words, [V|_]))
     ->  message(V, M), R = no(M)
     ;   R = no('no reading')

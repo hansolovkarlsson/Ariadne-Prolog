@@ -269,6 +269,14 @@ good('I read the picture book.').
 good('The school bus stopped at the train station.').
 good('An apple tree grows in the garden.').
 good('The old stone house is big.').
+
+% The mark at the end: a question ends with ?, a statement or a command with
+% . or !; with no mark the text is taken as it is.
+good('The dog barks!').
+good('Close the door!').
+good('The dog barks').
+good('Does the dog bark').
+good('"Does the dog bark?"').
 bad('The dogs chases a cat.',              subject_verb(chases)).
 bad('The dog chase a cat.',                subject_verb(chase)).
 bad('I is happy.',                         subject_verb(is)).
@@ -383,6 +391,12 @@ bad('The dog, and the cat sleep.',         no_reading).
 bad('Two cups of tea, please.',            no_reading).
 bad('A apple tree grows.',                  article(a, apple)).
 bad('The dog house are big.',              subject_verb(are)).
+bad('The dog barks?',                      punctuation('?')).
+bad('Close the door?',                     punctuation('?')).
+bad('Does the dog bark.',                  punctuation('.')).
+bad('What did the dog chase.',             punctuation('.')).
+bad('Is the dog happy!',                   punctuation('!')).
+bad('"The dog barks?"',                    punctuation('?')).
 
 readings('The old man walks in the park with his dog.', 2).
 readings('The dogs chase a cat.', 1).
@@ -426,15 +440,19 @@ splits('', []).
 % best relaxed reading.
 verdict(Text, V) :-
     words(Text, Words, Names),
+    end_mark(Text, Mark),
     unknown_words(Words, U),
     (   unplaced(U, Names, [_|_])
     ->  V = unknown
-    ;   with_placements(U, Names, verdict_of(Words, V))
+    ;   with_placements(U, Names, verdict_of(Words, Mark, V))
     ).
 
-verdict_of(Words, V) :-
-    (   all_readings(Words, [_|_])
+verdict_of(Words, Mark, V) :-
+    marked_readings(Words, Mark, Out),
+    (   Out = readings(_)
     ->  V = grammatical
+    ;   Out = wrong_mark(V0)
+    ->  V = V0
     ;   diagnosis(Words, [V0|_])
     ->  V = V0
     ;   V = no_reading
