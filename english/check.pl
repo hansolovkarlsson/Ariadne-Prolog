@@ -45,7 +45,7 @@ check(Text) :-
     ->  format("no words~n")
     ;   Unplaced \== []
     ->  format("not grammatical: not in the lexicon: ~w~n", [Unplaced])
-    ;   with_placements(Unknown, Names, verdict(Words, Mark)),
+    ;   with_placements(Unknown, Names, report_verdict(Words, Mark)),
         forall(( member(W, Unknown), placeable(W) ),
                ( placed_classes(W, Source, Cs), maplist(class_name, Cs, Ns),
                  atomic_list_concat(Ns, ' or ', C),
@@ -62,9 +62,9 @@ class_name(verb, 'a verb').
 class_name(adj,  'an adjective').
 class_name(adv,  'an adverb').
 
-% verdict(+Words, +Mark): prints whether Words, ending in Mark, are
+% report_verdict(+Words, +Mark): prints whether Words, ending in Mark, are
 % grammatical, and how or why not.
-verdict(Words, Mark) :-
+report_verdict(Words, Mark) :-
     marked_readings(Words, Mark, Out),
     (   Out = readings(Trees)
     ->  length(Trees, N),

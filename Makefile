@@ -100,6 +100,7 @@ tutorials: $(BIN)
 # The English grammar checker in english/: its own checks, then one sentence
 # of each kind through check/1, as the README shows them.
 english: $(BIN)
+	! $(BIN) -q english/tests.pl -g true 2>&1 | grep Warning
 	$(BIN) -q english/tests.pl -g run
 	$(BIN) -q english/check.pl -g "check('The dogs chase a cat.'), halt"
 	$(BIN) -q english/check.pl -g "check('The dogs chases a cat.'), halt"
