@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Forty-eight defects, in five cohorts that failed for five different reasons:
+Forty-nine defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -25,7 +25,7 @@ Forty-eight defects, in five cohorts that failed for five different reasons:
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
-  on 2026-09-27, one on 2026-09-28 and six on 2026-09-29.
+  on 2026-09-27, one on 2026-09-28, six on 2026-09-29 and one on 2026-09-30.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
@@ -577,6 +577,26 @@ Found on 2026-09-29 by cutting the second corpus's text with the checker's
 own splitter, which was chosen for the purpose so that its faults would
 show.
 
+### A rename onto the tests' own predicate
+
+Checking the mark at the end of a sentence (`d27c836`) renamed the
+checker's `verdict/1`, which prints a verdict, to `verdict/2`. The grammar's
+`tests.pl` already had a `verdict/2` of its own, and a predicate belongs to
+the file that first gave it clauses, so loading the tests replaced the
+checker's with a warning. Nothing failed, since the tests never call
+`check/1`, and the warning was printed on every run for a day, in CI's log
+too. Each run's output had been filtered down to the line with the count,
+and the warning was not on it. The checker's is `report_verdict/2` now, and
+`make english` fails if loading the grammar and its tests prints a warning
+(`eb320e4`).
+
+Found on 2026-09-30 by running three new checks against the old code in a
+scratch copy and reading the whole of its output.
+
+*What this says:* the loader's warning was built for exactly this, on
+2026-09-28, and it worked. A warning nobody reads is a check that cannot
+fail, so it now fails the build.
+
 ## What found what
 
 | Found by | Count |
@@ -587,6 +607,7 @@ show.
 | Loading a large program and measuring it | 1 |
 | Running ordinary sentences through the grammar | 3 |
 | Reading a corpus's passes with their brackets | 1 |
+| Reading the whole output of a run that was usually filtered | 1 |
 | Running the tokenizer on a case before building on it | 1 |
 | Timing each commit, looking for another cause | 1 |
 | Timing each sentence of a corpus, then each stage of one | 1 |
@@ -603,7 +624,7 @@ show.
 
 Three things stand out.
 
-**The test suite found four of forty-eight.** It is a good suite, 334 tests
+**The test suite found four of forty-nine.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
@@ -645,6 +666,7 @@ Each standing check exists because of something above:
 | `run_tests` refuses to start while any arity of `test` other than 2 exists | the thirteen tests that consulted as `test/3` and were never run |
 | `make test` loads two files that define one predicate, one that defines `member/2`, one file twice, and one file by two spellings of its path | the loader that merged clauses from every source |
 | `space_clause`: 10,000 small facts must cost under a kilobyte each, read from `statistics(program, _)` | the 4 KB arena blocks, which no check measured |
+| `make english` fails if loading the grammar and its tests prints a warning | a rename onto the tests' own `verdict/2`, warned about on every run for a day |
 
 ## What is probably still wrong
 

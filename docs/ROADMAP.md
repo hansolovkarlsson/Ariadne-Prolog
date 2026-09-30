@@ -94,7 +94,8 @@ These change the shape of the system rather than adding to it.
      19 are rejected and 31 have a word it does not know. Its record, by
      cause, is in the same README. Names, its largest cause, were done
      the same day, then lists with *and* and *or* and the commas they
-     need, a number after a name, and nouns before nouns; it passes 7.
+     need, a number after a name, nouns before nouns, and on 2026-09-30
+     mass nouns; it passes 8.
      What is left:
      - a name at the start of a sentence that WordNet has only in
        lowercase, *Woods was born*;
@@ -105,9 +106,7 @@ These change the shape of the system rather than adding to it.
        phrase beside another, *Springfield, Massachusetts*, *Mukesh Ambani,
        chairman of ...*; a request without a verb, *two cups of tea,
        please*, which the first corpus now refuses;
-     - more mass nouns and the months, *entered service*, which leaves
-       the *Class 91* sentence a pass for the wrong reason; superlatives,
-       *largest*; ordinals in digits, *27th*;
+     - superlatives, *largest*; ordinals in digits, *27th*;
      - constructions: a participle after its noun, *a movie directed by*,
        and before it, *the presiding bishop*; *a kind of*; *also* after
        *be*; a phrase before the subject, *In geology, ...* and *Last night

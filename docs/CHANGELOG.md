@@ -25,6 +25,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Mass nouns by kind, and WordNet's substances.** 113 more nouns may
+  stand in the singular with no article, listed by kind: drinks,
+  qualities and feelings, fields of study, sports, broadcasting,
+  illnesses; *knowledge is power*, *he died of cancer*. With WordNet, so
+  may any noun whose most frequent sense is a substance, *iron*, *glass*,
+  2,354 of them. 399 checks; the second corpus goes to 8 grammatical.
+  (`5c7e8f1`)
+
 - **The mark at the end of a sentence is checked.** A question ends with a
   question mark, and a statement or a command with a full stop or an
   exclamation mark: *The dog barks?* and *Does the dog bark.* are refused,
