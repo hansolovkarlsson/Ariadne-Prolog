@@ -61,6 +61,9 @@ noun(lion). noun(tiger). noun(rabbit). noun(snake). noun(fish). noun(sheep).
 noun(man). noun(woman). noun(child). noun(person). noun(boy). noun(girl).
 noun(baby). noun(friend). noun(teacher). noun(student). noun(doctor).
 noun(farmer). noun(king). noun(queen). noun(neighbour). noun(artist).
+% kind is an adjective as well, "a kind man", and a word listed here is not
+% looked up in WordNet, so its noun is listed too: "a kind of bird".
+noun(kind).
 noun(mouse). noun(foot). noun(tooth). noun(goose).
 noun(house). noun(garden). noun(park). noun(city). noun(village). noun(road).
 noun(river). noun(forest). noun(hill). noun(school). noun(library).
@@ -226,7 +229,7 @@ det(these, pl, _).   det(those, pl, _).
 det(every, sg, _).   det(each,  sg, _).
 det(some,  pl, _).   det(many,  pl, _).   det(several, pl, _).
 det(much,  mass, _).  det(such,  pl, _).
-det(few,   pl, _).   det(no,    _,  _).
+det(few,   pl, _).   det(no,    _,  _).   det(any,   _,  _).
 det(my,    _,  _).   det(your,  _,  _).   det(his,     _,  _).
 det(its,   _,  _).   det(our,   _,  _).   det(their,   _,  _).
 det(W,     Num, _) :- number_word(W, Num).

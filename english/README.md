@@ -128,6 +128,12 @@ end of this file.
   978 people lived there*, *last night the dog barked*, with a comma or
   none; but not *about the dog barked*.
 - **A rough number**: *about 2,850 people*, *nearly six years*.
+- **A kind of**: after *kind*, *sort* or *type*, *of* takes a singular
+  noun with no determiner, *a kind of rock*, *some sort of animal*, *any
+  kind of separation or break*; after other nouns it does not, *a picture
+  of bird*.
+- **Adverbs after *be***: *it is also the capital*, *the dog is always
+  happy*.
 - **Nouns before nouns**: *the record label*, *a water polo player*, *an
   apple tree*, the modifying nouns in the singular and after any
   adjectives, and *a* or *an* by the first of them.
@@ -535,4 +541,15 @@ before *people lived there*, and neither is what it says. A rough number,
 adverbs; *really* and *rather* still do. It keeps one reading it does not
 mean, *[about 2,850] people lived there*, which is English in form. The
 corpus gives **9 grammatical, 32 not, and 9 unknown**.
+
+*A kind of* and adverbs after *be* were next, each small. *Kind* had been
+an adjective only, and since a word the lexicon lists is not looked up in
+WordNet, it had no noun; *any* was no determiner. After *kind*, *sort* or
+*type*, *of* now takes a singular noun with no determiner, or several
+joined, and *some* takes *sort* and *kind* in the singular. The copula takes
+the adverbs a verb may have before it. The corpus gives **10 grammatical, 31
+not, and 9 unknown**: *In geology, a fracture is any kind of separation or
+break in a rock formation* passes, with three readings that differ only in
+where *in a rock formation* goes, and it needed the phrase before the
+subject from earlier in the day as well.
 

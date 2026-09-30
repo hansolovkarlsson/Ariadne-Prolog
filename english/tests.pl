@@ -194,6 +194,8 @@ bad('Yesterday dog barked.',               bare(dog)).
 bad('In the garden, sleeps.',              no_reading).
 bad('About the dog barked.',               no_reading).
 bad('Quite the dog barked.',               no_reading).
+bad('Some dog barks.',                     det_noun(some, dog)).
+bad('It is a picture of bird.',            bare(bird)).
 
 % Stage 3: the closed classes WordNet does not have.
 good('The dog barks and the cat sleeps.').
@@ -279,6 +281,13 @@ good('In the garden, the children played.').
 good('Every day the dog sleeps in the kitchen.').
 good('About six dogs barked.').
 good('Really, the dog barked.').
+
+% A kind of, and adverbs after be.
+good('It is a kind of bird.').
+good('It is some kind of bird.').
+good('It is any kind of cake or bread.').
+good('The dog is never hungry.').
+good('Alice is always a doctor.').
 
 % Nouns before nouns.
 good('The dog house is big.').

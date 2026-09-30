@@ -361,9 +361,11 @@ bare_ok(Head, Num, V0, V) :- agree(bare(Head), Num, pl, V0, V).
 
 % det_agrees(+Det, +Head, ?DetNumber, +Number, V0, V): the determiner and
 % the noun agree in number. A singular mass noun also takes some and much,
-% "some homework", "much bread"; much takes nothing else.
+% "some homework", "much bread"; much takes nothing else. Some takes a
+% singular kind or sort too, "some sort of animal".
 det_agrees(D, Head, DNum, sg, V, V) :-
     mass(Head), ( DNum == mass ; D == some ), !.
+det_agrees(some, Head, _, sg, V, V) :- kind_noun(Head), !.
 det_agrees(D, Head, DNum, Num, V0, V) :-
     agree(det_noun(D, Head), DNum, Num, V0, V).
 
@@ -379,7 +381,9 @@ nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
     modifiers(As),
     [Head], { noun_form(Head, _, Num) },
     { first_word(As, Head, First) },
-    pps(PPs, V0, V1),
+    kind_of(Head, KPs, V0, V01),
+    pps(PPs0, V01, V1),
+    { append(KPs, PPs0, PPs) },
     { agr_of(Num, Agr) },
     relative(Agr, Rels, V1, V),
     { append(PPs, Rels, Posts) }.
@@ -443,6 +447,27 @@ first_word([adjp([D|_], _)|_], _, D) :- !.
 first_word([name(W)|_], _, W) :- !.
 first_word([nmod(W)|_], _, W) :- !.
 first_word([], Head, Head).
+
+% kind_of(+Head, -PPs, V0, V): after kind, sort, type and their like, of and
+% a singular noun with no determiner, "a kind of rock", "some sort of
+% animal", where a noun that is counted would otherwise need one. A plural
+% or a mass noun there is an ordinary prepositional phrase, "a kind of
+% rocks", "a kind of bread". Two or more may be joined, "any kind of
+% separation or break".
+kind_of(Head, [pp(of, np(N))], V0, V) -->
+    { kind_noun(Head) },
+    [of], nominal(sg, _, H, N, V0, V), { \+ mass(H) }.
+kind_of(Head, [pp(of, np(coord(C, [N|Ns])))], V0, V) -->
+    { kind_noun(Head) },
+    [of], core_nominal(sg, _, _, N),
+    joined(kind_item, kind_last, [and, or], Ns, C, V0, V).
+kind_of(_, [], V, V) --> [].
+
+kind_item(N, V, V) --> core_nominal(sg, _, _, N).
+kind_last(N, V0, V) --> nominal(sg, _, _, N, V0, V).
+
+kind_noun(kind). kind_noun(kinds). kind_noun(sort). kind_noun(sorts).
+kind_noun(type). kind_noun(types). kind_noun(variety). kind_noun(form).
 
 pps([PP|PPs], V0, V) --> pp(PP, nogap, nogap, V0, V1), pps(PPs, V1, V).
 pps([], V, V) --> [].
@@ -549,9 +574,11 @@ rest(do,    _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(base, 6, Tok, VP, G0,
 rest(perf,  _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(en, 3, Tok, VP, G0, G, V0, V).
 rest(prog,  _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(ing, 4, Tok, VP, G0, G, V0, V).
 rest(pass,  _, Tok, _, [VP], G0, G, V0, V) --> verb_phrase(pass, 6, Tok, VP, G0, G, V0, V).
-rest(cop,   _, _, _, [C|Ms], G0, G, V0, V) -->
+rest(cop,   _, _, _, Items, G0, G, V0, V) -->
+    pre_adverbs(As),
     predicate(C, G0, G1, V0, V1),
-    modifiers(Ms, G1, G, V1, V).
+    modifiers(Ms, G1, G, V1, V),
+    { append(As, [C|Ms], Items) }.
 rest(lex, Base, Tok, Form, Items, G0, G, V0, V) -->
     { verb(Base, Frames), member(Frame0, Frames), frame(Form, Frame0, Frame) },
     complements(Frame, Tok, Cs, G0, G1, V0, V1),
@@ -598,7 +625,9 @@ complements(ing, Tok, [VP], G0, G, V0, V) -->
 complementizer(that) --> [that].
 complementizer(none) --> [].
 
-% What follows be: an adjective, a noun phrase, or a place.
+% What follows be: an adjective, a noun phrase, or a place, with the
+% adverbs that may stand before a verb before it: "is also the capital",
+% "is always happy".
 predicate(AP, G, G, V, V) --> adj_group(AP).
 predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
 predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
