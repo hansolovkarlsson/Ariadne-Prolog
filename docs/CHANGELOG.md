@@ -32,6 +32,11 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Dates.** *On April 14, 1948*, *on 10 May 1969*: a date with its year,
+  or with the day before the month, is a noun phrase. A month and a
+  number, *January 2014*, already read as a name and a number. 422
+  checks; the second corpus goes to 11 grammatical. (`448c145`)
+
 - **A kind of, and adverbs after be.** *It is a kind of rock*, *some sort
   of animal*, *any kind of separation or break*: after *kind*, *sort* or
   *type*, *of* takes a singular noun with no determiner. *It is also the
