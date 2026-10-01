@@ -1042,6 +1042,75 @@ minutes. That is the useful number: four features that each fixed a cause
 cleanly moved it by seven, because most of its sentences fail on three or
 four causes at once, and a sentence passes only when the last goes.
 
+## Day nine: the second corpus to eighteen, and a feature held for time
+
+The day opened on the fixes the evening had left. The mark at the end of a
+sentence was the first, and it had a choice in it: English allows a
+statement asked as a question, *You're leaving?*, in speech. Hans chose
+strict both ways, so a question ends with a question mark and anything
+else with a full stop or an exclamation mark (`d27c836`). The splitter
+came next, and its fix was a change of method rather than a longer list
+(`b58529a`). A list had already had to choose for *no.* and *etc.*, which
+end real sentences too, so the splitter now knows an abbreviation by its
+shape: initials, and a short word before a number. Only *lit.* joined the
+list. The sixty leads drawn the day before were cut again, and only the
+four wrong ones changed. The last fix was in the interpreter.
+`downcase_atom/2` lowercased bytes, and `char_type/2` knew the case of A
+to Z; both now read one table in C for Latin-1, Latin Extended-A, Greek
+and basic Cyrillic (`f80b1b7`). It was written out rather than taken from
+`towlower()`, which in the C locale knows ASCII only on some of the
+platforms the matrix runs on, and a test walks the whole table and checks
+that every mapping goes back where it came from.
+
+Mass nouns were the first new work, and the rule from the evening before
+held: no word goes in because a corpus sentence needs it. They went in by
+kind, 113 of them, and WordNet gave the rest by a rule of its own data, a
+noun whose most frequent sense is in its substance category (`5c7e8f1`).
+Its food category was looked at and left out, as it holds *apple* and
+*pizza*. Checking the new tests against the old code, in a scratch copy
+with its whole output read, found two things. One check, *Happiness is
+wonderful*, passed on the old code too, because a capitalized first word
+nothing knows is a name. The other was a warning that had been on every
+run since the end mark went in: the checker's `verdict/2` had been renamed
+onto the tests' own, and loading the tests replaced it. Every run's output
+had been cut down to the line with the count, which is how a warning the
+loader was built to give went unread for a day. It is fixed, and `make
+english` now fails on any warning (`eb320e4`).
+
+A phrase before the subject (`092b4cd`) moved one sentence, and it moved
+it the wrong way at first: *About 2,850 people lived there* passed with
+*about* as an adverb over the whole sentence. A rough number gave it the
+reading it means, and the words that only qualify a number stopped opening
+sentences. The first version of that exclusion took out every degree word,
+which would have refused *Really, the dog barked*; and a check written to
+guard it, *Very the dog barked*, guarded nothing, since *very* is no
+adverb in the lexicon, and was dropped when taking the rule out left it
+green.
+
+Participles were written next and not kept. They were correct, but the
+corpus run went from 172 seconds of CPU to 668, and its two slowest
+sentences from 36 seconds and under 12 to 117 and 328. Profiling those
+found a cost that had nothing to do with participles: a failing sentence
+was searched for faulty statements twice, once to know whether a command
+could be tried and again for the diagnosis. Searching once (`9947d09`)
+took the run with participles to 397 seconds, and without them from 2:52
+to 2:09. Keeping participles out of the diagnosis only reached 366, and
+lost a diagnosis. Hans chose to hold them behind the parser decision, and
+the change waits in `scratch/participles.patch`. It is the first feature
+refused on time and not on correctness, which is what the roadmap said
+would decide between a chart parser and tabling.
+
+The afternoon took the rest of the constructions: *a kind of*, with *kind*
+given the noun the lexicon had never listed and *any* made a determiner
+(`0d773ba`); dates (`448c145`); and brackets (`d3d1ab8`), which were set
+aside rather than read, since what goes in a parenthesis is open-ended.
+Brackets moved more than any feature since names: seven sentences, from 11
+grammatical to 18, each read as it means. They were sentences whose other
+causes had all gone during the two days, a name, a list, nouns before
+nouns, a date, so that a bracket was the last thing in the way. That is
+the evening before's finding seen from the other side: the count moves by
+sentences, and it moves most when a cause is the last one many share.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1062,10 +1131,10 @@ something it would have caught; those arrived with the program they check.
 
 ## Where it stands
 
-About 7,800 lines of hand-written C, 757 lines of library written in Prolog,
+About 8,000 lines of hand-written C, 760 lines of library written in Prolog,
 a 338-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
-2,380 lines built on the interpreter, through all three of its stages, and a
+2,710 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own
 tables.
 
