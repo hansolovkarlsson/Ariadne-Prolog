@@ -74,7 +74,8 @@ report_verdict(Words, Mark) :-
         ->  Trees = [T1], brackets(T1, B), format("grammatical: ~w~n", [B])
         ;   format("grammatical, ~d readings:~n", [N]),
             forall(member(T, Trees), (brackets(T, B), format("  ~w~n", [B])))
-        )
+        ),
+        first_name_note(Words, Trees)
     ;   Out = wrong_mark(V)
     ->  format("not grammatical: "),
         explain([V])
@@ -83,6 +84,28 @@ report_verdict(Words, Mark) :-
         explain(Violations)
     ;   format("not grammatical: the words do not make a sentence this grammar knows~n")
     ).
+
+% first_name_note(+Words, +Trees): a line under the verdict when every
+% reading has the first word as a name and the word is a common word too:
+% "Woods was born" is read with Woods a name, since woods the noun would
+% need a determiner, and so is "Dog barks", whose writer may have meant the
+% noun. The tree prints a name and a noun alike, so the bracketing alone
+% does not show it.
+first_name_note([W|_], Trees) :-
+    proper(W), common_word(W),
+    forall(member(T, Trees), reads_name(W, T)), !,
+    format("  ('~w' is read as a name, since it begins the sentence with a capital)~n", [W]).
+first_name_note(_, _).
+
+common_word(W) :- ( noun_form(W, _, _) ; verb_form(W, _, _) ; adj(W) ; adv(W) ), !.
+
+% reads_name(+Word, +Tree): Tree holds a name that is Word or begins with it.
+reads_name(W, T) :-
+    sub_term(name(N), T),
+    ( N == W ; atom_concat(W, ' ', P), atom_concat(P, _, N) ), !.
+
+sub_term(X, T) :- X = T.
+sub_term(X, T) :- compound(T), T =.. [_|As], member(A, As), sub_term(X, A).
 
 % end_mark(+Text, -Mark): the full stop, question mark or exclamation mark
 % that ends Text, past any closing quotes or brackets, or none.
@@ -121,16 +144,39 @@ question_tree(wh(_, _)).
 
 % all_readings(+Words, -Trees): every distinct reading. A word can be one form
 % twice over, as read is both present and past, and the tree does not say
-% which, so the same tree is found twice and counted once. A command is
-% read only when nothing else can be, and no statement can be even with a
-% word that disagrees; see imperative//3 in grammar.pl.
+% which, so the same tree is found twice and counted once. A name and a
+% noun print alike too, [NP wood], so "Wood is hard" read with the name
+% and with the mass noun is one reading to the eye, and the noun's tree is
+% the one kept; see distinct/3. A command is read only when nothing else
+% can be, and no statement can be even with a word that disagrees; see
+% imperative//3 in grammar.pl.
 all_readings(Words, Trees) :-
     findall(T, phrase(sentence(T, [], []), Words), Trees0),
     (   Trees0 == [], \+ faulty_statement(Words)
     ->  findall(T, phrase(imperative(T, [], []), Words), Trees1)
     ;   Trees1 = Trees0
     ),
-    sort(Trees1, Trees).
+    sort(Trees1, Trees2),
+    distinct(Words, Trees2, Trees).
+
+% distinct(+Words, +Trees, -Kept): Trees less any that prints as an earlier
+% one does, or as one that does not read the first word as a name, so that
+% first_name_note/2 sees the name only when the sentence is read no other
+% way.
+distinct([W|_], Trees, Kept) :-
+    findall(B, ( member(T, Trees), \+ reads_name(W, T), brackets(T, B) ), Plain),
+    distinct(Trees, W, Plain, [], Kept).
+
+distinct([], _, _, _, []).
+distinct([T|Ts], W, Plain, Seen, Kept) :-
+    brackets(T, B),
+    (   (   memberchk(B, Seen)
+        ;   reads_name(W, T), memberchk(B, Plain)
+        )
+    ->  distinct(Ts, W, Plain, Seen, Kept)
+    ;   Kept = [T|Kept1],
+        distinct(Ts, W, Plain, [B|Seen], Kept1)
+    ).
 
 % diagnosis(+Words, -Violations): the reading with the least wrong, if the
 % grammar can read Words at all once agreement is relaxed. A verb out of
@@ -600,20 +646,20 @@ words(Text, Words) :- words(Text, Words, _).
 
 % words(+Text, -Words, -Names): Words as words/2 gives them, and Names, the
 % words that Text writes with a capital where a name can stand, lowercased
-% as Words has them. A capitalized word after the first is a name, unless
-% it is one of the small closed classes, a determiner, a pronoun, a
-% preposition, a conjunction or a form of be, have or do: "the Congress
-% Party", but not "The" in "The Episcopal Church". The first word is
-% capitalized whatever it is, so it is a name only with more to go on: the
-% word after it is a name too, "Michael Bruce Curry", or a number, "Class
-% 93"; the lexicon lists it
-% as one, or WordNet writes it with a capital, "Springfield"; or nothing
-% knows the word at all, "Konnevesi". So "Dog barks" is still a noun with
-% no determiner, and "Woods was born" is too, since WordNet has woods only
-% in lowercase. A name keeps the other readings its word has: "Indian" is
-% a name and an adjective, and the grammar decides. A capital past ASCII,
-% "Île" or "Çorlu", is seen as one where the interpreter's case table has
-% it: Latin-1, Latin Extended-A, Greek and basic Cyrillic.
+% as Words has them. A capitalized word is a name, unless it is one of the
+% small closed classes, a determiner, a pronoun, a preposition, a
+% conjunction, a number or a form of be, have or do, or "please": "the
+% Congress Party", but not "The" in "The Episcopal Church". The first word is capitalized whatever
+% it is, and nothing in the word tells "Woods was born" from "Dog barks",
+% since WordNet has woods only in lowercase; it is a name all the same,
+% and the verdict says so when the sentence is read no other way. The one
+% exception is a word that is a plural and no singular, "Dogs bark",
+% "Leaves fall", which is its noun and not a name, so that "Dogs barks" is
+% still refused; a name after it, or a number, "Leaves 2", makes it one.
+% A name keeps the other readings its word has: "Indian" is a name and an
+% adjective, and the grammar decides. A capital past ASCII, "Île" or
+% "Çorlu", is seen as one where the interpreter's case table has it:
+% Latin-1, Latin Extended-A, Greek and basic Cyrillic.
 words(Text, Words, Names) :-
     atom_chars(Text, Chars0),
     maplist(plain_apostrophe, Chars0, Chars1),
@@ -656,10 +702,8 @@ names([C|Cs], [W|Ws], Names) :-
     maplist(later_name, Cs, Ws, Ns0),
     exclude(==(none), Ns0, Ns),
     (   capital(C), \+ closed_class(W),
-        (   Ws = [W2|_], ( memberchk(W2, Ns) ; digits(W2) )
-        ;   proper(W)
-        ;   wn_name(W)
-        ;   \+ known_word(W), \+ placement(W, wordnet, _)
+        (   \+ plural_only(W)
+        ;   Ws = [W2|_], ( memberchk(W2, Ns) ; digits(W2) )
         )
     ->  Names = [W|Ns]
     ;   Names = Ns
@@ -667,6 +711,17 @@ names([C|Cs], [W|Ws], Names) :-
 
 later_name(C, W, W)    :- capital(C), \+ closed_class(W), !.
 later_name(_, _, none).
+
+% plural_only(+Word): Word is the plural of a noun, in the lexicon or in
+% WordNet, and is no noun in the singular: dogs, leaves, men. Not woods,
+% which WordNet lists on its own as well as under wood, and not sheep.
+plural_only(W) :-
+    known_word(W), !,
+    noun_form(W, _, pl), \+ noun_form(W, _, sg).
+plural_only(W) :-
+    placement(W, wordnet, Es),
+    memberchk(noun-S, Es), S \== W,
+    \+ memberchk(noun-W, Es).
 
 capital(C) :- atom_chars(C, [F|_]), char_type(F, upper(_)).
 
@@ -678,6 +733,9 @@ closed_class(W) :- subordinator(W), !.
 closed_class(W) :- be_form(W, _), !.
 closed_class(W) :- have_form(W, _), !.
 closed_class(W) :- do_form(W, _), !.
+closed_class(W) :- number_word(W, _), !.
+closed_class(W) :- big_number(W), !.
+closed_class(please).
 closed_class(W) :- rel_pronoun(W, _), !.
 closed_class(W) :- wh_pronoun(W, _), !.
 closed_class(W) :- wh_det(W), !.

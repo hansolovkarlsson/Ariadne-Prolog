@@ -148,8 +148,9 @@ end of this file.
 - **Pronoun case**: *she sees him*, not *him sleeps* or *she sees he*.
 - **Names are capitalized**: *John sleeps* and *the dog sees Leroy*, a name
   of several words, *Stanley Ralph Ross*, and a name before a noun, *the
-  Congress Party*; but *the dog sees john* has a noun with no determiner,
-  and so does *Dog barks*.
+  Congress Party*; but *the dog sees john* has a noun with no determiner.
+  The first word is capitalized whatever it is, so *Woods was born* and
+  *Dog barks* are each read with a name, and the verdict says so.
 - **A singular noun needs a determiner**: *dogs bark*, not *dog barks*,
   unless it is a mass noun: *water boils*, *some homework*, and *much
   bread* but not *much dog*. 147 are listed by kind (drinks,
@@ -232,13 +233,16 @@ lowercases them and notes which were capitalized, and each of those is a
 name for that check, beside whatever else the word is: *Indian* is a name
 and an adjective, and the grammar decides. A capitalized determiner,
 pronoun, preposition, conjunction or form of *be*, *have* or *do* is not a
-name, so *The Episcopal Church* is *the* and a name. The first word of a
-sentence is capitalized whatever it is, so it is a name only when the word
-after it is one too (*Michael Bruce Curry*), when the lexicon lists it or
-WordNet writes it with a capital (*Springfield*, *John*), or when nothing
-knows it at all (*Konnevesi*). Otherwise *Dog barks* would pass. A run of
-names is one name, and names stand before a noun as adjectives do, *Peace
-TV programs*. Capitals past ASCII count where the interpreter's case table
+name, so *The Episcopal Church* is *the* and a name, and nor is a number
+or *please*. The first word of a sentence is capitalized whatever it is,
+and nothing in the word tells *Woods was born* from *Dog barks*, since
+WordNet has *woods* only in lowercase; so it is a name too, and when the
+sentence is read no other way the verdict says so, *'woods' is read as a
+name, since it begins the sentence with a capital*. The exception is a
+word that is a plural and no singular, *Dogs bark*, *Leaves fall*, which
+stays its noun, so that *Dogs barks* is still refused. A run of names is
+one name, and names stand before a noun as adjectives do, *Peace TV
+programs*. Capitals past ASCII count where the interpreter's case table
 has them, Latin-1, Latin Extended-A, Greek and basic Cyrillic: *Île*,
 *Çorlu*, *Αθήνα*, *Москва*.
 
@@ -582,4 +586,26 @@ sentences went from unknown to not: *Sedan* begins its sentence and is
 read as the noun, as *Woods* is, and *Zigzag of Success* has no reading.
 The run takes three and a half minutes, as more sentences are now parsed
 to the end.
+
+On 2026-10-01 the first word of a sentence became a name like any other
+capitalized word. It had been one only with more to go on, since it is
+capitalized whatever it is: the word after it a name too, the lexicon or
+WordNet listing it as one, or nothing knowing it at all. That kept *Dog
+barks* a bare noun, and with it *Woods was born* and *Sedan is a commune*,
+since WordNet has *woods* and *sedan* only in lowercase; nothing in the
+word tells the two apart. Now all three are read with a name, and the
+verdict says so when the sentence is read no other way: *'woods' is read
+as a name, since it begins the sentence with a capital*. A word that is a
+plural and no singular, *Dogs*, *Leaves*, stays its noun, so *Dogs barks*
+is still refused, and a number and *please* are no names, so *Hundred dogs
+bark* and *Please close the door* read as before. Two readings that print
+alike, the name and the mass noun in *Bread is good*, are now counted
+once. The corpus still gives **18 grammatical, 29 not, and 3 unknown**:
+*Woods was born in Springfield* passes, and *Sedan is a commune in the
+Ardennes department and Grand Est region of France* passes, but each
+corpus sentence stops on something else, the comma in *Springfield,
+Massachusetts*, and *north-eastern France*, a hyphenated word WordNet has
+only closed up before a name that takes no adjective. *Elm was a
+municipality* is read past its first word too, and stops on its list. The
+run takes 3:41.
 

@@ -339,7 +339,7 @@ bad('Him sleeps.',                         case(him)).
 bad('She sees he.',                        case(he)).
 bad('Me am happy.',                        case(me)).
 bad('The dog bites they.',                 case(they)).
-bad('Dog barks.',                          bare(dog)).
+bad('Dog bark.',                           subject_verb(bark)).
 bad('Much dog barks.',                     det_noun(much, dog)).
 bad('The dog eats much apples.',           det_noun(much, apples)).
 bad('Alice drink tea.',                    subject_verb(drink)).
@@ -417,9 +417,13 @@ bad('She\'ll eats.',                       verb_form('\'ll', eats, base)).
 bad('Alice\'s dogs barks.',                subject_verb(barks)).
 bad('An dog\'s bone is big.',              article(an, dog)).
 bad('A old man\'s dog barks.',             article(a, old)).
-bad('Dog\'s bone is big.',                 bare(dog)).
+bad('The cat saw dog\'s bone.',            bare(dog)).
 bad('The dog sees leroy.',                unknown).
 bad('Leroy sleep.',                        subject_verb(sleep)).
+good('Dog barks.').
+good('Fox was in the garden.').
+good('Dog\'s bone is big.').
+bad('Dogs sleeps.',                        subject_verb(sleeps)).
 bad('The dog sees Leroy Ross the cat.',    no_reading).
 bad('Apollo 11 sleep.',                    subject_verb(sleep)).
 bad('The dog or the cat bark.',            subject_verb(bark)).
@@ -450,6 +454,7 @@ readings('Alice\'s friend\'s dog barks.', 1).
 readings('The dog barks and the cat sleeps.', 1).
 readings('The children played football after school.', 2).
 readings('Close the door.', 1).
+readings('Bread is good.', 1).
 readings('I know the dog sleeps.', 1).
 readings('The dog barks every night.', 1).
 readings('The Old house is big.', 1).
