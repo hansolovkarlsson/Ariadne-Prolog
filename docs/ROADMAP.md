@@ -96,10 +96,10 @@ These change the shape of the system rather than adding to it.
      the same day, then lists with *and* and *or* and the commas they
      need, a number after a name, nouns before nouns, and on 2026-09-30
      mass nouns, a phrase before the subject, a rough number, *a kind of*
-     and adverbs after *be*, and dates; it passes 11.
+     and adverbs after *be*, dates, and brackets set aside; it passes 18.
      What is left:
      - a name at the start of a sentence that WordNet has only in
-       lowercase, *Woods was born*;
+       lowercase, *Woods was born*, *Sedan is a commune*;
      - what lists leave: a list that mixes nouns under one determiner with
        a noun phrase, *an Indian politician, author and a member*; verb
        phrases joined, *made by Retro Studios and published by Nintendo*;
@@ -108,8 +108,6 @@ These change the shape of the system rather than adding to it.
        chairman of ...*; a request without a verb, *two cups of tea,
        please*, which the first corpus now refuses;
      - superlatives, *largest*; ordinals in digits, *27th*;
-     - brackets, where most of the corpus's other dates stand, *(born 10
-       May 1969)*;
      - participles, after a noun, *a movie directed by*, and before it,
        *the presiding bishop*: written on 2026-09-30 and held behind the
        parser, below. They were correct, 417 checks passing, but the

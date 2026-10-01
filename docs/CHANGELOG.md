@@ -32,6 +32,11 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Brackets are set aside.** What stands in round or square brackets is
+  taken out, and the sentence is checked without it: *Frank Dolphin (born
+  January 1959) is an Irish psychologist*. What is in them is not checked.
+  428 checks; the second corpus goes from 11 grammatical to 18. (`d3d1ab8`)
+
 - **Dates.** *On April 14, 1948*, *on 10 May 1969*: a date with its year,
   or with the day before the month, is a noun phrase. A month and a
   number, *January 2014*, already read as a name and a number. 422
