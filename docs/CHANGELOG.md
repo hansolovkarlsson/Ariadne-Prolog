@@ -6,6 +6,21 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-10-01
+
+### Changed
+
+- **The first word of a sentence is a name like any other capitalized
+  word.** It had been one only with more to go on, which kept *Woods was
+  born* and *Sedan is a commune* bare nouns, since WordNet has *woods* and
+  *sedan* only in lowercase; nothing in the word tells them from *Dog
+  barks*, so all three now read with a name, and the verdict says so when
+  the sentence is read no other way. A plural with no singular, *Dogs*,
+  stays its noun, and a number and *please* are no names. Two readings
+  that print alike are counted once. 433 checks; the second corpus is
+  unchanged at 18, as each sentence stops on something else next.
+  (`460ef16`)
+
 ## 2026-09-30
 
 ### Changed
