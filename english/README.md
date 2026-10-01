@@ -86,7 +86,7 @@ short word before a number, *Vol. 3* or *No. 5*; or after *Mr.*, *Dr.*,
 *e.g.*, *lit.* and a few others that are listed, since nothing in their
 shape tells them from the last word of a sentence. Any other abbreviation
 ends one. Inside a sentence a comma is read, and the grammar has to place
-it; other punctuation is ignored. The mark at the end has to fit: a
+it; what stands in brackets is set aside; other punctuation is ignored. The mark at the end has to fit: a
 question mark for a question, a full stop or an exclamation mark for the
 rest.
 
@@ -133,6 +133,9 @@ end of this file.
   kind of separation or break*; after other nouns it does not, *a picture
   of bird*.
 - **Dates**: *on May 16, 2015*, *on 10 May 1969*, *in January 2014*.
+- **Brackets are set aside**: *Nita Ambani (born 1 November 1963) is an
+  Indian philanthropist* is checked as *Nita Ambani is an Indian
+  philanthropist*, and what is in the brackets is not checked.
 - **Adverbs after *be***: *it is also the capital*, *the dog is always
   happy*.
 - **Nouns before nouns**: *the record label*, *a water polo player*, *an
@@ -561,4 +564,22 @@ day, a comma and its year, *April 14, 1948*, and the day before the month,
 *It was founded on April 14, 1948 by Stanley Ralph Ross* passes, with the
 one reading it means. Most of the corpus's other dates stand in brackets,
 *(born 10 May 1969)*, and wait for those.
+
+Brackets were the last of the constructions, and they were not read but set
+aside: a parenthesis stands outside its sentence's grammar, and what goes
+in one, a date range, *born* and a date, a translation, a pronunciation, is
+open-ended. The sentence is checked without it, and nothing in it is
+checked, an unknown word included. A bracket never closed is dropped like
+other punctuation, and a sentence all in brackets is read as it is. Before
+this, the bracket marks were dropped and their contents left in the
+sentence. The corpus gives **18 grammatical, 29 not, and 3 unknown**. Seven
+sentences pass, each read as it means: a name, *is* or *was*, and a noun
+phrase, *Frank Dolphin (born January 1959) is an Irish psychologist and
+businessman*, *Anastassiya Yeremina (born 19 February 2000) is a
+Kazakhstani female water polo player*. Six of the nine unknown had their
+unknown word in brackets, the en dash in a range of dates most of all. Two
+sentences went from unknown to not: *Sedan* begins its sentence and is
+read as the noun, as *Woods* is, and *Zigzag of Success* has no reading.
+The run takes three and a half minutes, as more sentences are now parsed
+to the end.
 

@@ -616,11 +616,40 @@ words(Text, Words) :- words(Text, Words, _).
 % it: Latin-1, Latin Extended-A, Greek and basic Cyrillic.
 words(Text, Words, Names) :-
     atom_chars(Text, Chars0),
-    maplist(plain_apostrophe, Chars0, Chars),
+    maplist(plain_apostrophe, Chars0, Chars1),
+    set_aside(Chars1, Chars),
     split_letters(Chars, Cased),
     maplist(downcase_atom, Cased, Words),
     names(Cased, Words, Names0),
     sort(Names0, Names).
+
+% set_aside(+Chars, -Rest): Chars with what stands in brackets taken out,
+% round or square, nested or not: "Nita Ambani (born 1 November 1963) is
+% an Indian philanthropist" is read as "Nita Ambani is an Indian
+% philanthropist". A parenthesis stands outside the sentence's grammar,
+% and what is in it is not checked, an unknown word there included. A
+% bracket that is never closed is dropped like other punctuation, and a
+% sentence that is all in brackets is read as it is.
+set_aside(Cs, Rest) :-
+    drop_brackets(Cs, Rest0),
+    (   member(C, Rest0), letter(C) -> Rest = Rest0 ; Rest = Cs ).
+
+drop_brackets([], []).
+drop_brackets([C|Cs], Rest) :-
+    opening(C, Close), closing_after(Cs, Close, 0, After), !,
+    drop_brackets([' '|After], Rest).
+drop_brackets([C|Cs], [C|Rest]) :- drop_brackets(Cs, Rest).
+
+opening('(', ')'). opening('[', ']').
+
+% closing_after(+Chars, +Close, +Depth, -After): the chars after the
+% bracket that closes this one, past any nested inside it.
+closing_after([C|Cs], Close, 0, Cs) :- C == Close, !.
+closing_after([C|Cs], Close, D, After) :-
+    C == Close, !, D1 is D - 1, closing_after(Cs, Close, D1, After).
+closing_after([C|Cs], Close, D, After) :-
+    opening(C, Close), !, D1 is D + 1, closing_after(Cs, Close, D1, After).
+closing_after([_|Cs], Close, D, After) :- closing_after(Cs, Close, D, After).
 
 names([], [], []).
 names([C|Cs], [W|Ws], Names) :-
