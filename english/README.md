@@ -132,6 +132,7 @@ end of this file.
   noun with no determiner, *a kind of rock*, *some sort of animal*, *any
   kind of separation or break*; after other nouns it does not, *a picture
   of bird*.
+- **Dates**: *on May 16, 2015*, *on 10 May 1969*, *in January 2014*.
 - **Adverbs after *be***: *it is also the capital*, *the dog is always
   happy*.
 - **Nouns before nouns**: *the record label*, *a water polo player*, *an
@@ -552,4 +553,12 @@ not, and 9 unknown**: *In geology, a fracture is any kind of separation or
 break in a rock formation* passes, with three readings that differ only in
 where *in a rock formation* goes, and it needed the phrase before the
 subject from earlier in the day as well.
+
+Dates came next. A month and a number already read as a name and a
+number, *January 2014*, *May 16*, so two forms were added: a month, its
+day, a comma and its year, *April 14, 1948*, and the day before the month,
+*10 May 1969*. The corpus gives **11 grammatical, 30 not, and 9 unknown**:
+*It was founded on April 14, 1948 by Stanley Ralph Ross* passes, with the
+one reading it means. Most of the corpus's other dates stand in brackets,
+*(born 10 May 1969)*, and wait for those.
 

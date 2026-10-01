@@ -227,6 +227,8 @@ simple_np(Agr, Case, pro(W), V0, V) -->
            agree(case(W), PCase, Case, V0, V) }.
 simple_np(Agr, _, name(N), V, V) -->
     name(N), { agr_of(sg, Agr) }.
+simple_np(Agr, _, date(D), V, V) -->
+    date(D), { agr_of(sg, Agr) }.
 simple_np(Agr, _, num(W), V, V) -->
     [W], { number_word(W, Num), agr_of(Num, Agr) }.
 simple_np(Agr, _, np(det(D), N), V0, V) -->
@@ -257,6 +259,21 @@ simple_np(Agr, _, np(poss(P), N), V0, V) -->
     possessor(P, V0, V1),
     nominal(Num, _, _, N, V1, V),
     { agr_of(Num, Agr) }.
+
+% date(-Date): a date with its year, "May 16, 2015", or with its day first,
+% "10 May 1969", "10 May". A month and a number with no comma, "May 16",
+% "January 2014", is already a name followed by a number, and is not read
+% again here.
+date(D) --> [M, Day, ',', Y], { month(M), day(Day), year(Y),
+                                 atomic_list_concat([M, Day, Y], ' ', D) }.
+date(D) --> [Day, M], { day(Day), month(M) }, date_year(Ys),
+            { atomic_list_concat([Day, M|Ys], ' ', D) }.
+
+date_year([Y]) --> [Y], { year(Y) }.
+date_year([]) --> [].
+
+day(W) :- digits(W), catch(atom_number(W, N), _, fail), integer(N), N >= 1, N =< 31.
+year(W) :- digits(W), catch(atom_number(W, N), _, fail), integer(N), N >= 1.
 
 % name(-Name): a name of one word or more, each a name: "Alice", "Stanley
 % Ralph Ross", "East Coast Main Line". Name is the words joined by spaces.

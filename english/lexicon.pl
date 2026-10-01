@@ -247,6 +247,12 @@ number_word(W, Num) :-
     digits(W),
     ( W == '1' -> Num = sg ; Num = pl ).
 
+% month(Word): a month, for dates; see date//1 in grammar.pl. Capitalized,
+% each is a name as well, "in January".
+month(january). month(february). month(march). month(april). month(may).
+month(june). month(july). month(august). month(september).
+month(october). month(november). month(december).
+
 % digits(Word): a number written in digits, 91 or 3.5.
 digits(W) :- atom(W), atom_chars(W, [C|_]), digit(C).
 

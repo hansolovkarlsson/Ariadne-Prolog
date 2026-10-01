@@ -520,6 +520,7 @@ bracket(joined(C, S1, S2)) -->
 bracket(sub_first(C, S1, S2)) -->
     ['[S', '[SBAR', C], bracket(S1), [']'], bracket(S2), [']'].
 bracket(num(W))            --> ['[NP', W, ']'].
+bracket(date(D))           --> ['[NP', D, ']'].
 bracket(fronted(A, S))     --> ['[S'], bracket(A), bracket(S), [']'].
 bracket(imp(P1, Neg, VP, P2)) -->
     ['[S'], please_word(P1), imp_neg(Neg), bracket(VP), please_word(P2), [']'].

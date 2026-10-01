@@ -196,6 +196,7 @@ bad('About the dog barked.',               no_reading).
 bad('Quite the dog barked.',               no_reading).
 bad('Some dog barks.',                     det_noun(some, dog)).
 bad('It is a picture of bird.',            bare(bird)).
+bad('The dog slept on 40 May 1969.',      no_reading).
 
 % Stage 3: the closed classes WordNet does not have.
 good('The dog barks and the cat sleeps.').
@@ -288,6 +289,11 @@ good('It is some kind of bird.').
 good('It is any kind of cake or bread.').
 good('The dog is never hungry.').
 good('Alice is always a doctor.').
+
+% Dates.
+good('The dog barked on May 16, 2015.').
+good('The dog slept on 10 May 1969.').
+good('The dog slept on 10 May.').
 
 % Nouns before nouns.
 good('The dog house is big.').
