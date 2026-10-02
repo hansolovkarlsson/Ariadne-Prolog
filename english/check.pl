@@ -601,6 +601,7 @@ bracket(pp(P, NP))         --> ['[PP', P], bracket(NP), [']'].
 bracket(vp(W, Neg, Is))    --> ['[VP', W], neg(Neg), items(Is), [']'].
 bracket(adj(A))            --> ['[AP', A, ']'].
 bracket(adv(A))            --> ['[AdvP', A, ']'].
+bracket(prt(P))            --> ['[PRT', P, ']'].
 
 nom(nom(As, n(H), PPs)) --> adjective_words(As), [H], items(PPs).
 nom(coord(C, Ns))        --> joined_out(nom, C, Ns).

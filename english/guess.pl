@@ -134,6 +134,7 @@ candidate(W, E, S) :-
     (   S = S0
     ;   atom_concat(S0, e, S)
     ;   atom_concat(Si, i, S0), atom_concat(Si, y, S)
+    ;   E == ing, atom_concat(Si, y, S0), atom_concat(Si, ie, S)
     ).
 candidate(W, s, S) :- atom_concat(S, es, W), atom_length(S, N), N >= 2.
 candidate(W, s, S) :-

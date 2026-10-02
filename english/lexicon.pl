@@ -99,6 +99,7 @@ mass(bread). mass(tea). mass(coffee). mass(rice). mass(food). mass(music).
 mass(homework). mass(advice). mass(information). mass(furniture).
 mass(football). mass(breakfast). mass(lunch). mass(dinner).
 mass(school). mass(church). mass(college). mass(bed). mass(night).
+mass(office). mass(hospital). mass(prison). mass(court). mass(town).
 mass(english). mass(french). mass(german). mass(spanish). mass(italian).
 mass(latin). mass(greek). mass(russian). mass(chinese). mass(japanese).
 
@@ -318,6 +319,13 @@ prep(around). prep(about). prep(against). prep(since). prep(until).
 prep(along). prep(among). prep(above). prep(below). prep(beside).
 prep(inside). prep(outside). prep(toward). prep(towards). prep(within).
 prep(beyond). prep(throughout). prep(underneath).
+
+% particle(Word): a preposition that may stand after a verb with nothing
+% after it, "sworn in", "carried on", "came by"; see modifiers//5 in
+% grammar.pl.
+particle(in). particle(on). particle(over). particle(through).
+particle(along). particle(around). particle(about). particle(across).
+particle(by).
 % as is listed because WordNet has it as a noun, the Roman coin, and with
 % nothing else knowing it "best known as the chairperson" became a noun
 % phrase headed by as once a participle could stand before a noun, and
@@ -558,11 +566,15 @@ third(Base, Form) :- s_form(Base, Form).
 participle(Base, P) :- irregular_participle(Base, P0), !, P = P0.
 participle(Base, P) :- past(Base, P).
 
-% ing(+Base, -Form): running, chasing, seeing, playing.
+% ing(+Base, -Form): running, chasing, seeing, playing, dying.
 ing(Base, Form) :-
     doubles(Base), !, atom_chars(Base, Cs), last(Cs, C),
     atomic_list_concat([Base, C, ing], Form).
 ing(Base, Form) :- atom_concat(_, ee, Base), !, atom_concat(Base, ing, Form).
+% die, lie, tie: dying, lying, tying. Without this die gave diing, and
+% "dying" was found only as a form of dye, which WordNet has as
+% transitive, so "dying of cancer" had no reading.
+ing(Base, Form) :- atom_concat(Stem, ie, Base), !, atom_concat(Stem, ying, Form).
 ing(Base, Form) :-
     atom_concat(Stem, e, Base), !, atom_concat(Stem, ing, Form).
 ing(Base, Form) :- atom_concat(Base, ing, Form).

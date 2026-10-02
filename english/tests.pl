@@ -490,6 +490,23 @@ bad('Alice, friend of the king, sleep.',   subject_verb(sleep)).
 bad('Alice is teacher.',                   bare(teacher)).
 bad('Alice is dog of the king.',           bare(dog)).
 bad('Alice sees teacher of the king.',     bare(teacher)).
+% die, lie and tie in -ing, and a comma before the conjunction between
+% two verb phrases.
+good('The dog is dying.').
+good('The dog slept before dying.').
+good('The dog ran in, but slept.').
+good('The dog barked, and slept.').
+readings('The dog barked, and slept.', 1).
+bad('The dog barked, slept.',             no_reading).
+bad('Alice, and Bob sleep.',              no_reading).
+% A particle after the verb.
+good('The dog ran in.').
+good('The dog was carried in by Alice.').
+good('Alice ran in as the queen.').
+readings('The dog ran in.', 1).
+readings('The dog sleeps in the garden.', 1).
+bad('The dog ran in the.',                no_reading).
+bad('The dogs runs in.',                  subject_verb(runs)).
 % A name after a noun says which one.
 good('The river Thames is long.').
 good('I know the farmer Bob.').

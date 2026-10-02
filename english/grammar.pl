@@ -754,6 +754,13 @@ vp_rest(none, _, _, _, _, T, T, V, V) --> [].
 vp_rest(Pre, Cs, Form, Min, Prev, T1, T, V0, V) -->
     joined(vp_item(Form, Min, Prev), vp_item(Form, Min, Prev), Cs, Ts, C, V0, V),
     { correlated(Pre, vp_coord(C, [T1|Ts]), T) }.
+% Two verb phrases may have a comma before their conjunction, as two
+% clauses may: "was sworn in as Governor, but only served four months".
+% Noun phrases may not, "Alice, and Bob" being no list.
+vp_rest(Pre, Cs, Form, Min, Prev, T1, T, V0, V) -->
+    [',', C], { memberchk(C, Cs) },
+    vp_item(Form, Min, Prev, T2, V0, V),
+    { correlated(Pre, vp_coord(C, [T1, T2]), T) }.
 
 vp_item(Form, Min, Prev, T, V0, V) -->
     verb_phrase(Form, Min, Prev, T, nogap, nogap, V0, V).
@@ -895,6 +902,11 @@ predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
 % Adverbs and prepositional phrases after the verb and what it takes. The
 % gap may be a preposition's object: "the park that the dog walks in _".
 modifiers([adv(A)|Ms], G0, G, V0, V) --> [A], { adv(A) }, modifiers(Ms, G0, G, V0, V).
+% A particle, a preposition with no noun phrase after it that goes with
+% the verb: "sworn in", "ran in", "carried on", "came by". Only the
+% prepositions the lexicon lists are read this way; "up", "out", "off",
+% "away" are adverbs in WordNet already and are read as those.
+modifiers([prt(P)|Ms], G0, G, V0, V) --> [P], { particle(P) }, modifiers(Ms, G0, G, V0, V).
 modifiers([PP|Ms], G0, G, V0, V) --> pp(PP, G0, G1, V0, V1), modifiers(Ms, G1, G, V1, V).
 modifiers([npadv(D, N)|Ms], G0, G, V0, V) -->
     [D, N], { adverbial_np(D, N) }, modifiers(Ms, G0, G, V0, V).
