@@ -10,6 +10,17 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A participle before a noun.** *The presiding bishop*, *a painted
+  house*, *managing director*: an *-ing* or *-en* form of a verb that is
+  not an adjective or a noun as well stands where an adjective does. The
+  half of the participle change of 2026-09-30 that costs one word of
+  lookahead; the half after the noun stays behind the parser. Measured
+  before believed: 318 seconds of CPU at first against 184, from two
+  costs outside the rule, the verb-form lookup now kept per word while a
+  sentence's placements stand, and *as*, which WordNet had as a noun and
+  the lexicon now has as a preposition; 197 with both. 499 checks; the
+  second corpus goes from 31 grammatical to 33.
+
 - **An appositive after a name, and a bare role noun.** A comma and a
   noun phrase that says what the name is, *Alice, a doctor, sleeps*,
   *Mukesh Ambani, chairman of Reliance Industries*, closed by a comma or

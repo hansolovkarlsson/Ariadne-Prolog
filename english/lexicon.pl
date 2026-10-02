@@ -317,6 +317,11 @@ prep(around). prep(about). prep(against). prep(since). prep(until).
 prep(along). prep(among). prep(above). prep(below). prep(beside).
 prep(inside). prep(outside). prep(toward). prep(towards). prep(within).
 prep(beyond). prep(throughout). prep(underneath).
+% as is listed because WordNet has it as a noun, the Roman coin, and with
+% nothing else knowing it "best known as the chairperson" became a noun
+% phrase headed by as once a participle could stand before a noun, and
+% one corpus sentence took fifty seconds to be refused instead of one.
+prep(as).
 
 adv(quickly). adv(slowly). adv(quietly). adv(loudly). adv(happily).
 adv(sadly). adv(often). adv(always). adv(never). adv(sometimes).
@@ -495,6 +500,27 @@ noun_form(Word, Sg, pl) :- noun(Sg), plural(Sg, Word).
 
 plural(Sg, Pl) :- irregular_plural(Sg, Pl0), !, Pl = Pl0.
 plural(Sg, Pl) :- s_form(Sg, Pl).
+
+% participle_adj(+Word): a participle that may stand before a noun as an
+% adjective does, "the presiding bishop", "a painted house", "managing
+% director": an -ing or -en form of a verb that is not an adjective or a
+% noun, which are read as those already, "tired", "building". The answer
+% is kept per word while the placements stand, since verb_form/3 with the
+% word given walks every verb for each of its forms, a millisecond, and
+% the grammar asks at every word a noun phrase could start at: without
+% this one corpus sentence went from a third of a second to fifty.
+% with_placements/3 in guess.pl clears it with the placements.
+:- dynamic(participle_memo/2).
+
+participle_adj(W) :- participle_memo(W, Yes), !, Yes == yes.
+participle_adj(W) :-
+    (   ( verb_form(W, _, ing) ; verb_form(W, _, en) ),
+        \+ adj(W), \+ noun_form(W, _, _)
+    ->  Yes = yes
+    ;   Yes = no
+    ),
+    assertz(participle_memo(W, Yes)),
+    Yes == yes.
 
 % verb_form(?Word, -Base, -Form): the present forms agree with the subject,
 % the past form agrees with any; the others follow an auxiliary.

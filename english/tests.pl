@@ -490,6 +490,16 @@ bad('Alice, friend of the king, sleep.',   subject_verb(sleep)).
 bad('Alice is teacher.',                   bare(teacher)).
 bad('Alice is dog of the king.',           bare(dog)).
 bad('Alice sees teacher of the king.',     bare(teacher)).
+% A participle before a noun.
+good('The sleeping dog barks.').
+good('A painted house is big.').
+good('An eaten cake is small.').
+good('The barking dogs sleep in the painted house.').
+readings('The sleeping dog barks.', 1).
+bad('The sleeping dogs barks.',            subject_verb(barks)).
+bad('A painted houses are big.',           det_noun(a, houses)).
+bad('A eaten cake is small.',              article(a, eaten)).
+bad('The dog sleeping barks.',             no_reading).
 bad('The dog, and the cat sleep.',         no_reading).
 bad('Two cups of tea, please.',            no_reading).
 bad('A apple tree grows.',                  article(a, apple)).

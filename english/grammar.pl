@@ -520,7 +520,15 @@ adjectives([AP, sep(S)|As]) -->
 adjectives([name(W)|As]) --> [W], { proper(W), \+ adj(W) }, adjectives(As).
 adjectives([name(W), name(D)|As]) -->
     [W, D], { proper(W), digits(D) }, adjectives(As).
+adjectives([part(W)|As]) --> [W], { participle_adj(W) }, adjectives(As).
 adjectives([]) --> [].
+
+% A participle stands before a noun as an adjective does, "the presiding
+% bishop", "a painted house", "managing director"; participle_adj/1 in
+% lexicon.pl says which words. It costs one word of lookahead and the
+% noun must follow, so the diagnosis cannot run with it; a participle
+% after its noun, "a movie directed by", opens a verb phrase after every
+% noun, and waits for the parser, see docs/ROADMAP.md.
 
 % plain_adjectives(-Trees): one or more adjectives before a name, "old
 % London", "north-eastern France", "a big, old dog" as before a noun, none
@@ -568,6 +576,7 @@ first_word([adj(A)|_], _, A) :- !.
 first_word([adjp([D|_], _)|_], _, D) :- !.
 first_word([name(W)|_], _, W) :- !.
 first_word([nmod(W)|_], _, W) :- !.
+first_word([part(W)|_], _, W) :- !.
 first_word([], Head, Head).
 
 % kind_of(+Head, -PPs, V0, V): after kind, sort, type and their like, of and

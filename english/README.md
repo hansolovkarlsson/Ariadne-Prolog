@@ -101,7 +101,7 @@ end of this file.
 
 | | |
 |---|---|
-| `lexicon.pl` | 411 words, a word in two classes counted in each: 113 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 39 prepositions, 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 147 nouns are marked as mass nouns, which may stand alone in the singular, and with WordNet loaded so is any noun whose most frequent sense is a substance; 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
+| `lexicon.pl` | 412 words, a word in two classes counted in each: 113 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 40 prepositions, 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 147 nouns are marked as mass nouns, which may stand alone in the singular, and with WordNet loaded so is any noun whose most frequent sense is a substance; 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
 | `grammar.pl` | The rules: statements, alone or joined by a conjunction, yes/no and *wh*-questions, commands, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
@@ -160,6 +160,12 @@ end of this file.
 - **Nouns before nouns**: *the record label*, *a water polo player*, *an
   apple tree*, the modifying nouns in the singular and after any
   adjectives, and *a* or *an* by the first of them.
+- **A participle before a noun**: *the presiding bishop*, *a painted
+  house*, *the barking dogs*, *managing director*, an *-ing* or *-en*
+  form of a verb standing where an adjective does; a word that is an
+  adjective or a noun as well, *tired*, *building*, is read as that. A
+  participle after its noun, *a movie directed by*, is not read; see the
+  roadmap.
 - **Determiner and noun**: *a dog*, *these dogs*, *six dogs*, *a hundred
   dogs*, not *a dogs*, *this dogs* or *one dogs*.
 - **A gerund after a preposition**: *tired of barking*, *after eating the
@@ -756,5 +762,33 @@ Service Executive (HSE)*. *She is the wife of Mukesh Ambani, chairman and
 managing director of Reliance Industries* reads its appositive and stops
 on *managing*, which WordNet has only as a form of the verb: a participle
 before a noun, the half of the participle change that costs a lookahead
-and not a verb phrase after every noun. The run takes 2:54.
+and not a verb phrase after every noun. The corpus alone runs in 2:54.
+
+That half came the same day: an *-ing* or *-en* form of a verb that is
+not an adjective or a noun as well stands before a noun as an adjective
+does, *the presiding bishop*, *a painted house*, *managing director*. It
+was measured before it was believed, sentence by sentence on a copy of
+the tree against the commit before it, and the first measure said no: the
+corpus run went from 184 to 318 seconds of CPU, and *Nita Ambani ... is
+an Indian philanthropist and businesswoman, best known as the chairperson
+of the Reliance Foundation* from a third of a second to fifty, for no
+reading gained. Two causes, both outside the rule. The test for a
+participle asks `verb_form/3` with the word given, which walks every verb
+for each of its forms, a millisecond, and the grammar asks it at every
+word a noun phrase could start at; the answer is now kept per word while
+the sentence's placements stand. And *as* was not in the lexicon, so
+WordNet supplied it, as a noun, the Roman coin: *best known as* became a
+noun phrase headed by *as* once the participle could swallow *known*,
+and the relaxed search ran on from there, where before it had stopped at
+*known*. *As* is now a preposition, which also took *He was sworn in as
+the sixteenth Governor* from nineteen seconds to a tenth. With both, the
+run is 197 seconds of CPU against 184, the difference nearly all in one
+sentence, *They would have been derived from the Class 91 locomotives
+that entered service on the East Coast Main Line in 1989*, where
+*entered service* may now open a subject inside the relative clause, and
+every attachment of the phrases after it is tried before that fails. The
+corpus gives **33 grammatical, 16 not, and 1 unknown**: the Ambani
+sentence, and *He was the 27th presiding bishop and primate of The
+Episcopal Church*. `make english-wordnet`, the checks and both corpora,
+takes 3:40.
 

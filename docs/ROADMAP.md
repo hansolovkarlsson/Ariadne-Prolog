@@ -108,20 +108,24 @@ These change the shape of the system rather than adding to it.
      whose first item has two nouns under one determiner; it passes
      30. On 2026-10-02 an appositive after a name, *Alice, a doctor,
      sleeps*, and the bare role noun it needs, *He was chairman of the
-     Health Service Executive*; it passes 31. What is left:
+     Health Service Executive*, and a participle before a noun, *the
+     presiding bishop*, *managing director*; it passes 33. What is left:
      - a request without a verb, *two cups of tea, please*, which the
        first corpus now refuses; an adjective after a noun modifier,
        *jazz bebop alto saxophonist*; a number before the noun, *the 2020
        census*, *the 2017 World Aquatics Championships*;
-     - participles, after a noun, *a movie directed by*, and before it,
-       *the presiding bishop*, *managing director*, on which *Mukesh
-       Ambani, chairman and managing director of Reliance Industries*
-       now stops: written on 2026-09-30 and held behind the
-       parser, below. They were correct, 417 checks passing, but the
-       corpus run went from 172 to 397 seconds of CPU for no corpus
-       sentence gained, and to 366 even with them kept out of the
-       diagnosis. The change is in `scratch/participles.patch` on the
-       machine it was written on, and is a short one to write again.
+     - a participle after a noun, *a movie directed by*, *a network
+       broadcasting from Dubai*: written on 2026-09-30 with the
+       participle before a noun and held behind the parser, below. The
+       pair were correct, 417 checks passing, but the corpus run went
+       from 172 to 397 seconds of CPU for no corpus sentence gained, and
+       to 366 even with them kept out of the diagnosis. On 2026-10-02 the
+       half before the noun went in on its own, *the presiding bishop*,
+       *managing director*, at 197 seconds against 184 once two costs
+       outside it were found, in `english/README.md`; the half after the
+       noun opens a verb phrase after every noun and is still the
+       parser's. Its rules are in `scratch/participles.patch` on the
+       machine it was written on, and are short to write again.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

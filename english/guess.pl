@@ -50,10 +50,16 @@ with_placements(Words, Names, Goal) :-
     forall(( member(W, Words), placement(W, _, Es), member(What-E, Es) ),
            assertz(guessed(What, E))),
     forall(member(N, Names), assertz(guessed(name, N))),
-    (   catch(Goal, Ball, (retractall(guessed(_, _)), throw(Ball)))
-    ->  retractall(guessed(_, _))
-    ;   retractall(guessed(_, _)), fail
+    (   catch(Goal, Ball, (unplace, throw(Ball)))
+    ->  unplace
+    ;   unplace, fail
     ).
+
+% unplace: the placements are taken out again, and with them what was
+% kept per word while they stood; see participle_adj/1 in lexicon.pl.
+unplace :-
+    retractall(guessed(_, _)),
+    retractall(participle_memo(_, _)).
 
 % placed_classes(+Word, -Source, -Classes): where Word was placed from, and
 % the classes, in order.
