@@ -10,6 +10,13 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A preposition of two words.** *As of the census*, *because of the
+  rain*, *out of the garden*, *according to Alice*: nine pairs listed
+  in the lexicon, read only before a noun phrase, and saying nothing
+  about their first word alone, so *the lights went out* keeps its
+  WordNet reading of *out*. 532 checks; the second corpus goes from 35
+  grammatical to 36. (`as of the 2020 United States census`)
+
 - **A number before the noun, and a name that is a head does not end
   before another name.** *The 2020 census*, *the 2017 World Aquatics
   Championships*, *a 1968 Soviet comedy movie*: a number in digits

@@ -323,6 +323,16 @@ prep(beyond). prep(throughout). prep(underneath).
 % one corpus sentence took fifty seconds to be refused instead of one.
 prep(as).
 
+% prep_pair(First, Second): a preposition of two words, "as of the
+% census", "out of the box", "because of the rain"; see preposition//1
+% in grammar.pl. The pair is read only before a noun phrase, and does
+% not make its first word known on its own: out keeps the adverb and
+% the adjective WordNet gives it, "the lights went out", which a word
+% the lexicon knows is never looked up for.
+prep_pair(as, of).        prep_pair(out, of).       prep_pair(because, of).
+prep_pair(instead, of).   prep_pair(according, to). prep_pair(due, to).
+prep_pair(next, to).      prep_pair(prior, to).     prep_pair(close, to).
+
 adv(quickly). adv(slowly). adv(quietly). adv(loudly). adv(happily).
 adv(sadly). adv(often). adv(always). adv(never). adv(sometimes).
 adv(today). adv(yesterday). adv(again). adv(carefully). adv(well).

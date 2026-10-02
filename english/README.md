@@ -101,7 +101,7 @@ end of this file.
 
 | | |
 |---|---|
-| `lexicon.pl` | 412 words, a word in two classes counted in each: 113 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 40 prepositions, 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 147 nouns are marked as mass nouns, which may stand alone in the singular, and with WordNet loaded so is any noun whose most frequent sense is a substance; 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
+| `lexicon.pl` | 412 words, a word in two classes counted in each: 113 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 40 prepositions and 9 of two words (*as of*, *because of*), 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 147 nouns are marked as mass nouns, which may stand alone in the singular, and with WordNet loaded so is any noun whose most frequent sense is a substance; 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
 | `grammar.pl` | The rules: statements, alone or joined by a conjunction, yes/no and *wh*-questions, commands, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
@@ -178,6 +178,10 @@ end of this file.
   with nothing before it the digits are the determiner, *3 dogs*. *A*
   or *an* goes by the number as it is said, *an 1800 census*, *a 1968
   movie*.
+- **A preposition of two words**: *as of the census*, *because of the
+  rain*, *out of the garden*, *according to Alice*, nine listed pairs,
+  read only before a noun phrase; the first word keeps whatever else it
+  is, so *the lights went out* still reads.
 - **A gerund after a preposition**: *tired of barking*, *after eating the
   cake*, *the record for being the largest cluster*, an *-ing* verb
   phrase where a noun phrase would stand.
@@ -861,4 +865,17 @@ sentence, with five readings, the two phrases attached two ways and
 same shape in them, *East Coast Main Line*, and every sentence with a
 run of names paid for it. *As of the 2020 United States census* reads
 its number and stops on *as of*, a preposition of two words.
+
+The two-word preposition closed the standup's list: *as of*, *out of*,
+*because of*, *instead of*, *according to*, *due to*, *next to*, *prior
+to* and *close to*, nine pairs listed in the lexicon and read only
+before a noun phrase, the two counting as one word as *a hundred* does.
+A first try made a pair's first word a known word, and *the lights went
+out* lost its reading: a word the checker knows is never looked up, and
+*out* is an adverb or an adjective only through WordNet. The pair now
+says nothing about its first word alone, so *ran out of the garden* has
+two readings, *out* an adverb before *of the garden* or the pair, both
+English. The corpus gives **36 grammatical, 13 not, and 1 unknown**:
+*As of the 2020 United States census, 354 people lived there*. `make
+english-wordnet` takes 1:14.
 

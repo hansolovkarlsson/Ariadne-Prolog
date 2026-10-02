@@ -658,9 +658,15 @@ pps([PP|PPs], V0, V) --> pp(PP, nogap, nogap, V0, V1), pps(PPs, V1, V).
 pps([], V, V) --> [].
 
 pp(pp(P, NP), G0, G, V0, V) -->
-    [P], { prep(P) }, noun_phrase(_, obj, NP, G0, G, V0, V).
+    preposition(P), noun_phrase(_, obj, NP, G0, G, V0, V).
 pp(pp(P, VP), G0, G, V0, V) -->
-    [P], { prep(P) }, ing_ahead, verb_phrase(ing, 2, P, VP, G0, G, V0, V).
+    preposition(P), ing_ahead, verb_phrase(ing, 2, P, VP, G0, G, V0, V).
+
+% preposition(-Prep): one word, or two that make one, "as of the census",
+% "out of the box", "because of the rain", which prep_pair/2 lists; the
+% two count as one word, as the two-word determiners do.
+preposition(P) --> [P], { prep(P) }.
+preposition(P) --> [A, B], { prep_pair(A, B), atomic_list_concat([A, B], ' ', P) }.
 
 % A preposition may take an -ing verb phrase in place of a noun phrase,
 % "tired of barking", "after eating the cake", "the record for being the

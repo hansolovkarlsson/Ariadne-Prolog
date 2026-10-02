@@ -533,6 +533,13 @@ readings('I saw 3 dogs.', 1).
 bad('An 2020 picture is red.',              article(an, '2020')).
 bad('The 2020 parties was big.',            subject_verb(was)).
 bad('2020 party was big.',                  det_noun('2020', party)).
+% A preposition of two words.
+good('The dog slept because of the cat.').
+good('As of the party, the dogs sleep.').
+good('The dog sleeps close to the cat.').
+readings('The dog slept because of the cat.', 1).
+bad('The dog slept because of the cats sleep.', no_reading).
+bad('The dog slept because the cat.',       no_reading).
 bad('A apple tree grows.',                  article(a, apple)).
 bad('The dog house are big.',              subject_verb(are)).
 bad('The dog barks?',                      punctuation('?')).
