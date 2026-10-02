@@ -1201,6 +1201,124 @@ bare role noun it needs, a request without a verb, an adjective after a
 noun modifier, a number before the noun, and participles behind the
 parser decision.
 
+## Day eleven: the standup's list closed, and three rules that were cheap until the search reached past them
+
+The day took the standup's five grammar items in order, each as a commit
+with its tests and README record, pushed as it went, and a sixth that
+the fourth made necessary. Six changes took the second corpus from 30
+grammatical to 36, the first back to all fifty, and the grammar's
+checks from 475 to 532. The run, which had held near three minutes for
+two days, ends the day at 1:14, and not because of anything meant to
+make it faster.
+
+The appositive after a name came first (`f3f7da4`): a comma and a noun
+phrase that says what the name is, *Alice, a doctor, sleeps*, *Mukesh
+Ambani, chairman of Reliance Industries*. It takes one noun phrase with
+a determiner, a possessor or a bare role noun, not a list and not a
+name, since a name after the comma is the placing comma of the day
+before, and a comma or the end of the sentence closes it, as the list
+rule's comma is read only in a list. The role noun was the harder half:
+*chairman* has to stand bare, and the grammar refuses a bare singular
+noun everywhere, as a learner's checker should. The rule that went in
+is narrow and named: a noun for a person, with *of* after it, after
+*be* or beside a name. The person nouns are the lexicon's own and
+WordNet's, the nouns whose most frequent sense is in its category of
+people, which the generator now writes as it writes the substances; and
+the *of* is read inside the noun phrase, since it is the licence, so
+*was chairman of the board* has one reading where *was the chairman of
+the board* has two. *I am student* is still refused, which is the case
+the narrowness is for. *He was chairman of the Health Service Executive*
+passed, and the Ambani sentence read its appositive and stopped on
+*managing*, which WordNet has only as a form of the verb.
+
+That made the participle before a noun the next thing, the cheap half of
+the change held on 2026-09-30, one word of lookahead where the half
+after the noun opens a verb phrase after every noun (`0769a0e`). It was
+measured before it was believed, sentence by sentence on a copy of the
+tree against the commit before, as yesterday's entry said to do, and the
+first measure said no: 184 to 318 seconds of CPU, and the Nita Ambani
+sentence from a third of a second to fifty, for no reading gained. The
+rule was innocent both times. The test for a participle asks
+`verb_form/3` with the word given, which walks every verb for each of
+its six forms, a millisecond, and the grammar asks it at every word a
+noun phrase could start at; benchmarking the lexical lookups one by one
+showed the adjective test at half a microsecond beside it. The answer
+is now kept per word while the sentence's placements stand, and
+`with_placements/3` clears it with them. That took the sentence from
+fifty seconds to forty-two, so the lookup was not the cost either, and
+cutting the sentence down found it: *as* was not in the lexicon, so
+WordNet supplied it, as a noun, the Roman coin, and *best known as* had
+become a noun phrase headed by *as* once the participle could swallow
+*known*. The old grammar had never got past *known* at all. *As* is a
+preposition now, which also took *He was sworn in as the sixteenth
+Governor* from nineteen seconds to a tenth. With both, 197 seconds
+against 184, nearly all of it in one sentence where *entered service*
+may now open a subject inside a relative clause, and two sentences
+gained.
+
+The request without a verb (`7946581`) was small and cost seventy
+seconds. A noun phrase and *please* with a comma between them is read on
+the terms a command is, only when nothing else reads the sentence, and
+the comma is what tells it from *the dogs please*, which is a statement.
+But a command is tried on every sentence nothing else reads, which is
+the expensive kind, and the request parsed a noun phrase for each of
+them before the missing *please* was noticed. The guard the possessive
+has, a lookahead for the word somewhere in what is left to read, put the
+run back under where it had been. The adjective after a noun modifier
+(`511a09f`) turned out to be a noun after one: *alto* is both in
+WordNet, and a noun modifier was never read from a word that is an
+adjective, since *stone* and *last* are both and *the stone bridge*
+would have two readings. After a noun modifier the adjectives are past,
+so such a word there can be nothing but one more, and *last* and *next*
+stay out, as they stand before a noun only in *last night*. A plain
+adjective after a noun modifier, *a world famous singer*, is still not
+read, and went on the roadmap; no corpus sentence needs it. The Woods
+sentence passed, and the run fell from 3:30 to 2:43 for it alone: it
+had been the slowest sentence in the corpus, eighty seconds to refuse,
+and a sentence with a reading has no diagnosis to search for.
+
+The number before the noun (`fd637af`) was the day's finding. The rule
+is a number in digits first among the modifiers after a determiner or a
+possessor, with the digits staying the determiner when nothing is before
+them, so *3 dogs* keeps one reading. It was cheap, and the Kazakhstan
+sentence was not: once it could be read, its strict parse ran for
+minutes where it had been refused in nine seconds, and the check that
+had been started with the suite had to be killed. A ten-word cut took
+three seconds, and cutting further moved the cost away from the number
+altogether: *the World Aquatics Championships and World Aquatics
+Championships*, with no number in it, took six times longer for every
+word of the runs. Each word of a capitalized run is a noun in WordNet as
+well, so a noun phrase could end at any of them, and then try the rest
+as a relative clause with no relative word, *the cat the dog chased*,
+which starts the same search again one word on. A head that is a name
+now does not end before another name, which is what the name rule
+already does for a run read whole. The sentence passed, and so did the
+whole corpus faster: 1:12 against 2:43, since the Woods and Class 91
+sentences had *East Coast Main Line* and its like in them and every
+sentence with a run of names had been paying. The sentence after it,
+*As of the 2020 United States census*, then needed a preposition of two
+words (`2654e01`), nine pairs listed and read only before a noun phrase.
+The first try made a pair's first word a known word and *the lights went
+out* lost its reading, which the first corpus's pinned count caught at
+once: a word the checker knows is never looked up, and *out* is an
+adverb only through WordNet. The pair now says nothing about its first
+word alone.
+
+Three of the six rules were cheap and three sentences blew up, and the
+shape was the same each time, which is yesterday's lesson with a turn
+on it. Yesterday the relaxed diagnosis walked through a rule that the
+strict parse used correctly. Today the rules were used correctly by
+both, and what they did was let the search reach a place it had never
+reached before, where something else was waiting: a lookup priced for
+the verb head and not for every word, a word the lexicon did not have
+and WordNet had wrong, a run of names a noun phrase could stop inside
+of. None of the three was in the rule, and none could have been seen by
+reading it. The per-sentence timing against the commit before found all
+three, and each time the sentence had to be cut down until the cost
+moved, since the slow sentence names the place and not the cause. The
+corpus run under a time limit is still the check, and the cut is how it
+is read.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1211,7 +1329,7 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 475 checks: good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. |
+| `make english` | The grammar checker's 532 checks: good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. |
 | `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of `english/corpus.txt` and the fifty of `english/corpus2.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
@@ -1224,7 +1342,7 @@ something it would have caught; those arrived with the program they check.
 About 8,000 lines of hand-written C, 760 lines of library written in Prolog,
 a 338-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
-2,970 lines built on the interpreter, through all three of its stages, and a
+3,220 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own
 tables.
 

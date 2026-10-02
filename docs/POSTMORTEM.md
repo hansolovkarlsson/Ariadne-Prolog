@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Fifty defects, in five cohorts that failed for five different reasons:
+Fifty-four defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -21,20 +21,22 @@ Fifty defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: nineteen defects in which two parts of the project did not
+- **Consistency**: twenty defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
-  on 2026-09-27, one on 2026-09-28, six on 2026-09-29 and one on 2026-09-30.
+  on 2026-09-27, one on 2026-09-28, six on 2026-09-29, one on 2026-09-30 and
+  one on 2026-10-02.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
   by asking what a check could reach.
-- **Scale**: fourteen defects that no test was large enough to meet, a fixed
+- **Scale**: seventeen defects that no test was large enough to meet, a fixed
   buffer, a recursion on the C stack, a cost that grew with the square or a
   fixed allocation, ten found on 2026-09-27, nine of them by probing a
-  neighbour of the defect before, three on 2026-09-29 and one on
-  2026-10-01.
+  neighbour of the defect before, three on 2026-09-29, one on 2026-10-01
+  and three on 2026-10-02, each a rule that was cheap until the search
+  reached past it.
 
 ## Cohort A — the design era
 
@@ -394,7 +396,7 @@ the only evidence that it can.
 
 ## Cohort E: scale
 
-Fourteen defects that no test was large enough to meet, ten of them found on
+Seventeen defects that no test was large enough to meet, ten of them found on
 2026-09-27. The first nine came one from another: each fix was followed by probing the same shape a
 step further, at a million elements or a million levels, and the probe found
 the next.
@@ -415,6 +417,9 @@ the next.
 | The grammar's checks took 60 per cent longer after possessives went in, sentences with no *'s* included | The possessive rule was tried at every noun phrase, whatever the sentence held | Timing the checks at each of the day's commits, on 2026-09-29, while looking for a slowdown blamed on the interpreter (`1649f0c`) |
 | Refusing one sentence of 28 words took more than six minutes, and the corpus run went from two and a half minutes to twelve and a half | The diagnosis parsed with its violation list open, and with WordNet nearly every noun can stand bare at the cost of one more violation | Timing each sentence of the second corpus after names let long sentences be parsed to the end, then each stage of one, on 2026-09-29 (`39d2965`) |
 | Refusing the Class 93 sentence, thirty words and five prepositions, had not ended after seven minutes, and the corpus run that took three minutes was stopped at fifteen | A gerund after a preposition, written that morning, let the verb phrase rule decide the form as a verb's rule does; with agreement relaxed for the diagnosis, every noun WordNet also lists as a verb opened a verb phrase after every preposition | Running the corpus under a time limit before the change was committed, then timing each sentence on a copy with an alarm (`d9763ca`); the rule is entered only when an *-ing* form follows, a lookahead the diagnosis does not relax, and the sentence is refused in three seconds |
+| The corpus run went from 184 to 318 seconds of CPU, and the Nita Ambani sentence from a third of a second to fifty, after a participle could stand before a noun, for no reading gained | Two causes outside the rule. The participle test asked `verb_form/3` with the word given, which walks every verb for each of its six forms, a millisecond, and the grammar asked it at every word a noun phrase could start at; and *as* was not in the lexicon, so WordNet supplied it as a noun, the Roman coin, and *best known as* became a noun phrase headed by *as* once *known* could be swallowed, where the old grammar had never got past *known* | Timing each sentence against the commit before on a copy of the tree, then benchmarking the lexical lookups one by one, then cutting the slow sentence down until the cost moved (`0769a0e`); the answer is kept per word while a sentence's placements stand, and *as* is a preposition |
+| A request without a verb, *two cups of tea, please*, cost the corpus run seventy seconds, 3:40 to 4:51 | A command is tried on every sentence nothing else reads, which is the expensive kind, and the request parsed a noun phrase for each of them before the missing *please* was noticed | Timing the run before the commit (`7946581`); the rule is entered only when a *please* is somewhere ahead, the guard the possessive has |
+| Reading the Kazakhstan sentence ran for minutes once a number before the noun let it be read, where it had been refused in nine seconds; a ten-word cut took three | Not the number: each word of a capitalized run is a noun in WordNet as well, so a noun phrase could end at any of them and try the rest as a relative clause with no relative word, which starts the same search again one word on, six times the cost for every word of the run, and every sentence with a run of names had been paying | Cutting the sentence down until the cost moved, which left the names and no number (`fd637af`); a head that is a name does not end before another name, and the corpus run fell from 2:43 to 1:12 |
 
 Every one of these passed the suite, because every test in the suite is small.
 The deep-nesting fix touched the collector, unification, comparison, copying,
@@ -599,6 +604,26 @@ scratch copy and reading the whole of its output.
 2026-09-28, and it worked. A warning nobody reads is a check that cannot
 fail, so it now fails the build.
 
+### A pair's first word made known, and *out* lost its adverb
+
+Two-word prepositions, *as of*, *out of*, *because of*, went in on
+2026-10-02, and the first version counted a pair's first word as a word
+the checker knows. A known word is never looked up in WordNet, which is
+deliberate, so that *can* and *will* do not become nouns; and *out* is
+an adverb and an adjective only through WordNet. *The lights went out*,
+the first corpus's own sentence, lost its reading (`2654e01`).
+
+Found at once by the first corpus's pinned count, which
+`make english-wordnet` fails on when a sentence moves either way: the
+run printed the one sentence and the count it expected. The pair now
+says nothing about its first word alone, and *ran out of the garden*
+has two readings, *out* an adverb before *of the garden* or the pair,
+both English.
+
+*What this says:* the pinned count was added on 2026-09-29 so that a
+change which moved a sentence would be seen whichever way it moved it,
+and this is the first time it caught a sentence moving the wrong way.
+
 ## What found what
 
 | Found by | Count |
@@ -613,6 +638,8 @@ fail, so it now fails the build.
 | Running the tokenizer on a case before building on it | 1 |
 | Timing each commit, looking for another cause | 1 |
 | Timing each sentence of a corpus, and once each stage of one | 2 |
+| Timing each sentence of a corpus against the commit before, then cutting the slow one down until the cost moved | 3 |
+| A corpus count pinned in the runner, which fails the build when a sentence moves | 1 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 4 |
 | Rendering the pages and looking at them | 3 |
@@ -626,7 +653,7 @@ fail, so it now fails the build.
 
 Three things stand out.
 
-**The test suite found four of fifty.** It is a good suite, 334 tests
+**The test suite found four of fifty-four.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
