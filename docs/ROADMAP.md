@@ -109,11 +109,12 @@ These change the shape of the system rather than adding to it.
      30. On 2026-10-02 an appositive after a name, *Alice, a doctor,
      sleeps*, and the bare role noun it needs, *He was chairman of the
      Health Service Executive*, and a participle before a noun, *the
-     presiding bishop*, *managing director*; it passes 33. What is left:
-     - a request without a verb, *two cups of tea, please*, which the
-       first corpus now refuses; an adjective after a noun modifier,
-       *jazz bebop alto saxophonist*; a number before the noun, *the 2020
-       census*, *the 2017 World Aquatics Championships*;
+     presiding bishop*, *managing director*; it passes 33. A request
+     without a verb, *two cups of tea, please*, the same day, and the
+     first corpus passes whole again. What is left:
+     - an adjective after a noun modifier, *jazz bebop alto
+       saxophonist*; a number before the noun, *the 2020 census*, *the
+       2017 World Aquatics Championships*;
      - a participle after a noun, *a movie directed by*, *a network
        broadcasting from Dubai*: written on 2026-09-30 with the
        participle before a noun and held behind the parser, below. The

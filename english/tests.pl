@@ -501,7 +501,19 @@ bad('A painted houses are big.',           det_noun(a, houses)).
 bad('A eaten cake is small.',              article(a, eaten)).
 bad('The dog sleeping barks.',             no_reading).
 bad('The dog, and the cat sleep.',         no_reading).
-bad('Two cups of tea, please.',            no_reading).
+% A request without a verb.
+good('Two cups of tea, please.').
+good('A coffee, please.').
+good('Please, two cups of tea.').
+good('The dogs please.').
+readings('A coffee, please.', 1).
+readings('The dogs please.', 1).
+bad('A coffees, please.',                  det_noun(a, coffees)).
+bad('Two cups of tea, please?',            punctuation('?')).
+bad('A coffee.',                           no_reading).
+bad('A coffee please.',                    subject_verb(please)).
+bad('Please, two cups of tea, please.',    no_reading).
+% "Please two cups of tea" is a command, please being a verb.
 bad('A apple tree grows.',                  article(a, apple)).
 bad('The dog house are big.',              subject_verb(are)).
 bad('The dog barks?',                      punctuation('?')).

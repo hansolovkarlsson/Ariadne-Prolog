@@ -570,6 +570,8 @@ bracket(date(D))           --> ['[NP', D, ']'].
 bracket(fronted(A, S))     --> ['[S'], bracket(A), bracket(S), [']'].
 bracket(imp(P1, Neg, VP, P2)) -->
     ['[S'], please_word(P1), imp_neg(Neg), bracket(VP), please_word(P2), [']'].
+bracket(request(P1, NP, P2)) -->
+    ['[S'], please_word(P1), bracket(NP), please_word(P2), [']'].
 bracket(pre(As, VP))       --> ['[VP'], items(As), bracket(VP), [']'].
 bracket(adjp(Ds, A))       --> ['[AP'], Ds, [A, ']'].
 bracket(sbar(that, S))     --> ['[SBAR', that], bracket(S), [']'].

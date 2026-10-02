@@ -204,6 +204,12 @@ end of this file.
   *was chased*, not *can barks* or *has ate*.
 - **The order of auxiliaries**: *might have been chased*, not *is having
   eaten* or *can can swim*.
+- **A request without a verb**: a noun phrase and *please* with a comma
+  between them, *two cups of tea, please*, *please, the bill*, read on
+  the terms a command is, only when nothing else reads the sentence.
+  The comma tells it from a statement, since *please* is a verb too:
+  *the dogs please* is a statement, and *a coffee please* one with its
+  verb disagreeing.
 - **The mark at the end fits the sentence**: a question ends with a
   question mark, and a statement or a command with a full stop or an
   exclamation mark, so *The dog barks?* and *Does the dog bark.* are both
@@ -791,4 +797,19 @@ corpus gives **33 grammatical, 16 not, and 1 unknown**: the Ambani
 sentence, and *He was the 27th presiding bishop and primate of The
 Episcopal Church*. `make english-wordnet`, the checks and both corpora,
 takes 3:40.
+
+The request without a verb closed the first corpus the same day: a noun
+phrase and *please* with a comma between them, *two cups of tea,
+please*, *please, the bill*, is read on the terms a command is, only
+when nothing else reads the sentence, and the comma is what tells it
+from a statement, since *please* is a verb as well and *the dogs please*
+is one; *a coffee please* stays a statement whose verb disagrees. The
+sentence had passed while commas were thrown away, with *please* the
+verb, and was refused once they were read. The rule cost seventy
+seconds at first: a command is tried on every sentence nothing else
+reads, and the request parsed a noun phrase for each of them before the
+*please* was missed. It is now entered only when a *please* is somewhere
+in what is left to read, the guard the possessive uses, and the run is
+3:30. The first corpus gives **50 grammatical**, and so guards
+everything it has and measures nothing, which is what it is for.
 

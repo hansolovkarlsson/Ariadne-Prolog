@@ -97,6 +97,28 @@ imperative(imp(P1, Neg, VP, P2), V0, V) -->
     verb_phrase(base, 5, imperative, VP, nogap, nogap, V0, V),
     please(P2).
 
+% A request without a verb: a noun phrase and please, with a comma
+% between them, "two cups of tea, please", "please, the bill". It is read
+% on the same terms as a command, since please is a verb as well and
+% "the dogs please" is a statement. The comma is what tells the two
+% apart, so "a coffee please" is still the statement, with its verb
+% disagreeing. please_ahead: a please is somewhere in what is left to
+% read. A command is tried on every sentence nothing else reads, and
+% without this the noun phrase was parsed for each of them before the
+% please was missed, which cost the corpus run seventy seconds.
+imperative(request(P1, NP, P2), V0, V) -->
+    please_ahead,
+    request_please(P1),
+    noun_phrase(_, obj, NP, nogap, nogap, V0, V),
+    request_please(P2),
+    { P1 \== P2 }.
+
+please_ahead(S, S) :- memberchk(please, S).
+
+request_please(please) --> [please, ','].
+request_please(please) --> [',', please].
+request_please(none) --> [].
+
 please(please) --> [please].
 please(please) --> [',', please].
 please(none) --> [].

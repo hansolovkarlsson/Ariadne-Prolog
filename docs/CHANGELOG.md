@@ -10,6 +10,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A request without a verb.** *Two cups of tea, please*, *please, the
+  bill*: a noun phrase and *please* with a comma between them, read on
+  the terms a command is, when nothing else reads the sentence. The
+  comma tells it from a statement, *please* being a verb too, and the
+  rule is entered only when a *please* is ahead, since tried on every
+  sentence nothing else reads it had cost the corpus run seventy
+  seconds. 509 checks; the first corpus passes all fifty again.
+
 - **A participle before a noun.** *The presiding bishop*, *a painted
   house*, *managing director*: an *-ing* or *-en* form of a verb that is
   not an adjective or a noun as well stands where an adjective does. The
