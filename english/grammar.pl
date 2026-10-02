@@ -190,16 +190,47 @@ wh_phrase(wh_np(D, N), Agr, D, _, V0, V) -->
 % relative or question word may stand: whom in a subject's place is caught
 % by the rules for a missing subject.
 noun_phrase(_, _, gap, gap, nogap, V, V) --> [].
-noun_phrase(Agr, Case, coord(C, [T1|Ts]), G, G, V0, V) -->
-    simple_np(_, Case, T1, V0, V1),
-    joined(np_item(Case), np_last(Case), [and, or], Items, C, V1, V),
-    { last(Items, Last-_), coord_agr(C, Last, Agr), pairs_values(Items, Ts) }.
+noun_phrase(Agr, Case, T, G, G, V0, V) -->
+    correlative_word(Pre, Cs),
+    np_first(Case, T1, V0, V1),
+    joined(np_item(Case), np_last(Case), Cs, Items, C, V1, V),
+    { last(Items, Last-_), coord_agr(C, Last, Agr), pairs_values(Items, Ts),
+      correlated(Pre, coord(C, [T1|Ts]), T) }.
 
 np_item(Case, A-T, V0, V) --> simple_np(A, Case, T, V0, V).
 np_last(Case, A-T, V0, V) --> noun_phrase(A, Case, T, nogap, nogap, V0, V).
 
 coord_agr(and, _, agr(n, n, n)).
 coord_agr(or, Agr, Agr).
+coord_agr(nor, Agr, Agr).
+
+% correlative_word(-Word, -Conjunctions): either, neither or both before a
+% list, which fixes the conjunction that joins it, or nothing, and the
+% list may take any. correlated/3 puts the word in the tree.
+correlative_word(Pre, [C]) --> [Pre], { correlative(Pre, C) }.
+correlative_word(none, [and, or, but]) --> [].
+
+correlated(none, T, T) :- !.
+correlated(Pre, T, corr(Pre, T)).
+
+% np_first(+Case, -Tree, V0, V): the first of a list of noun phrases: a
+% noun phrase, or a determiner with nouns after it set off by commas and
+% no conjunction, "a politician, author" in "a politician, author and a
+% member of the party", where the list's own conjunction comes later. The
+% nouns agree with the determiner as under nominal_list.
+np_first(Case, T, V0, V) --> simple_np(_, Case, T, V0, V).
+np_first(_, np(det(D), coord(',', [N1|Ns])), V0, V) -->
+    determiner(D, DNum, DSound),
+    core_nominal(Num1, First, Head1, N1),
+    comma_nominals(Items), { Items = [_|_] },
+    { pairs_keys_values(Items, NumHeads, Ns),
+      det_agrees_each([Num1-Head1|NumHeads], D, DNum, V0, V1),
+      sound(First, Sound),
+      agree(article(D, First), DSound, Sound, V1, V) }.
+
+comma_nominals([(Num-Head)-N|Is]) -->
+    [','], core_nominal(Num, _, Head, N), comma_nominals(Is).
+comma_nominals([]) --> [].
 
 % joined(:Item, :Last, +Conjunctions, -Items, -Conjunction, V0, V): what
 % follows the first of a list: "and B", ", B and C", ", B, and C". Items
@@ -555,9 +586,25 @@ relative(_, [rel(none, S)], V0, V) -->
 % Rank is the lowest rank the first word may have: an auxiliary is followed
 % only by ones ranked above it, which is English's order.
 verb_phrase(Form, Min, Prev, T, G0, G, V0, V) -->
+    correlative_word(Pre, Cs),
     pre_adverbs(As),
-    verb_head(Form, Min, Prev, VP, G0, G, V0, V),
-    { As == [] -> T = VP ; T = pre(As, VP) }.
+    verb_head(Form, Min, Prev, VP, G0, G, V0, V1),
+    { As == [] -> T1 = VP ; T1 = pre(As, VP) },
+    vp_rest(Pre, Cs, Form, Min, Prev, T1, T, V1, V).
+
+% vp_rest(+Pre, +Conjunctions, +Form, +Min, +Prev, +First, -Tree, V0, V):
+% the verb phrase First alone, or joined to verb phrases after it in the
+% same form, each a list item as joined//7 reads them: "sleeps and eats",
+% "barks, eats and sleeps", "was made by X and published by Y", "either
+% sleeps or eats". After either, neither or both the list is required.
+% The phrases after the first take no gap.
+vp_rest(none, _, _, _, _, T, T, V, V) --> [].
+vp_rest(Pre, Cs, Form, Min, Prev, T1, T, V0, V) -->
+    joined(vp_item(Form, Min, Prev), vp_item(Form, Min, Prev), Cs, Ts, C, V0, V),
+    { correlated(Pre, vp_coord(C, [T1|Ts]), T) }.
+
+vp_item(Form, Min, Prev, T, V0, V) -->
+    verb_phrase(Form, Min, Prev, T, nogap, nogap, V0, V).
 
 % pre_adverbs(-Adverbs): the adverbs that may stand before a verb, "has
 % already eaten", "never sleeps": those of time and frequency listed in

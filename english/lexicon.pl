@@ -230,6 +230,7 @@ det(every, sg, _).   det(each,  sg, _).
 det(some,  pl, _).   det(many,  pl, _).   det(several, pl, _).
 det(much,  mass, _).  det(such,  pl, _).
 det(few,   pl, _).   det(no,    _,  _).   det(any,   _,  _).
+det(either, sg, _).  det(neither, sg, _). det(both,  pl, _).
 det(my,    _,  _).   det(your,  _,  _).   det(his,     _,  _).
 det(its,   _,  _).   det(our,   _,  _).   det(their,   _,  _).
 det(W,     Num, _) :- number_word(W, Num).
@@ -336,7 +337,12 @@ adv(A) :- guessed(adv, A).
 
 % coordinator(Word): joins two clauses as equals, "I like coffee but my
 % brother prefers tea". and also joins noun phrases, in grammar.pl.
-coordinator(and). coordinator(but). coordinator(or).
+coordinator(and). coordinator(but). coordinator(or). coordinator(nor).
+
+% correlative(Word, Conjunction): a word before the first of a list that
+% says which conjunction joins it: "either the dog or the cat", "neither
+% sleeps nor eats", "both the dog and the cat". Each is a determiner too.
+correlative(either, or). correlative(neither, nor). correlative(both, and).
 
 % subordinator(Word): opens a clause that goes with another, before it or
 % after it: "he opened the window because the room was hot", "if it rains

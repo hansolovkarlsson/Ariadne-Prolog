@@ -585,6 +585,9 @@ bracket(rel(none, S))      --> ['[SBAR'], bracket(S), [']'].
 bracket(rel(W, C))         --> { W \== none }, ['[SBAR', W], bracket(C), [']'].
 bracket(gap)               --> ['_'].
 bracket(coord(C, Ts))      --> ['[NP'], joined_out(bracket, C, Ts), [']'].
+bracket(vp_coord(C, Ts))   --> ['[VP'], joined_out(bracket, C, Ts), [']'].
+bracket(corr(P, coord(C, Ts)))    --> ['[NP', P], joined_out(bracket, C, Ts), [']'].
+bracket(corr(P, vp_coord(C, Ts))) --> ['[VP', P], joined_out(bracket, C, Ts), [']'].
 bracket(adj_coord(C, As))  --> ['[AP'], joined_out(bracket, C, As), [']'].
 bracket(pro(W))            --> ['[NP', W, ']'].
 bracket(name(W))           --> ['[NP', W, ']'].

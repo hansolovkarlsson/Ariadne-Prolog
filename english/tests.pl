@@ -456,6 +456,22 @@ good('The dog has a bone for being the biggest dog.').
 good('The dog sleeps after having eaten the cake.').
 bad('The dog sleeps after eat the cake.',   no_reading).
 bad('The dog sleeps after eating the cakes sleeps.', no_reading).
+good('The dog sleeps and eats.').
+good('The dog barks, eats and sleeps.').
+good('The cat was chased by the dog and eaten by the fox.').
+good('The dog either sleeps or eats.').
+good('Either the dog or the cat sleeps.').
+good('Neither the dog nor the cats sleep.').
+good('Both the dog and the cat sleep.').
+good('He was a doctor, teacher and a farmer.').
+good('Close the door and visit the garden.').
+readings('The dog sleeps and eats.', 1).
+readings('He was a doctor, teacher and a farmer.', 1).
+bad('The dog sleeps and eat.',              subject_verb(eat)).
+bad('Either the dog or the cat sleep.',     subject_verb(sleep)).
+bad('Both the dog and the cat sleeps.',     subject_verb(sleeps)).
+bad('Either the dog sleeps.',               no_reading).
+bad('The dog sleeps either.',               no_reading).
 bad('The dog, barks.',                     no_reading).
 bad('The dog, and the cat sleep.',         no_reading).
 bad('Two cups of tea, please.',            no_reading).

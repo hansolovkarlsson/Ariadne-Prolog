@@ -115,11 +115,16 @@ end of this file.
   *they were*, *nobody sleeps*; and a subject joined by *and* is plural. Each
   clause of a sentence joined by *and*, *but* or *because* agrees on its
   own: *the dog barks but the cats sleep*.
-- **Lists, with *and* or *or***: *Alice, Bob and Carol sing*, with the
-  comma before *and* or without it; *the dog or the cats bark*, *or*
+- **Lists, with *and*, *or* or *but***: *Alice, Bob and Carol sing*, with
+  the comma before *and* or without it; *the dog or the cats bark*, *or*
   agreeing with the nearest; *a doctor and teacher* under one determiner,
-  which agrees with each noun, so not *these cat and dogs*; *big, old and
-  happy* after a verb and *a big, old dog* before a noun. A comma is read
+  which agrees with each noun, so not *these cat and dogs*, and *a
+  politician, author and a member of the party*, where the first item
+  has two nouns under its determiner; *big, old and happy* after a verb
+  and *a big, old dog* before a noun; verb phrases, *the dog sleeps and
+  eats*, *was made by Retro Studios and published by Nintendo*, each in
+  the form of the first; and *either ... or*, *neither ... nor* and
+  *both ... and* before a list of noun phrases or of verb phrases. A comma is read
   only in a list, between two clauses (*the dog barks, but the cat
   sleeps*, *if it rains, the dog sleeps*), between a name and the name
   that places it (*Springfield, Massachusetts*) and before a last *please*;
@@ -701,4 +706,23 @@ one. The corpus gives **28 grammatical, 21 not, and 1 unknown**: *It has
 (2014) the record for being the largest distant galaxy cluster we have
 discovered* and *He was also known for being the voice of Mickey Mouse
 from 1947 to 1977*. The run takes 3:14.
+
+What lists left came last. Verb phrases had never been joined at all:
+*the dog sleeps and eats* had no reading, since *and* joined statements
+and noun phrases only. A verb phrase may now be followed by others in
+the same form, by the list rule noun phrases use, *barks, eats and
+sleeps*, *was made by Retro Studios and published by Nintendo*, and
+*either*, *neither* or *both* before a list of noun phrases or verb
+phrases fixes its conjunction, *either the dog or the cat sleeps*,
+*neither sleeps nor eats*. The first item of a list of noun phrases may
+be a determiner with nouns after it set off by commas, *an Indian
+politician, author and a member of the Congress Party*, where *author*
+had needed a determiner. The corpus gives **30 grammatical, 19 not, and 1
+unknown**: *It was made by Retro Studios and published by Nintendo*, with
+a reading that joins *published* to *was* and one that joins it to *was
+made*, both English in form, and the Syed Ahmed sentence. Two more that
+looked like lists were not: *jazz bebop alto saxophonist* is an adjective
+after noun modifiers, and *the 2017 World Aquatics Championships and 2019
+World Aquatics Championships* a number before the noun; both are on the
+roadmap. The run takes 3:19.
 
