@@ -10,6 +10,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A hyphen stays in its word, and an adjective may stand before a
+  name.** A hyphenated word is kept whole when a capital makes it a name,
+  *Bernes-sur-Oise*, or the lexicon or WordNet has it as written,
+  *well-known*, or closed up, *north-eastern* as *northeastern*; otherwise
+  it is its parts. `tools/gen_wordnet.py` now keeps WordNet's hyphenated
+  lemmas. *Old London*, *north-eastern France*. 444 checks; the second
+  corpus goes from 21 grammatical to 24. (`c3a52a4`)
+
 - **A comma places a name.** A name, a comma and a name after it are one
   name, *Springfield, Massachusetts*, *McLennan County, Texas, United
   States*. Names only: *Mukesh Ambani, chairman of ...* waits. *Alice,
