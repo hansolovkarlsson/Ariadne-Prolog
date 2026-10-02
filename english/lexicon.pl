@@ -70,6 +70,7 @@ noun(house). noun(garden). noun(park). noun(city). noun(village). noun(road).
 noun(river). noun(forest). noun(hill). noun(school). noun(library).
 noun(kitchen). noun(room). noun(table). noun(chair). noun(door).
 noun(window). noun(box). noun(bag). noun(book). noun(letter). noun(story).
+noun(front). noun(top).
 noun(song). noun(picture). noun(ball). noun(toy). noun(car). noun(bus).
 noun(train). noun(boat). noun(bicycle). noun(apple). noun(orange).
 noun(banana). noun(egg). noun(cake). noun(sandwich). noun(bone).
@@ -332,6 +333,15 @@ prep(as).
 prep_pair(as, of).        prep_pair(out, of).       prep_pair(because, of).
 prep_pair(instead, of).   prep_pair(according, to). prep_pair(due, to).
 prep_pair(next, to).      prep_pair(prior, to).     prep_pair(close, to).
+
+% prep_triple(First, Second, Third): a preposition of three words with a
+% noun inside that takes no determiner there, "as part of the project",
+% "in front of the house", "on behalf of the club". The noun keeps
+% whatever else it is, as a pair's first word does.
+prep_triple(as, part, of).     prep_triple(in, front, of).
+prep_triple(on, top, of).      prep_triple(in, charge, of).
+prep_triple(on, behalf, of).   prep_triple(in, spite, of).
+prep_triple(in, addition, to). prep_triple(in, place, of).
 
 adv(quickly). adv(slowly). adv(quietly). adv(loudly). adv(happily).
 adv(sadly). adv(often). adv(always). adv(never). adv(sometimes).

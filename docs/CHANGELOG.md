@@ -10,6 +10,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A preposition of three words.** *In front of the house*, *on top of
+  the box*, *as part of the project*, eight listed, with a noun inside
+  that takes no determiner there; *front* and *top* join the lexicon.
+  *Be* and a *to*-infinitive was written beside it and held: the one
+  corpus sentence it reads has fifty readings without its last phrase
+  and none in five minutes with it. 550 checks; the second corpus stays
+  at 39.
+
 - **Of and a name are part of a name.** *Zigzag of Success*, *Statue
   of Liberty*, *University of Oxford*, as the placing comma is; a name
   takes no prepositional phrase otherwise. 546 checks; the second

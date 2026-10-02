@@ -120,7 +120,7 @@ These change the shape of the system rather than adding to it.
      after a noun, *a movie directed by Eldar Ryazanov*, and *of* and a
      name as part of a name, *Zigzag of Success*; it passes 39. What is
      left, one sentence each, in `english/README.md`:
-     - *be* and a *to*-infinitive, *were to enter service*; a phrasal verb,
+     - a phrasal verb,
        *sworn in as*; a name after a noun phrase, *the record label
        Yellow Productions*; an adjective phrase after a comma, *best
        known as the chairperson*; *which in turn were*; a comma before a
@@ -129,16 +129,18 @@ These change the shape of the system rather than adding to it.
        after a noun phrase, *her stage name, Barbara*;
      - a plain adjective after a noun modifier, *a world famous
        singer*, which no corpus sentence needs;
-     - nothing now waits on the parser. Participles, after a noun and
-       before it, were written on 2026-09-30 and held, since the corpus
-       run went from 172 to 397 seconds of CPU for no corpus sentence
-       gained. On 2026-10-02 both halves went in, the half before the
-       noun at 197 seconds against 184 once two costs outside it were
-       found, and the half after at 55 against 47 once a name head no
-       longer ended before another name, which had been most of the
-       cost all along; the record is in `english/README.md`. The parser
-       question below stands on its own merits, and no corpus sentence
-       argues for it today.
+     - *be* and a *to*-infinitive, *the locomotives that were to enter
+       service*, one rule, written on 2026-10-02 and held in
+       `scratch/be-to.patch`: with it the Class 93 sentence is
+       grammatical, and the strict parse, which finds every reading,
+       found 23 in 12 seconds for the sentence cut short, 50 in 83
+       seconds with one more phrase, and none in five minutes for the
+       whole. Every trailing phrase multiplies the attachments and a DCG
+       shares nothing between them. This is the one corpus sentence that
+       waits on the parser, below, and the first to meet the wall from
+       the grammatical side. Participles, held the same way on
+       2026-09-30, went in on 2026-10-02 once their cost was found to be
+       elsewhere; the record of both is in `english/README.md`.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

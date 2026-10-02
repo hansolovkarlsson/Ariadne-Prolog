@@ -671,11 +671,14 @@ pp(pp(P, NP), G0, G, V0, V) -->
 pp(pp(P, VP), G0, G, V0, V) -->
     preposition(P), ing_ahead, verb_phrase(ing, 2, P, VP, G0, G, V0, V).
 
-% preposition(-Prep): one word, or two that make one, "as of the census",
-% "out of the box", "because of the rain", which prep_pair/2 lists; the
-% two count as one word, as the two-word determiners do.
+% preposition(-Prep): one word, or two or three that make one, "as of the
+% census", "out of the box", "as part of the project", "in front of the
+% house", which prep_pair/2 and prep_triple/3 list; the words count as
+% one, as the two-word determiners do.
 preposition(P) --> [P], { prep(P) }.
 preposition(P) --> [A, B], { prep_pair(A, B), atomic_list_concat([A, B], ' ', P) }.
+preposition(P) -->
+    [A, B, C], { prep_triple(A, B, C), atomic_list_concat([A, B, C], ' ', P) }.
 
 % A preposition may take an -ing verb phrase in place of a noun phrase,
 % "tired of barking", "after eating the cake", "the record for being the
@@ -871,7 +874,11 @@ complementizer(none) --> [].
 
 % What follows be: an adjective, a noun phrase, a bare role noun, or a
 % place, with the adverbs that may stand before a verb before it: "is also
-% the capital", "is always happy", "was chairman of the board".
+% the capital", "is always happy", "was chairman of the board". A
+% to-infinitive, "the locomotives were to enter service", is written and
+% held in scratch/be-to.patch: it is one rule, and correct, but the one
+% corpus sentence it lets through has fifty readings without its last
+% phrase and runs past five minutes with it; see docs/ROADMAP.md.
 predicate(AP, G, G, V, V) --> adj_group(AP).
 predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
 predicate(NP, G, G, V0, V) --> role_np(NP, V0, V).

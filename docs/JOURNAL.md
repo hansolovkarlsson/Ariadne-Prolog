@@ -1338,6 +1338,19 @@ along, two days before the participle was blamed for it, and nothing
 now waits on the parser: what the eleven refused sentences stop on is
 named one each in the README, and none of them is a parsing problem.
 
+That held for two sentences. *Zigzag of Success* went in as *of* and a
+name inside a name, and then *be* and a *to*-infinitive, one rule, met
+the wall from the side it had never been met from. The Class 93
+sentence became grammatical, and a grammatical sentence has every
+reading found: 23 in 12 seconds cut short, 50 in 83 with one more
+phrase, and none in five minutes whole, each trailing phrase
+multiplying the attachments and the DCG sharing nothing between them.
+No guard applies, since nothing is wrong: the readings are real and the
+parser enumerates them one at a time from the start. The rule is held in
+`scratch/be-to.patch` with the numbers, and the parser item has the
+sentence it had lacked. Nine commits in the day, and the method held
+through the last: time, cut, and believe the cut.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:

@@ -490,6 +490,11 @@ bad('Alice, friend of the king, sleep.',   subject_verb(sleep)).
 bad('Alice is teacher.',                   bare(teacher)).
 bad('Alice is dog of the king.',           bare(dog)).
 bad('Alice sees teacher of the king.',     bare(teacher)).
+% A preposition of three words.
+good('The dog sleeps in front of the house.').
+good('The cat sleeps on top of the box.').
+readings('The dog sleeps in front of the house.', 1).
+bad('The dog sleeps in front the house.',  no_reading).
 % Of and a name after a name are part of it.
 good('Alice of London sleeps.').
 good('The dog sees Alice of London.').
