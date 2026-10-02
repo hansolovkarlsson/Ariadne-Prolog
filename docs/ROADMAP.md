@@ -106,16 +106,17 @@ These change the shape of the system rather than adding to it.
      after a preposition, *the record for being the largest cluster*, and
      what lists left, verb phrases joined, *either ... or*, and a list
      whose first item has two nouns under one determiner; it passes
-     30. What is left:
-     - a comma setting a noun phrase beside a name, *Mukesh Ambani,
-       chairman of ...*, which also needs *chairman* as a bare noun, as
-       does *He was chairman of the Health Service Executive*; a request
-       without a verb, *two cups of tea, please*, which the first corpus
-       now refuses; an adjective after a noun modifier, *jazz bebop alto
-       saxophonist*; a number before the noun, *the 2020 census*, *the
-       2017 World Aquatics Championships*;
+     30. On 2026-10-02 an appositive after a name, *Alice, a doctor,
+     sleeps*, and the bare role noun it needs, *He was chairman of the
+     Health Service Executive*; it passes 31. What is left:
+     - a request without a verb, *two cups of tea, please*, which the
+       first corpus now refuses; an adjective after a noun modifier,
+       *jazz bebop alto saxophonist*; a number before the noun, *the 2020
+       census*, *the 2017 World Aquatics Championships*;
      - participles, after a noun, *a movie directed by*, and before it,
-       *the presiding bishop*: written on 2026-09-30 and held behind the
+       *the presiding bishop*, *managing director*, on which *Mukesh
+       Ambani, chairman and managing director of Reliance Industries*
+       now stops: written on 2026-09-30 and held behind the
        parser, below. They were correct, 417 checks passing, but the
        corpus run went from 172 to 397 seconds of CPU for no corpus
        sentence gained, and to 366 even with them kept out of the

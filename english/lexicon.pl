@@ -48,6 +48,7 @@
 :- dynamic(wn_irregular/3).
 :- dynamic(wn_name/1).
 :- dynamic(wn_mass/1).
+:- dynamic(wn_person/1).
 
 % agr_of(+Number, -Agr): the agreement of a third-person noun phrase.
 agr_of(sg, agr(n, y, y)).
@@ -143,6 +144,18 @@ mass(asthma). mass(arthritis).
 % tools/gen_wordnet.py writes as wn_mass/1: iron, sand, glass, oxygen. A
 % word the lexicon lists is never one of these, as it is not guessed.
 mass(W) :- guessed(noun, W), wn_mass(W).
+
+% person(Noun): a noun for a person, which may stand bare in the singular
+% where it names an office, after be or beside a name, "he was chairman of
+% the board", "Mukesh Ambani, chairman of Reliance Industries"; see
+% role_np//3 in grammar.pl. The lexicon's own are listed; the rest are
+% WordNet's, the nouns whose most frequent sense is in its category of
+% people, which tools/gen_wordnet.py writes as wn_person/1.
+person(man). person(woman). person(child). person(person). person(boy).
+person(girl). person(baby). person(friend). person(teacher).
+person(student). person(doctor). person(farmer). person(king).
+person(queen). person(neighbour). person(artist).
+person(W) :- guessed(noun, W), wn_person(W).
 
 % time_noun(Noun): a noun that makes an adverb of time with last, next,
 % this, every or each before it, "last night", "every day"; see

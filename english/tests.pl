@@ -473,6 +473,23 @@ bad('Both the dog and the cat sleeps.',     subject_verb(sleeps)).
 bad('Either the dog sleeps.',               no_reading).
 bad('The dog sleeps either.',               no_reading).
 bad('The dog, barks.',                     no_reading).
+% An appositive after a name, and a bare role noun after be and beside a
+% name.
+good('Alice, a doctor, sleeps.').
+good('The dog sees Alice, a doctor.').
+good('Alice, the old farmer\'s friend, sleeps.').
+good('Alice is teacher of the children.').
+good('Alice, friend of the king, sleeps.').
+good('Alice sees Bob, friend and teacher of the children.').
+readings('Alice is teacher of the children.', 1).
+readings('I saw Alice, a doctor, and Bob.', 2).
+readings('I saw Alice, a doctor and Bob.', 1).
+bad('Alice, a doctor sleeps.',             no_reading).
+bad('Alice, a doctors, sleeps.',           det_noun(a, doctors)).
+bad('Alice, friend of the king, sleep.',   subject_verb(sleep)).
+bad('Alice is teacher.',                   bare(teacher)).
+bad('Alice is dog of the king.',           bare(dog)).
+bad('Alice sees teacher of the king.',     bare(teacher)).
 bad('The dog, and the cat sleep.',         no_reading).
 bad('Two cups of tea, please.',            no_reading).
 bad('A apple tree grows.',                  article(a, apple)).

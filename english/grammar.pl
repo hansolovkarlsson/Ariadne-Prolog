@@ -258,20 +258,33 @@ simple_np(Agr, Case, pro(W), V0, V) -->
            agree(case(W), PCase, Case, V0, V) }.
 simple_np(Agr, _, name(N), V, V) -->
     name(N), { agr_of(sg, Agr) }.
+simple_np(Agr, _, appos(name(N), NP), V0, V) -->
+    name(N), [','], apposition(NP, V0, V), apposition_end,
+    { agr_of(sg, Agr) }.
 simple_np(Agr, _, np(nom(As, n(N), [])), V, V) -->
     plain_adjectives(As), name(N), { agr_of(sg, Agr) }.
 simple_np(Agr, _, date(D), V, V) -->
     date(D), { agr_of(sg, Agr) }.
 simple_np(Agr, _, num(W), V, V) -->
     [W], { number_word(W, Num), agr_of(Num, Agr) }.
-simple_np(Agr, _, np(det(D), N), V0, V) -->
+simple_np(Agr, _, T, V0, V) --> det_np(Agr, T, V0, V).
+simple_np(Agr, _, np(N), V0, V) -->
+    nominal(Num, _, Head, N, V0, V1),
+    { \+ names_only(N),
+      bare_ok(Head, Num, V1, V),
+      agr_of(Num, Agr) }.
+
+% det_np(-Agr, -Tree, V0, V): a noun phrase with a determiner or a
+% possessor before its noun, which is what may stand beside a name as an
+% appositive.
+det_np(Agr, np(det(D), N), V0, V) -->
     determiner(D, DNum, DSound),
     nominal(Num, First, Head, N, V0, V1),
     { det_agrees(D, Head, DNum, Num, V1, V2),
       sound(First, Sound),
       agree(article(D, First), DSound, Sound, V2, V),
       agr_of(Num, Agr) }.
-simple_np(Agr, _, np(det(D), coord(C, [N1|Ns])), V0, V) -->
+det_np(Agr, np(det(D), coord(C, [N1|Ns])), V0, V) -->
     determiner(D, DNum, DSound),
     core_nominal(Num1, First, Head1, N1),
     joined(nom_item, nom_last, [and, or], Items, C, V0, V1),
@@ -282,16 +295,49 @@ simple_np(Agr, _, np(det(D), coord(C, [N1|Ns])), V0, V) -->
       pairs_keys([Num1-Head1|NumHeads], Nums),
       coord_num(C, DNum, Nums, Num),
       agr_of(Num, Agr) }.
-simple_np(Agr, _, np(N), V0, V) -->
-    nominal(Num, _, Head, N, V0, V1),
-    { \+ names_only(N),
-      bare_ok(Head, Num, V1, V),
-      agr_of(Num, Agr) }.
-simple_np(Agr, _, np(poss(P), N), V0, V) -->
+det_np(Agr, np(poss(P), N), V0, V) -->
     possessive_ahead,
     possessor(P, V0, V1),
     nominal(Num, _, _, N, V1, V),
     { agr_of(Num, Agr) }.
+
+% apposition(-Tree, V0, V): a noun phrase a comma sets beside a name to say
+% what the name is: "Mukesh Ambani, chairman of Reliance Industries",
+% "Syed Ahmed, an Indian politician", "Alice, the doctor, sleeps". It is
+% one noun phrase with a determiner or a possessor, or a bare role noun,
+% and not a list, a pronoun or a name, since a name after the comma places
+% the first, "Springfield, Massachusetts". A comma closes it, or the end
+% of the sentence: "Alice, a doctor sleeps" has no reading, as "the dog,
+% barks" has none.
+apposition(T, V0, V) --> det_np(_, T, V0, V).
+apposition(T, V0, V) --> role_np(T, V0, V).
+
+apposition_end --> [','].
+apposition_end([], []).
+
+% role_np(-Tree, V0, V): a noun for an office stands bare in the singular
+% where it says what someone is, after be and beside a name: "he was
+% chairman of the board", "Mukesh Ambani, chairman and managing director
+% of Reliance Industries". The noun is one for a person, person/1 in the
+% lexicon or WordNet's category of people, and of follows it, or follows
+% the last of a run joined by and or or. Neither is relaxed by the
+% diagnosis, so "I am student" and "he is doctor" are still refused as a
+% noun without its determiner.
+role_np(np(N), V0, V) --> role_nominal(N, V0, V).
+role_np(np(coord(C, [N1|Ns])), V0, V) -->
+    role_core(N1),
+    joined(role_item, role_last, [and, or], Ns, C, V0, V).
+
+role_core(N) --> core_nominal(sg, _, Head, N), { person(Head) }.
+role_item(N, V, V) --> role_core(N).
+role_last(N, V0, V) --> role_nominal(N, V0, V).
+
+% The of phrase is read here and not left to the verb, since it is what
+% lets the noun stand bare: "was chairman of the board" has one reading.
+role_nominal(nom(As, n(Head), [Of|Posts]), V0, V) -->
+    role_core(nom(As, n(Head), [])),
+    pp(Of, nogap, nogap, V0, V1), { Of = pp(of, _) },
+    nominal_rest(sg, Head, Posts, V1, V).
 
 % date(-Date): a date with its year, "May 16, 2015", or with its day first,
 % "10 May 1969", "10 May". A month and a number with no comma, "May 16",
@@ -439,9 +485,11 @@ core_nominal(Num, First, Head, nom(As, n(Head), [])) -->
 % nominal(-Number, -FirstWord, -HeadNoun, -Tree, V0, V): adjectives, the
 % noun, the prepositional phrases after it, and a relative clause.
 nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
-    modifiers(As),
-    [Head], { noun_form(Head, _, Num) },
-    { first_word(As, Head, First) },
+    core_nominal(Num, First, Head, nom(As, n(Head), [])),
+    nominal_rest(Num, Head, Posts, V0, V).
+
+% nominal_rest(+Number, +HeadNoun, -Posts, V0, V): what follows the noun.
+nominal_rest(Num, Head, Posts, V0, V) -->
     kind_of(Head, KPs, V0, V01),
     pps(PPs0, V01, V1),
     { append(KPs, PPs0, PPs) },
@@ -726,11 +774,12 @@ complements(ing, Tok, [VP], G0, G, V0, V) -->
 complementizer(that) --> [that].
 complementizer(none) --> [].
 
-% What follows be: an adjective, a noun phrase, or a place, with the
-% adverbs that may stand before a verb before it: "is also the capital",
-% "is always happy".
+% What follows be: an adjective, a noun phrase, a bare role noun, or a
+% place, with the adverbs that may stand before a verb before it: "is also
+% the capital", "is always happy", "was chairman of the board".
 predicate(AP, G, G, V, V) --> adj_group(AP).
 predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
+predicate(NP, G, G, V0, V) --> role_np(NP, V0, V).
 predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
 
 % Adverbs and prepositional phrases after the verb and what it takes. The

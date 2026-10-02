@@ -20,7 +20,11 @@ A noun whose first sense, WordNet's most frequent, is in its substance
 category (lexicographer file 27, noun.substance) is kept as wn_mass/1:
 water, iron, sand, glass. That category is nearly all uncountable, and the
 food category beside it is not (apple, pizza), so food is left out. Words
-of two letters are left out too, as most are chemical symbols. What each verb takes after
+of two letters are left out too, as most are chemical symbols. A noun whose
+first sense is in the person category (lexicographer file 18, noun.person)
+is kept as wn_person/1: chairman, director, wife, politician; the grammar
+lets such a noun stand bare where it names an office, "he was chairman of
+the board". What each verb takes after
 it is read from the sentence frames WordNet gives every verb sense, mapped to
 the grammar's frames:
 
@@ -123,8 +127,8 @@ def names(path):
     return sorted(out)
 
 
-def substances(index_path, data_path):
-    """The nouns whose first sense is in noun.substance."""
+def first_sense_in(index_path, data_path, lexnum):
+    """The nouns whose first sense is in lexicographer file lexnum."""
     lexfile = {}
     with open(data_path, encoding='utf-8') as f:
         for line in f:
@@ -144,7 +148,7 @@ def substances(index_path, data_path):
             # lemma pos synset_cnt p_cnt [ptr_symbol...] sense_cnt tagsense_cnt offsets
             p_cnt = int(fields[3])
             offsets = fields[6 + p_cnt:]
-            if offsets and lexfile.get(offsets[0]) == 27:
+            if offsets and lexfile.get(offsets[0]) == lexnum:
                 out.append(w)
     return out
 
@@ -186,9 +190,12 @@ def main():
             f.write("wn_adj('%s').\n" % w)
         for w in advs:
             f.write("wn_adv('%s').\n" % w)
-        for w in substances(os.path.join(d, 'index.noun'),
-                            os.path.join(d, 'data.noun')):
+        index_noun = os.path.join(d, 'index.noun')
+        data_noun = os.path.join(d, 'data.noun')
+        for w in first_sense_in(index_noun, data_noun, 27):
             f.write("wn_mass('%s').\n" % w)
+        for w in first_sense_in(index_noun, data_noun, 18):
+            f.write("wn_person('%s').\n" % w)
         for w in names(os.path.join(d, 'data.noun')):
             f.write("wn_name('%s').\n" % w)
         for form, base in exceptions(os.path.join(d, 'noun.exc')):

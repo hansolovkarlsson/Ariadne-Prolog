@@ -6,6 +6,20 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-10-02
+
+### Added
+
+- **An appositive after a name, and a bare role noun.** A comma and a
+  noun phrase that says what the name is, *Alice, a doctor, sleeps*,
+  *Mukesh Ambani, chairman of Reliance Industries*, closed by a comma or
+  the end of the sentence; and a noun for a person with *of* after it
+  standing without its determiner after *be* and beside a name, *he was
+  chairman of the board*, the person nouns being the lexicon's own and
+  WordNet's, which `tools/gen_wordnet.py` now writes as `wn_person/1`.
+  *I am student* is still refused. 490 checks; the second corpus goes
+  from 30 grammatical to 31.
+
 ## 2026-10-01
 
 ### Added

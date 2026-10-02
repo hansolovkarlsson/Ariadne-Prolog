@@ -127,9 +127,22 @@ end of this file.
   *both ... and* before a list of noun phrases or of verb phrases. A comma is read
   only in a list, between two clauses (*the dog barks, but the cat
   sleeps*, *if it rains, the dog sleeps*), between a name and the name
-  that places it (*Springfield, Massachusetts*) and before a last *please*;
+  that places it (*Springfield, Massachusetts*), around an appositive
+  after a name (*Alice, a doctor, sleeps*) and before a last *please*;
   anywhere else it leaves the sentence with no reading, so *Alice, Bob
   sing* and *the dog, barks* fail.
+- **An appositive after a name**: a comma and a noun phrase that says what
+  the name is, *Mukesh Ambani, chairman of Reliance Industries*, *Alice,
+  a doctor, sleeps*, *the dog sees Alice, a doctor*; one noun phrase with
+  a determiner, a possessor or a bare role noun, closed by a comma or the
+  end of the sentence, so *Alice, a doctor sleeps* has no reading.
+- **A role noun stands bare**: a noun for a person, with *of* after it,
+  needs no determiner after *be* or beside a name, *he was chairman of
+  the board*, *chairman and managing director of Reliance Industries*;
+  without the *of*, or for a noun that is not a person's, it still does,
+  so *I am student* and *it is piece of cake* are refused. The nouns for
+  people are the lexicon's own and those WordNet gives a person as the
+  most frequent sense.
 - **A phrase before the subject**: *yesterday the dog barked*, *in 2019,
   978 people lived there*, *last night the dog barked*, with a comma or
   none; but not *about the dog barked*.
@@ -725,4 +738,23 @@ looked like lists were not: *jazz bebop alto saxophonist* is an adjective
 after noun modifiers, and *the 2017 World Aquatics Championships and 2019
 World Aquatics Championships* a number before the noun; both are on the
 roadmap. The run takes 3:19.
+
+On 2026-10-02 came the appositive after a name, and the bare role noun it
+needs: a comma and a noun phrase that says what the name is, *Alice, a
+doctor, sleeps*, closed by a comma or the end of the sentence, as the
+list rule's comma is read only in a list; and a noun for a person, with
+*of* after it, standing without its determiner after *be* and beside a
+name, *he was chairman of the board*. The person nouns are the lexicon's
+own and WordNet's, the nouns whose most frequent sense is in its category
+of people, which `tools/gen_wordnet.py` now writes as `wn_person/1`, as it
+writes the substances. The *of* is the licence and is read inside the
+noun phrase, so *was chairman of the board* has one reading and not the
+two that *was the chairman of the board* has; without it *I am student*
+is still refused, which a learner's checker should do. The corpus gives
+**31 grammatical, 18 not, and 1 unknown**: *He was chairman of the Health
+Service Executive (HSE)*. *She is the wife of Mukesh Ambani, chairman and
+managing director of Reliance Industries* reads its appositive and stops
+on *managing*, which WordNet has only as a form of the verb: a participle
+before a noun, the half of the participle change that costs a lookahead
+and not a verb phrase after every noun. The run takes 2:54.
 
