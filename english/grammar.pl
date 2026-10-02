@@ -227,6 +227,8 @@ simple_np(Agr, Case, pro(W), V0, V) -->
            agree(case(W), PCase, Case, V0, V) }.
 simple_np(Agr, _, name(N), V, V) -->
     name(N), { agr_of(sg, Agr) }.
+simple_np(Agr, _, np(nom(As, n(N), [])), V, V) -->
+    plain_adjectives(As), name(N), { agr_of(sg, Agr) }.
 simple_np(Agr, _, date(D), V, V) -->
     date(D), { agr_of(sg, Agr) }.
 simple_np(Agr, _, num(W), V, V) -->
@@ -440,6 +442,19 @@ adjectives([name(W)|As]) --> [W], { proper(W), \+ adj(W) }, adjectives(As).
 adjectives([name(W), name(D)|As]) -->
     [W, D], { proper(W), digits(D) }, adjectives(As).
 adjectives([]) --> [].
+
+% plain_adjectives(-Trees): one or more adjectives before a name, "old
+% London", "north-eastern France", "a big, old dog" as before a noun, none
+% of them a name itself, since "United States" is one name and not an
+% adjective and a name.
+plain_adjectives([AP|As]) --> adj_phrase(AP), { plain(AP) }, plain_rest(As).
+
+plain_rest([]) --> [].
+plain_rest([AP|As]) --> adj_phrase(AP), { plain(AP) }, plain_rest(As).
+plain_rest([sep(S), AP|As]) --> adj_sep(S), adj_phrase(AP), { plain(AP) }, plain_rest(As).
+
+plain(adj(A)) :- \+ proper(A).
+plain(adjp(_, A)) :- \+ proper(A).
 
 % adj_sep(-Words): between two adjectives before a noun, a comma, a
 % conjunction, or both: "a big, old dog", "a big and old dog", "a small

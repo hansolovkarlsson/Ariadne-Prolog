@@ -8,7 +8,9 @@
 
     In WordNet, a word is found as itself, as an -s, -ed or -ing form of a
     stem WordNet has, or in WordNet's lists of irregular forms: flung is
-    fling, oxen is ox, grabbed is grab with its consonant doubled. A verb
+    fling, oxen is ox, grabbed is grab with its consonant doubled. A
+    hyphenated word WordNet has only closed up, north-eastern, is found as
+    northeastern. A verb
     brings the frames WordNet gives it. The lexicon's own words are never
     looked up, so a word it lists keeps only the entries it gives, and can,
     will and a do not become WordNet's nouns.
@@ -70,6 +72,7 @@ wordnet_entry(W, adj-W) :- wn_adj(W).
 wordnet_entry(W, adv-W) :- wn_adv(W).
 wordnet_entry(W, noun-S) :- inflection(W, S, s), wn_noun(S).
 wordnet_entry(W, verb(Fs)-S) :- inflection(W, S, _), wn_verb(S, Fs).
+wordnet_entry(W, Class-W) :- closed_up(W, C), wordnet_entry(C, Class-C).
 wordnet_entry(W, E) :- wn_irregular(noun, W, S), wn_noun(S),
     member(E, [noun-S, irregular_plural-(S-W)]).
 wordnet_entry(W, E) :- wn_irregular(verb, W, B), wn_verb(B, Fs),
@@ -77,6 +80,15 @@ wordnet_entry(W, E) :- wn_irregular(verb, W, B), wn_verb(B, Fs),
     ->  member(E, [verb(Fs)-B, doubles-B])
     ;   member(E, [verb(Fs)-B, irregular_form-(B-W)])
     ).
+
+% closed_up(+Word, -Closed): Word has a hyphen inside it, and Closed is
+% Word without its hyphens: north-eastern and northeastern. WordNet writes
+% many such words one way only, and a text the other, so a hyphenated
+% word it does not have is looked up closed, and takes the entries of the
+% closed word that are the word itself and not a form of another.
+closed_up(W, C) :-
+    atomic_list_concat(Parts, '-', W), Parts = [_, _|_],
+    atomic_list_concat(Parts, C).
 
 % doubled(+Base, +Form): Form is Base with its last consonant doubled before
 % -ed or -ing, grab and grabbed, which is a rule the lexicon has, and not

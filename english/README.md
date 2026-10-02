@@ -153,7 +153,13 @@ end of this file.
   The first word is capitalized whatever it is, so *Woods was born* and
   *Dog barks* are each read with a name, and the verdict says so. A comma
   and a name after a name place it, *Springfield, Massachusetts*,
-  *McLennan County, Texas, United States*, and the whole is one name.
+  *McLennan County, Texas, United States*, and the whole is one name. An
+  adjective may stand before a name, *old London*, *north-eastern France*.
+- **A hyphen inside a word** stays when something knows the word whole:
+  a capital makes it a name, *Bernes-sur-Oise*; the lexicon or WordNet has
+  it as written, *well-known*, or closed up, *north-eastern*. Otherwise
+  the word is its parts, *singer-songwriter* as *singer* and
+  *songwriter*.
 - **A singular noun needs a determiner**: *dogs bark*, not *dog barks*,
   unless it is a mass noun: *water boils*, *some homework*, and *much
   bread* but not *much dog*. 147 are listed by kind (drinks,
@@ -282,11 +288,13 @@ do.
 ## Stage 3: what a large lexicon breaks
 
 `make wordnet` downloads WordNet 3.1 and `tools/gen_wordnet.py` turns it into
-`english/wordnet.pl`: 55,213 nouns, 14,783 names (the nouns WordNet writes with a capital), 8,431 verbs with the frames WordNet gives
-them, 17,870 adjectives, 3,642 adverbs, and 4,162 irregular forms. It is not
+`english/wordnet.pl`: 57,176 nouns, 15,025 names (the nouns WordNet writes with a capital), 8,696 verbs with the frames WordNet gives
+them, 20,734 adjectives, 3,749 adverbs, and 4,325 irregular forms, hyphenated
+words among them, *well-known*, *part-time*. It is not
 committed. A word the lexicon lacks is looked up there, as itself, as an
-inflected form of a stem, or among the irregular forms (*flung*, *oxen*,
-*grabbed*), before it is guessed from its ending. The lexicon's own words are
+inflected form of a stem, among the irregular forms (*flung*, *oxen*,
+*grabbed*), or, for a hyphenated word, closed up (*north-eastern* as
+*northeastern*), before it is guessed from its ending. The lexicon's own words are
 never looked up, so its entries are what they were, and `make english` runs
 without WordNet and without the network. CI runs `make english-wordnet` in a
 job of its own, with WordNet kept in its cache.
@@ -630,4 +638,22 @@ satellite television network broadcasting globally from Dubai, United
 Arab Emirates*, the last with *broadcasting* read as a noun that ends the
 noun phrase, which is English in form and not what it means; the
 participle it is waits for the parser. The run takes 3:18.
+
+Hyphens came after, since the Sedan sentence, read past its first word,
+stopped on *north-eastern France*: the tokenizer had cut at the hyphen,
+and *north eastern France* has a noun before an adjective. A hyphen
+between letters now stays in its word, and the word stays whole when
+something knows it: a capital makes it a name, *Bernes-sur-Oise*,
+*Chavez-DeRemer*; the lexicon or WordNet has it as written, *well-known*,
+*part-time*, which `tools/gen_wordnet.py` had left out with every
+hyphenated lemma and now keeps, 5,477 of them; or WordNet has it closed
+up, *north-eastern* as *northeastern*, and the word takes the closed
+word's entries. Otherwise it is its parts, *singer-songwriter* as
+*singer* and *songwriter*, each placed on its own, which is what it was
+before. With that, an adjective may stand before a name, *old London*,
+*north-eastern France*, the adjective not a name itself, so that *United
+States* stays one name. The corpus gives **24 grammatical, 23 not, and 3
+unknown**: the Sedan sentence, *Bernes-sur-Oise is a commune*, and *It is
+in Île-de-France in the Val-d'Oise department in north France*. The run
+takes 2:56.
 

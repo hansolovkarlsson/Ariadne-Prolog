@@ -638,7 +638,8 @@ tidy(A0, A) :-
 % A letter is what char_type/2 calls alpha, so a word with an accented
 % letter stays one word. An apostrophe between letters
 % belongs to the word, so doesn't is one word; a typographic apostrophe is
-% read as the plain one. A contraction such as 's, 're or 'll is then cut
+% read as the plain one. So does a hyphen between letters, well-known,
+% when the word is known whole or is a name; see unhyphen/2. A contraction such as 's, 're or 'll is then cut
 % from its word, as it is a word of its own: she's gives [she, 's]. So is
 % the apostrophe after a plural, dogs' giving [dogs, 's], since it marks a
 % possessive as 's does.
@@ -664,7 +665,8 @@ words(Text, Words, Names) :-
     atom_chars(Text, Chars0),
     maplist(plain_apostrophe, Chars0, Chars1),
     set_aside(Chars1, Chars),
-    split_letters(Chars, Cased),
+    split_letters(Chars, Cased0),
+    maplist(unhyphen, Cased0, Nested), append(Nested, Cased),
     maplist(downcase_atom, Cased, Words),
     names(Cased, Words, Names0),
     sort(Names0, Names).
@@ -775,9 +777,20 @@ clitic_split(W, [Stem, Clitic]) :-
 clitic_split(W, [W]).
 
 take_letters([C|Cs], [C|Ls], Rest) :- letter(C), !, take_letters(Cs, Ls, Rest).
-take_letters(['\'', C|Cs], ['\'', C|Ls], Rest) :-
-    letter(C), !, take_letters(Cs, Ls, Rest).
+take_letters([P, C|Cs], [P, C|Ls], Rest) :-
+    ( P == '\'' ; P == '-' ), letter(C), !, take_letters(Cs, Ls, Rest).
 take_letters(Rest, [], Rest).
+
+% unhyphen(+Word, -Words): a word with a hyphen inside it, "north-eastern",
+% stays one word when something knows it: it is capitalized, so a name,
+% "Bernes-sur-Oise", "Chavez-DeRemer"; or the lexicon or WordNet has it as
+% written, "well-known", or closed up, "north-eastern" as northeastern,
+% which guess.pl looks up. Otherwise it is its parts, "singer-songwriter"
+% as singer and songwriter, each placed on its own.
+unhyphen(W, [W]) :- \+ sub_atom(W, _, _, _, '-'), !.
+unhyphen(W, [W]) :- capital(W), !.
+unhyphen(W, [W]) :- downcase_atom(W, L), ( known_word(L) ; placement(L, wordnet, _) ), !.
+unhyphen(W, Ws) :- atomic_list_concat(Ws0, '-', W), exclude(==(''), Ws0, Ws).
 
 letter(C) :- char_type(C, alpha).
 

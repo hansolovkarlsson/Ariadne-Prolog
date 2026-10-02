@@ -42,7 +42,7 @@ import os
 import re
 import sys
 
-WORD = re.compile(r'^[a-z]{2,}$')
+WORD = re.compile(r'^[a-z]{2,}(-[a-z]+)*$')
 
 # WordNet's 35 verb frames (dict/verb.Framestext), by the grammar frame each
 # one means; a frame absent from both sets is not used.

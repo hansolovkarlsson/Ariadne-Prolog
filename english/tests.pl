@@ -434,6 +434,13 @@ good('Alice sleeps in London, England.').
 good('Alice, Bob sings.').
 readings('Alice sleeps in London, England.', 1).
 readings('Alice, Bob and Carol sleep.', 2).
+good('Alice sleeps in old London.').
+good('Old London sleeps.').
+good('Alice sleeps in Bernes-sur-Oise.').
+good('The dog-cat sleeps.').
+readings('Alice sleeps in old London.', 1).
+readings('Old London sleeps.', 1).
+bad('Alice sleeps in old London sleeps.',  no_reading).
 bad('The dog, barks.',                     no_reading).
 bad('The dog, and the cat sleep.',         no_reading).
 bad('Two cups of tea, please.',            no_reading).
