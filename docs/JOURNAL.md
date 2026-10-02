@@ -1111,6 +1111,96 @@ nouns, a date, so that a bracket was the last thing in the way. That is
 the evening before's finding seen from the other side: the count moves by
 sentences, and it moves most when a cause is the last one many share.
 
+## Day ten: the second corpus to thirty, and a rule guarded against its own diagnosis
+
+The day took the second corpus's remaining causes one at a time, each as
+a commit with its tests and README record and a second commit moving the
+item from the roadmap to the changelog, and pushed as it went. Six
+changes took the corpus from 18 grammatical to 30, and the grammar's
+checks from 428 to 475, while the run held near three minutes
+throughout. Each cause was found the way the README's record was built:
+cut the failing sentence down until it passed, and the last thing taken
+out is the cause. Twice the cutting found causes that were on no list, a
+hyphenated word and a number before the noun, and the roadmap gained
+them.
+
+The first change reversed a choice. A capitalized first word had been a
+name only with more to go on, since it is capitalized whatever it is,
+and the README said why: otherwise *Dog barks* would pass. The roadmap
+asked for *Woods was born* and *Sedan is a commune*, and nothing in the
+word tells them from *Dog barks*, since WordNet has *woods* and *sedan*
+only in lowercase. So the first word is now a name like any other
+capitalized word, and *Dog barks* passes, with a line under the verdict
+saying the word was read as a name when the sentence is read no other
+way (`460ef16`). Two guards kept the learner's cases: a word that is a
+plural and no singular, *Dogs*, stays its noun, so *Dogs barks* is still
+refused, and numbers and *please* joined the closed classes when
+*Hundred dogs bark* and *Please close the door* broke. The name reading
+also doubled *Bread is good*, the name and the mass noun printing alike,
+so readings that print alike are now counted once, the noun's tree kept.
+Neither corpus sentence moved: each got past its first word and stopped
+on the next cause.
+
+The comma that places a name came next, names only, by Hans's choice:
+*Springfield, Massachusetts*, *McLennan County, Texas, United States*
+(`1b323ab`). The rule leaves the shorter name open, since in *In London,
+Alice sleeps* the comma ends the phrase before the subject, and the
+price is that *Alice, Bob sing* is now refused as a name with a plural
+verb rather than as no sentence, which names alone cannot tell apart.
+Three sentences moved, one of them, the Peace TV sentence, with
+*broadcasting* read as a noun that ends its noun phrase, English in form
+and not what it means. Hyphens followed (`c3a52a4`): the tokenizer had
+cut at every one, and *north-eastern France* was a noun before an
+adjective. A hyphen between letters stays in its word, and the word
+stays whole when a capital makes it a name or the lexicon or WordNet has
+it, as written or closed up. WordNet has *northeastern* and not
+*north-eastern*, so the closed word's entries are taken; and the
+generator had left out every hyphenated lemma, 5,477 of them, which it
+now keeps. With that, an adjective may stand before a name, and the
+Sedan sentence passed, with *Bernes-sur-Oise* and *Île-de-France*.
+Superlatives were the odd case in WordNet: it lists *larger* and *bigger*
+as words of their own but no superlative, and the lexicon derives no
+forms for an adjective, so *largest* was unknown. A word in *-er* or
+*-est* whose stem is an adjective by the spelling rules is now that
+adjective's (`4e0c5e4`); the doubling rule first gave *bi* for *biggest*
+and the test written beside it said so before anything was committed. An
+ordinal in digits became one word and an adjective, and two sentences
+with one passed outright.
+
+The gerund after a preposition is the day's finding (`d9763ca`). The
+first version let the verb phrase rule decide the form, as the rule for a
+verb that takes an *-ing* phrase does, and the suite passed. The corpus
+run, which had taken three minutes, was stopped at fifteen. Timing each
+sentence on a copy of that grammar, four at a time under a seven-minute
+alarm, named the one: the Class 93 sentence, thirty words and five
+prepositions, had no verdict when the alarm went; the next slowest took
+78 seconds, as before. The cause was not the rule but the diagnosis: with
+agreement relaxed, every noun WordNet also lists as a verb, which is most
+of them, opened a verb phrase after every preposition, and a fault was
+cheap enough to spend on each. The rule is now entered only when the
+next word is an *-ing* form, a lookahead the diagnosis does not relax,
+and the sentence is refused in three seconds. This is the participles
+case from the day before seen again, and the cure this time was a guard
+rather than a hold: a new rule in this grammar costs what the relaxed
+search can do with it, not what the strict parse can, and a lookahead
+that stays strict is how a rule is kept from feeding that search. The
+suite cannot see this, since every test is small; the corpus run under a
+time limit is the check, and it should be run before a rule is believed.
+
+Lists closed the day (`3ea200f`), and the bullet had understated them:
+verb phrases had never been joined at all, *the dog sleeps and eats* had
+no reading, since *and* joined statements and noun phrases only. A verb
+phrase may now be followed by others in the same form, by the list rule
+noun phrases use, with *either*, *neither* and *both* fixing the
+conjunction before a list of either kind, and the first item of a noun
+phrase list may be a determiner with nouns after it set off by commas,
+*an Indian politician, author and a member of the Congress Party*. The
+corpus gives 30 grammatical, 19 not and 1 unknown, and what is left on
+it is small and named: an appositive noun phrase after a name and the
+bare role noun it needs, a request without a verb, an adjective after a
+noun modifier, a number before the noun, and participles behind the
+parser decision.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1121,7 +1211,7 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 428 checks: good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. |
+| `make english` | The grammar checker's 475 checks: good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. |
 | `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of `english/corpus.txt` and the fifty of `english/corpus2.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
@@ -1134,7 +1224,7 @@ something it would have caught; those arrived with the program they check.
 About 8,000 lines of hand-written C, 760 lines of library written in Prolog,
 a 338-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
-2,710 lines built on the interpreter, through all three of its stages, and a
+2,970 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own
 tables.
 

@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Forty-nine defects, in five cohorts that failed for five different reasons:
+Fifty defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -30,10 +30,11 @@ Forty-nine defects, in five cohorts that failed for five different reasons:
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
   by asking what a check could reach.
-- **Scale**: thirteen defects that no test was large enough to meet, a fixed
+- **Scale**: fourteen defects that no test was large enough to meet, a fixed
   buffer, a recursion on the C stack, a cost that grew with the square or a
   fixed allocation, ten found on 2026-09-27, nine of them by probing a
-  neighbour of the defect before, and three on 2026-09-29.
+  neighbour of the defect before, three on 2026-09-29 and one on
+  2026-10-01.
 
 ## Cohort A — the design era
 
@@ -393,7 +394,7 @@ the only evidence that it can.
 
 ## Cohort E: scale
 
-Thirteen defects that no test was large enough to meet, ten of them found on
+Fourteen defects that no test was large enough to meet, ten of them found on
 2026-09-27. The first nine came one from another: each fix was followed by probing the same shape a
 step further, at a million elements or a million levels, and the probe found
 the next.
@@ -413,6 +414,7 @@ the next.
 | Loading WordNet's 89,000 facts took 490 MB, 5.5 KB a fact | Every clause has an arena of its own, and an arena's blocks were a fixed 4 KB, for clauses of a hundred bytes | Measuring the first large program loaded, on 2026-09-29, for grammar stage 3 (`99ff4bd`) |
 | The grammar's checks took 60 per cent longer after possessives went in, sentences with no *'s* included | The possessive rule was tried at every noun phrase, whatever the sentence held | Timing the checks at each of the day's commits, on 2026-09-29, while looking for a slowdown blamed on the interpreter (`1649f0c`) |
 | Refusing one sentence of 28 words took more than six minutes, and the corpus run went from two and a half minutes to twelve and a half | The diagnosis parsed with its violation list open, and with WordNet nearly every noun can stand bare at the cost of one more violation | Timing each sentence of the second corpus after names let long sentences be parsed to the end, then each stage of one, on 2026-09-29 (`39d2965`) |
+| Refusing the Class 93 sentence, thirty words and five prepositions, had not ended after seven minutes, and the corpus run that took three minutes was stopped at fifteen | A gerund after a preposition, written that morning, let the verb phrase rule decide the form as a verb's rule does; with agreement relaxed for the diagnosis, every noun WordNet also lists as a verb opened a verb phrase after every preposition | Running the corpus under a time limit before the change was committed, then timing each sentence on a copy with an alarm (`d9763ca`); the rule is entered only when an *-ing* form follows, a lookahead the diagnosis does not relax, and the sentence is refused in three seconds |
 
 Every one of these passed the suite, because every test in the suite is small.
 The deep-nesting fix touched the collector, unification, comparison, copying,
@@ -610,7 +612,7 @@ fail, so it now fails the build.
 | Reading the whole output of a run that was usually filtered | 1 |
 | Running the tokenizer on a case before building on it | 1 |
 | Timing each commit, looking for another cause | 1 |
-| Timing each sentence of a corpus, then each stage of one | 1 |
+| Timing each sentence of a corpus, and once each stage of one | 2 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 4 |
 | Rendering the pages and looking at them | 3 |
@@ -624,7 +626,7 @@ fail, so it now fails the build.
 
 Three things stand out.
 
-**The test suite found four of forty-nine.** It is a good suite, 334 tests
+**The test suite found four of fifty.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
