@@ -121,7 +121,8 @@ end of this file.
   which agrees with each noun, so not *these cat and dogs*; *big, old and
   happy* after a verb and *a big, old dog* before a noun. A comma is read
   only in a list, between two clauses (*the dog barks, but the cat
-  sleeps*, *if it rains, the dog sleeps*) and before a last *please*;
+  sleeps*, *if it rains, the dog sleeps*), between a name and the name
+  that places it (*Springfield, Massachusetts*) and before a last *please*;
   anywhere else it leaves the sentence with no reading, so *Alice, Bob
   sing* and *the dog, barks* fail.
 - **A phrase before the subject**: *yesterday the dog barked*, *in 2019,
@@ -150,7 +151,9 @@ end of this file.
   of several words, *Stanley Ralph Ross*, and a name before a noun, *the
   Congress Party*; but *the dog sees john* has a noun with no determiner.
   The first word is capitalized whatever it is, so *Woods was born* and
-  *Dog barks* are each read with a name, and the verdict says so.
+  *Dog barks* are each read with a name, and the verdict says so. A comma
+  and a name after a name place it, *Springfield, Massachusetts*,
+  *McLennan County, Texas, United States*, and the whole is one name.
 - **A singular noun needs a determiner**: *dogs bark*, not *dog barks*,
   unless it is a mass noun: *water boils*, *some homework*, and *much
   bread* but not *much dog*. 147 are listed by kind (drinks,
@@ -608,4 +611,23 @@ Massachusetts*, and *north-eastern France*, a hyphenated word WordNet has
 only closed up before a name that takes no adjective. *Elm was a
 municipality* is read past its first word too, and stops on its list. The
 run takes 3:41.
+
+The comma that places a name came the same day: a name, a comma and a
+name after it are one name, *Springfield, Massachusetts*, *McLennan
+County, Texas, United States*, and may go on, as the second does. Names
+only: *Mukesh Ambani, chairman and managing director* waits, with
+*chairman* as a bare noun, which the grammar refuses elsewhere too, *He
+was chairman of the Health Service Executive*. The rule leaves the
+shorter name open, since in *In London, Alice sleeps* the comma ends the
+phrase before the subject, so *Alice, Bob and Carol sleep* now has two
+readings, *Bob* a name of his own or the place of *Alice*; and *Alice,
+Bob sing* is now refused as a name with a plural verb rather than as no
+sentence at all, and *Alice, Bob sings* passes. That is what names alone
+can tell. The corpus gives **21 grammatical, 26 not, and 3 unknown**:
+*Woods was born in Springfield, Massachusetts*, *Leroy is a city in
+McLennan County, Texas, United States*, and *Peace TV is a nonprofit
+satellite television network broadcasting globally from Dubai, United
+Arab Emirates*, the last with *broadcasting* read as a noun that ends the
+noun phrase, which is English in form and not what it means; the
+participle it is waits for the parser. The run takes 3:18.
 

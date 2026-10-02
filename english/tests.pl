@@ -429,7 +429,11 @@ bad('Apollo 11 sleep.',                    subject_verb(sleep)).
 bad('The dog or the cat bark.',            subject_verb(bark)).
 bad('The dogs or the cat bark.',           subject_verb(bark)).
 bad('These cat and dogs sleep.',           det_noun(these, cat)).
-bad('Alice, Bob sing.',                    no_reading).
+bad('Alice, Bob sing.',                    subject_verb(sing)).
+good('Alice sleeps in London, England.').
+good('Alice, Bob sings.').
+readings('Alice sleeps in London, England.', 1).
+readings('Alice, Bob and Carol sleep.', 2).
 bad('The dog, barks.',                     no_reading).
 bad('The dog, and the cat sleep.',         no_reading).
 bad('Two cups of tea, please.',            no_reading).

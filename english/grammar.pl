@@ -281,11 +281,22 @@ year(W) :- digits(W), catch(atom_number(W, N), _, fail), integer(N), N >= 1.
 % and is not tried again split in two at each place it could be. A number
 % in digits after a name may be part of it, "Class 91", "Apollo 11", but
 % need not be, since in "he gave Bob 3 apples" it is the next phrase's.
-name(N) --> [W], { proper(W) }, name_rest(Ws), { atomic_list_concat([W|Ws], ' ', N) }.
+% A comma and a name after a name may place it, "Springfield,
+% Massachusetts", "McLennan County, Texas, United States", and the whole
+% is one name; it need not, since in "In London, Alice sleeps" the comma
+% ends the phrase before the subject, so that reading is left open.
+name(N) -->
+    [W], { proper(W) }, name_rest(Ws), name_places(Ps),
+    { atomic_list_concat([W|Ws], ' ', N0), atomic_list_concat([N0|Ps], ', ', N) }.
 
 name_rest([W|Ws]) --> [W], { proper(W) }, !, name_rest(Ws).
 name_rest([D|Ws]) --> [D], { digits(D) }, name_rest(Ws).
 name_rest([]) --> [].
+
+name_places([P|Ps]) -->
+    [',', W], { proper(W) }, name_rest(Ws),
+    { atomic_list_concat([W|Ws], ' ', P) }, name_places(Ps).
+name_places([]) --> [].
 
 % names_only(+Nominal): names before a noun that is a name too, "Samsung
 % Bluewings", "Texas United States", where United is an adjective as well.
