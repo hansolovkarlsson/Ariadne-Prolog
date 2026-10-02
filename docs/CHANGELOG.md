@@ -10,6 +10,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Verb phrases joined, correlatives, and a mixed list.** *The dog
+  sleeps and eats*, *was made by Retro Studios and published by
+  Nintendo*, each phrase in the form of the first; *either ... or*,
+  *neither ... nor*, *both ... and* before a list of noun phrases or verb
+  phrases; and *a politician, author and a member of the party*, the
+  first item two nouns under one determiner. 475 checks; the second
+  corpus goes from 28 grammatical to 30. (`3ea200f`)
+
 - **A gerund after a preposition.** *Tired of barking*, *after eating the
   cake*, *the record for being the largest cluster*: an *-ing* verb
   phrase where a noun phrase would stand, entered only when an *-ing*

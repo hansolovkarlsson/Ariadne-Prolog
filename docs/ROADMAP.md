@@ -103,15 +103,17 @@ These change the shape of the system rather than adding to it.
      Massachusetts*, hyphenated words, *Bernes-sur-Oise*, *north-eastern*,
      an adjective before a name, *north-eastern France*, comparatives,
      superlatives and ordinals in digits, *largest*, *27th*, and a gerund
-     after a preposition, *the record for being the largest cluster*; it
-     passes 28. What is left:
-     - what lists leave: a list that mixes nouns under one determiner with
-       a noun phrase, *an Indian politician, author and a member*; verb
-       phrases joined, *made by Retro Studios and published by Nintendo*;
-       *either ... or* and *neither ... nor*; a comma setting a noun
-       phrase beside a name, *Mukesh Ambani, chairman of ...*, which also
-       needs *chairman* as a bare noun; a request without a verb, *two
-       cups of tea, please*, which the first corpus now refuses;
+     after a preposition, *the record for being the largest cluster*, and
+     what lists left, verb phrases joined, *either ... or*, and a list
+     whose first item has two nouns under one determiner; it passes
+     30. What is left:
+     - a comma setting a noun phrase beside a name, *Mukesh Ambani,
+       chairman of ...*, which also needs *chairman* as a bare noun, as
+       does *He was chairman of the Health Service Executive*; a request
+       without a verb, *two cups of tea, please*, which the first corpus
+       now refuses; an adjective after a noun modifier, *jazz bebop alto
+       saxophonist*; a number before the noun, *the 2020 census*, *the
+       2017 World Aquatics Championships*;
      - participles, after a noun, *a movie directed by*, and before it,
        *the presiding bishop*: written on 2026-09-30 and held behind the
        parser, below. They were correct, 417 checks passing, but the
