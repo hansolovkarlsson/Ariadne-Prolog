@@ -10,6 +10,16 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A particle after the verb, and three things beside it.** *Sworn
+  in*, *ran in*, *carried on*, the nine prepositions the lexicon lists;
+  a comma before the conjunction between two verb phrases, *, but only
+  served four months*; *office*, *hospital*, *prison*, *court* and
+  *town* among the places that take no determiner, *in office*; and
+  *-ie* to *-ying*, so *dying* is a form of *die* and not only of *dye*.
+  571 checks; the second corpus goes from 40 grammatical to 41, the
+  sentence gained having 672 readings, and `make english-wordnet` goes
+  from 1:22 to 2:24 for it. (`c050156`)
+
 - **A name after a noun says which one.** *The river Thames*, *my
   friend Alice*, *the record label Yellow Productions*, read after the
   head noun and before the phrases that follow it. 557 checks; the

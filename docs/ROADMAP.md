@@ -119,9 +119,12 @@ These change the shape of the system rather than adding to it.
      2020 census*; and, measured again after the closeout, a participle
      after a noun, *a movie directed by Eldar Ryazanov*, and *of* and a
      name as part of a name, *Zigzag of Success*, and a name after a
-     noun, *the record label Yellow Productions*; it passes 40. What is
-     left, one sentence each, in `english/README.md`:
-     - a phrasal verb, *sworn in as*; an adjective phrase after a comma, *best
+     noun, *the record label Yellow Productions*; a particle after the
+     verb, *sworn in*, with *dying* spelt from *die* and a comma before
+     *but* between two verb phrases; it passes 41, the last at 672
+     readings in 58 seconds, the parser's cost. What is left, one
+     sentence each, in `english/README.md`:
+     - an adjective phrase after a comma, *best
        known as the chairperson*; *which in turn were*; a comma before a
        phrase, *a municipality, in the municipality of*; an adjective
        after its noun, *the municipality farthest south*; an appositive

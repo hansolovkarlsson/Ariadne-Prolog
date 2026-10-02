@@ -101,7 +101,7 @@ end of this file.
 
 | | |
 |---|---|
-| `lexicon.pl` | 414 words, a word in two classes counted in each: 115 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 40 prepositions, 9 of two words (*as of*, *because of*) and 8 of three (*in front of*, *as part of*), 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 147 nouns are marked as mass nouns, which may stand alone in the singular, and with WordNet loaded so is any noun whose most frequent sense is a substance; 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
+| `lexicon.pl` | 414 words, a word in two classes counted in each: 115 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 40 prepositions, 9 of them particles as well (*sworn in*), 9 of two words (*as of*, *because of*) and 8 of three (*in front of*, *as part of*), 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 147 nouns are marked as mass nouns, which may stand alone in the singular, and with WordNet loaded so is any noun whose most frequent sense is a substance; 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
 | `grammar.pl` | The rules: statements, alone or joined by a conjunction, yes/no and *wh*-questions, commands, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
@@ -174,6 +174,12 @@ end of this file.
   entered only when such a form is the next word; its verb is never
   read as a wrong form of itself, so *the dogs chase by the cat* has no
   reading rather than a participle gone wrong.
+- **A particle after the verb**: *sworn in*, *ran in*, *carried on*, a
+  preposition with no noun phrase after it that goes with the verb; the
+  nine the lexicon lists, since *up*, *out*, *off* and *away* are adverbs
+  in WordNet and read as those. Two verb phrases may have a comma before
+  their conjunction, *was sworn in as Governor, but only served four
+  months*, as two clauses may; two noun phrases may not.
 - **Determiner and noun**: *a dog*, *these dogs*, *six dogs*, *a hundred
   dogs*, not *a dogs*, *this dogs* or *one dogs*.
 - **A number before the noun**: *the 2020 census*, *the 2017 World
@@ -216,8 +222,9 @@ end of this file.
   *songwriter*.
 - **A singular noun needs a determiner**: *dogs bark*, not *dog barks*,
   unless it is a mass noun: *water boils*, *some homework*, and *much
-  bread* but not *much dog*. 147 are listed by kind (drinks,
-  qualities and feelings, fields of study, sports, illnesses, *knowledge*,
+  bread* but not *much dog*. 152 are listed by kind (drinks,
+  qualities and feelings, fields of study, sports, illnesses, places
+  taken for what goes on there, *in office*, *at school*, *knowledge*,
   *television*, *cancer*), and a noun WordNet gives a substance as its
   most frequent sense is one too: *iron*, *sand*, *glass*.
 - **What a verb takes**: *gives* two objects, *sleeps* none, *tastes* an
@@ -958,4 +965,25 @@ disagreement it should be. The corpus gives **40 grammatical, 9 not,
 and 1 unknown**: *He is the owner of the record label Yellow
 Productions*, with *of the record label* on the noun or on *is*. `make
 english-wordnet` takes 1:22.
+
+The phrasal verb was four things, and the cut found them one at a time.
+A particle, a preposition after the verb with nothing after it, *sworn
+in*, the nine prepositions the lexicon lists, since *up*, *out* and
+*off* are adverbs in WordNet already. *Office* among the places taken
+for what goes on there, *in office* as *at school*, with *hospital*,
+*prison*, *court* and *town*. A comma before the conjunction between
+two verb phrases, *, but only served four months*, which the list rule
+allows only from three items on, as two clauses have always been
+allowed one. And a spelling: *dying* was found only as a form of *dye*,
+which WordNet has as transitive, because the lexicon's *-ing* rule made
+*diing* of *die*; *-ie* goes to *-ying* now, in the rule and in the
+guesser that undoes it, and *The dog is dying* reads as a verb and not
+only as the adjective. The sentence then passes, with **672 readings in
+58 seconds**: *as the sixteenth Governor of Manipur*, *on May 16, 2015*,
+*four months*, *before dying of cancer*, *in office* and *on September
+27* each attach in several places, and the parser finds the product. It
+is the Class 93 wall from a sentence that fits under it, and a minute
+of the run for one sentence. The corpus gives **41 grammatical, 8 not,
+and 1 unknown**. `make english-wordnet` takes 2:24, from 1:22, the
+whole of the difference in that sentence.
 
