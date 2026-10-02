@@ -112,11 +112,13 @@ These change the shape of the system rather than adding to it.
      presiding bishop*, *managing director*; it passes 33. A request
      without a verb, *two cups of tea, please*, the same day, and the
      first corpus passes whole again; and a noun that is an adjective
-     too after a noun modifier, *a jazz bebop alto saxophonist*; it
-     passes 34. What is left:
-     - a number before the noun, *the 2020 census*, *the 2017 World
-       Aquatics Championships*; a plain adjective after a noun modifier,
-       *a world famous singer*, which no corpus sentence needs;
+     too after a noun modifier, *a jazz bebop alto saxophonist*; a number
+     before the noun, *the 2017 World Aquatics Championships*, and with
+     it a name that is a head does not end before another name, which
+     halved the corpus run; it passes 35. What is left:
+     - a preposition of two words, *as of the 2020 census*; a plain
+       adjective after a noun modifier, *a world famous singer*, which
+       no corpus sentence needs;
      - a participle after a noun, *a movie directed by*, *a network
        broadcasting from Dubai*: written on 2026-09-30 with the
        participle before a noun and held behind the parser, below. The

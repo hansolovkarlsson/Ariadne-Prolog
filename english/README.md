@@ -172,6 +172,12 @@ end of this file.
   roadmap.
 - **Determiner and noun**: *a dog*, *these dogs*, *six dogs*, *a hundred
   dogs*, not *a dogs*, *this dogs* or *one dogs*.
+- **A number before the noun**: *the 2020 census*, *the 2017 World
+  Aquatics Championships*, *a 1968 Soviet comedy movie*, a number in
+  digits first among the modifiers, after a determiner or a possessor;
+  with nothing before it the digits are the determiner, *3 dogs*. *A*
+  or *an* goes by the number as it is said, *an 1800 census*, *a 1968
+  movie*.
 - **A gerund after a preposition**: *tired of barking*, *after eating the
   cake*, *the record for being the largest cluster*, an *-ing* verb
   phrase where a noun phrase would stand.
@@ -832,4 +838,27 @@ list of four nouns the grammar already had. `make english-wordnet` takes
 2:43, down from 3:30, since that sentence had been the slowest in the
 corpus, eighty seconds to refuse, and now has a reading and no
 diagnosis to search for.
+
+The number before the noun came last of the four: a number in digits
+first among the modifiers, after a determiner or a possessor, *the 2020
+census*, *the 2017 World Aquatics Championships*, *a 1968 Soviet comedy
+movie*; with nothing before it the digits stay the determiner, *3
+dogs*, so that sentence keeps one reading. The rule was cheap and the
+Kazakhstan sentence was not: once it could be read, the strict parse of
+it ran for minutes, where it had been refused in nine seconds, and a
+ten-word cut took three. Cutting further found the cost in the names
+and not the number: *the World Aquatics Championships and World
+Aquatics Championships* took six times longer for every word of the
+runs. A noun phrase could end at any word of a capitalized run, since
+each is a noun in WordNet as well, and then try the rest as a relative
+clause with no relative word, which starts the same search again one
+word on. A head that is a name now does not end before another name,
+which is what `name//1` already does for a run read whole. The corpus
+gives **35 grammatical, 14 not, and 1 unknown**: the Kazakhstan
+sentence, with five readings, the two phrases attached two ways and
+*2019* read as a determiner of its own. `make english-wordnet` takes
+1:12, down from 2:43: the Woods and the Class 91 sentences had the
+same shape in them, *East Coast Main Line*, and every sentence with a
+run of names paid for it. *As of the 2020 United States census* reads
+its number and stops on *as of*, a preposition of two words.
 

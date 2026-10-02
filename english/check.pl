@@ -617,6 +617,7 @@ adjective_words([name(W)|As]) --> [W], adjective_words(As).
 adjective_words([sep(S)|As]) --> S, adjective_words(As).
 adjective_words([nmod(W)|As]) --> [W], adjective_words(As).
 adjective_words([part(W)|As]) --> [W], adjective_words(As).
+adjective_words([num(D)|As]) --> [D], adjective_words(As).
 
 neg(not)  --> [not].
 neg(none) --> [].

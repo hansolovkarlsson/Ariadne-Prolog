@@ -594,9 +594,20 @@ consonant_y(Word, Stem) :-
 % sound, which is what chooses between a and an. The spelling decides,
 % except for the words listed.
 sound(Word, Sound) :- sound_exception(Word, S), !, Sound = S.
+sound(Word, Sound) :- digits(Word), !, digits_sound(Word, Sound).
 sound(Word, Sound) :-
     atom_chars(Word, [C|_]),
     ( vowel_letter(C) -> Sound = vowel ; Sound = consonant ).
+
+% digits_sound(+Digits, -Sound): a number in digits as it is said, "an
+% 1800 census", "a 1968 movie": eight, eleven and eighteen begin with a
+% vowel, eleven and eighteen when they are the whole number or its first
+% two of four figures, eighteen hundred.
+digits_sound(W, vowel) :- atom_chars(W, ['8'|_]), !.
+digits_sound(W, vowel) :-
+    atom_chars(W, [A, B|Rest]), atomic_list_concat([A, B], P),
+    memberchk(P, ['11', '18']), ( Rest == [] ; length(Rest, 2) ), !.
+digits_sound(_, consonant).
 
 sound_exception(hour, vowel).        sound_exception(honest, vowel).
 sound_exception(university, consonant). sound_exception(unicorn, consonant).

@@ -10,6 +10,18 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A number before the noun, and a name that is a head does not end
+  before another name.** *The 2020 census*, *the 2017 World Aquatics
+  Championships*, *a 1968 Soviet comedy movie*: a number in digits
+  first among the modifiers after a determiner or a possessor, the
+  digits staying the determiner in *3 dogs*. Reading the Kazakhstan
+  sentence took minutes until the cost was found in its names: a noun
+  phrase could end at any word of a capitalized run and try the rest as
+  a relative clause, six times the search for every word; a head that
+  is a name now does not end before another name. 526 checks; the
+  second corpus goes from 34 grammatical to 35, and `make
+  english-wordnet` from 2:43 to 1:12.
+
 - **A noun that is an adjective too, after a noun modifier.** *A jazz
   bebop alto saxophonist*: such a word before a noun is read as the
   adjective, *the stone bridge*, but after a noun modifier the

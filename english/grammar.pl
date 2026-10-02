@@ -292,7 +292,7 @@ simple_np(Agr, _, num(W), V, V) -->
 simple_np(Agr, _, T, V0, V) --> det_np(Agr, T, V0, V).
 simple_np(Agr, _, np(N), V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
-    { \+ names_only(N),
+    { \+ names_only(N), \+ leads_number(N),
       bare_ok(Head, Num, V1, V),
       agr_of(Num, Agr) }.
 
@@ -457,7 +457,7 @@ possessor_base(np(det(D), N), V0, V) -->
       agree(article(D, First), DSound, Sound, V1, V) }.
 possessor_base(np(N), V0, V) -->
     core_nominal(Num, _, Head, N),
-    { bare_ok(Head, Num, V0, V) }.
+    { \+ leads_number(N), bare_ok(Head, Num, V0, V) }.
 
 % Nouns joined under one determiner: "a doctor and teacher", "the bishop
 % and primate of the church", "these cats and dogs". The determiner agrees
@@ -498,11 +498,19 @@ det_agrees(some, Head, _, sg, V, V) :- kind_noun(Head), !.
 det_agrees(D, Head, DNum, Num, V0, V) :-
     agree(det_noun(D, Head), DNum, Num, V0, V).
 
-% core_nominal(-Number, -FirstWord, -HeadNoun, -Tree): adjectives and a noun.
+% core_nominal(-Number, -FirstWord, -HeadNoun, -Tree): adjectives and a
+% noun. A head that is a name does not end before another name: "World
+% Aquatics Championships" is one run, and a nominal that stopped at
+% "World" and tried the rest as a relative clause started the same search
+% again one word on, six times the cost for every word of the run; a
+% name is read whole for the same reason, see name//1.
 core_nominal(Num, First, Head, nom(As, n(Head), [])) -->
     modifiers(As),
     [Head], { noun_form(Head, _, Num) },
+    head_ends(Head),
     { first_word(As, Head, First) }.
+
+head_ends(Head, S, S) :- \+ ( proper(Head), S = [W|_], proper(W) ).
 
 % nominal(-Number, -FirstWord, -HeadNoun, -Tree, V0, V): adjectives, the
 % noun, the prepositional phrases after it, and a relative clause.
@@ -531,7 +539,21 @@ nominal_rest(Num, Head, Posts, V0, V) -->
 % been read by then and it can be nothing else; "last" and "next" stay
 % out, as they are read before a noun only in "last night", see
 % adverbial_np/2, so "I saw the film last night" keeps its one reading.
-modifiers(Ms) --> adjectives(As), noun_modifiers(Ns), { append(As, Ns, Ms) }.
+modifiers(Ms) -->
+    leading_number(Ds), adjectives(As), noun_modifiers(Ns),
+    { append([Ds, As, Ns], Ms) }.
+
+% leading_number(-Trees): a number in digits first among the modifiers,
+% "the 2020 census", "the 2017 World Aquatics Championships", "a 1968
+% Soviet comedy movie". It follows a determiner or a possessor: with
+% nothing before it the digits are the determiner, "3 dogs", and the
+% noun phrases that take no determiner leave it out, see
+% leads_number/1.
+leading_number([num(D)]) --> [D], { digits(D) }.
+leading_number([]) --> [].
+
+% leads_number(+Nominal): a number in digits opens it.
+leads_number(nom([num(_)|_], _, _)).
 
 noun_modifiers([nmod(W)|Ns]) -->
     [W], { noun_form(W, _, sg), \+ proper(W), \+ adj(W) }, more_noun_modifiers(Ns).
@@ -608,6 +630,7 @@ first_word([adjp([D|_], _)|_], _, D) :- !.
 first_word([name(W)|_], _, W) :- !.
 first_word([nmod(W)|_], _, W) :- !.
 first_word([part(W)|_], _, W) :- !.
+first_word([num(D)|_], _, D) :- !.
 first_word([], Head, Head).
 
 % kind_of(+Head, -PPs, V0, V): after kind, sort, type and their like, of and

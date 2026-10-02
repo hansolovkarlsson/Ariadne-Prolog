@@ -521,6 +521,18 @@ readings('I saw the garden orange tree.', 1).
 readings('The orange tree is big.', 1).
 bad('The garden orange trees is big.',     subject_verb(is)).
 bad('The garden orange tree are big.',     subject_verb(are)).
+% A number in digits before the noun, after a determiner or a possessor.
+good('The 2020 party was big.').
+good('A 1968 picture is red.').
+good('An 1800 picture is red.').
+good('An 8 dog party is big.').
+good('Alice\'s 2020 party was big.').
+good('The dogs slept in the 2017 London party and 2019 London party.').
+readings('The 2020 party was big.', 1).
+readings('I saw 3 dogs.', 1).
+bad('An 2020 picture is red.',              article(an, '2020')).
+bad('The 2020 parties was big.',            subject_verb(was)).
+bad('2020 party was big.',                  det_noun('2020', party)).
 bad('A apple tree grows.',                  article(a, apple)).
 bad('The dog house are big.',              subject_verb(are)).
 bad('The dog barks?',                      punctuation('?')).
