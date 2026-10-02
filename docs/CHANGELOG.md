@@ -8,6 +8,15 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ## 2026-10-01
 
+### Added
+
+- **A comma places a name.** A name, a comma and a name after it are one
+  name, *Springfield, Massachusetts*, *McLennan County, Texas, United
+  States*. Names only: *Mukesh Ambani, chairman of ...* waits. *Alice,
+  Bob sing* is now refused as a name with a plural verb, not as no
+  sentence. 437 checks; the second corpus goes from 18 grammatical to 21.
+  (`1b323ab`)
+
 ### Changed
 
 - **The first word of a sentence is a name like any other capitalized

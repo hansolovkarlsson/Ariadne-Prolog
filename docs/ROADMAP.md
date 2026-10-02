@@ -98,15 +98,16 @@ These change the shape of the system rather than adding to it.
      mass nouns, a phrase before the subject, a rough number, *a kind of*
      and adverbs after *be*, dates, and brackets set aside; it passes 18.
      On 2026-10-01 a name at the start of a sentence that WordNet has
-     only in lowercase, *Woods was born*, *Sedan is a commune*. What is
-     left:
+     only in lowercase, *Woods was born*, *Sedan is a commune*, and a comma
+     between a name and the name that places it, *Springfield,
+     Massachusetts*; it passes 21. What is left:
      - what lists leave: a list that mixes nouns under one determiner with
        a noun phrase, *an Indian politician, author and a member*; verb
        phrases joined, *made by Retro Studios and published by Nintendo*;
-       *either ... or* and *neither ... nor*; a comma setting one noun
-       phrase beside another, *Springfield, Massachusetts*, *Mukesh Ambani,
-       chairman of ...*; a request without a verb, *two cups of tea,
-       please*, which the first corpus now refuses;
+       *either ... or* and *neither ... nor*; a comma setting a noun
+       phrase beside a name, *Mukesh Ambani, chairman of ...*, which also
+       needs *chairman* as a bare noun; a request without a verb, *two
+       cups of tea, please*, which the first corpus now refuses;
      - superlatives, *largest*; ordinals in digits, *27th*;
      - a hyphenated word WordNet has only closed up, *north-eastern*, and
        an adjective before a name, *north-eastern France*;
