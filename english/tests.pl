@@ -490,6 +490,14 @@ bad('Alice, friend of the king, sleep.',   subject_verb(sleep)).
 bad('Alice is teacher.',                   bare(teacher)).
 bad('Alice is dog of the king.',           bare(dog)).
 bad('Alice sees teacher of the king.',     bare(teacher)).
+% A name after a noun says which one.
+good('The river Thames is long.').
+good('I know the farmer Bob.').
+good('The dog sees the farmer Bob of London.').
+readings('The river Thames is long.', 1).
+readings('I know the farmer Bob.', 1).
+bad('The farmer Bob are old.',             subject_verb(are)).
+bad('I see farmer Bob.',                  bare(farmer)).
 % A preposition of three words.
 good('The dog sleeps in front of the house.').
 good('The cat sleeps on top of the box.').

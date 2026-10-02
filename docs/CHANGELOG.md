@@ -10,6 +10,11 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A name after a noun says which one.** *The river Thames*, *my
+  friend Alice*, *the record label Yellow Productions*, read after the
+  head noun and before the phrases that follow it. 557 checks; the
+  second corpus goes from 39 grammatical to 40.
+
 - **A preposition of three words.** *In front of the house*, *on top of
   the box*, *as part of the project*, eight listed, with a noun inside
   that takes no determiner there; *front* and *top* join the lexicon.

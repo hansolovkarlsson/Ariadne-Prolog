@@ -26,7 +26,7 @@
 % wordnet_entry/2 that moves a sentence is seen, whichever way it moves it,
 % and the record is brought up to date with it.
 recorded('english/corpus.txt', 50, 0, 0).
-recorded('english/corpus2.txt', 39, 10, 1).
+recorded('english/corpus2.txt', 40, 9, 1).
 
 corpus :-
     corpus('english/corpus.txt'),

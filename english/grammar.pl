@@ -521,17 +521,25 @@ core_nominal(Num, First, Head, nom(As, n(Head), [])) -->
 
 head_ends(Head, S, S) :- \+ ( proper(Head), S = [W|_], proper(W) ).
 
+name_after([name(N)]) --> name(N).
+name_after([]) --> [].
+
 % nominal(-Number, -FirstWord, -HeadNoun, -Tree, V0, V): adjectives, the
 % noun, the prepositional phrases after it, and a relative clause.
 nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
     core_nominal(Num, First, Head, nom(As, n(Head), [])),
     nominal_rest(Num, Head, Posts, V0, V).
 
-% nominal_rest(+Number, +HeadNoun, -Posts, V0, V): what follows the noun.
+% nominal_rest(+Number, +HeadNoun, -Posts, V0, V): what follows the noun:
+% a name that says which one, "the record label Yellow Productions", "the
+% river Thames", "my friend Alice", then the prepositional phrases and a
+% relative clause. The name is read only after a head that is not a
+% name itself, see head_ends//1, so "Leroy Ross the cat" has no reading.
 nominal_rest(Num, Head, Posts, V0, V) -->
+    name_after(Ns),
     kind_of(Head, KPs, V0, V01),
     pps(PPs0, V01, V1),
-    { append(KPs, PPs0, PPs) },
+    { append([Ns, KPs, PPs0], PPs) },
     { agr_of(Num, Agr) },
     relative(Agr, Rels, V1, V),
     { append(PPs, Rels, Posts) }.

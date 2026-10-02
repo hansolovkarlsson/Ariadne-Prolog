@@ -118,11 +118,10 @@ These change the shape of the system rather than adding to it.
      halved the corpus run; and a preposition of two words, *as of the
      2020 census*; and, measured again after the closeout, a participle
      after a noun, *a movie directed by Eldar Ryazanov*, and *of* and a
-     name as part of a name, *Zigzag of Success*; it passes 39. What is
+     name as part of a name, *Zigzag of Success*, and a name after a
+     noun, *the record label Yellow Productions*; it passes 40. What is
      left, one sentence each, in `english/README.md`:
-     - a phrasal verb,
-       *sworn in as*; a name after a noun phrase, *the record label
-       Yellow Productions*; an adjective phrase after a comma, *best
+     - a phrasal verb, *sworn in as*; an adjective phrase after a comma, *best
        known as the chairperson*; *which in turn were*; a comma before a
        phrase, *a municipality, in the municipality of*; an adjective
        after its noun, *the municipality farthest south*; an appositive

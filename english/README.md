@@ -207,6 +207,8 @@ end of this file.
   *McLennan County, Texas, United States*, and the whole is one name; so
   do *of* and a name, *Zigzag of Success*, *University of Oxford*. An
   adjective may stand before a name, *old London*, *north-eastern France*.
+  A name after a noun says which one, *the river Thames*, *my friend
+  Alice*, *the record label Yellow Productions*.
 - **A hyphen inside a word** stays when something knows the word whole:
   a capital makes it a name, *Bernes-sur-Oise*; the lexicon or WordNet has
   it as written, *well-known*, or closed up, *north-eastern*. Otherwise
@@ -943,4 +945,17 @@ with the numbers, and the three-word prepositions stayed, *front* and
 *top* joining the lexicon so that they could be tested. The corpus
 stays at **39 grammatical, 10 not, and 1 unknown**, and `make
 english-wordnet` takes 1:26.
+
+A name after a noun says which one, *the river Thames*, *my friend
+Alice*, *the record label Yellow Productions*: it is read after the head
+and before the phrases that follow it, and only after a head that is
+not a name, which the guard against a name head ending before another
+name already gives, so *Leroy Ross the cat* still has no reading. One
+oddity of testing without WordNet: *Thames* is guessed a plural noun
+from its *-s*, so *the river Thames are long* agrees there as *river*
+and a bare plural; with WordNet, which has no *thame*, it is the
+disagreement it should be. The corpus gives **40 grammatical, 9 not,
+and 1 unknown**: *He is the owner of the record label Yellow
+Productions*, with *of the record label* on the noun or on *is*. `make
+english-wordnet` takes 1:22.
 
