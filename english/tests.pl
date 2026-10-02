@@ -490,6 +490,13 @@ bad('Alice, friend of the king, sleep.',   subject_verb(sleep)).
 bad('Alice is teacher.',                   bare(teacher)).
 bad('Alice is dog of the king.',           bare(dog)).
 bad('Alice sees teacher of the king.',     bare(teacher)).
+% Of and a name after a name are part of it.
+good('Alice of London sleeps.').
+good('The dog sees Alice of London.').
+readings('Alice of London sleeps.', 1).
+readings('The dog sees Alice of London.', 2).
+bad('Alice of London sleep.',             subject_verb(sleep)).
+bad('Alice of sleeps.',                   no_reading).
 % A participle after a noun, and before it.
 good('The dogs chased by the cat bark.').
 good('The dog chasing the cat barks.').

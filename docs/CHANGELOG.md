@@ -10,6 +10,11 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Of and a name are part of a name.** *Zigzag of Success*, *Statue
+  of Liberty*, *University of Oxford*, as the placing comma is; a name
+  takes no prepositional phrase otherwise. 546 checks; the second
+  corpus goes from 38 grammatical to 39.
+
 - **A participle after a noun.** *A movie directed by Eldar Ryazanov*,
   *a network broadcasting from Dubai*, *the dogs chased by the cat
   bark*: a relative clause with its relative word and *be* left out,

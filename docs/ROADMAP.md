@@ -117,10 +117,10 @@ These change the shape of the system rather than adding to it.
      it a name that is a head does not end before another name, which
      halved the corpus run; and a preposition of two words, *as of the
      2020 census*; and, measured again after the closeout, a participle
-     after a noun, *a movie directed by Eldar Ryazanov*; it passes 38.
-     What is left, one sentence each, in `english/README.md`:
-     - a name with an *of* phrase after it, *Zigzag of Success is*; *be*
-       and a *to*-infinitive, *were to enter service*; a phrasal verb,
+     after a noun, *a movie directed by Eldar Ryazanov*, and *of* and a
+     name as part of a name, *Zigzag of Success*; it passes 39. What is
+     left, one sentence each, in `english/README.md`:
+     - *be* and a *to*-infinitive, *were to enter service*; a phrasal verb,
        *sworn in as*; a name after a noun phrase, *the record label
        Yellow Productions*; an adjective phrase after a comma, *best
        known as the chairperson*; *which in turn were*; a comma before a

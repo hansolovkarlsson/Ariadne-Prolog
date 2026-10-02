@@ -385,10 +385,19 @@ year(W) :- digits(W), catch(atom_number(W, N), _, fail), integer(N), N >= 1.
 % A comma and a name after a name may place it, "Springfield,
 % Massachusetts", "McLennan County, Texas, United States", and the whole
 % is one name; it need not, since in "In London, Alice sleeps" the comma
-% ends the phrase before the subject, so that reading is left open.
+% ends the phrase before the subject, so that reading is left open. Of
+% and a name after a name are part of it, "Zigzag of Success", "Statue
+% of Liberty", "University of Oxford"; a name takes no prepositional
+% phrase otherwise, so this is the only way "Zigzag of Success is" can
+% be read, and "I saw Alice of London" has that reading and the one
+% with "of London" on the verb.
 name(N) -->
-    [W], { proper(W) }, name_rest(Ws), name_places(Ps),
-    { atomic_list_concat([W|Ws], ' ', N0), atomic_list_concat([N0|Ps], ', ', N) }.
+    [W], { proper(W) }, name_rest(Ws), name_of(Os), name_places(Ps),
+    { append([W|Ws], Os, Words), atomic_list_concat(Words, ' ', N0),
+      atomic_list_concat([N0|Ps], ', ', N) }.
+
+name_of([of, W|Ws]) --> [of, W], { proper(W) }, name_rest(Ws).
+name_of([]) --> [].
 
 name_rest([W|Ws]) --> [W], { proper(W) }, !, name_rest(Ws).
 name_rest([D|Ws]) --> [D], { digits(D) }, name_rest(Ws).

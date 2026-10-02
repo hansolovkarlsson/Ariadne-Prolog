@@ -202,7 +202,8 @@ end of this file.
   The first word is capitalized whatever it is, so *Woods was born* and
   *Dog barks* are each read with a name, and the verdict says so. A comma
   and a name after a name place it, *Springfield, Massachusetts*,
-  *McLennan County, Texas, United States*, and the whole is one name. An
+  *McLennan County, Texas, United States*, and the whole is one name; so
+  do *of* and a name, *Zigzag of Success*, *University of Oxford*. An
   adjective may stand before a name, *old London*, *north-eastern France*.
 - **A hyphen inside a word** stays when something knows the word whole:
   a capital makes it a name, *Bernes-sur-Oise*; the lexicon or WordNet has
@@ -912,4 +913,13 @@ municipality farthest south*; an appositive after a noun phrase, *her
 stage name, Barbara*; and the Cosby sentence, *first broadcast on
 September 20, 1984 and ran for eight seasons*, which is two of these at
 once.
+
+The first of those went the same evening: *of* and a name after a name
+are part of it, *Zigzag of Success*, *Statue of Liberty*, *University of
+Oxford*, as the placing comma is. A name takes no prepositional phrase
+otherwise, so *Zigzag of Success is* has this reading only, while *I saw
+Alice of London* has it and the one with *of London* on the verb. The
+corpus gives **39 grammatical, 10 not, and 1 unknown**: the Zigzag
+sentence, with *by Eldar Ryazanov* on the participle or on *is*. `make
+english-wordnet` takes 1:24.
 
