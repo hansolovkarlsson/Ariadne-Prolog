@@ -10,6 +10,13 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **Comparatives, superlatives and ordinals in digits.** A word in *-er*
+  or *-est* whose stem is an adjective the lexicon or WordNet has is that
+  adjective's, *older*, *largest*, *biggest*; *27th* is one word and an
+  adjective, and a number in digits is digits alone. 453 checks; the
+  second corpus goes from 24 grammatical to 26, and from 3 unknown to 1.
+  (`4e0c5e4`)
+
 - **A hyphen stays in its word, and an adjective may stand before a
   name.** A hyphenated word is kept whole when a capital makes it a name,
   *Bernes-sur-Oise*, or the lexicon or WordNet has it as written,
