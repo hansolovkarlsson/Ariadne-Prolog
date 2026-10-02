@@ -511,25 +511,26 @@ noun_form(Word, Sg, pl) :- noun(Sg), plural(Sg, Word).
 plural(Sg, Pl) :- irregular_plural(Sg, Pl0), !, Pl = Pl0.
 plural(Sg, Pl) :- s_form(Sg, Pl).
 
-% participle_adj(+Word): a participle that may stand before a noun as an
-% adjective does, "the presiding bishop", "a painted house", "managing
-% director": an -ing or -en form of a verb that is not an adjective or a
-% noun, which are read as those already, "tired", "building". The answer
-% is kept per word while the placements stand, since verb_form/3 with the
-% word given walks every verb for each of its forms, a millisecond, and
-% the grammar asks at every word a noun phrase could start at: without
-% this one corpus sentence went from a third of a second to fifty.
-% with_placements/3 in guess.pl clears it with the placements.
-:- dynamic(participle_memo/2).
+% participle_word(+Word): an -ing or -en form of a verb, "chasing",
+% "chased", "eaten", whatever else the word may be. participle_adj(+Word):
+% one that may stand before a noun as an adjective does, "the presiding
+% bishop", "a painted house", "managing director": not an adjective or a
+% noun as well, which are read as those already, "tired", "building".
+% Each answer is kept per word while the placements stand, since
+% verb_form/3 with the word given walks every verb for each of its forms,
+% a millisecond, and the grammar asks at every word a noun phrase could
+% start at and after every noun: without this one corpus sentence went
+% from a third of a second to fifty. with_placements/3 in guess.pl clears
+% them with the placements.
+:- dynamic(participle_memo/3).
 
-participle_adj(W) :- participle_memo(W, Yes), !, Yes == yes.
-participle_adj(W) :-
-    (   ( verb_form(W, _, ing) ; verb_form(W, _, en) ),
-        \+ adj(W), \+ noun_form(W, _, _)
-    ->  Yes = yes
-    ;   Yes = no
-    ),
-    assertz(participle_memo(W, Yes)),
+participle_word(W) :- memo(word, W, ( verb_form(W, _, ing) ; verb_form(W, _, en) )).
+participle_adj(W)  :- memo(adj, W, ( participle_word(W), \+ adj(W), \+ noun_form(W, _, _) )).
+
+memo(Kind, W, _) :- participle_memo(Kind, W, Yes), !, Yes == yes.
+memo(Kind, W, Goal) :-
+    ( call(Goal) -> Yes = yes ; Yes = no ),
+    assertz(participle_memo(Kind, W, Yes)),
     Yes == yes.
 
 % verb_form(?Word, -Base, -Form): the present forms agree with the subject,

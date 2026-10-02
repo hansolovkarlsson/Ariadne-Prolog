@@ -10,6 +10,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A participle after a noun.** *A movie directed by Eldar Ryazanov*,
+  *a network broadcasting from Dubai*, *the dogs chased by the cat
+  bark*: a relative clause with its relative word and *be* left out,
+  entered only when such a form is the next word. Held since
+  2026-09-30 at 172 to 397 seconds of CPU; measured again after the
+  name guard, 55 against 47. 540 checks; the second corpus goes from 36
+  grammatical to 38, and `make english-wordnet` takes 1:25.
+
 - **A preposition of two words.** *As of the census*, *because of the
   rain*, *out of the garden*, *according to Alice*: nine pairs listed
   in the lexicon, read only before a noun phrase, and saying nothing

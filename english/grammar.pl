@@ -693,6 +693,21 @@ relative(_, [rel(W, S)], V0, V) -->
     statement(S, gap, nogap, V0, V).
 relative(_, [rel(none, S)], V0, V) -->
     statement(S, gap, nogap, V0, V).
+% A clause with its relative word and be left out is a participle and
+% what follows it, passive, "a movie directed by Eldar Ryazanov", or in
+% -ing, "a network broadcasting from Dubai". The rule is entered only
+% when the next word is such a form, a lookahead the diagnosis does not
+% relax, as the gerund after a preposition has, and its verb is never
+% read as a wrong form of itself, so an ordinary fault is not diagnosed
+% as a participle.
+relative(_, [rel(none, VP)], V0, V) -->
+    participle_ahead,
+    verb_phrase(pass, 6, reduced, VP, nogap, nogap, V0, V).
+relative(_, [rel(none, VP)], V0, V) -->
+    participle_ahead,
+    verb_phrase(ing, 6, reduced, VP, nogap, nogap, V0, V).
+
+participle_ahead([W|S], [W|S]) :- participle_word(W).
 
 /* ---------------- verb phrases ---------------- */
 
@@ -771,6 +786,8 @@ form_ok(fin(Agr), _, Tok, F, V0, V) :- !,
     ;   \+ has_finite(Tok),
         violation(finite(Tok), V0, V)
     ).
+form_ok(pass, reduced, _, F, V, V) :- !, F == en.
+form_ok(ing, reduced, _, F, V, V) :- !, F == ing.
 form_ok(pass, Prev, Tok, F, V0, V) :- !,
     agree(verb_form(Prev, Tok, en), en, F, V0, V).
 form_ok(Form, Prev, Tok, F, V0, V) :-

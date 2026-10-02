@@ -59,7 +59,7 @@ with_placements(Words, Names, Goal) :-
 % kept per word while they stood; see participle_adj/1 in lexicon.pl.
 unplace :-
     retractall(guessed(_, _)),
-    retractall(participle_memo(_, _)).
+    retractall(participle_memo(_, _, _)).
 
 % placed_classes(+Word, -Source, -Classes): where Word was placed from, and
 % the classes, in order.

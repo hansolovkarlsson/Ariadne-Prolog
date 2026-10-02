@@ -490,6 +490,15 @@ bad('Alice, friend of the king, sleep.',   subject_verb(sleep)).
 bad('Alice is teacher.',                   bare(teacher)).
 bad('Alice is dog of the king.',           bare(dog)).
 bad('Alice sees teacher of the king.',     bare(teacher)).
+% A participle after a noun, and before it.
+good('The dogs chased by the cat bark.').
+good('The dog chasing the cat barks.').
+good('The cake eaten by the fox was big.').
+good('I saw the dog chasing the cat.').
+readings('The dogs chased by the cat bark.', 1).
+bad('The dogs chased by the cat barks.',   subject_verb(barks)).
+bad('The dogs chase by the cat bark.',     no_reading).
+bad('The dog chasing the cat bark.',       subject_verb(bark)).
 % A participle before a noun.
 good('The sleeping dog barks.').
 good('A painted house is big.').
@@ -499,7 +508,7 @@ readings('The sleeping dog barks.', 1).
 bad('The sleeping dogs barks.',            subject_verb(barks)).
 bad('A painted houses are big.',           det_noun(a, houses)).
 bad('A eaten cake is small.',              article(a, eaten)).
-bad('The dog sleeping barks.',             no_reading).
+good('The dog sleeping barks.').
 bad('The dog, and the cat sleep.',         no_reading).
 % A request without a verb.
 good('Two cups of tea, please.').

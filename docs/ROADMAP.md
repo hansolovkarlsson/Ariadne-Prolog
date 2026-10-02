@@ -116,21 +116,29 @@ These change the shape of the system rather than adding to it.
      before the noun, *the 2017 World Aquatics Championships*, and with
      it a name that is a head does not end before another name, which
      halved the corpus run; and a preposition of two words, *as of the
-     2020 census*; it passes 36. What is left:
+     2020 census*; and, measured again after the closeout, a participle
+     after a noun, *a movie directed by Eldar Ryazanov*; it passes 38.
+     What is left, one sentence each, in `english/README.md`:
+     - a name with an *of* phrase after it, *Zigzag of Success is*; *be*
+       and a *to*-infinitive, *were to enter service*; a phrasal verb,
+       *sworn in as*; a name after a noun phrase, *the record label
+       Yellow Productions*; an adjective phrase after a comma, *best
+       known as the chairperson*; *which in turn were*; a comma before a
+       phrase, *a municipality, in the municipality of*; an adjective
+       after its noun, *the municipality farthest south*; an appositive
+       after a noun phrase, *her stage name, Barbara*;
      - a plain adjective after a noun modifier, *a world famous
        singer*, which no corpus sentence needs;
-     - a participle after a noun, *a movie directed by*, *a network
-       broadcasting from Dubai*: written on 2026-09-30 with the
-       participle before a noun and held behind the parser, below. The
-       pair were correct, 417 checks passing, but the corpus run went
-       from 172 to 397 seconds of CPU for no corpus sentence gained, and
-       to 366 even with them kept out of the diagnosis. On 2026-10-02 the
-       half before the noun went in on its own, *the presiding bishop*,
-       *managing director*, at 197 seconds against 184 once two costs
-       outside it were found, in `english/README.md`; the half after the
-       noun opens a verb phrase after every noun and is still the
-       parser's. Its rules are in `scratch/participles.patch` on the
-       machine it was written on, and are short to write again.
+     - nothing now waits on the parser. Participles, after a noun and
+       before it, were written on 2026-09-30 and held, since the corpus
+       run went from 172 to 397 seconds of CPU for no corpus sentence
+       gained. On 2026-10-02 both halves went in, the half before the
+       noun at 197 seconds against 184 once two costs outside it were
+       found, and the half after at 55 against 47 once a name head no
+       longer ended before another name, which had been most of the
+       cost all along; the record is in `english/README.md`. The parser
+       question below stands on its own merits, and no corpus sentence
+       argues for it today.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

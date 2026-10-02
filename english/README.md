@@ -167,9 +167,13 @@ end of this file.
 - **A participle before a noun**: *the presiding bishop*, *a painted
   house*, *the barking dogs*, *managing director*, an *-ing* or *-en*
   form of a verb standing where an adjective does; a word that is an
-  adjective or a noun as well, *tired*, *building*, is read as that. A
-  participle after its noun, *a movie directed by*, is not read; see the
-  roadmap.
+  adjective or a noun as well, *tired*, *building*, is read as that.
+- **A participle after a noun**: *a movie directed by Eldar Ryazanov*,
+  *a network broadcasting from Dubai*, *the dogs chased by the cat
+  bark*, a relative clause with its relative word and *be* left out,
+  entered only when such a form is the next word; its verb is never
+  read as a wrong form of itself, so *the dogs chase by the cat* has no
+  reading rather than a participle gone wrong.
 - **Determiner and noun**: *a dog*, *these dogs*, *six dogs*, *a hundred
   dogs*, not *a dogs*, *this dogs* or *one dogs*.
 - **A number before the noun**: *the 2020 census*, *the 2017 World
@@ -878,4 +882,34 @@ two readings, *out* an adverb before *of the garden* or the pair, both
 English. The corpus gives **36 grammatical, 13 not, and 1 unknown**:
 *As of the 2020 United States census, 354 people lived there*. `make
 english-wordnet` takes 1:14.
+
+After the day's closeout, the participle after a noun was measured
+again, since the number that had refused it on 2026-09-30, 172 to 397
+seconds of CPU, was taken before the name guard halved the run for
+reasons of its own. The rule is the one written then, a relative clause
+with its relative word and *be* left out, *a movie directed by Eldar
+Ryazanov*, *a network broadcasting from Dubai*, with one guard added: it
+is entered only when the next word is an *-ing* or *-en* form of a
+verb, the lookahead the gerund after a preposition has, and the answer
+is kept per word as the participle before a noun's is. Timed sentence
+by sentence against the commit before, the corpus costs 55 seconds of
+CPU against 47, six of the eight in the Class 93 sentence, which it
+still refuses. The corpus gives **38 grammatical, 11 not, and 1
+unknown**: *El Caribe is a Spanish-language daily newspaper published
+in Santo Domingo* and *El Gordo is the largest distant galaxy cluster
+seen as of 2011*, each with two readings, the phrase after the
+participle attached to it or to the verb; and the galaxy record
+sentence gains a fourth, *the cluster we have* with *discovered* on the
+record, English in form. `make english-wordnet` takes 1:25. What the
+eleven stop on is named, one each: a name with an *of* phrase after it,
+*Zigzag of Success is*; *be* and a *to*-infinitive, *were to enter
+service*; a phrasal verb, *sworn in as*; a name after a noun phrase,
+*the record label Yellow Productions*; an adjective phrase after a
+comma, *best known as the chairperson* and *better known by his stage
+name*; *which in turn were*; a comma before a phrase, *a municipality,
+in the municipality of Glarus Süd*; an adjective after its noun, *the
+municipality farthest south*; an appositive after a noun phrase, *her
+stage name, Barbara*; and the Cosby sentence, *first broadcast on
+September 20, 1984 and ran for eight seasons*, which is two of these at
+once.
 

@@ -1319,6 +1319,25 @@ moved, since the slow sentence names the place and not the cause. The
 corpus run under a time limit is still the check, and the cut is how it
 is read.
 
+### After the closeout: the participle after a noun, measured again
+
+The closeout had said what the next step was, and it was an hour: the
+number that refused the participle after a noun on 2026-09-30, 172 to
+397 seconds of CPU, had been taken before the name guard halved the run
+for reasons of its own, and a stale number is not a decision. The rule
+went in as it was written then, with one guard added, the lookahead the
+gerund has, so that it is entered only when the next word is an *-ing*
+or *-en* form, and the answer kept per word as the other participle's
+is. Timed sentence by sentence against the closeout's commit: 55
+seconds against 47, six of the eight in the Class 93 sentence, which
+still has no reading. Two sentences passed, *El Caribe is a
+Spanish-language daily newspaper published in Santo Domingo* and the El
+Gordo sentence, and the corpus gives 38 grammatical, 11 not and 1
+unknown. So the name guard had been most of the participle's cost all
+along, two days before the participle was blamed for it, and nothing
+now waits on the parser: what the eleven refused sentences stop on is
+named one each in the README, and none of them is a parsing problem.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
