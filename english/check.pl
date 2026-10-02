@@ -642,7 +642,7 @@ tidy(A0, A) :-
 % when the word is known whole or is a name; see unhyphen/2. A contraction such as 's, 're or 'll is then cut
 % from its word, as it is a word of its own: she's gives [she, 's]. So is
 % the apostrophe after a plural, dogs' giving [dogs, 's], since it marks a
-% possessive as 's does.
+% possessive as 's does. An ordinal in digits is one word, 27th.
 words(Text, Words) :- words(Text, Words, _).
 
 % words(+Text, -Words, -Names): Words as words/2 gives them, and Names, the
@@ -795,9 +795,13 @@ unhyphen(W, Ws) :- atomic_list_concat(Ws0, '-', W), exclude(==(''), Ws0, Ws).
 letter(C) :- char_type(C, alpha).
 
 % take_number(+Chars, -Number, -Rest): a run of digits, with a point or
-% comma inside it kept when a digit follows, 3.5 or 1,000; a full stop
+% comma inside it kept when a digit follows, 3.5 or 1,000, and an
+% ordinal's ending when no letter follows that, 27th or 1st; a full stop
 % after it ends the sentence and is not part of it.
 take_number([C|Cs], [C|Ds], Rest) :- digit(C), !, take_number(Cs, Ds, Rest).
 take_number([P, D|Cs], [P, D|Ds], Rest) :-
     ( P == '.' ; P == ',' ), digit(D), !, take_number(Cs, Ds, Rest).
+take_number([A, B|Cs], [A, B], Cs) :-
+    atom_chars(S, [A, B]), memberchk(S, [st, nd, rd, th]),
+    \+ ( Cs = [N|_], letter(N) ), !.
 take_number(Rest, [], Rest).

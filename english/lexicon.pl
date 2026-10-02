@@ -253,8 +253,18 @@ month(january). month(february). month(march). month(april). month(may).
 month(june). month(july). month(august). month(september).
 month(october). month(november). month(december).
 
-% digits(Word): a number written in digits, 91 or 3.5.
-digits(W) :- atom(W), atom_chars(W, [C|_]), digit(C).
+% digits(Word): a number written in digits, 91 or 3.5 or 1,000. Not an
+% ordinal, 27th, which is an adjective; see ordinal/1.
+digits(W) :-
+    atom(W), atom_chars(W, [C|Cs]), digit(C),
+    forall(member(X, Cs), ( digit(X) ; X == '.' ; X == ',' )).
+
+% ordinal(Word): an ordinal written in digits, 27th, 1st, 2nd, 3rd, which
+% words/2 in check.pl keeps as one word. It stands where an adjective
+% does, "the 27th bishop", "Oregon's 5th district".
+ordinal(W) :-
+    atom(W), atom_chars(W, Cs), append(Ds, [A, B], Cs), Ds = [_|_],
+    maplist(digit, Ds), atom_chars(S, [A, B]), memberchk(S, [st, nd, rd, th]).
 
 number_name(two). number_name(three). number_name(four). number_name(five).
 number_name(six). number_name(seven). number_name(eight). number_name(nine).
@@ -283,6 +293,7 @@ adj(clever). adj(kind). adj(brave). adj(funny). adj(strange). adj(empty).
 adj(beautiful). adj(ugly). adj(honest). adj(orange). adj(early). adj(late).
 adj(colorless).
 adj(A) :- guessed(adj, A).
+adj(A) :- ordinal(A).
 
 prep(in). prep(on). prep(under). prep(near). prep(behind). prep(with).
 prep(without). prep(from). prep(to). prep(into). prep(over). prep(by).
@@ -499,6 +510,22 @@ past(Base, Past) :-
 past(Base, Past) :-
     consonant_y(Base, Stem), !, atom_concat(Stem, ied, Past).
 past(Base, Past) :- atom_concat(Base, ed, Past).
+
+% degree_inflection(+Word, -Base, -Degree): Word is an adjective's
+% comparative or superlative by the spelling rules, older, larger,
+% happier, bigger, oldest, largest, happiest, biggest, and Base is the
+% adjective it would be, which the caller checks. guess.pl reads it for a
+% word the lexicon lacks and places the form as an adjective itself,
+% since the lexicon derives no forms for an adjective.
+degree_inflection(W, B, D) :-
+    member(D-E, [comparative-er, superlative-est]),
+    atom_concat(S0, E, W), atom_length(S0, N), N >= 2,
+    (   B = S0
+    ;   atom_concat(S0, e, B)
+    ;   atom_concat(Si, i, S0), atom_concat(Si, y, B)
+    ;   atom_chars(S0, Cs), append(Bs, [C, C], Cs), \+ vowel_letter(C),
+        append(Bs, [C], Bs1), atom_chars(B, Bs1)
+    ).
 
 % s_form(+Base, -Form): the -s ending of a noun plural or of a verb:
 % boxes, watches, cries, plays, dogs.

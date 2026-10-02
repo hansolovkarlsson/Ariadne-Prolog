@@ -15,6 +15,9 @@
     looked up, so a word it lists keeps only the entries it gives, and can,
     will and a do not become WordNet's nouns.
 
+    A comparative or superlative, largest, is its adjective's, large, in
+    WordNet or in the lexicon, and is placed as an adjective itself.
+
     By its ending, quickly is an adverb, nation a noun, careful an
     adjective, organize a verb. An inflected word is first taken back to its
     stem, as blorfed to blorf, and the stem is placed by its own ending, or,
@@ -73,6 +76,7 @@ wordnet_entry(W, adv-W) :- wn_adv(W).
 wordnet_entry(W, noun-S) :- inflection(W, S, s), wn_noun(S).
 wordnet_entry(W, verb(Fs)-S) :- inflection(W, S, _), wn_verb(S, Fs).
 wordnet_entry(W, Class-W) :- closed_up(W, C), wordnet_entry(C, Class-C).
+wordnet_entry(W, adj-W) :- degree_inflection(W, B, _), wn_adj(B).
 wordnet_entry(W, E) :- wn_irregular(noun, W, S), wn_noun(S),
     member(E, [noun-S, irregular_plural-(S-W)]).
 wordnet_entry(W, E) :- wn_irregular(verb, W, B), wn_verb(B, Fs),
@@ -105,6 +109,7 @@ doubled(B, W) :-
 guess(W, adv, W) :- atom_concat(S, ly, W), atom_length(S, N), N >= 3.
 guess(W, C, W) :- \+ atom_concat(_, ly, W), suffix_class(W, C).
 guess(W, C, S) :- inflection(W, S, Ending), stem_class(S, C), takes(C, Ending).
+guess(W, adj, W) :- degree_inflection(W, B, _), adj(B).
 
 % inflection(+Word, -Stem, -Ending): Word is Stem with an -s, -ed or -ing
 % ending, by the lexicon's own rules. The candidates are made by undoing

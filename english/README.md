@@ -144,6 +144,10 @@ end of this file.
   adjectives, and *a* or *an* by the first of them.
 - **Determiner and noun**: *a dog*, *these dogs*, *six dogs*, *a hundred
   dogs*, not *a dogs*, *this dogs* or *one dogs*.
+- **Comparatives, superlatives and ordinals**: *the older dog*, *the
+  biggest dog*, *the largest cluster*, a form of an adjective the lexicon
+  or WordNet lists, by the spelling rules; and an ordinal in digits, *the
+  27th bishop*, *1st*, *2nd*, *3rd*, one word and an adjective.
 - **A and an**, by the sound of the next word rather than its spelling: *an
   hour*, *a university*, *an old man*.
 - **Pronoun case**: *she sees him*, not *him sleeps* or *she sees he*.
@@ -293,7 +297,8 @@ them, 20,734 adjectives, 3,749 adverbs, and 4,325 irregular forms, hyphenated
 words among them, *well-known*, *part-time*. It is not
 committed. A word the lexicon lacks is looked up there, as itself, as an
 inflected form of a stem, among the irregular forms (*flung*, *oxen*,
-*grabbed*), or, for a hyphenated word, closed up (*north-eastern* as
+*grabbed*), as a comparative or superlative of an adjective (*largest*),
+or, for a hyphenated word, closed up (*north-eastern* as
 *northeastern*), before it is guessed from its ending. The lexicon's own words are
 never looked up, so its entries are what they were, and `make english` runs
 without WordNet and without the network. CI runs `make english-wordnet` in a
@@ -656,4 +661,22 @@ States* stays one name. The corpus gives **24 grammatical, 23 not, and 3
 unknown**: the Sedan sentence, *Bernes-sur-Oise is a commune*, and *It is
 in Île-de-France in the Val-d'Oise department in north France*. The run
 takes 2:56.
+
+Superlatives and ordinals were the last of the day. *Largest* was unknown,
+two of the three unknown sentences: WordNet lists *larger* and *bigger* as
+words of their own but no superlative, and the lexicon derives no forms
+for an adjective. A word in *-er* or *-est* whose stem, by the spelling
+rules, is an adjective the lexicon or WordNet has, *older*, *largest*,
+*happiest*, *biggest*, is now that adjective's and an adjective itself.
+An ordinal in digits, *27th*, had been cut into *27* and *th*; it is one
+word and an adjective, and a number in digits is now digits alone. The
+corpus gives **26 grammatical, 23 not, and 1 unknown**. The two
+*largest* sentences went from unknown to not, each stopping on something
+after it: *the record for being the largest cluster*, a gerund clause
+after a preposition, and *the largest distant galaxy cluster seen as of
+2011*, a participle. *The 27th presiding bishop* stops on its participle
+too. Two sentences with an ordinal passed outright, *She was the U.S.
+Representative for Oregon's 5th congressional district from 2023 to
+2025* and the sentence before it, each with the reading it means among
+the ways *from 2023 to 2025* can attach. The run takes 3:11.
 

@@ -441,6 +441,15 @@ good('The dog-cat sleeps.').
 readings('Alice sleeps in old London.', 1).
 readings('Old London sleeps.', 1).
 bad('Alice sleeps in old London sleeps.',  no_reading).
+good('The biggest dog sleeps.').
+good('The largest dog sleeps.').
+good('The happiest dog sleeps.').
+good('The older dog sleeps.').
+good('The 27th dog sleeps.').
+good('The dog is older.').
+bad('The biggest dog sleep.',               subject_verb(sleep)).
+bad('A 27th dogs sleep.',                   det_noun(a, dogs)).
+bad('The forest sleep.',                    subject_verb(sleep)).
 bad('The dog, barks.',                     no_reading).
 bad('The dog, and the cat sleep.',         no_reading).
 bad('Two cups of tea, please.',            no_reading).
