@@ -10,6 +10,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A gerund after a preposition.** *Tired of barking*, *after eating the
+  cake*, *the record for being the largest cluster*: an *-ing* verb
+  phrase where a noun phrase would stand, entered only when an *-ing*
+  form follows, since without that guard the diagnosis opened a verb
+  phrase after every preposition and the corpus run went from three
+  minutes to past fifteen. 459 checks; the second corpus goes from 26
+  grammatical to 28. (`d9763ca`)
+
 - **Comparatives, superlatives and ordinals in digits.** A word in *-er*
   or *-est* whose stem is an adjective the lexicon or WordNet has is that
   adjective's, *older*, *largest*, *biggest*; *27th* is one word and an

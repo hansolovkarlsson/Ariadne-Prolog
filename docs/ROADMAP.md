@@ -102,8 +102,9 @@ These change the shape of the system rather than adding to it.
      between a name and the name that places it, *Springfield,
      Massachusetts*, hyphenated words, *Bernes-sur-Oise*, *north-eastern*,
      an adjective before a name, *north-eastern France*, comparatives,
-     superlatives and ordinals in digits, *largest*, *27th*; it passes
-     26. What is left:
+     superlatives and ordinals in digits, *largest*, *27th*, and a gerund
+     after a preposition, *the record for being the largest cluster*; it
+     passes 28. What is left:
      - what lists leave: a list that mixes nouns under one determiner with
        a noun phrase, *an Indian politician, author and a member*; verb
        phrases joined, *made by Retro Studios and published by Nintendo*;
@@ -111,8 +112,6 @@ These change the shape of the system rather than adding to it.
        phrase beside a name, *Mukesh Ambani, chairman of ...*, which also
        needs *chairman* as a bare noun; a request without a verb, *two
        cups of tea, please*, which the first corpus now refuses;
-     - a gerund clause after a preposition, *the record for being the
-       largest cluster*;
      - participles, after a noun, *a movie directed by*, and before it,
        *the presiding bishop*: written on 2026-09-30 and held behind the
        parser, below. They were correct, 417 checks passing, but the
