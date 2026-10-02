@@ -525,12 +525,21 @@ nominal_rest(Num, Head, Posts, V0, V) -->
 % singular, "record label" and not "records label". It is not a name or
 % an adjective, which are read as those already: WordNet has "stone" and
 % "last" as adjectives and nouns, and "the stone bridge" or "the film last
-% night" would otherwise have a reading for each.
+% night" would otherwise have a reading for each. After a noun modifier,
+% though, a word that is a noun as well as an adjective is one more noun
+% modifier, "a jazz bebop alto saxophonist", since the adjectives have
+% been read by then and it can be nothing else; "last" and "next" stay
+% out, as they are read before a noun only in "last night", see
+% adverbial_np/2, so "I saw the film last night" keeps its one reading.
 modifiers(Ms) --> adjectives(As), noun_modifiers(Ns), { append(As, Ns, Ms) }.
 
 noun_modifiers([nmod(W)|Ns]) -->
-    [W], { noun_form(W, _, sg), \+ proper(W), \+ adj(W) }, noun_modifiers(Ns).
+    [W], { noun_form(W, _, sg), \+ proper(W), \+ adj(W) }, more_noun_modifiers(Ns).
 noun_modifiers([]) --> [].
+
+more_noun_modifiers([nmod(W)|Ns]) -->
+    [W], { noun_form(W, _, sg), \+ proper(W), \+ time_det(W) }, more_noun_modifiers(Ns).
+more_noun_modifiers([]) --> [].
 
 % adjectives(-Trees): the adjectives before a noun, and any name, which
 % stands there as an adjective does: "the Congress Party", "Peace TV

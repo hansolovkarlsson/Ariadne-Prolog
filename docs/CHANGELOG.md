@@ -10,6 +10,15 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **A noun that is an adjective too, after a noun modifier.** *A jazz
+  bebop alto saxophonist*: such a word before a noun is read as the
+  adjective, *the stone bridge*, but after a noun modifier the
+  adjectives are past and it is one more noun modifier. *Last* and
+  *next* stay out, so *the film last night* keeps one reading. 515
+  checks; the second corpus goes from 33 grammatical to 34, and the run
+  from 3:30 to 2:43, the sentence gained having been the slowest to
+  refuse.
+
 - **A request without a verb.** *Two cups of tea, please*, *please, the
   bill*: a noun phrase and *please* with a comma between them, read on
   the terms a command is, when nothing else reads the sentence. The

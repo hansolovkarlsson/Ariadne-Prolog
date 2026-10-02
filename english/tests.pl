@@ -514,6 +514,13 @@ bad('A coffee.',                           no_reading).
 bad('A coffee please.',                    subject_verb(please)).
 bad('Please, two cups of tea, please.',    no_reading).
 % "Please two cups of tea" is a command, please being a verb.
+% A noun that is an adjective too, after a noun modifier.
+good('I saw the garden orange tree.').
+good('The school garden orange trees are big.').
+readings('I saw the garden orange tree.', 1).
+readings('The orange tree is big.', 1).
+bad('The garden orange trees is big.',     subject_verb(is)).
+bad('The garden orange tree are big.',     subject_verb(are)).
 bad('A apple tree grows.',                  article(a, apple)).
 bad('The dog house are big.',              subject_verb(are)).
 bad('The dog barks?',                      punctuation('?')).

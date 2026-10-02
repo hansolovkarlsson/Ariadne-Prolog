@@ -159,7 +159,11 @@ end of this file.
   happy*.
 - **Nouns before nouns**: *the record label*, *a water polo player*, *an
   apple tree*, the modifying nouns in the singular and after any
-  adjectives, and *a* or *an* by the first of them.
+  adjectives, and *a* or *an* by the first of them. A word that is an
+  adjective as well is read as the adjective, *the stone bridge*, unless
+  a noun modifier already stands before it, *a jazz bebop alto
+  saxophonist*, where it is one more; *last* and *next* stay out, so *I
+  saw the film last night* keeps its one reading.
 - **A participle before a noun**: *the presiding bishop*, *a painted
   house*, *the barking dogs*, *managing director*, an *-ing* or *-en*
   form of a verb standing where an adjective does; a word that is an
@@ -812,4 +816,20 @@ reads, and the request parsed a noun phrase for each of them before the
 in what is left to read, the guard the possessive uses, and the run is
 3:30. The first corpus gives **50 grammatical**, and so guards
 everything it has and measures nothing, which is what it is for.
+
+Then the adjective after a noun modifier, which turned out to be a noun
+after one: *alto* in *a jazz bebop alto saxophonist* is a noun as well
+as an adjective in WordNet, and a noun modifier was never read from a
+word that is an adjective, since *stone* and *last* are both and *the
+stone bridge* would have had a reading for each. After a noun modifier
+the adjectives have been read, so such a word there can be nothing but
+one more noun modifier, and it now is; *last* and *next* stay out, as
+they stand before a noun only in *last night*, which keeps *I saw the
+film last night* at one reading. A plain adjective after a noun
+modifier, *a world famous singer*, is still not read. The corpus gives
+**34 grammatical, 15 not, and 1 unknown**: the Woods sentence, whose
+list of four nouns the grammar already had. `make english-wordnet` takes
+2:43, down from 3:30, since that sentence had been the slowest in the
+corpus, eighty seconds to refuse, and now has a reading and no
+diagnosis to search for.
 
