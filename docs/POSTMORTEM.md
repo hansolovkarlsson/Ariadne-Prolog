@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Fifty-four defects, in five cohorts that failed for five different reasons:
+Fifty-five defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -21,12 +21,12 @@ Fifty-four defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: twenty defects in which two parts of the project did not
+- **Consistency**: twenty-one defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
   on 2026-09-27, one on 2026-09-28, six on 2026-09-29, one on 2026-09-30 and
-  one on 2026-10-02.
+  two on 2026-10-02.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
@@ -146,7 +146,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Nineteen defects in which two parts of the project disagreed. The first eight were
+Twenty-one defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -494,6 +494,24 @@ right. (`29b45a2`)
 *What this says:* a table of exceptions is checked only where something
 reads it, and a lexicon is mostly exceptions nobody has read.
 
+### A verb the lexicon could not spell, again
+
+The lexicon's *-ing* rule drops a final *e*, so *die* gave *diing*, and
+*lie* and *tie* the same. *Dying* was then found only through WordNet,
+as a form of *dye*, which WordNet has as transitive, so *before dying of
+cancer* had no reading, and *The dog is dying* was read only with
+*dying* the adjective. *-ie* now goes to *-ying*, in the rule and in the
+guesser that undoes it (`c050156`).
+
+Found on 2026-10-02 by cutting a refused corpus sentence into eight
+pieces and timing them in parallel: *He served four months before dying
+of cancer in office* failed where *He died in office* passed, and *He
+slept before dying* named the word.
+
+*What this says:* the same as the first time, a week on. A spelling rule
+is checked only where a word reaches it, and *sleep* and *die* both
+waited for a sentence that needed them.
+
 ### Entries the lexicon had short
 
 *Tell* was listed as taking two objects and never one, *open* one and never
@@ -640,6 +658,7 @@ and this is the first time it caught a sentence moving the wrong way.
 | Timing each sentence of a corpus, and once each stage of one | 2 |
 | Timing each sentence of a corpus against the commit before, then cutting the slow one down until the cost moved | 3 |
 | A corpus count pinned in the runner, which fails the build when a sentence moves | 1 |
+| Cutting a refused corpus sentence into pieces and checking each | 1 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 4 |
 | Rendering the pages and looking at them | 3 |
@@ -653,7 +672,7 @@ and this is the first time it caught a sentence moving the wrong way.
 
 Three things stand out.
 
-**The test suite found four of fifty-four.** It is a good suite, 334 tests
+**The test suite found four of fifty-five.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong

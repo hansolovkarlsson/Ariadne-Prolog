@@ -1348,8 +1348,31 @@ multiplying the attachments and the DCG sharing nothing between them.
 No guard applies, since nothing is wrong: the readings are real and the
 parser enumerates them one at a time from the start. The rule is held in
 `scratch/be-to.patch` with the numbers, and the parser item has the
-sentence it had lacked. Nine commits in the day, and the method held
-through the last: time, cut, and believe the cut.
+sentence it had lacked.
+
+Two more went in after that, and the second showed the wall can be
+reached from under it as well. A name after a noun, *the record label
+Yellow Productions*, was one rule and cheap, since the morning's guard
+already kept a name head from taking a name after it. The phrasal verb,
+*He was sworn in as the sixteenth Governor of Manipur ... but only
+served four months before dying of cancer in office*, was four things,
+and cutting it into eight pieces timed in parallel found them in two
+rounds: a particle after the verb; *office* among the places taken for
+what goes on there; a comma before *but* between two verb phrases, which
+the list rule had allowed only from three items on; and a spelling. The
+lexicon's *-ing* rule made *diing* of *die*, so *dying* was found only as
+a form of *dye*, which WordNet has as transitive, and *before dying of
+cancer* had no reading. The sentence then passed with 672 readings in 58
+seconds, six trailing phrases each attaching in several places, and the
+corpus run went from 1:22 to 2:24 for it alone. It was committed, with
+the standup naming it as the one commit to revert if the minute is not
+worth it: the rules are right, and the cost is the parser's, as the
+Class 93 sentence's is, from a sentence that happens to fit under the
+limit. The records for it went out a commit late, since the script that
+wrote them stopped on an anchor and the commit went ahead without them;
+the next commit carried them. Thirteen commits in the day, the second
+corpus at 41, and the method held through the last: time, cut, and
+believe the cut.
 
 ## How the work is checked
 
@@ -1361,7 +1384,7 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 532 checks: good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. |
+| `make english` | The grammar checker's 571 checks: good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. |
 | `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of `english/corpus.txt` and the fifty of `english/corpus2.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
@@ -1374,7 +1397,7 @@ something it would have caught; those arrived with the program they check.
 About 8,000 lines of hand-written C, 760 lines of library written in Prolog,
 a 338-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
-3,220 lines built on the interpreter, through all three of its stages, and a
+3,350 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own
 tables.
 
