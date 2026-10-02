@@ -517,6 +517,17 @@ pps([], V, V) --> [].
 
 pp(pp(P, NP), G0, G, V0, V) -->
     [P], { prep(P) }, noun_phrase(_, obj, NP, G0, G, V0, V).
+pp(pp(P, VP), G0, G, V0, V) -->
+    [P], { prep(P) }, ing_ahead, verb_phrase(ing, 2, P, VP, G0, G, V0, V).
+
+% A preposition may take an -ing verb phrase in place of a noun phrase,
+% "tired of barking", "after eating the cake", "the record for being the
+% largest cluster", "after having eaten". The rule is entered only when
+% the next word is an -ing form, which the diagnosis does not relax:
+% without that, with agreement relaxed, every noun WordNet also lists as
+% a verb opened a verb phrase after every preposition, and the corpus
+% run that had taken three minutes was stopped at fifteen.
+ing_ahead([W|S], [W|S]) :- ( verb_form(W, _, ing) ; be_form(W, ing) ), !.
 
 % relative(+Agr, -Rels, V0, V): no relative clause, or one, for a noun
 % whose agreement is Agr. When the relative word stands for the subject,

@@ -450,6 +450,12 @@ good('The dog is older.').
 bad('The biggest dog sleep.',               subject_verb(sleep)).
 bad('A 27th dogs sleep.',                   det_noun(a, dogs)).
 bad('The forest sleep.',                    subject_verb(sleep)).
+good('The dog is tired of barking.').
+good('The dog sleeps after eating the cake.').
+good('The dog has a bone for being the biggest dog.').
+good('The dog sleeps after having eaten the cake.').
+bad('The dog sleeps after eat the cake.',   no_reading).
+bad('The dog sleeps after eating the cakes sleeps.', no_reading).
 bad('The dog, barks.',                     no_reading).
 bad('The dog, and the cat sleep.',         no_reading).
 bad('Two cups of tea, please.',            no_reading).

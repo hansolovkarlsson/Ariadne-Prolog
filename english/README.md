@@ -144,6 +144,9 @@ end of this file.
   adjectives, and *a* or *an* by the first of them.
 - **Determiner and noun**: *a dog*, *these dogs*, *six dogs*, *a hundred
   dogs*, not *a dogs*, *this dogs* or *one dogs*.
+- **A gerund after a preposition**: *tired of barking*, *after eating the
+  cake*, *the record for being the largest cluster*, an *-ing* verb
+  phrase where a noun phrase would stand.
 - **Comparatives, superlatives and ordinals**: *the older dog*, *the
   biggest dog*, *the largest cluster*, a form of an adjective the lexicon
   or WordNet lists, by the spelling rules; and an ordinal in digits, *the
@@ -679,4 +682,23 @@ too. Two sentences with an ordinal passed outright, *She was the U.S.
 Representative for Oregon's 5th congressional district from 2023 to
 2025* and the sentence before it, each with the reading it means among
 the ways *from 2023 to 2025* can attach. The run takes 3:11.
+
+A gerund after a preposition followed: *tired of barking*, *after eating
+the cake*, *the record for being the largest cluster*, an *-ing* verb
+phrase where a noun phrase would stand, its first word in the *-ing*
+form as after a verb that takes one. The first version let the verb
+phrase rule decide that, as the verb's rule does, and the corpus run that
+had taken three minutes was stopped at fifteen: with agreement relaxed
+for the diagnosis, every noun WordNet also lists as a verb opened a verb
+phrase after every preposition: *Class 93 is the traction classification
+assigned to the electric locomotives that were to enter service as part
+of British Rail's InterCity 250 project on the West Coast Main Line*,
+thirty words and five prepositions, is refused in three seconds with the
+guard and had not been refused after seven minutes without it. The rule is now entered only
+when the next word is an *-ing* form, a lookahead the diagnosis does not
+relax, so *after eat the cake* gets no diagnosis where it might have had
+one. The corpus gives **28 grammatical, 21 not, and 1 unknown**: *It has
+(2014) the record for being the largest distant galaxy cluster we have
+discovered* and *He was also known for being the voice of Mickey Mouse
+from 1947 to 1977*. The run takes 3:14.
 
