@@ -56,8 +56,25 @@ These change the shape of the system rather than adding to it.
 - **Modules.** The predicate table is flat, so every program shares one
   namespace.
 
-- **Tabling and constraints.** Both are large, self-contained projects that the
-  current solver has no hooks for.
+- **Tabling.** `:- table p/n` memoises a predicate's calls and answers, so
+  left recursion terminates, recursion over cyclic data does too, and a
+  sub-goal met again is looked up rather than solved again: graph
+  reachability, transitive closure and dynamic programming written the
+  plain way, and the `:- table` programs written for SWI-Prolog and XSB
+  running here unchanged. A tabled call must suspend while another
+  produces its answers, which reaches the choice points, the trail, the
+  stacks and the collector, and cut and side effects inside a tabled
+  predicate need defined behaviour; months, and the solver has no hooks
+  for it. Answer subsumption, mode-directed tabling, belongs with it: it
+  lets an answer be combined rather than listed, so a count is kept
+  without the answers it counts. The grammar checker is its first user:
+  settled by Hans on 2026-10-03, the chart parser under *Built on the
+  interpreter* comes first, and once tabling is in, the grammar is
+  reworked to table its rules and the chart parser is retired. Its
+  reading counts are then the check that tabling gives the same answers.
+
+- **Constraints.** A large, self-contained project that the current solver
+  has no hooks for.
 
 ## Built on the interpreter
 
@@ -163,8 +180,8 @@ These change the shape of the system rather than adding to it.
   the auxiliary chain, relative clauses and possessives all read left to
   right. Past that, there are two answers: a chart or left-corner parser
   written in Prolog, which is days, or *Tabling* under *Structural*, which is
-  months. Which one is a decision for the first rule that cannot be written
-  on the right, taken from what it costs then. The second corpus brought the
+  months. Settled by Hans on 2026-10-03: both, the chart parser first and
+  tabling later, which replaces it. The second corpus brought the
   other half of the wall first: one sentence of 23 words takes 116 seconds,
   since every word WordNet lists as a noun, a verb and an adjective at once
   multiplies the sub-parses that are redone. Speed may force the decision
@@ -172,6 +189,20 @@ These change the shape of the system rather than adding to it.
   cost the parser could not absorb: each noun opens a whole verb phrase,
   and the corpus's two slowest sentences went from 36 seconds and under
   12 to 117 and 328.
+
+  - **A chart parser for the grammar**, in Prolog, in `english/`, run by
+    `check.pl` in place of `phrase/2` on the rules `grammar.pl` already
+    has. It keeps a table of what was found between which words, with
+    its agreement, gap and violations, so a phrase is parsed once and
+    looked up after; the readings are kept as one packed forest and
+    counted through it, so the corpus still pins how many a sentence has
+    without building each. Left recursion is then allowed. The rules
+    that cut or look at the words ahead, `name_rest//1`, `please_ahead`,
+    `prep_ahead` and their like, are reworked for it, and the rework
+    carries over to tabling. Two grammatical sentences wait on it: the
+    sworn-in sentence, 672 readings in 52 seconds, half the second
+    corpus's run, and Class 93 with `scratch/be-to.patch`, 156 readings
+    in 187 seconds. Done when both take seconds with the same counts.
 
 ## Not planned
 
