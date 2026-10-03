@@ -281,7 +281,7 @@ simple_np(Agr, Case, pro(W), V0, V) -->
 simple_np(Agr, _, name(N), V, V) -->
     name(N), { agr_of(sg, Agr) }.
 simple_np(Agr, _, appos(name(N), NP), V0, V) -->
-    name(N), [','], apposition(NP, V0, V), apposition_end,
+    name(N), [','], name_appositive(NP, V0, V), apposition_end,
     { agr_of(sg, Agr) }.
 simple_np(Agr, _, np(nom(As, n(N), [])), V, V) -->
     plain_adjectives(As), name(N), { agr_of(sg, Agr) }.
@@ -289,7 +289,7 @@ simple_np(Agr, _, date(D), V, V) -->
     date(D), { agr_of(sg, Agr) }.
 simple_np(Agr, _, num(W), V, V) -->
     [W], { number_word(W, Num), agr_of(Num, Agr) }.
-simple_np(Agr, _, T, V0, V) --> det_np(Agr, T, V0, V).
+simple_np(Agr, _, T, V0, V) --> det_np(Agr, T0, V0, V), np_appositive(T0, T).
 simple_np(Agr, _, np(N), V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
     { \+ names_only(N), \+ leads_number(N),
@@ -301,22 +301,56 @@ simple_np(Agr, _, np(N), V0, V) -->
 % appositive.
 det_np(Agr, np(det(D), N), V0, V) -->
     determiner(D, DNum, DSound),
-    nominal(Num, First, Head, N, V0, V1),
-    { det_agrees(D, Head, DNum, Num, V1, V2),
+    core_nominal(Num1, First, Head1, nom(As, n(Head1), [])),
+    { copy_term(DNum, DNum1),
+      det_agrees(D, Head1, DNum1, Num1, V0, V1),
       sound(First, Sound),
-      agree(article(D, First), DSound, Sound, V2, V),
-      agr_of(Num, Agr) }.
-det_np(Agr, np(det(D), coord(C, [N1|Ns])), V0, V) -->
-    determiner(D, DNum, DSound),
-    core_nominal(Num1, First, Head1, N1),
-    joined(nom_item, nom_last, [and, or], Items, C, V0, V1),
+      agree(article(D, First), DSound, Sound, V1, V2) },
+    noun_posts(Head1, Posts1, V2, V3),
+    det_np_end(D, DNum, Num1, Head1, nom(As, n(Head1), Posts1), N, Agr, V3, V).
+
+% det_np_end(+Det, ?DetNumber, +Number, +Head, +Nominal, -Tree, -Agr, V0, V):
+% what follows the first noun after a determiner, once its phrases are
+% read: its relative clause, and the noun phrase is that noun; or more
+% nouns under the same determiner, "a doctor and teacher", "the
+% municipality of Glarus Süd and canton of Glarus", where each noun may
+% have phrases of its own. The phrases are read once, before the two are
+% told apart, since reading them again for each would double the search
+% at every noun phrase inside them; and the determiner is checked against
+% the first noun before them, so that "an American television sitcom
+% series" is not read on as the plural series, which "an" refuses only at
+% the end.
+det_np_end(_, _, Num, _, nom(As, H, Posts0), nom(As, H, Posts), Agr, V0, V) -->
+    { agr_of(Num, Agr) },
+    relative(Agr, Rels, V0, V),
+    { append(Posts0, Rels, Posts) }.
+det_np_end(D, DNum, Num1, Head1, N1, coord(C, [N1|Ns]), Agr, V0, V) -->
+    nouns_after(N1, Head1, Items, C, V0, V1),
     { pairs_keys_values(Items, NumHeads, Ns),
-      det_agrees_each([Num1-Head1|NumHeads], D, DNum, V1, V2),
-      sound(First, Sound),
-      agree(article(D, First), DSound, Sound, V2, V),
+      det_agrees_each(NumHeads, D, DNum, V1, V),
       pairs_keys([Num1-Head1|NumHeads], Nums),
       coord_num(C, DNum, Nums, Num),
       agr_of(Num, Agr) }.
+% nouns_after(+First, +Head, -Items, -Conjunction, V0, V): the nouns after
+% the first under one determiner. A first noun with no phrases of its own
+% begins a list as joined//7 reads it. One with phrases is joined to one
+% more noun by and or or and no comma, "the municipality of Glarus Süd
+% and canton of Glarus", so that "the wife of Mukesh Ambani, chairman and
+% managing director" is not three nouns under the; and not after kind and
+% its like, whose of already takes a list, "any kind of separation or
+% break".
+nouns_after(nom(_, _, []), _, Items, C, V0, V) -->
+    joined(nom_item, nom_last, [and, or], Items, C, V0, V).
+nouns_after(nom(_, _, [_|_]), Head, [X], C, V0, V) -->
+    { \+ kind_noun(Head) },
+    [C], { memberchk(C, [and, or]) },
+    nom_last(X, V0, V).
+
+% The before a name, "the Sernf", "the Hague", "the Rhine": a river, a
+% place or a thing that has the in its name. Only the, as "a Sernf" is
+% not English in the same way, and the name is singular.
+det_np(Agr, np(det(the), nom([], n(N), [])), V, V) -->
+    [the], name(N), { agr_of(sg, Agr) }.
 det_np(Agr, np(poss(P), N), V0, V) -->
     possessive_ahead,
     possessor(P, V0, V1),
@@ -334,8 +368,39 @@ det_np(Agr, np(poss(P), N), V0, V) -->
 apposition(T, V0, V) --> det_np(_, T, V0, V).
 apposition(T, V0, V) --> role_np(T, V0, V).
 
+% name_appositive(-Tree, V0, V): after a name and its comma, an
+% appositive, or a participle phrase, "Christophe Le Friant, better known
+% by his stage name Bob Sinclar, is a record producer"; see
+% supplement//3.
+name_appositive(T, V0, V) --> apposition(T, V0, V).
+name_appositive(T, V0, V) --> supplement_body(T, V0, V).
+
 apposition_end --> [','].
 apposition_end([], []).
+
+% np_appositive(+NP, -Tree): a name a comma sets after a noun phrase to
+% say which one it is, "her stage name, Barbara, from her grandmother",
+% "the doctor, Alice, sleeps". It is closed as the appositive after a
+% name is, by a comma or the end, so "the doctor, Alice and Bob" is
+% still a list and not a noun phrase and a name.
+% A noun phrase that ends in a name takes none, since a comma and a name
+% after a name place it, "a city in McLennan County, Texas", and that is
+% read by name//1.
+np_appositive(T, T) --> [].
+np_appositive(T, appos(T, name(N))) -->
+    { \+ ends_in_name(T) },
+    [','], name(N), apposition_end.
+
+% ends_in_name(+Tree): the last word of a noun phrase is a name.
+ends_in_name(name(_)).
+ends_in_name(appos(_, T)) :- ends_in_name(T).
+ends_in_name(np(_, nom(_, n(H), Posts))) :-
+    (   Posts == [] -> proper(H)
+    ;   last(Posts, P), ends_in_name(P)
+    ).
+ends_in_name(np(_, coord(_, Ns))) :- last(Ns, N), ends_in_name(np(x, N)).
+ends_in_name(pp(_, NP)) :- ends_in_name(NP).
+ends_in_name(coord(_, Ts)) :- last(Ts, T), ends_in_name(T).
 
 % role_np(-Tree, V0, V): a noun for an office stands bare in the singular
 % where it says what someone is, after be and beside a name: "he was
@@ -536,13 +601,19 @@ nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
 % relative clause. The name is read only after a head that is not a
 % name itself, see head_ends//1, so "Leroy Ross the cat" has no reading.
 nominal_rest(Num, Head, Posts, V0, V) -->
-    name_after(Ns),
-    kind_of(Head, KPs, V0, V01),
-    pps(PPs0, V01, V1),
-    { append([Ns, KPs, PPs0], PPs) },
+    noun_posts(Head, PPs, V0, V1),
     { agr_of(Num, Agr) },
     relative(Agr, Rels, V1, V),
     { append(PPs, Rels, Posts) }.
+
+% noun_posts(+HeadNoun, -Posts, V0, V): what follows the noun before a
+% relative clause: the name, the of after kind, and the prepositional
+% phrases.
+noun_posts(Head, PPs, V0, V) -->
+    name_after(Ns),
+    kind_of(Head, KPs, V0, V1),
+    pps(PPs0, V1, V),
+    { append([Ns, KPs, PPs0], PPs) }.
 
 % modifiers(-Trees): what goes before the noun: its adjectives and names,
 % then the nouns that modify it, "the old stone bridge", "the NBC
@@ -688,6 +759,9 @@ preposition(P) --> [A, B], { prep_pair(A, B), atomic_list_concat([A, B], ' ', P)
 preposition(P) -->
     [A, B, C], { prep_triple(A, B, C), atomic_list_concat([A, B, C], ' ', P) }.
 
+% prep_ahead: the next words are a preposition.
+prep_ahead(S, S) :- phrase(preposition(_), S, _), !.
+
 % A preposition may take an -ing verb phrase in place of a noun phrase,
 % "tired of barking", "after eating the cake", "the record for being the
 % largest cluster", "after having eaten". The rule is entered only when
@@ -704,15 +778,28 @@ ing_ahead([W|S], [W|S]) :- ( verb_form(W, _, ing) ; be_form(W, ing) ), !.
 % the gap in it: "the cat that the dog chased _". The word may then be
 % left out, "the cat the dog chased", but not for a subject.
 relative(_, [], V, V) --> [].
-relative(Agr, [rel(W, VP)], V0, V) -->
-    [W], { rel_pronoun(W, Case),
-           agree(case(W), Case, subj, V0, V1) },
-    verb_phrase(fin(Agr), 1, subject, VP, nogap, nogap, V1, V).
-relative(_, [rel(W, S)], V0, V) -->
+relative(Agr, [rel(W, C)], V0, V) -->
     [W], { rel_pronoun(W, _) },
-    statement(S, gap, nogap, V0, V).
+    relative_body(Agr, W, C, V0, V).
+% The word is not left out before a singular common noun, which the head
+% would have taken as one more noun before it: in "an American television
+% sitcom series starring Bill Cosby", a head that stopped at American or
+% television read the rest as the subject of a clause, the whole of it,
+% for each, and a sentence that took a fifth of a second took forty. A
+% subject there would need a determiner of its own, or be a mass noun.
 relative(_, [rel(none, S)], V0, V) -->
+    no_noun_ahead,
     statement(S, gap, nogap, V0, V).
+
+no_noun_ahead(S, S) :- \+ ( S = [W|_], noun_form(W, _, sg), \+ proper(W) ).
+% A relative clause a comma sets off says more about a noun already
+% known, "comedy routines in Cosby's act, which in turn were based on his
+% family life". It opens with which, who or whom, never that or nothing,
+% and is closed as an appositive is, by a comma or the end.
+relative(Agr, [rel(W, C)], V0, V) -->
+    [','], [W], { nonrestrictive(W) },
+    relative_body(Agr, W, C, V0, V),
+    apposition_end.
 % A clause with its relative word and be left out is a participle and
 % what follows it, passive, "a movie directed by Eldar Ryazanov", or in
 % -ing, "a network broadcasting from Dubai". The rule is entered only
@@ -728,6 +815,17 @@ relative(_, [rel(none, VP)], V0, V) -->
     verb_phrase(ing, 6, reduced, VP, nogap, nogap, V0, V).
 
 participle_ahead([W|S], [W|S]) :- participle_word(W).
+
+% relative_body(+Agr, +Word, -Tree, V0, V): what follows the relative
+% word: a verb phrase, the word standing for the subject, or a statement
+% with the gap in it.
+relative_body(Agr, W, VP, V0, V) -->
+    { rel_pronoun(W, Case), agree(case(W), Case, subj, V0, V1) },
+    verb_phrase(fin(Agr), 1, subject, VP, nogap, nogap, V1, V).
+relative_body(_, _, S, V0, V) -->
+    statement(S, gap, nogap, V0, V).
+
+nonrestrictive(which). nonrestrictive(who). nonrestrictive(whom).
 
 /* ---------------- verb phrases ---------------- */
 
@@ -770,7 +868,14 @@ vp_item(Form, Min, Prev, T, V0, V) -->
 % lexicon.pl, and any in -ly, "quickly ran". Others, "yesterday", "well",
 % go after it, in modifiers//5.
 pre_adverbs([adv(A)|As]) --> [A], { adv(A), before_verb(A) }, pre_adverbs(As).
+pre_adverbs([adv(A)|As]) --> [W1, W2], { adverb_pair(W1, W2, A) }, pre_adverbs(As).
 pre_adverbs([]) --> [].
+
+% adverb_pair(?First, ?Second, ?Adverb): two words that are one adverb,
+% "in turn", read where the adverbs before a verb are, "which in turn
+% were based on". Read as a preposition and its noun, turn would need a
+% determiner.
+adverb_pair(in, turn, 'in turn').
 
 before_verb(A) :- frequency(A), !.
 before_verb(A) :- atom_concat(_, ly, A).
@@ -892,8 +997,9 @@ complementizer(none) --> [].
 % the capital", "is always happy", "was chairman of the board". A
 % to-infinitive, "the locomotives were to enter service", is written and
 % held in scratch/be-to.patch: it is one rule, and correct, but the one
-% corpus sentence it lets through has fifty readings without its last
-% phrase and runs past five minutes with it; see docs/ROADMAP.md.
+% corpus sentence it lets through has 156 readings and takes three
+% minutes, where before the guard on a relative with its word left out
+% it ran past five; see docs/ROADMAP.md.
 predicate(AP, G, G, V, V) --> adj_group(AP).
 predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
 predicate(NP, G, G, V0, V) --> role_np(NP, V0, V).
@@ -907,10 +1013,58 @@ modifiers([adv(A)|Ms], G0, G, V0, V) --> [A], { adv(A) }, modifiers(Ms, G0, G, V
 % prepositions the lexicon lists are read this way; "up", "out", "off",
 % "away" are adverbs in WordNet already and are read as those.
 modifiers([prt(P)|Ms], G0, G, V0, V) --> [P], { particle(P) }, modifiers(Ms, G0, G, V0, V).
-modifiers([PP|Ms], G0, G, V0, V) --> pp(PP, G0, G1, V0, V1), modifiers(Ms, G1, G, V1, V).
+modifiers([PP|Ms], G0, G, V0, V) -->
+    pp(PP0, G0, G1, V0, V1), pp_joined(PP0, PP, V1, V2), modifiers(Ms, G1, G, V2, V).
+% A comma may set off a prepositional phrase after the verb and what it
+% takes, "Elm was a municipality, in the municipality of Glarus Süd". It
+% is entered only when a preposition follows the comma, and takes no gap.
+modifiers([PP|Ms], G0, G, V0, V) -->
+    [','], prep_ahead, pp(PP, nogap, nogap, V0, V1), modifiers(Ms, G0, G, V1, V).
 modifiers([npadv(D, N)|Ms], G0, G, V0, V) -->
     [D, N], { adverbial_np(D, N) }, modifiers(Ms, G0, G, V0, V).
 modifiers([], G, G, V, V) --> [].
+
+% A participle phrase a comma sets off, after the verb and what it takes:
+% "is a businesswoman, best known as the chairperson", "was a sitcom
+% series, first broadcast in 1984 and ran for eight seasons".
+% It is the last of them, so that what follows it is its own and not
+% the verb's again.
+modifiers([S], G, G, V0, V) --> supplement(S, V0, V).
+
+% pp_joined(+PP, -Tree, V0, V): a prepositional phrase alone, or joined to
+% a second by and or or, "known as the chairperson and as a director",
+% "in the house or in the garden". The two have the same preposition:
+% the second is read only when it follows the conjunction, and the first
+% is not read again.
+pp_joined(PP, PP, V, V) --> [].
+pp_joined(PP1, pp_coord(C, [PP1, PP2]), V0, V) -->
+    [C], { ( C == and ; C == or ), PP1 = pp(P, _) },
+    same_prep_ahead(P),
+    pp(PP2, nogap, nogap, V0, V), { PP2 = pp(P, _) }.
+
+same_prep_ahead(P, S, S) :- phrase(preposition(P), S, _), !.
+
+% supplement(-Tree, V0, V): a comma and a participle phrase that says
+% more about what came before, passive or in -ing, with one adverb before
+% it or none: "best known as the chairperson", "better known by his
+% stage name", "first broadcast in 1984". It is entered only when a
+% participle, or an adverb and a participle, follows the comma, a
+% lookahead the diagnosis does not relax. After a name it is closed as
+% an appositive is; after a verb phrase nothing need close it, since
+% what follows is read as the verb phrase's own.
+supplement(T, V0, V) --> [','], supplement_body(T, V0, V).
+
+supplement_body(T, V0, V) -->
+    supplement_adverb(As),
+    participle_ahead,
+    supplement_vp(VP, V0, V),
+    { As == [] -> T = VP ; T = pre(As, VP) }.
+
+supplement_adverb([adv(A)]) --> [A], { adv(A) }.
+supplement_adverb([]) --> [].
+
+supplement_vp(VP, V0, V) --> verb_phrase(pass, 6, reduced, VP, nogap, nogap, V0, V).
+supplement_vp(VP, V0, V) --> verb_phrase(ing, 6, reduced, VP, nogap, nogap, V0, V).
 
 % adverbial_np(?Word, ?Noun): a noun phrase that is an adverb of time or
 % place, "last night", "every day", "next door". last and next are not

@@ -6,6 +6,39 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-10-03
+
+### Added
+
+- **The seven sentences of the second corpus that the grammar could
+  reach.** A name a comma sets after a noun phrase, *her stage name,
+  Barbara, from*; *the* before a name, *the Sernf*; a comma before a
+  prepositional phrase after the verb, *was a municipality, in the
+  municipality of*; two nouns under one determiner each with a phrase of
+  its own, *the municipality of Glarus Süd and canton of Glarus*; a
+  relative clause a comma sets off, *, which in turn were based on*, and
+  *in turn* as one adverb; a participle phrase a comma sets off, after a
+  name or last after the verb, *better known by*, *best known as*,
+  *first broadcast on*; two prepositional phrases joined that share
+  their preposition, *as the chairperson and as a director*; and *cast*,
+  *put*, *set* and their kind, with *broadcast* and *forecast*, as their
+  own past and participle, which WordNet's exception list leaves out.
+  600 checks; the second corpus goes from 41 grammatical to 48, the one
+  not being Class 93; *Sedan is a commune* goes from five readings to
+  seven.
+
+### Changed
+
+- **A relative clause with its relative word left out is not entered
+  before a singular common noun**, which the head before it would have
+  taken as a noun modifier: a head that stopped at *American* in *an
+  American television sitcom series* read the rest as that clause's
+  subject. The Cosby sentence goes from 85 seconds to two, the second
+  corpus from 169 seconds of CPU to 88, and `make english-wordnet` from
+  2:24 to 1:46. A determiner's noun and its phrases are read once
+  before a single noun is told from a list, and the determiner is
+  checked against the first noun before its phrases.
+
 ## 2026-10-02
 
 ### Added

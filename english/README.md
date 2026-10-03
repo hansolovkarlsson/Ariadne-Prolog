@@ -120,7 +120,11 @@ end of this file.
   agreeing with the nearest; *a doctor and teacher* under one determiner,
   which agrees with each noun, so not *these cat and dogs*, and *a
   politician, author and a member of the party*, where the first item
-  has two nouns under its determiner; *big, old and happy* after a verb
+  has two nouns under its determiner; two nouns under one determiner
+  each with a phrase of its own, *the municipality of Glarus Süd and
+  canton of Glarus*, joined by *and* or *or* and no comma; two
+  prepositional phrases with the same preposition, *known as the
+  chairperson and as a director*; *big, old and happy* after a verb
   and *a big, old dog* before a noun; verb phrases, *the dog sleeps and
   eats*, *was made by Retro Studios and published by Nintendo*, each in
   the form of the first; and *either ... or*, *neither ... nor* and
@@ -128,14 +132,35 @@ end of this file.
   only in a list, between two clauses (*the dog barks, but the cat
   sleeps*, *if it rains, the dog sleeps*), between a name and the name
   that places it (*Springfield, Massachusetts*), around an appositive
-  after a name (*Alice, a doctor, sleeps*) and before a last *please*;
-  anywhere else it leaves the sentence with no reading, so *Alice, Bob
-  sing* and *the dog, barks* fail.
+  (*Alice, a doctor, sleeps*, *her stage name, Barbara, from*), around
+  a relative clause with *which*, *who* or *whom* (*the dog, which barks,
+  sleeps*), around a participle phrase (*Alice, better known as the
+  queen, sleeps*), before a prepositional phrase after the verb (*Elm
+  was a municipality, in the municipality of Glarus Süd*) and before a
+  last *please*; anywhere else it leaves the sentence with no reading,
+  so *Alice, Bob sing* and *the dog, barks* fail.
 - **An appositive after a name**: a comma and a noun phrase that says what
   the name is, *Mukesh Ambani, chairman of Reliance Industries*, *Alice,
   a doctor, sleeps*, *the dog sees Alice, a doctor*; one noun phrase with
   a determiner, a possessor or a bare role noun, closed by a comma or the
-  end of the sentence, so *Alice, a doctor sleeps* has no reading.
+  end of the sentence, so *Alice, a doctor sleeps* has no reading. After
+  a noun phrase the appositive is a name, *she took her stage name,
+  Barbara, from her grandmother*, *the doctor, Alice, sleeps*, closed
+  the same way, and not after a noun phrase that ends in a name, where
+  the comma and the name place it, *a city in McLennan County, Texas*.
+- **The before a name**: *the Sernf*, *the Hague*, *the Rhine*, a
+  singular name; only *the*.
+- **A relative clause a comma sets off**: *comedy routines in Cosby's
+  act, which in turn were based on his family life*, with *which*,
+  *who* or *whom*, never *that*, closed by a comma or the end, so *the
+  dog, that barks, sleeps* has no reading. *In turn* is one adverb,
+  where the adverbs before a verb stand.
+- **A participle phrase a comma sets off**: after a name, *Christophe Le
+  Friant, better known by his stage name Bob Sinclar, is*, closed as an
+  appositive is; and last after the verb and what it takes, *is a
+  businesswoman, best known as the chairperson*, *was a sitcom series,
+  first broadcast in 1984 and ran for eight seasons*. It may have one
+  adverb before it, and is entered only when a participle follows.
 - **A role noun stands bare**: a noun for a person, with *of* after it,
   needs no determiner after *be* or beside a name, *he was chairman of
   the board*, *chairman and managing director of Reliance Industries*;
@@ -987,3 +1012,62 @@ of the run for one sentence. The corpus gives **41 grammatical, 8 not,
 and 1 unknown**. `make english-wordnet` takes 2:24, from 1:22, the
 whole of the difference in that sentence.
 
+
+The seven left on 2026-10-03 were taken one at a time, cut down until
+the cause showed, and two of the causes named for them were wrong. *Her
+stage name, Barbara* was as named: a name a comma sets after a noun
+phrase, closed as the appositive after a name is, and not after a noun
+phrase that ends in a name, since *a city in McLennan County, Texas*
+gained a reading as *Texas* said which city. *The municipality farthest
+south* was not an adjective after its noun: *farthest south* already
+read, as two adverbs on *is*, and what failed was *the Sernf*, since
+*the* was read before no name; *the Thames* passed only because its
+*-s* made it a guessed plural. *The* before a name now reads, and the
+noun-side reading of *farthest south* is left for the sentence that
+needs it. *Elm was a municipality, in the municipality of Glarus Süd
+and canton of Glarus* needed the comma before a prepositional phrase
+after the verb and also two nouns under one determiner, each with a
+phrase of its own; the list rule had allowed a phrase on the last noun
+only. *Which in turn were* needed a relative clause a comma sets off,
+with *which*, *who* or *whom*, and *in turn* as one adverb; its verb
+agrees with *routines* and not with *act*, the noun before it, which
+the grammar already allowed. The adjective phrase after a comma was a
+participle phrase, *best known as*, *better known by*, *first
+broadcast on*, read after a name and last among the verb's modifiers,
+with one adverb before it; *as the chairperson and as a director*
+needed two prepositional phrases joined, which share their preposition.
+The Cosby sentence was that and the comma before a phrase, as named,
+and one more thing: *broadcast* had no participle, since WordNet's
+`verb.exc` lists only the forms that differ from the base, so *cast*,
+*put*, *set* and their kind, and the same verbs after a listed prefix,
+*broadcast*, *forecast*, *upset*, are now their own past.
+
+The Cosby sentence then passed, at 85 seconds of CPU in the corpus run.
+Cutting it found the cost in *an American television sitcom series*: a
+head that stopped at *American* or at *television* tried the rest as a
+relative clause with its relative word left out, *the cat the dog
+chased*, and parsed the whole of *television sitcom series starring
+Bill Cosby, first broadcast on* as its subject before failing. That
+clause is no longer entered before a singular common noun, which the
+head would have taken as one more noun before it, and the sentence takes
+two seconds. The guard was for one sentence and paid for the corpus:
+timed sentence by sentence, the second corpus took 169 seconds of CPU
+before the day's work and 88 with the guard, the Class 93 sentence
+going from 20 to 5 and the water polo sentence, *the 2017 World
+Aquatics Championships and 2019 World Aquatics Championships*, from 31
+to 1. Reading a determiner's noun
+and its phrases once, before telling one noun from a list of them,
+saved a few seconds more. With the guard the Class 93 sentence and
+`scratch/be-to.patch` finish, at **156 readings in 187 seconds**, where
+before there were none in five minutes; the rule stays held, since three
+minutes for one sentence is still the parser's to pay. Two
+readings were found to be the new rules at work and closed: *the wife
+of Mukesh Ambani, chairman and managing director* read as three nouns
+under *the*, so a noun with a phrase of its own is joined to one more by
+*and* or *or* with no comma, and not after *kind*; and *any kind of
+separation or break* read twice. *Sedan is a commune in the Ardennes
+department and Grand Est region* keeps two more, five to seven, *a
+commune in the Ardennes department* and *Grand Est region* under one
+*a*, which is English in form. The corpus gives **48 grammatical, 1
+not, and 1 unknown**: the one not is Class 93. `make english-wordnet`
+takes 1:46.

@@ -91,6 +91,18 @@ wordnet_entry(W, E) :- wn_irregular(verb, W, B), wn_verb(B, Fs),
     ;   member(E, [verb(Fs)-B, irregular_form-(B-W)])
     ).
 
+% A verb whose past and participle are its base, cast, put, set, and the
+% same verb with a prefix, broadcast, forecast, upset, is in no list of
+% WordNet's, since verb.exc lists only forms that differ from the base, so
+% "was broadcast" had no participle. same_form_past/1 says which.
+wordnet_entry(W, irregular_form-(W-W)) :- wn_verb(W, _), same_form_past(W).
+
+same_form_past(W) :-
+    member(V, [cast, put, set, cut, hit, let, shut, spread, burst, hurt,
+               cost, split, quit, bet, thrust]),
+    atom_concat(P, V, W),
+    memberchk(P, ['', broad, fore, re, up, off, in, out, mis, over, under, tele]), !.
+
 % closed_up(+Word, -Closed): Word has a hyphen inside it, and Closed is
 % Word without its hyphens: north-eastern and northeastern. WordNet writes
 % many such words one way only, and a text the other, so a hyphenated

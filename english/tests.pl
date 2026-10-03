@@ -586,6 +586,42 @@ good('The dog sleeps close to the cat.').
 readings('The dog slept because of the cat.', 1).
 bad('The dog slept because of the cats sleep.', no_reading).
 bad('The dog slept because the cat.',       no_reading).
+% A name a comma sets after a noun phrase.
+good('The doctor, Alice, sleeps.').
+good('I saw the doctor, Alice.').
+readings('I saw the doctor, Alice and Bob.', 1).
+bad('The doctors, Alice, sleeps.',          subject_verb(sleeps)).
+bad('The doctor, Alice sleeps.',            no_reading).
+% The before a name.
+good('The Hague is big.').
+readings('The Hague is big.', 1).
+% Nouns under one determiner, each with its own phrase.
+good('Alice is the friend of Bob and teacher of the children.').
+good('The dog of Alice and cat of Bob sleep.').
+readings('Alice is the friend of Bob and teacher of the children.', 2).
+% A comma before a prepositional phrase after the verb.
+good('The dog sleeps, in the garden.').
+readings('The dog sleeps, in the garden.', 1).
+bad('The dog sleeps, the garden.',          no_reading).
+% A relative clause a comma sets off.
+good('The dog, which barks, sleeps.').
+good('I saw the dogs, which bark.').
+readings('The dog, which barks, sleeps.', 1).
+bad('The dog, that barks, sleeps.',         no_reading).
+bad('The dog, which barks sleeps.',         no_reading).
+bad('The dogs, which barks, sleep.',        subject_verb(barks)).
+% A participle phrase a comma sets off, after a name or a verb phrase.
+good('Alice, known as the queen, sleeps.').
+good('Alice, often known as the queen, sleeps.').
+good('Alice is a doctor, often known as the friend of Bob.').
+good('The dog was seen, chasing the cat.').
+readings('Alice, often known as the queen, sleeps.', 1).
+bad('Alice, known as the queen sleeps.',    no_reading).
+bad('Alice, known as the queen, sleep.',    subject_verb(sleep)).
+% Two prepositional phrases joined, with the same preposition.
+good('The dog sleeps in the house and in the garden.').
+readings('The dog sleeps in the house and in the garden.', 1).
+bad('The dog sleeps in the house and on the box.', no_reading).
 bad('A apple tree grows.',                  article(a, apple)).
 bad('The dog house are big.',              subject_verb(are)).
 bad('The dog barks?',                      punctuation('?')).

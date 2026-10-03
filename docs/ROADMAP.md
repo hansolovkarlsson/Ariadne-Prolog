@@ -122,27 +122,40 @@ These change the shape of the system rather than adding to it.
      noun, *the record label Yellow Productions*; a particle after the
      verb, *sworn in*, with *dying* spelt from *die* and a comma before
      *but* between two verb phrases; it passes 41, the last at 672
-     readings in 58 seconds, the parser's cost. What is left, one
-     sentence each, in `english/README.md`:
-     - an adjective phrase after a comma, *best
-       known as the chairperson*; *which in turn were*; a comma before a
-       phrase, *a municipality, in the municipality of*; an adjective
-       after its noun, *the municipality farthest south*; an appositive
-       after a noun phrase, *her stage name, Barbara*;
+     readings in 58 seconds, the parser's cost. On 2026-10-03 the seven
+     left, each cut down until its cause showed: an appositive name after
+     a noun phrase, *her stage name, Barbara*; *the* before a name, *the
+     Sernf*, which was the fault in *the municipality farthest south*;
+     a comma before a prepositional phrase after the verb, and two nouns
+     under one determiner each with its own phrase, *the municipality of
+     Glarus Süd and canton of Glarus*; a relative clause a comma sets
+     off, *, which in turn were*; a participle phrase a comma sets off,
+     *better known by*, *best known as*, *first broadcast on*, with two
+     prepositional phrases joined; and *broadcast* as its own
+     participle. A guard on the relative clause with its word left out,
+     not entered before a singular common noun, took the Cosby sentence
+     from 85 seconds to two and the corpus from 169 seconds of CPU to
+     88. It passes 48; the one not is Class 93. What is left, in
+     `english/README.md`:
      - a plain adjective after a noun modifier, *a world famous
        singer*, which no corpus sentence needs;
+     - an adjective phrase after its noun, *the municipality farthest
+       south*, which reads as adverbs on the verb and needs nothing
+       more until a sentence does;
      - *be* and a *to*-infinitive, *the locomotives that were to enter
        service*, one rule, written on 2026-10-02 and held in
        `scratch/be-to.patch`: with it the Class 93 sentence is
        grammatical, and the strict parse, which finds every reading,
        found 23 in 12 seconds for the sentence cut short, 50 in 83
        seconds with one more phrase, and none in five minutes for the
-       whole. Every trailing phrase multiplies the attachments and a DCG
-       shares nothing between them. This is the one corpus sentence that
-       waits on the parser, below, and the first to meet the wall from
-       the grammatical side. Participles, held the same way on
-       2026-09-30, went in on 2026-10-02 once their cost was found to be
-       elsewhere; the record of both is in `english/README.md`.
+       whole. On 2026-10-03, with the guard above, the whole finishes:
+       **156 readings in 187 seconds**. Every trailing phrase multiplies
+       the attachments and a DCG shares nothing between them. This is
+       the one corpus sentence that waits on the parser, below, and the
+       first to meet the wall from the grammatical side. Participles,
+       held the same way on 2026-09-30, went in on 2026-10-02 once their
+       cost was found to be elsewhere; the record of both is in
+       `english/README.md`.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

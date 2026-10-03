@@ -598,6 +598,7 @@ bracket(np(det(D), Nom))   --> ['[NP', D], nom(Nom), [']'].
 bracket(np(Nom))           --> ['[NP'], nom(Nom), [']'].
 bracket(np(poss(P), Nom))  --> ['[NP'], bracket(P), ['\'s'], nom(Nom), [']'].
 bracket(pp(P, NP))         --> ['[PP', P], bracket(NP), [']'].
+bracket(pp_coord(C, Ps))   --> ['[PP'], joined_out(bracket, C, Ps), [']'].
 bracket(vp(W, Neg, Is))    --> ['[VP', W], neg(Neg), items(Is), [']'].
 bracket(adj(A))            --> ['[AP', A, ']'].
 bracket(adv(A))            --> ['[AdvP', A, ']'].
