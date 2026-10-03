@@ -27,6 +27,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   not being Class 93; *Sedan is a commune* goes from five readings to
   seven.
 
+- **An adjective after a noun modifier.** *A world famous singer*, *a
+  water resistant watch*: an adjective that is neither a noun nor an
+  adverb may follow a noun before the head, the two one adjective. No
+  corpus sentence needed it, and the corpus is unchanged. 604 checks.
+
 ### Changed
 
 - **A relative clause with its relative word left out is not entered

@@ -154,8 +154,6 @@ These change the shape of the system rather than adding to it.
      from 85 seconds to two and the corpus from 169 seconds of CPU to
      88. It passes 48; the one not is Class 93. What is left, in
      `english/README.md`:
-     - a plain adjective after a noun modifier, *a world famous
-       singer*, which no corpus sentence needs;
      - an adjective phrase after its noun, *the municipality farthest
        south*, which reads as adverbs on the verb and needs nothing
        more until a sentence does;

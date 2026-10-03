@@ -567,6 +567,11 @@ readings('I saw the garden orange tree.', 1).
 readings('The orange tree is big.', 1).
 bad('The garden orange trees is big.',     subject_verb(is)).
 bad('The garden orange tree are big.',     subject_verb(are)).
+% An adjective that is not a noun, after a noun modifier.
+good('Alice has a garden happy dog.').
+good('The school garden happy dog sleeps.').
+readings('Alice has a garden happy dog.', 1).
+bad('A garden happy dogs sleeps.',         det_noun(a, dogs)).
 % A number in digits before the noun, after a determiner or a possessor.
 good('The 2020 party was big.').
 good('A 1968 picture is red.').

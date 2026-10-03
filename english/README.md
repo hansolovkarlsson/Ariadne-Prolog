@@ -188,7 +188,9 @@ end of this file.
   adjective as well is read as the adjective, *the stone bridge*, unless
   a noun modifier already stands before it, *a jazz bebop alto
   saxophonist*, where it is one more; *last* and *next* stay out, so *I
-  saw the film last night* keeps its one reading.
+  saw the film last night* keeps its one reading. An adjective that is
+  neither a noun nor an adverb may follow a noun modifier, the two one
+  adjective, *a world famous singer*, *a water resistant watch*.
 - **A participle before a noun**: *the presiding bishop*, *a painted
   house*, *the barking dogs*, *managing director*, an *-ing* or *-en*
   form of a verb standing where an adjective does; a word that is an
@@ -1071,3 +1073,15 @@ commune in the Ardennes department* and *Grand Est region* under one
 *a*, which is English in form. The corpus gives **48 grammatical, 1
 not, and 1 unknown**: the one not is Class 93. `make english-wordnet`
 takes 1:46.
+
+The plain adjective after a noun modifier went in the same day, though
+no corpus sentence needs it: *world famous*, *water resistant*. With
+WordNet *world famous* already read, *world* being an adjective there
+as well, and *sugar free* and *dog friendly* read as two noun modifiers,
+since WordNet has *free* and *friendly* as nouns; *resistant* is only an
+adjective and had no place after a noun. It now has one when it is
+neither a noun, which the noun modifier rule reads already, nor an
+adverb: the first try took *farthest*, and *the municipality farthest
+south* gained five readings with *south* the head noun. The corpus is
+unchanged, **48 grammatical, 1 not, and 1 unknown**, every count of
+readings as before.

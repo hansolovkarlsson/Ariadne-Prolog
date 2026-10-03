@@ -627,6 +627,11 @@ noun_posts(Head, PPs, V0, V) -->
 % been read by then and it can be nothing else; "last" and "next" stay
 % out, as they are read before a noun only in "last night", see
 % adverbial_np/2, so "I saw the film last night" keeps its one reading.
+% An adjective that is not a noun may follow a noun modifier too, the
+% two making one adjective, "a water resistant watch", "a world famous
+% singer"; one that is a noun as well is the noun modifier already. Nor
+% an adverb: "the municipality farthest south" would read with south its
+% head.
 modifiers(Ms) -->
     leading_number(Ds), adjectives(As), noun_modifiers(Ns),
     { append([Ds, As, Ns], Ms) }.
@@ -649,6 +654,9 @@ noun_modifiers([]) --> [].
 
 more_noun_modifiers([nmod(W)|Ns]) -->
     [W], { noun_form(W, _, sg), \+ proper(W), \+ time_det(W) }, more_noun_modifiers(Ns).
+more_noun_modifiers([adj(W)|Ns]) -->
+    [W], { adj(W), \+ noun_form(W, _, _), \+ adv(W), \+ proper(W) },
+    more_noun_modifiers(Ns).
 more_noun_modifiers([]) --> [].
 
 % adjectives(-Trees): the adjectives before a noun, and any name, which
