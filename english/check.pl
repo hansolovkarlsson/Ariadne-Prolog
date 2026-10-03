@@ -23,7 +23,7 @@
 */
 
 :- consult(lexicon).
-:- consult(grammar).
+:- consult(chart).
 :- consult(guess).
 
 % grammatical(+Text, -Tree): Text is an atom; Tree is a reading of it.
@@ -151,6 +151,7 @@ question_tree(wh(_, _)).
 % can be, and no statement can be even with a word that disagrees; see
 % imperative//3 in grammar.pl.
 all_readings(Words, Trees) :-
+    new_chart,
     findall(T, phrase(sentence(T, [], []), Words), Trees0),
     (   Trees0 == [], \+ faulty_statement(Words)
     ->  findall(T, phrase(imperative(T, [], []), Words), Trees1)
@@ -231,6 +232,7 @@ forget_faults :- retractall(fault_memo(_, _, _)).
 % fault_parse(+Goal, +Words, -Violations): Words read as Goal, one of the
 % kinds of sentence or a command, with at most max_faults/1 faults.
 fault_parse(G, Words, Vs) :-
+    new_chart,
     max_faults(Max),
     length(Slots, Max),
     fault_phrase(G, Slots, Rest, Words),

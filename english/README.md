@@ -103,11 +103,12 @@ end of this file.
 |---|---|
 | `lexicon.pl` | 414 words, a word in two classes counted in each: 115 nouns, 50 verbs, 43 adjectives, 40 adverbs, 7 degree words (*very*), 40 prepositions, 9 of them particles as well (*sworn in*), 9 of two words (*as of*, *because of*) and 8 of three (*in front of*, *as part of*), 23 determiners, 27 numbers and 4 that need one before them (*a hundred*, *two dozen*), 12 names (and any word a sentence capitalizes where a name can stand), 23 pronouns, 9 modals, 8 question and relative words (*that* is counted as a determiner), and 13 conjunctions; a number in digits is a word too; the forms of *be*, *have* and *do*; 17 contractions with *n't* and 6 others, *'s*, *'re*, *'m*, *'ve*, *'ll* and *'d*. Plurals and verb forms (*-s*, past, *-ing*, participle) are derived by rule, with the irregular ones listed, 434 noun and verb forms in all. 147 nouns are marked as mass nouns, which may stand alone in the singular, and with WordNet loaded so is any noun whose most frequent sense is a substance; 14 as nouns of time, *last night*, and 14 adverbs as ones that may go before the verb. |
 | `grammar.pl` | The rules: statements, alone or joined by a conjunction, yes/no and *wh*-questions, commands, noun phrases (with determiners, possessives, adjectives, prepositional phrases, relative clauses and `and`), verb phrases (a chain of auxiliaries, then a verb that is intransitive, transitive or ditransitive, or `be` with an adjective, noun phrase or place), negation, passives, adverbs. |
+| `chart.pl` | The grammar run with a chart: `grammar.pl` loaded unchanged, ten of its nonterminals renamed and put behind a table of the calls already answered, by the words left and the call's arguments, so a phrase is parsed once at each place. |
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
 | `wordnet_check.pl` | `check.pl` with WordNet's words loaded, from `wordnet.pl`, which `make wordnet` generates and git ignores. |
 | `corpus.txt`, `corpus2.txt`, `corpus.pl` | Fifty ordinary sentences the grammar was built to pass; fifty from Simple English Wikipedia that it was not, with their articles in `corpus2-sources.tsv`; and the run over both that `make english-wordnet` does, which fails unless the counts are the ones `corpus.pl` records. |
-| `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, the number of readings of an ambiguous one, and how running text is cut into sentences. |
+| `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, the number of readings of an ambiguous one, the number of answers a parse gives before they are sorted, and how running text is cut into sentences. |
 
 ## What it checks
 
@@ -378,6 +379,22 @@ phrases rather than built from a smaller noun phrase, since a left-recursive
 rule such as `np --> np, pp` makes a DCG loop. Nothing in stage 2 has needed
 one either: a relative clause follows its noun, as its prepositional phrases
 do.
+
+The grammar is run **with a chart**. `phrase/2` on a DCG remembers
+nothing: a phrase is parsed again every time the search backtracks past
+it, so a sentence whose trailing phrases each attach in several places
+costs the product of the attachments. `chart.pl` loads `grammar.pl`,
+renames the nonterminals parsed again most, noun phrases, prepositional
+phrases, verb phrases, relative clauses and the rest, and puts a call
+through a table in front of each. The first call of one, at a place in
+the sentence and with given arguments, finds every answer and keeps
+them; a later call that is a variant of it at the same place takes them
+from the table. The answers are the rules' own, in their order, so a
+sentence has the readings it had and the diagnosis the violations it
+had; `answers/3` in `tests.pl` pins the count of answers before they are
+sorted, which is where a chart that gave one twice would show. It shares
+the parts and still lists the readings one by one, so a sentence of 672
+readings builds 672 trees, from shared pieces, in under half a second.
 
 ## Stage 3: what a large lexicon breaks
 
@@ -1085,3 +1102,28 @@ adverb: the first try took *farthest*, and *the municipality farthest
 south* gained five readings with *south* the head noun. The corpus is
 unchanged, **48 grammatical, 1 not, and 1 unknown**, every count of
 readings as before.
+
+The chart went in the same day, and with it the rule that had been held
+for it. Its first version did not answer as `phrase/2` did, in two ways
+that cost an afternoon. It asserted answers while a lookup walked the
+same table, and the interpreter has no logical update view, so a lookup
+saw answers it had not been given; they are now found first and
+asserted after. And `tests.pl` and `wordnet_check.pl` both consult
+`check.pl`, so the grammar was loaded twice and its renamed rules,
+asserted rather than loaded, were there twice: every answer came twice
+and doubled again at every rule above it, *The dogs bark* gave 256
+parses where it gives one, and the checks all passed, since a sentence's
+readings are sorted and each counted once. `answers/3` now pins five
+sentences' answers as `phrase/2` gives them, strict and relaxed, runs
+before every other check and stops the run on the first wrong count;
+`make english` loads `check.pl` twice, as `make english-wordnet` does;
+and with the clearing taken out the run fails in a seventh of a second.
+Every sentence of both corpora and every sentence of the tests gives the
+same number of answers, strict and in each of the four relaxed parses,
+as `phrase/2` on the rules alone. The sworn-in sentence takes 0.44
+seconds, from 52, and *be* and a *to*-infinitive is in, *the locomotives
+that were to enter service*: the Class 93 sentence reads, with **156
+readings in 0.41 seconds**, where it had taken three minutes. The corpus
+gives **49 grammatical, 0 not, and 1 unknown**, the one unknown a word
+neither the lexicon nor WordNet has, and `make english-wordnet` takes 21
+seconds.

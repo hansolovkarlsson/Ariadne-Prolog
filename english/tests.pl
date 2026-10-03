@@ -5,8 +5,11 @@
     good/1 sentences must be grammatical; bad/2 sentences must not be, and
     the diagnosis, parsing again with agreement relaxed, must name the kind
     of violation given. readings/2 pins how many structures a sentence has,
-    so that a change which adds or loses an ambiguity is seen. splits/2
-    pins how check_text/1 cuts running text into sentences.
+    so that a change which adds or loses an ambiguity is seen. answers/3
+    pins how many answers the parse gives before they are sorted, strict
+    and with agreement relaxed, since readings/2 counts each tree once and
+    cannot see one found twice. splits/2 pins how check_text/1 cuts
+    running text into sentences.
 */
 
 :- consult(check).
@@ -591,6 +594,14 @@ good('The dog sleeps close to the cat.').
 readings('The dog slept because of the cat.', 1).
 bad('The dog slept because of the cats sleep.', no_reading).
 bad('The dog slept because the cat.',       no_reading).
+% be and a to-infinitive.
+good('The dog is to sleep.').
+good('The dogs were to visit the garden.').
+good('The dogs that were to visit the garden sleep.').
+readings('The dog is to sleep.', 1).
+bad('The dogs was to sleep.',             subject_verb(was)).
+bad('The dog is to sleeps.',              verb_form(to, sleeps, base)).
+bad('The dog is to.',                     no_reading).
 % A name a comma sets after a noun phrase.
 good('The doctor, Alice, sleeps.').
 good('I saw the doctor, Alice.').
@@ -664,6 +675,20 @@ readings('The dog is big, old and happy.', 1).
 % Orange is an adjective and a noun, and before a noun it is read once.
 readings('The orange box is big.', 1).
 
+% answers(Text, Strict, Relaxed): the answers phrase/2 gives for Text as
+% a sentence, unsorted, and as a statement with max_faults/1 faults
+% allowed. The chart in chart.pl must give what phrase/2 gives on the
+% rules alone, answer for answer; on 2026-10-03 a second consult doubled
+% every charted rule, and every reading came twice, which no other check
+% here could see. They run first, shortest first, and the first wrong
+% count stops the run: with answers doubled at every rule, a longer
+% sentence takes minutes, and every other check would say nothing new.
+answers('The dogs bark.', 1, 1).
+answers('The old man walks in the park with his dog.', 2, 2).
+answers('The dog in the garden that barks is old.', 2, 2).
+answers('The dogs chased by the cat barks.', 0, 1).
+answers('Alice gave Bob 3 dogs.', 8, 8).
+
 % splits(Text, Sentences): Text cuts into exactly these sentences.
 splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).
 splits('Does it bark?  It does!', ['Does it bark?', 'It does!']).
@@ -714,12 +739,20 @@ run :-
     findall(S-E, bad(S, E), Bad),
     findall(S-N, readings(S, N), Readings),
     findall(T-Ss, splits(T, Ss), Splits),
+    findall(S-N-M, answers(S, N, M), Answers),
+    check_answers(Answers, 0, F0),
+    (   F0 > 0
+    ->  format("an answer count is wrong; the other checks were not run~n"),
+        halt(1)
+    ;   true
+    ),
     check_good(Good, 0, F1),
     check_bad(Bad, F1, F2),
     check_readings(Readings, F2, F3),
     check_splits(Splits, F3, F),
     length(Good, G), length(Bad, D), length(Readings, R), length(Splits, P),
-    Total is G + D + R + P,
+    length(Answers, A),
+    Total is G + D + R + P + A,
     Passed is Total - F,
     format("~d grammar checks, ~d passed, ~d failed~n", [Total, Passed, F]),
     (   F =:= 0 -> halt ; halt(1) ).
@@ -749,6 +782,23 @@ check_readings([S-N|Ss], F0, F) :-
     ;   format("FAIL  readings: ~w  expected ~d, got ~d~n", [S, N, M]), F1 is F0 + 1
     ),
     check_readings(Ss, F1, F).
+
+check_answers([], F, F).
+check_answers([S-N-M|Ss], F0, F) :-
+    words(S, Words, Names),
+    with_placements([], Names, raw_answers(Words, N1, M1)),
+    (   N1 =:= N, M1 =:= M
+    ->  check_answers(Ss, F0, F)
+    ;   format("FAIL  answers: ~w  expected ~d and ~d, got ~d and ~d~n",
+               [S, N, M, N1, M1]),
+        F is F0 + 1
+    ).
+
+raw_answers(Words, N, M) :-
+    new_chart,
+    findall(x, phrase(sentence(_, [], []), Words), L1), length(L1, N),
+    forget_faults,
+    findall(x, fault_parse(declarative, Words, _), L2), length(L2, M).
 
 check_splits([], F, F).
 check_splits([T-Ss|Ts], F0, F) :-

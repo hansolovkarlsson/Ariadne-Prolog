@@ -10,6 +10,21 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Added
 
+- **The grammar runs with a chart.** `english/chart.pl` loads the
+  grammar unchanged and puts ten of its nonterminals behind a table of
+  the calls already answered, so a phrase is parsed once at each place
+  in the sentence. The answers are the same, counted before sorting,
+  over both corpora and the tests. The sworn-in sentence takes 0.44
+  seconds, from 52, and `make english-wordnet` 21 seconds, from 1:48.
+  `answers/3` in the tests pins five sentences' unsorted answers and
+  runs first.
+
+- **Be and a to-infinitive**, *the locomotives that were to enter
+  service*, *the dog is to sleep*, held since 2026-10-02 for its cost.
+  The Class 93 sentence reads, 156 readings in 0.41 seconds; the second
+  corpus passes 49, the one left with a word neither the lexicon nor
+  WordNet has. 616 checks.
+
 - **The seven sentences of the second corpus that the grammar could
   reach.** A name a comma sets after a noun phrase, *her stage name,
   Barbara, from*; *the* before a name, *the Sernf*; a comma before a

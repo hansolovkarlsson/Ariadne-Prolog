@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Fifty-five defects, in five cohorts that failed for five different reasons:
+Fifty-nine defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -21,22 +21,22 @@ Fifty-five defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: twenty-one defects in which two parts of the project did not
+- **Consistency**: twenty-four defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
-  on 2026-09-27, one on 2026-09-28, six on 2026-09-29, one on 2026-09-30 and
-  two on 2026-10-02.
+  on 2026-09-27, one on 2026-09-28, six on 2026-09-29, one on 2026-09-30,
+  two on 2026-10-02 and three on 2026-10-03.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
   by asking what a check could reach.
-- **Scale**: seventeen defects that no test was large enough to meet, a fixed
+- **Scale**: eighteen defects that no test was large enough to meet, a fixed
   buffer, a recursion on the C stack, a cost that grew with the square or a
   fixed allocation, ten found on 2026-09-27, nine of them by probing a
-  neighbour of the defect before, three on 2026-09-29, one on 2026-10-01
-  and three on 2026-10-02, each a rule that was cheap until the search
-  reached past it.
+  neighbour of the defect before, three on 2026-09-29, one on 2026-10-01,
+  three on 2026-10-02, each a rule that was cheap until the search
+  reached past it, and one on 2026-10-03 of the same kind.
 
 ## Cohort A — the design era
 
@@ -146,7 +146,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Twenty-one defects in which two parts of the project disagreed. The first eight were
+Twenty-four defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -396,7 +396,7 @@ the only evidence that it can.
 
 ## Cohort E: scale
 
-Seventeen defects that no test was large enough to meet, ten of them found on
+Eighteen defects that no test was large enough to meet, ten of them found on
 2026-09-27. The first nine came one from another: each fix was followed by probing the same shape a
 step further, at a million elements or a million levels, and the probe found
 the next.
@@ -420,6 +420,7 @@ the next.
 | The corpus run went from 184 to 318 seconds of CPU, and the Nita Ambani sentence from a third of a second to fifty, after a participle could stand before a noun, for no reading gained | Two causes outside the rule. The participle test asked `verb_form/3` with the word given, which walks every verb for each of its six forms, a millisecond, and the grammar asked it at every word a noun phrase could start at; and *as* was not in the lexicon, so WordNet supplied it as a noun, the Roman coin, and *best known as* became a noun phrase headed by *as* once *known* could be swallowed, where the old grammar had never got past *known* | Timing each sentence against the commit before on a copy of the tree, then benchmarking the lexical lookups one by one, then cutting the slow sentence down until the cost moved (`0769a0e`); the answer is kept per word while a sentence's placements stand, and *as* is a preposition |
 | A request without a verb, *two cups of tea, please*, cost the corpus run seventy seconds, 3:40 to 4:51 | A command is tried on every sentence nothing else reads, which is the expensive kind, and the request parsed a noun phrase for each of them before the missing *please* was noticed | Timing the run before the commit (`7946581`); the rule is entered only when a *please* is somewhere ahead, the guard the possessive has |
 | Reading the Kazakhstan sentence ran for minutes once a number before the noun let it be read, where it had been refused in nine seconds; a ten-word cut took three | Not the number: each word of a capitalized run is a noun in WordNet as well, so a noun phrase could end at any of them and try the rest as a relative clause with no relative word, which starts the same search again one word on, six times the cost for every word of the run, and every sentence with a run of names had been paying | Cutting the sentence down until the cost moved, which left the names and no number (`fd637af`); a head that is a name does not end before another name, and the corpus run fell from 2:43 to 1:12 |
+| The Cosby sentence took 85 seconds once it could be read, from a third of a second refused | The Kazakhstan row's shape again, without the names: in *an American television sitcom series starring Bill Cosby, first broadcast on*, a head that stopped at *American* or at *television* tried the rest as a relative clause with its word left out and parsed the whole of it as that clause's subject, for each place it could stop | Timing each sentence against the commit before, then cutting the sentence down until the cost moved, on 2026-10-03 (`de8468c`); the clause is not entered before a singular common noun, which the head would have taken, and the second corpus fell from 169 seconds of CPU to 88 |
 
 Every one of these passed the suite, because every test in the suite is small.
 The deep-nesting fix touched the collector, unification, comparison, copying,
@@ -642,6 +643,80 @@ both English.
 change which moved a sentence would be seen whichever way it moved it,
 and this is the first time it caught a sentence moving the wrong way.
 
+### A verb WordNet could not spell
+
+*Broadcast* had no participle, so *The Cosby Show was ... first
+broadcast on September 20, 1984* had no reading for a reason that had
+nothing to do with its grammar. WordNet's `verb.exc` lists the forms
+that differ from the base, so *cast*, *put*, *set* and every verb made
+from them are in no list of irregular forms, and the lexicon's rule
+made their past *broadcasted*. They are their own past now, the verbs
+and the same verbs after a listed prefix (`de8468c`).
+
+Found on 2026-10-03 by cutting the Cosby sentence down: *The show was
+broadcast* failed, and *They broadcast the dog* passed.
+
+*What this says:* the third verb in a week that a sentence needed and
+the forms did not have. A list of exceptions says nothing about what it
+leaves out because it is not an exception.
+
+### Rules that read more than they were written for
+
+Three of the day's rules gave sentences that already passed readings
+nobody meant. The name after a noun phrase, *her stage name, Barbara*,
+read *Texas, United States* in *a city in McLennan County, Texas,
+United States* as saying which city, where the placing comma of
+2026-10-01 had left that open on purpose. Two nouns under one
+determiner each with a phrase read *the wife of Mukesh Ambani, chairman
+and managing director* as three nouns under *the*, and *any kind of
+separation or break* a second time beside the *of* that already takes
+a list. And the adjective after a noun modifier, *a world famous
+singer*, took *farthest*, so *the municipality farthest south* was read
+five more ways, with *south* its head noun. Each was narrowed before it
+was committed (`de8468c`, `bf8e955`).
+
+Found by diffing the corpus run's whole output, verdicts and counts of
+readings, against the commit before. The pinned counts would not have
+caught them, since they count sentences that pass, and these passed
+already.
+
+*What this says:* a rule is written for the sentence that needs it and
+runs on every sentence. The count of readings is the only place a
+sentence that already passed shows what a new rule did to it.
+
+### A chart that held every rule twice
+
+The chart parser, `english/chart.pl`, renames the grammar's
+nonterminals and asserts them under new names. `tests.pl` consults
+`check.pl`, and `wordnet_check.pl` consults it too, so loading both
+consulted the grammar twice: the second consult replaced the clauses it
+had loaded, and the renamed clauses, asserted rather than loaded, were
+asserted again beside the first. Every charted rule then answered
+twice, and the answers multiplied up the parse: *The dogs bark* had 256
+parses in the diagnosis, all one parse, and the grammar's checks with
+WordNet ran for minutes. `make english`, which loads once, passed. The
+chart clears its renamed clauses before writing them, and `answers/3`
+in `english/tests.pl` pins five sentences' unsorted answers as
+`phrase/2` gives them, runs first, and stops the run on the first wrong
+count; `make english` loads the checker twice. With the clearing taken
+out, it fails in a seventh of a second.
+
+Found on 2026-10-03 by the grammar's checks with WordNet taking minutes
+where they had taken seconds, then counting the parses one sentence
+gave against the commit before: 256 against 1. No check had failed. The
+readings checks sort a sentence's trees and count each once, which is
+right for the readings and blind to an answer found twice.
+
+The chart also met the interpreter's missing logical update view, the
+deviation recorded on 2026-08-28: its first version asserted answers
+while a lookup walked the same predicate. That is a known limit, not a
+new defect, and the reference's advice, collect with `findall/3` and
+assert after, is what the chart does.
+
+*What this says:* a check that removes duplicates cannot see them. A
+layer meant to give the same answers faster is checked by counting its
+answers, all of them, against the layer it replaces.
+
 ## What found what
 
 | Found by | Count |
@@ -656,9 +731,11 @@ and this is the first time it caught a sentence moving the wrong way.
 | Running the tokenizer on a case before building on it | 1 |
 | Timing each commit, looking for another cause | 1 |
 | Timing each sentence of a corpus, and once each stage of one | 2 |
-| Timing each sentence of a corpus against the commit before, then cutting the slow one down until the cost moved | 3 |
+| Timing each sentence of a corpus against the commit before, then cutting the slow one down until the cost moved | 4 |
 | A corpus count pinned in the runner, which fails the build when a sentence moves | 1 |
-| Cutting a refused corpus sentence into pieces and checking each | 1 |
+| Cutting a refused corpus sentence into pieces and checking each | 2 |
+| Diffing a corpus run's verdicts and counts of readings against the commit before | 1 |
+| A check taking minutes where it had taken seconds, then counting one sentence's parses against the commit before | 1 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
 | The test suite | 4 |
 | Rendering the pages and looking at them | 3 |
@@ -672,7 +749,7 @@ and this is the first time it caught a sentence moving the wrong way.
 
 Three things stand out.
 
-**The test suite found four of fifty-five.** It is a good suite, 334 tests
+**The test suite found four of fifty-nine.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
@@ -715,6 +792,7 @@ Each standing check exists because of something above:
 | `make test` loads two files that define one predicate, one that defines `member/2`, one file twice, and one file by two spellings of its path | the loader that merged clauses from every source |
 | `space_clause`: 10,000 small facts must cost under a kilobyte each, read from `statistics(program, _)` | the 4 KB arena blocks, which no check measured |
 | `make english` fails if loading the grammar and its tests prints a warning | a rename onto the tests' own `verdict/2`, warned about on every run for a day |
+| `answers/3`: five sentences' answers counted before sorting, run first, stopping on the first wrong count; `make english` loads the checker twice | the chart's rules doubled by a second consult, which every readings check passed |
 
 ## What is probably still wrong
 

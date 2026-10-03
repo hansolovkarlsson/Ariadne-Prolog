@@ -68,10 +68,12 @@ These change the shape of the system rather than adding to it.
   for it. Answer subsumption, mode-directed tabling, belongs with it: it
   lets an answer be combined rather than listed, so a count is kept
   without the answers it counts. The grammar checker is its first user:
-  settled by Hans on 2026-10-03, the chart parser under *Built on the
-  interpreter* comes first, and once tabling is in, the grammar is
-  reworked to table its rules and the chart parser is retired. Its
-  reading counts are then the check that tabling gives the same answers.
+  settled by Hans on 2026-10-03, the chart parser came first, and went
+  in the same day as `english/chart.pl`; once tabling is in, the grammar
+  is reworked to table its rules and the chart is retired. Its answer
+  counts, `answers/3` in `english/tests.pl`, are then the check that
+  tabling gives the same answers. Tabling would also allow what the
+  chart does not, a rule that calls itself on the left.
 
 - **Constraints.** A large, self-contained project that the current solver
   has no hooks for.
@@ -152,25 +154,15 @@ These change the shape of the system rather than adding to it.
      participle. A guard on the relative clause with its word left out,
      not entered before a singular common noun, took the Cosby sentence
      from 85 seconds to two and the corpus from 169 seconds of CPU to
-     88. It passes 48; the one not is Class 93. What is left, in
-     `english/README.md`:
+     88. It passes 48; the one not is Class 93. The same day the grammar
+     was put behind a chart, `english/chart.pl`, which parses a phrase
+     once at each place, and *be* and a *to*-infinitive, held since
+     2026-10-02, went in: the Class 93 sentence reads, 156 readings in
+     0.41 seconds, and the corpus passes 49, the one left with a word
+     nothing knows. What is left, in `english/README.md`:
      - an adjective phrase after its noun, *the municipality farthest
        south*, which reads as adverbs on the verb and needs nothing
-       more until a sentence does;
-     - *be* and a *to*-infinitive, *the locomotives that were to enter
-       service*, one rule, written on 2026-10-02 and held in
-       `scratch/be-to.patch`: with it the Class 93 sentence is
-       grammatical, and the strict parse, which finds every reading,
-       found 23 in 12 seconds for the sentence cut short, 50 in 83
-       seconds with one more phrase, and none in five minutes for the
-       whole. On 2026-10-03, with the guard above, the whole finishes:
-       **156 readings in 187 seconds**. Every trailing phrase multiplies
-       the attachments and a DCG shares nothing between them. This is
-       the one corpus sentence that waits on the parser, below, and the
-       first to meet the wall from the grammatical side. Participles,
-       held the same way on 2026-09-30, went in on 2026-10-02 once their
-       cost was found to be elsewhere; the record of both is in
-       `english/README.md`.
+       more until a sentence does.
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
@@ -179,7 +171,12 @@ These change the shape of the system rather than adding to it.
   right. Past that, there are two answers: a chart or left-corner parser
   written in Prolog, which is days, or *Tabling* under *Structural*, which is
   months. Settled by Hans on 2026-10-03: both, the chart parser first and
-  tabling later, which replaces it. The second corpus brought the
+  tabling later, which replaces it. The chart went in that day, and
+  answers half the wall: sub-parses are shared, and `make english-wordnet`
+  takes 21 seconds where it took 1:48. It is filled top down, each call's
+  answers found whole before they are kept, so a rule that called itself
+  at the place it started would still loop; the grammar stays written on
+  the right until tabling. The second corpus brought the
   other half of the wall first: one sentence of 23 words takes 116 seconds,
   since every word WordNet lists as a noun, a verb and an adjective at once
   multiplies the sub-parses that are redone. Speed may force the decision
@@ -187,20 +184,6 @@ These change the shape of the system rather than adding to it.
   cost the parser could not absorb: each noun opens a whole verb phrase,
   and the corpus's two slowest sentences went from 36 seconds and under
   12 to 117 and 328.
-
-  - **A chart parser for the grammar**, in Prolog, in `english/`, run by
-    `check.pl` in place of `phrase/2` on the rules `grammar.pl` already
-    has. It keeps a table of what was found between which words, with
-    its agreement, gap and violations, so a phrase is parsed once and
-    looked up after; the readings are kept as one packed forest and
-    counted through it, so the corpus still pins how many a sentence has
-    without building each. Left recursion is then allowed. The rules
-    that cut or look at the words ahead, `name_rest//1`, `please_ahead`,
-    `prep_ahead` and their like, are reworked for it, and the rework
-    carries over to tabling. Two grammatical sentences wait on it: the
-    sworn-in sentence, 672 readings in 52 seconds, half the second
-    corpus's run, and Class 93 with `scratch/be-to.patch`, 156 readings
-    in 187 seconds. Done when both take seconds with the same counts.
 
 ## Not planned
 

@@ -1374,6 +1374,118 @@ the next commit carried them. Thirteen commits in the day, the second
 corpus at 41, and the method held through the last: time, cut, and
 believe the cut.
 
+## Day twelve: the seven sentences, a guard that halved the run, and a chart
+
+The day began with the standup's seven: the refused sentences of the
+second corpus that the grammar could reach, each named the night before
+with one cause. The method was the one day eleven ended on, cut the
+sentence down until the cause shows, and it showed that two of the seven
+names were wrong. *The municipality farthest south* was listed as an
+adjective after its noun, but *farthest south* already read, as two
+adverbs on *is*; the sentence failed on *the Sernf*, since nothing read
+*the* before a name, and *the Thames* had only ever passed because its
+*-s* made it a guessed plural. *Elm was a municipality, in the
+municipality of Glarus Süd and canton of Glarus* was listed as a comma
+before a phrase, and was that and also two nouns under one determiner,
+each with a phrase of its own. The "adjective phrase after a comma" of
+*best known as the chairperson* turned out to be a participle phrase,
+the same construction as *better known by his stage name* and *first
+broadcast on*, and one rule read three sentences. The Cosby sentence
+needed one thing nobody had named: *broadcast* had no participle, since
+WordNet's exception list leaves out the verbs whose past is their base.
+A name written down before the cut is a guess about the cause, and two
+of seven were wrong.
+
+The Cosby sentence then passed at 85 seconds, and the cut found the cost
+where the Kazakhstan sentence's had been on day eleven, in a relative
+clause with its word left out, tried after every place a head could
+stop. *An American* stopped at *American* read *television sitcom
+series starring Bill Cosby, first broadcast on* as the subject of such
+a clause, all of it, and again at *television*. The guard is that the
+clause is not entered before a singular common noun, which the head
+would have taken as a modifier. It was written for one sentence and
+halved the corpus: 169 seconds of CPU to 88, the water polo sentence
+from 31 to 1, Class 93 from 20 to 5, and `make english-wordnet` from
+2:24 to 1:46. With it, Class 93 and the held *be*-to patch finished for
+the first time, at 156 readings in 187 seconds. The day's other
+discipline was a diff of the whole corpus output, every verdict and
+count of readings, against the commit before, and it found three
+sentences that already passed and had gained readings from the new
+rules, each narrowed before the commit; the postmortem has them. The
+corpus went from 41 to 48 (`de8468c`), and *a world famous singer*
+went in after (`bf8e955`), the same diff catching its first version
+taking *farthest*.
+
+Between the two, the conversation turned to what "a better parser"
+meant, and settled the roadmap's open question. A DCG run by `phrase/2`
+remembers nothing, so a phrase is parsed again every time the search
+backtracks past it; a chart keeps what was found between which words
+and looks it up. The roadmap had two answers, a chart parser in Prolog,
+days, or tabling in the interpreter, months, with the choice left to
+the first rule that could not be written on the right. Hans settled it
+as both, in order: the chart parser first, in `english/`, and tabling
+later as the interpreter's own feature, after which the grammar tables
+its rules and the chart is retired, its reading counts the check that
+tabling gives the same answers (`8c2407e`).
+
+The chart was then written. It
+turned out smaller than "days": `english/chart.pl`, under a hundred
+lines, loads `grammar.pl` unchanged, renames ten of its nonterminals and
+puts a table in front of each, keyed by the name, the number of words
+left and the call with its variables numbered, so that a call made again
+at the same place takes its answers from the table. That is a chart
+filled top down, a well-formed substring table; it shares sub-parses,
+which is where the cost was, but does not pack the readings, so they are
+still listed one by one, only from shared parts. The sworn-in sentence
+went from 52 seconds to 0.44, the same 672 readings, and Class 93 with
+the *be*-to rule from 187 seconds to 0.41, the same 156. Two things went
+wrong on the way, and both are worth the record. The first version
+asserted answers while a lookup walked the same predicate, and the
+interpreter has no logical update view, as its reference says; the fix
+is the one the reference gives. The second was a duplication the
+readings checks could not see: two files consult the checker, the
+grammar was consulted twice, and the renamed rules were asserted twice,
+so every answer came twice and multiplied; the readings checks sort and
+count each tree once, so they passed, and only the time gave it away.
+With both fixed, `make english` passes its 604 checks and `make
+english-wordnet` gives output identical to the committed grammar's,
+every verdict and count of readings over both corpora, in 20.6 seconds
+against 1:48. The closeout left it uncommitted, since the readings
+matching was what the duplication had shown to be not enough.
+
+### After the closeout: the chart's answers counted, and be-to in
+
+The session crashed after the closeout and was resumed to finish the
+chart. The count the duplication called for came first: every sentence
+of both corpora and of the tests, 687, parsed with the chart and with
+`phrase/2` on a clean copy of the commit before, and the answers of each
+parse counted before sorting, strict, as a command, and in the four
+relaxed parses the diagnosis runs when a sentence has no reading. The
+first attempt asked for all four relaxed parses of every sentence,
+which the checker never does, and the old parser sat for minutes on the
+galaxy record sentence; the comparison was cut to what the checker
+runs, and split four ways. The counts are identical. A check then went
+in that would have caught the duplication: `answers/3` pins five
+sentences' unsorted answers, strict and relaxed, as `phrase/2` gives
+them, runs before everything else and stops at the first wrong count,
+and `make english` loads the checker twice as the WordNet run does.
+Planted, the duplication fails it in a seventh of a second. The first
+version ran it last and did not stop, and with the duplication planted
+the run took more than ten minutes before it reached it: a check that
+waits behind the slow ones fails by hanging. *Alice gave Bob 3 dogs*
+gives eight answers for two readings under `phrase/2` as well, which is
+why the check compares with the old parser's count and not with the
+readings.
+
+Then the rule held since day eleven. *Be* and a *to*-infinitive went in
+as written, and the Class 93 sentence reads, 156 readings in 0.41
+seconds; the second corpus passes 49, the fiftieth a word nothing knows,
+and `make english-wordnet` takes 21 seconds. The roadmap's chart item
+had said left recursion would then be allowed. It is not: the chart is
+filled top down and a call's answers are found whole before they are
+kept, so a rule that called itself where it started would still loop.
+That is tabling's, and the roadmap now says so.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1384,7 +1496,7 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 571 checks: good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. |
+| `make english` | The grammar checker's 616 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
 | `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of `english/corpus.txt` and the fifty of `english/corpus2.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
@@ -1397,7 +1509,7 @@ something it would have caught; those arrived with the program they check.
 About 8,000 lines of hand-written C, 760 lines of library written in Prolog,
 a 338-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
-3,350 lines built on the interpreter, through all three of its stages, and a
+3,700 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own
 tables.
 

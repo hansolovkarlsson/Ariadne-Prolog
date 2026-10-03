@@ -1002,16 +1002,18 @@ complementizer(none) --> [].
 
 % What follows be: an adjective, a noun phrase, a bare role noun, or a
 % place, with the adverbs that may stand before a verb before it: "is also
-% the capital", "is always happy", "was chairman of the board". A
-% to-infinitive, "the locomotives were to enter service", is written and
-% held in scratch/be-to.patch: it is one rule, and correct, but the one
-% corpus sentence it lets through has 156 readings and takes three
-% minutes, where before the guard on a relative with its word left out
-% it ran past five; see docs/ROADMAP.md.
+% the capital", "is always happy", "was chairman of the board"; or a
+% to-infinitive, what is arranged or expected, "the locomotives were to
+% enter service", "the dog is to sleep". The last was held from
+% 2026-10-02 to 2026-10-03: the one corpus sentence it lets through has
+% 156 readings, which took three minutes to find before the chart, see
+% chart.pl, and takes under half a second with it.
 predicate(AP, G, G, V, V) --> adj_group(AP).
 predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
 predicate(NP, G, G, V0, V) --> role_np(NP, V0, V).
 predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
+predicate(inf(VP), G0, G, V0, V) -->
+    [to], verb_phrase(base, 2, to, VP, G0, G, V0, V).
 
 % Adverbs and prepositional phrases after the verb and what it takes. The
 % gap may be a preposition's object: "the park that the dog walks in _".
