@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Sixty-one defects, in five cohorts that failed for five different reasons:
+Sixty-two defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -21,12 +21,12 @@ Sixty-one defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: twenty-four defects in which two parts of the project did not
+- **Consistency**: twenty-five defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
   on 2026-09-27, one on 2026-09-28, six on 2026-09-29, one on 2026-09-30,
-  two on 2026-10-02 and three on 2026-10-03.
+  two on 2026-10-02, three on 2026-10-03 and one on 2026-10-16.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
@@ -148,7 +148,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Twenty-four defects in which two parts of the project disagreed. The first eight were
+Twenty-five defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -318,6 +318,30 @@ Found on 2026-09-27 by reading `clause_make` while designing error contexts,
 which needed to know whether a goal a library predicate was handed arrived
 through a meta-call. Bodies are converted now, iteratively, and the cut is
 local. (`a1336d2`)
+
+### Every character past ASCII was a letter
+
+`char_type/2` says it follows SWI-Prolog, and past ASCII it answered
+`alpha` for everything: a curly quotation mark, an en dash, an em dash,
+the ellipsis. The rule was written on purpose, since most characters
+past ASCII in a word are letters, and the case table added on
+2026-09-30 refined it for case and left it alone for the rest. The
+grammar checker splits words on `alpha`, so *“Open* was one unknown
+word, *1–4* one more, and the dash in *THE HAGUE —* a third, three
+causes in the third corpus's record that were one. Unicode's blocks for
+punctuation, spaces and symbols are `punct`, `space` and `cntrl` now;
+the rest is a letter as before (`7764563`).
+
+Found on 2026-10-16 by cutting the third corpus's failing sentences
+down to their causes: *IBM's new product is called "Open Client
+Offering"* passed with straight quotation marks and was unknown with
+curly ones, and the question was why the checker took a mark for a
+letter. Asking the interpreter answered it.
+
+*What this says:* three findings in a record by cause were one, below
+the layer the record was about. A cause that names a character is worth
+asking of the layer that classifies characters before it is mended in
+the one that reads words.
 
 ## Cohort D — the suite about itself
 
@@ -786,7 +810,7 @@ after the stop rather than the word before it.
 | Timing each sentence of a corpus, and once each stage of one | 2 |
 | Timing each sentence of a corpus against the commit before, then cutting the slow one down until the cost moved | 4 |
 | A corpus count pinned in the runner, which fails the build when a sentence moves | 1 |
-| Cutting a refused corpus sentence into pieces and checking each | 3 |
+| Cutting a refused corpus sentence into pieces and checking each | 4 |
 | Cutting a newly drawn corpus with the checker's own splitter, and reading the cuts against the source | 1 |
 | Diffing a corpus run's verdicts and counts of readings against the commit before | 1 |
 | A check taking minutes where it had taken seconds, then counting one sentence's parses against the commit before | 1 |
@@ -803,7 +827,7 @@ after the stop rather than the word before it.
 
 Three things stand out.
 
-**The test suite found four of sixty-one.** It is a good suite, 334 tests
+**The test suite found four of sixty-two.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
