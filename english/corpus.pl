@@ -1,5 +1,5 @@
-/*  english/corpus.pl -- the checker over english/corpus.txt and
-    english/corpus2.txt.
+/*  english/corpus.pl -- the checker over english/corpus.txt,
+    english/corpus2.txt and english/corpus3.txt.
 
     Run with:  make english-wordnet   (or bin/prolog -q
                english/wordnet_check.pl english/corpus.pl -g corpus)
@@ -16,6 +16,11 @@
     README gives the rule and the articles; corpus2-sources.tsv lists each
     with the revision it was taken from.
 
+    corpus3.txt is fifty more, from a different register: the first two
+    sentences of 25 articles drawn at random from English Wikinews, by the
+    same kind of rule, which the README gives; corpus3-sources.tsv lists
+    the articles and revisions.
+
     Each sentence is checked and its verdict printed, then a count of each
     kind, which must be the recorded one. The sentences it rejects are the
     record of what the grammar lacks, which the README sets out.
@@ -27,10 +32,12 @@
 % and the record is brought up to date with it.
 recorded('english/corpus.txt', 50, 0, 0).
 recorded('english/corpus2.txt', 49, 0, 1).
+recorded('english/corpus3.txt', 9, 31, 10).
 
 corpus :-
     corpus('english/corpus.txt'),
-    corpus('english/corpus2.txt').
+    corpus('english/corpus2.txt'),
+    corpus('english/corpus3.txt').
 
 corpus(File) :-
     open(File, read, In),

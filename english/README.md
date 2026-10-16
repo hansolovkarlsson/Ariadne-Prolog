@@ -107,7 +107,7 @@ end of this file.
 | `guess.pl` | A word the lexicon lacks, looked up in WordNet when it is loaded, or else guessed from its ending: *-ly* an adverb, *-tion* a noun, *-ful* an adjective, *-ize* a verb, and *-s*, *-ed* and *-ing* taken back to a stem that is placed the same way. |
 | `check.pl` | Text into words, with contractions cut off; the verdict, the explanation, and the bracketed trees; running text into sentences, for `check_file/1`. |
 | `wordnet_check.pl` | `check.pl` with WordNet's words loaded, from `wordnet.pl`, which `make wordnet` generates and git ignores. |
-| `corpus.txt`, `corpus2.txt`, `corpus.pl` | Fifty ordinary sentences the grammar was built to pass; fifty from Simple English Wikipedia that it was not, with their articles in `corpus2-sources.tsv`; and the run over both that `make english-wordnet` does, which fails unless the counts are the ones `corpus.pl` records. |
+| `corpus.txt`, `corpus2.txt`, `corpus3.txt`, `corpus.pl` | Fifty ordinary sentences the grammar was built to pass; fifty from Simple English Wikipedia and fifty from English Wikinews that it was not, with their articles in `corpus2-sources.tsv` and `corpus3-sources.tsv`; and the run over all three that `make english-wordnet` does, which fails unless the counts are the ones `corpus.pl` records. |
 | `tests.pl` | Sentences that must pass, sentences that must fail with a named reason, the number of readings of an ambiguous one, the number of answers a parse gives before they are sorted, and how running text is cut into sentences. |
 
 ## What it checks
@@ -1156,3 +1156,52 @@ readings in 0.41 seconds**, where it had taken three minutes. The corpus
 gives **49 grammatical, 0 not, and 1 unknown**, the one unknown a word
 neither the lexicon nor WordNet has, and `make english-wordnet` takes 21
 seconds.
+
+## The third corpus: news
+
+`corpus3.txt` holds fifty sentences from a different register, news, which
+the grammar was not built against either. The rule was written down on
+2026-10-16 before any text was seen: draw articles from English Wikinews
+with the API's random list, in the main namespace and without redirects,
+in the order returned; keep an article only if it is in
+Category:Published; take its plain-text extract and drop a leading
+dateline; take the first two sentences of what remains, verbatim, as the
+checker's own splitter cuts them; skip an article with fewer than two;
+stop at 25. The draw took the first 25 articles it returned, all
+published and all with two sentences or more. `corpus3-sources.tsv` lists
+each article with the revision it was taken from. The sentences are
+Wikinews's, under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+The draw was made in two fetches. The first kept only each article's first
+paragraph, which was not the rule, since Wikinews often gives its first
+sentence a paragraph of its own; the same 40 articles were fetched again,
+whole, in the same order, and none had a newer revision.
+
+The splitter cut three of the fifty in the wrong place: after *Inc.* in
+*International Business Machines Inc. said*, after *Rep.* in *Rep. Duncan
+Hunter*, and at an ellipsis inside a quotation, *we are investigating ...
+but he is being released*. The file keeps the true sentences, and the
+three cuts are a finding of their own. One sentence keeps the source's
+typing, *the arrest.We don't know*, as the rule says verbatim.
+
+On 2026-10-16, **9 were grammatical, 31 were not, and 10 had a word in
+neither the lexicon nor WordNet**, in 8.7 seconds. Corpus 2 began at none,
+19 and 31; news has fewer names nobody has heard of, and the grammar had
+grown. The record by cause, each failing sentence cut down until it
+passes, is still to be made. What a first reading shows:
+
+- **Words the checker has no entry for**: *himself*, twice, as no
+  reflexive pronoun is in the lexicon; *than* in *more than twenty*;
+  *via*; the en dash in a score, *1–4*; curly quotation marks; a web
+  address, *www.mjjsource.com*; the dash after a dateline, *THE HAGUE —*;
+  and *exoplanet* and *extrasolar*, which WordNet does not have.
+- **A singular noun with no determiner**: a title before a name,
+  *musician Michael Jackson*; *Millwall football club*; *Thursday the 2
+  August*.
+- **No reading**, 28 sentences, among them, by a first reading only: a
+  participle with phrases of its own after a noun, *journalists kidnapped
+  in Iraq on March 28*; *saw* with a bare infinitive, *saw Videla gain
+  power*; quoted speech, *read: "It is ..."*, *as "grim"*; a semicolon
+  between clauses; an object clause without *that*, *reported many of the
+  rockets were shot down*; *either ... or* between numbers; money and
+  percentages, *US$5.1 billion*, *40%*; and a score, *7-6 (3)*.

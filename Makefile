@@ -113,9 +113,9 @@ english: $(BIN)
 # Stage 3 of the grammar: WordNet 3.1's words, generated into
 # english/wordnet.pl, which is not committed. Fetching it needs the network,
 # so nothing else depends on it; english-wordnet runs the grammar's checks
-# with it loaded, and the sentences in english/corpus.txt and
-# english/corpus2.txt, which record what a large lexicon breaks and what
-# text the grammar was not built against does.
+# with it loaded, and the sentences in english/corpus.txt, corpus2.txt and
+# corpus3.txt, which record what a large lexicon breaks and what text the
+# grammar was not built against does.
 WORDNET_URL = https://wordnetcode.princeton.edu/wn3.1.dict.tar.gz
 
 build/wordnet/dict/index.noun:

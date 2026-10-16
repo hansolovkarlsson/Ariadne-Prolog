@@ -36,6 +36,13 @@ There are no releases yet, so entries are grouped by the day they landed on
   appears* is refused, its known cost. The last of stage 2's leftovers.
   656 checks; both corpora unchanged.
 
+- **A third corpus, news.** `english/corpus3.txt`, fifty sentences, the
+  first two of 25 articles drawn at random from English Wikinews by a
+  rule written down before the text was seen, with the articles and
+  revisions in `corpus3-sources.tsv`. `make english-wordnet` runs it
+  with the other two and records 9 grammatical, 31 not and 10 with an
+  unknown word. The splitter cut three sentences wrongly, a finding.
+
 ## 2026-10-03
 
 ### Added
