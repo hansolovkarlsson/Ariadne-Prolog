@@ -740,9 +740,13 @@ closing_after([_|Cs], Close, D, After) :- closing_after(Cs, Close, D, After).
 
 names([], [], []).
 names([C|Cs], [W|Ws], Names) :-
-    maplist(later_name, Cs, Ws, Ns0),
+    (   member(X, [C|Cs]), atom_chars(X, Xs), member(L, Xs), char_type(L, lower(_))
+    ->  Shout = no
+    ;   Shout = yes
+    ),
+    maplist(later_name(Shout), Cs, Ws, Ns0),
     exclude(==(none), Ns0, Ns),
-    (   capital(C), \+ closed_class(W),
+    (   name_word(Shout, C, W),
         (   \+ plural_only(W)
         ;   Ws = [W2|_], ( memberchk(W2, Ns) ; digits(W2) )
         )
@@ -750,8 +754,20 @@ names([C|Cs], [W|Ws], Names) :-
     ;   Names = Ns
     ).
 
-later_name(C, W, W)    :- capital(C), \+ closed_class(W), !.
-later_name(_, _, none).
+later_name(Shout, C, W, W) :- name_word(Shout, C, W), !.
+later_name(_, _, _, none).
+
+% name_word(+Shout, +Cased, +Word): a word with a capital is a name, unless
+% it is a closed-class word, "The", "He"; but one of two letters or more
+% all in capitals is an abbreviation even so, "six US service members",
+% "the IT department", unless the whole sentence is in capitals, Shout,
+% where every word is.
+name_word(_, C, W) :- capital(C), \+ closed_class(W), !.
+name_word(no, C, _) :- abbreviation(C).
+
+abbreviation(C) :-
+    atom_chars(C, Cs), Cs = [_, _|_],
+    forall(member(X, Cs), char_type(X, upper(_))).
 
 % plural_only(+Word): Word is the plural of a noun, in the lexicon or in
 % WordNet, and is no noun in the singular: dogs, leaves, men. Not woods,

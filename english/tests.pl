@@ -770,6 +770,14 @@ bad('Himself sleeps.',                     case(himself)).
 bad('They himself sleep.',                 reflexive(himself)).
 bad('The dogs who himself sleep bark.',    reflexive(himself)).
 
+% A closed-class word in capitals, two letters or more, is an abbreviation
+% and a name, unless the whole sentence is in capitals.
+good('The US dog sleeps.').
+good('The dog killed six US cats.').
+good('They saw us.').
+readings('The US dog sleeps.', 1).
+bad('THE DOG SLEEPS.',                     no_reading).
+
 % A verb whose participle is its base and its past is not, from WordNet.
 wordnet_good('The dog has come.').
 wordnet_good('The dog has become big.').

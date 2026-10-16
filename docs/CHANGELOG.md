@@ -62,6 +62,14 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Fixed
 
+- ***US* was the pronoun *us*.** A closed-class word is never a name,
+  which keeps a capital at the start of a sentence from making one, and
+  so *six US NATO service members* had no reading. A word of two letters
+  or more all in capitals is an abbreviation and a name now, *the US
+  army*, *the IT department*, except in a sentence written all in
+  capitals. The third corpus gives 12, 30 and 8. 694 checks, 701 with
+  WordNet.
+
 - ***Has come*, from WordNet.** *Come*, *run* and the same verbs after a
   listed prefix, *become*, *overcome*, *outrun*, take their base as
   participle, which WordNet's `verb.exc` leaves out as it lists only

@@ -1351,3 +1351,13 @@ grammatical, 31 not, and 8 unknown**: *On Monday, a suicide bomber blew
 himself up on a motorcycle* passes, and *Virginia governor Bob McDonnell,
 who himself had been considered* is no longer unknown and fails on its
 title with no determiner.
+
+*US* came next. A word with a capital is a name unless it is a
+closed-class word, which keeps *The* and *He* at the start of a sentence
+from being names; but *US* in *six US NATO service members* was then the
+pronoun *us*. A word of two letters or more all in capitals is an
+abbreviation, and a name even when its lower-case form is a closed-class
+word, *the US army*, *the IT department*; not in a sentence written all
+in capitals, where every word is. The corpus gives **12 grammatical, 30
+not, and 8 unknown**, *The bombing killed six US NATO service members
+and injured several others* the new pass.
