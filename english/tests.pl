@@ -2,6 +2,10 @@
 
     Run with:  make english      (or bin/prolog -q english/tests.pl -g run)
 
+    wordnet_good/1 and wordnet_bad/2 are the same, for sentences whose
+    words only WordNet has; they are checked when wordnet_check.pl has
+    loaded it, as make english-wordnet does, and left out otherwise.
+
     good/1 sentences must be grammatical; bad/2 sentences must not be, and
     the diagnosis, parsing again with agreement relaxed, must name the kind
     of violation given. readings/2 pins how many structures a sentence has,
@@ -734,6 +738,15 @@ answers('The dog in the garden that barks is old.', 2, 2).
 answers('The dogs chased by the cat barks.', 0, 1).
 answers('Alice gave Bob 3 dogs.', 8, 8).
 
+% A verb whose participle is its base and its past is not, from WordNet.
+wordnet_good('The dog has come.').
+wordnet_good('The dog has become big.').
+wordnet_good('The man has overcome it.').
+wordnet_good('He came and has come.').
+wordnet_good('The man has flung it.').
+wordnet_bad('The dog has came.',            verb_form(has, came, en)).
+wordnet_bad('The dog come.',                subject_verb(come)).
+
 % splits(Text, Sentences): Text cuts into exactly these sentences.
 splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).
 splits('Does it bark?  It does!', ['Does it bark?', 'It does!']).
@@ -789,8 +802,12 @@ verdict_of(Words, Mark, V) :-
     ).
 
 run :-
-    findall(S, good(S), Good),
-    findall(S-E, bad(S, E), Bad),
+    (   wordnet_loaded
+    ->  findall(S, ( good(S) ; wordnet_good(S) ), Good),
+        findall(S-E, ( bad(S, E) ; wordnet_bad(S, E) ), Bad)
+    ;   findall(S, good(S), Good),
+        findall(S-E, bad(S, E), Bad)
+    ),
     findall(S-N, readings(S, N), Readings),
     findall(T-Ss, splits(T, Ss), Splits),
     findall(S-N-M, answers(S, N, M), Answers),
@@ -810,6 +827,8 @@ run :-
     Passed is Total - F,
     format("~d grammar checks, ~d passed, ~d failed~n", [Total, Passed, F]),
     (   F =:= 0 -> halt ; halt(1) ).
+
+wordnet_loaded :- wn_verb(_, _), !.
 
 check_good([], F, F).
 check_good([S|Ss], F0, F) :-

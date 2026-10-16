@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Sixty defects, in five cohorts that failed for five different reasons:
+Sixty-one defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -31,13 +31,14 @@ Sixty defects, in five cohorts that failed for five different reasons:
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
   by asking what a check could reach.
-- **Scale**: nineteen defects that no test was large enough to meet, a fixed
+- **Scale**: twenty defects that no test was large enough to meet, a fixed
   buffer, a recursion on the C stack, a cost that grew with the square or a
   fixed allocation, ten found on 2026-09-27, nine of them by probing a
   neighbour of the defect before, three on 2026-09-29, one on 2026-10-01,
   three on 2026-10-02, each a rule that was cheap until the search
-  reached past it, one on 2026-10-03 of the same kind, and one on
-  2026-10-16, the sentence splitter again, on text it had not met.
+  reached past it, one on 2026-10-03 of the same kind, and two on
+  2026-10-16, the sentence splitter again, on text it had not met, and a
+  verb WordNet could not spell, again.
 
 ## Cohort A — the design era
 
@@ -397,7 +398,7 @@ the only evidence that it can.
 
 ## Cohort E: scale
 
-Nineteen defects that no test was large enough to meet, ten of them found on
+Twenty defects that no test was large enough to meet, ten of them found on
 2026-09-27. The first nine came one from another: each fix was followed by probing the same shape a
 step further, at a million elements or a million levels, and the probe found
 the next.
@@ -661,6 +662,33 @@ broadcast* failed, and *They broadcast the dog* passed.
 the forms did not have. A list of exceptions says nothing about what it
 leaves out because it is not an exception.
 
+### *Come*, the same gap from the other side
+
+*Has come* had no reading, nor *has become* nor *has overcome*.
+`verb.exc` lists *came* for *come*, and the participle, which is the
+base, is not an exception and so is in no list: the gap *broadcast*
+had, with the past this time irregular and the participle not. Nothing
+in the list tells *come* from *fling*, whose one listed form, *flung*,
+is past and participle both, so the verbs are named, *come* and *run*
+and the same after a listed prefix, and given their base as participle
+alone. Giving it alone mattered: with *came* in a sentence and *come*
+not, the one listed form was taken as the participle too, and *the dog
+has came* passed. It is refused now, because the base participle is
+placed for the past as well, and taken first. `make english-wordnet`
+runs checks of its own for words only WordNet has, seven of them, which
+the suite without WordNet cannot.
+
+Found on 2026-10-16 by cutting the third corpus's failing sentences
+down to their causes: *His sacking has come after a defeat* failed, and
+*The sacking has come* failed with it, for a word the sentence was not
+about.
+
+*What this says:* the earlier entry named the hole, a list that says
+nothing about what is not an exception, and was mended for the one
+shape a sentence had shown. The neighbour of that shape, irregular past
+with a regular-looking participle, was one step away and went unprobed
+for thirteen days.
+
 ### Rules that read more than they were written for
 
 Three of the day's rules gave sentences that already passed readings
@@ -758,7 +786,7 @@ after the stop rather than the word before it.
 | Timing each sentence of a corpus, and once each stage of one | 2 |
 | Timing each sentence of a corpus against the commit before, then cutting the slow one down until the cost moved | 4 |
 | A corpus count pinned in the runner, which fails the build when a sentence moves | 1 |
-| Cutting a refused corpus sentence into pieces and checking each | 2 |
+| Cutting a refused corpus sentence into pieces and checking each | 3 |
 | Cutting a newly drawn corpus with the checker's own splitter, and reading the cuts against the source | 1 |
 | Diffing a corpus run's verdicts and counts of readings against the commit before | 1 |
 | A check taking minutes where it had taken seconds, then counting one sentence's parses against the commit before | 1 |
@@ -775,7 +803,7 @@ after the stop rather than the word before it.
 
 Three things stand out.
 
-**The test suite found four of sixty.** It is a good suite, 334 tests
+**The test suite found four of sixty-one.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong

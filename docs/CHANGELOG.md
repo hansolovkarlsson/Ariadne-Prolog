@@ -45,6 +45,15 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Fixed
 
+- ***Has come*, from WordNet.** *Come*, *run* and the same verbs after a
+  listed prefix, *become*, *overcome*, *outrun*, take their base as
+  participle, which WordNet's `verb.exc` leaves out as it lists only
+  forms that differ from the base. As participle only: *the dog come*
+  is still refused, and *the dog has came*, which passed, is refused
+  now. `make english-wordnet` gains checks of its own for words only
+  WordNet has, `wordnet_good/1` and `wordnet_bad/2`, seven of them: 669
+  checks there, 662 without. All three corpora unchanged.
+
 - **The splitter's three wrong cuts in the third corpus.** A piece that
   ends as a sentence does, followed by a word in lower case, goes on:
   *Business Machines Inc. said*, *investigating ... but he is*, *"Who?"

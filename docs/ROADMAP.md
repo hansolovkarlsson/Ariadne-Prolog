@@ -171,9 +171,13 @@ These change the shape of the system rather than adding to it.
      asks, in `english/README.md`, where the record by cause was
      written the same day, each of the 41 failing sentences cut down
      until its cause showed:
-     - two defects first: *has come*, *has become* and *has overcome*
-       have no participle from WordNet, and a word the lexicon lists as
-       a verb only, *visit*, *walk*, has no noun;
+     - a defect: a word the lexicon lists as a verb only, *visit*,
+       *walk*, has no noun, since the lexicon's words are never looked
+       up in WordNet. Measured on 2026-10-16: giving all 40 such verbs
+       WordNet has as nouns a noun breaks 13 checks, *Alice wants swim*
+       and *The dog is to sleeps* among them passing; *visit* and *walk*
+       alone move nothing. Which, if either, is Hans's to say. The other
+       defect, *has come*, was mended the same day;
      - then the causes, one at a time, by how many sentences each holds:
        numbers, times and dates (10); a comma and a noun phrase or
        participle after a noun phrase (9); a title with no determiner,

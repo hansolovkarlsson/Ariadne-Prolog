@@ -1282,7 +1282,12 @@ reported* fail on agreement and *by police* wants a determiner. And
 or *has overcome*: WordNet lists *came* as an irregular form of *come*,
 but its list holds only forms that differ from the base, so the
 participle, which is the base, is not found, as *broadcast* was not.
-*Run* reads, since the lexicon lists it. And a word the lexicon lists is
+*Run* reads, since the lexicon lists it. Mended the same day: *come*,
+*run* and the same verbs after a listed prefix take their base as
+participle, and as participle only, so *the dog come* is still refused,
+and *the dog has came*, which had passed, is refused too. No sentence of
+the corpus moved, since the one it was in, *His sacking, announced on
+Tuesday, has come after a 1–4 defeat*, has three causes more. And a word the lexicon lists is
 never looked up in WordNet, which is so that *can* and *will* do not
 become nouns; the cost is that *visit* and *walk*, listed as verbs only,
 have no noun, and *the visit was bad* has no reading.

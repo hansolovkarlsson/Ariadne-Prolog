@@ -32,8 +32,8 @@
 % guessed(What, Entry): a word missing from the lexicon, placed for the
 % length of one check, from WordNet when it is loaded or else by its ending;
 % see guess.pl. What is noun, verb(Frames), adj or adv, with the stem as
-% Entry, or irregular_plural, irregular_form or doubles, for WordNet's
-% irregular forms; or name, for a word the sentence capitalizes, which is a
+% Entry, or irregular_plural, irregular_form, base_participle or doubles,
+% for WordNet's irregular forms; or name, for a word the sentence capitalizes, which is a
 % name for that check whether the lexicon lists it or not; see names/3 in
 % check.pl. The open classes and the spelling rules below each end
 % with a clause that reads it.
@@ -457,6 +457,7 @@ irregular_participle(eat, eaten).     irregular_participle(drink, drunk).
 irregular_participle(write, written). irregular_participle(see, seen).
 irregular_participle(know, known).    irregular_participle(bite, bitten).
 irregular_participle(give, given).    irregular_participle(show, shown).
+irregular_participle(Base, Base) :- guessed(base_participle, Base).
 irregular_participle(Base, P) :- guessed(irregular_form, Base-P).
 
 % irregular_third(Base, Form): the -s form, where the rule does not make it.

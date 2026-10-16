@@ -103,6 +103,23 @@ same_form_past(W) :-
     atom_concat(P, V, W),
     memberchk(P, ['', broad, fore, re, up, off, in, out, mis, over, under, tele]), !.
 
+% A verb whose participle is its base and whose past is not, come and
+% run and the same verbs with a prefix, become, overcome, outrun, has
+% only its past in verb.exc, came, ran, and nothing tells it from fling,
+% whose one listed form is past and participle both; so "has come" had
+% no participle. same_form_participle/1 says which. The entry gives the
+% participle alone, so "the dog come" is still no past; and it is given
+% for the past too, since the participle is taken first, or "has came"
+% would read with came as the participle as well as the past.
+wordnet_entry(W, base_participle-W) :- wn_verb(W, _), same_form_participle(W).
+wordnet_entry(W, base_participle-B) :-
+    wn_irregular(verb, W, B), wn_verb(B, _), same_form_participle(B).
+
+same_form_participle(W) :-
+    member(V, [come, run]),
+    atom_concat(P, V, W),
+    memberchk(P, ['', be, over, out, re, under]), !.
+
 % closed_up(+Word, -Closed): Word has a hyphen inside it, and Closed is
 % Word without its hyphens: north-eastern and northeastern. WordNet writes
 % many such words one way only, and a text the other, so a hyphenated
