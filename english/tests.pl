@@ -778,6 +778,11 @@ good('They saw us.').
 readings('The US dog sleeps.', 1).
 bad('THE DOG SLEEPS.',                     no_reading).
 
+% Curly quotation marks are punctuation, as straight ones are.
+good('“The dog sleeps.”').
+good('Alice likes ‘the dog’.').
+readings('“The dog sleeps.”', 1).
+
 % A verb whose participle is its base and its past is not, from WordNet.
 wordnet_good('The dog has come.').
 wordnet_good('The dog has become big.').

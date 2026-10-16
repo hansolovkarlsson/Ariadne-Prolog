@@ -457,7 +457,10 @@ atomic_list_concat(List, Sep, Atom) :-
 /*  char_type(?Char, ?Type) and code_type(?Code, ?Type), as SWI-Prolog and
     the Edinburgh systems before it have them. ASCII is classified exactly.
     A character past ASCII counts as a letter, since in text read as UTF-8
-    most of them in words are. Case comes from the interpreter's table,
+    most of them in words are, except in the blocks Unicode gives to
+    punctuation, spaces and symbols, which '$ctype_other'/2 lists: curly
+    quotation marks, dashes and the ellipsis are punct, a no-break space
+    is a space. Case comes from the interpreter's table,
     '$code_case'/3, which upcase_atom/2 and downcase_atom/2 read too: ASCII,
     Latin-1, Latin Extended-A, Greek and basic Cyrillic. A character is
     upper or lower when the table maps it to another. With the character
@@ -494,24 +497,59 @@ code_type(C, Type) :-
 '$ctype'(X, csymf)       :- ( '$ctype_letter'(X) -> true ; X =:= 0'_ ).
 '$ctype'(X, ascii)       :- X < 128.
 '$ctype'(X, white)       :- ( X =:= 0'  -> true ; X =:= 9 ).
-'$ctype'(X, space)       :- ( X =:= 0'  -> true ; X >= 9, X =< 13 ).
+'$ctype'(X, space)       :- ( X =:= 0'  -> true ; X >= 9, X =< 13 -> true ; '$ctype_other'(X, space) ).
 '$ctype'(X, end_of_line) :- ( X =:= 10 -> true ; X =:= 13 ).
-'$ctype'(X, cntrl)       :- ( X < 32 -> true ; X =:= 127 ).
+'$ctype'(X, cntrl)       :- ( X < 32 -> true ; X =:= 127 -> true ; '$ctype_other'(X, cntrl) ).
 '$ctype'(X, digit(W))    :- '$ctype_digit'(X), W is X - 0'0.
 '$ctype'(X, upper)       :- '$code_case'(X, L, _), L =\= X.
 '$ctype'(X, upper(L))    :- '$code_case'(X, L0, _), L0 =\= X, L = L0.
 '$ctype'(X, lower)       :- '$code_case'(X, _, U), U =\= X.
 '$ctype'(X, lower(U))    :- '$code_case'(X, _, U0), U0 =\= X, U = U0.
-'$ctype'(X, punct)       :- X >= 33, X =< 126, \+ '$ctype_letter'(X), \+ '$ctype_digit'(X).
-'$ctype'(X, graph)       :- ( X >= 33, X =< 126 -> true ; X > 127 ).
-'$ctype'(X, print)       :- ( X >= 32, X =< 126 -> true ; X > 127 ).
+'$ctype'(X, punct)       :- ( X >= 33, X =< 126 -> \+ '$ctype_letter'(X), \+ '$ctype_digit'(X)
+                            ;   '$ctype_other'(X, punct) ).
+'$ctype'(X, graph)       :- ( X >= 33, X =< 126 -> true ; X > 127, \+ '$ctype_other'(X, space), \+ '$ctype_other'(X, cntrl) ).
+'$ctype'(X, print)       :- ( X >= 32, X =< 126 -> true ; X > 127, \+ '$ctype_other'(X, cntrl) ).
 '$ctype'(X, period)      :- ( X =:= 0'. -> true ; X =:= 0'! -> true ; X =:= 0'? ).
 '$ctype'(X, quote)       :- ( X =:= 0'' -> true ; X =:= 0'" -> true ; X =:= 0'` ).
 '$ctype'(X, paren)       :- ( X =:= 0'( -> true ; X =:= 0') ).
 '$ctype'(X, to_lower(L)) :- '$code_case'(X, L, _).
 '$ctype'(X, to_upper(U)) :- '$code_case'(X, _, U).
 
-'$ctype_letter'(X) :- ( X >= 0'a, X =< 0'z -> true ; X >= 0'A, X =< 0'Z -> true ; X > 127 ).
+'$ctype_letter'(X) :-
+    (   X >= 0'a, X =< 0'z -> true
+    ;   X >= 0'A, X =< 0'Z -> true
+    ;   X > 127, \+ '$ctype_other'(X, _)
+    ).
+
+% '$ctype_other'(+Code, -Type): a code past ASCII that is no letter, and
+% whether it is a control, a space or punctuation, the last standing for
+% symbols too, as in ASCII: by the blocks Unicode sets aside for them.
+% Latin-1's are listed one by one, since ª, µ and º among them are
+% letters; the rest go by block.
+'$ctype_other'(X, cntrl) :- X >= 0x80, X =< 0x9F, !.
+'$ctype_other'(X, space) :- '$ctype_space'(X), !.
+'$ctype_other'(X, punct) :- X >= 0xA1, X =< 0xBF, X =\= 0xAA, X =\= 0xB5, X =\= 0xBA, !.
+'$ctype_other'(X, punct) :- ( X =:= 0xD7 ; X =:= 0xF7 ), !.
+'$ctype_other'(X, punct) :- '$ctype_symbols'(X).
+
+'$ctype_space'(0xA0).
+'$ctype_space'(X) :- X >= 0x2000, X =< 0x200B.
+'$ctype_space'(0x2028). '$ctype_space'(0x2029).
+'$ctype_space'(0x202F). '$ctype_space'(0x205F). '$ctype_space'(0x3000).
+
+% General Punctuation, currency, arrows to technical symbols, box drawing
+% to dingbats, Supplemental Punctuation, CJK punctuation, the fullwidth
+% punctuation, the specials, and the emoji and pictographs.
+'$ctype_symbols'(X) :- X >= 0x2010, X =< 0x206F, \+ '$ctype_space'(X).
+'$ctype_symbols'(X) :- X >= 0x20A0, X =< 0x20CF.
+'$ctype_symbols'(X) :- X >= 0x2190, X =< 0x23FF.
+'$ctype_symbols'(X) :- X >= 0x2500, X =< 0x27BF.
+'$ctype_symbols'(X) :- X >= 0x2E00, X =< 0x2E7F.
+'$ctype_symbols'(X) :- X >= 0x3001, X =< 0x303F.
+'$ctype_symbols'(X) :- X >= 0xFF01, X =< 0xFF0F.
+'$ctype_symbols'(X) :- X >= 0xFF1A, X =< 0xFF20.
+'$ctype_symbols'(X) :- X >= 0xFFF0, X =< 0xFFFF.
+'$ctype_symbols'(X) :- X >= 0x1F000, X =< 0x1FAFF.
 '$ctype_digit'(X)  :- X >= 0'0, X =< 0'9.
 
 concat_atom(L, A) :- atomic_list_concat(L, A).

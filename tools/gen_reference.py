@@ -461,7 +461,9 @@ BUILTINS = [
      "`space`, `white`, `end_of_line`, `upper`, `upper(Lower)`, `lower`, "
      "`lower(Upper)`, `to_lower(L)`, `to_upper(U)`, `punct`, `graph`, `print`, "
      "`cntrl`, `csym`, `csymf`, `ascii`, `period`, `quote` or `paren`. ASCII is "
-     "classified exactly; a character past ASCII counts as a letter. Case is "
+     "classified exactly. Past it, Unicode's punctuation and symbol blocks are "
+     "`punct`, so a curly quotation mark or a dash is no letter, its spaces "
+     "are `space`, and every other character counts as a letter. Case is "
      "read from the table `upcase_atom/2` uses, so `char_type('Î', upper(L))` "
      "gives `L = 'î'`. Either argument may be unbound: `findall(C, "
      "char_type(C, digit(_)), L)` gives the ten digits."),
@@ -967,8 +969,9 @@ section('limits', 'Deviations and limits', ''.join([
         "Letters have case in ASCII, Latin-1, Latin Extended-A, Greek and "
         "Cyrillic U+0400 to U+045F only, the table `upcase_atom/2`, "
         "`downcase_atom/2` and `char_type/2` share; SWI-Prolog cases every "
-        "script Unicode does. A character past ASCII is a letter for "
-        "`char_type/2` whatever it is.",
+        "script Unicode does. Past ASCII, `char_type/2` goes by block, and "
+        "counts as a letter a character in no block of punctuation, spaces "
+        "or symbols; SWI-Prolog reads each character's own category.",
     ]),
     '<h3>Predicates that are absent</h3>',
     ul([

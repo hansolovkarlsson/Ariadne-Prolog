@@ -1361,3 +1361,16 @@ word, *the US army*, *the IT department*; not in a sentence written all
 in capitals, where every word is. The corpus gives **12 grammatical, 30
 not, and 8 unknown**, *The bombing killed six US NATO service members
 and injured several others* the new pass.
+
+Curly quotation marks were next, and they were not the checker's fault.
+The interpreter's `char_type/2` counted every character past ASCII as a
+letter, so *“Open* was one word, and so were the en dash in *1–4* and the
+dash after *THE HAGUE*, three of the causes under words and characters
+with one cause between them. Unicode's punctuation, space and symbol
+blocks are punctuation now, as SWI-Prolog has them, and the checker
+skips them as it skips straight quotation marks. The corpus gives **13
+grammatical, 32 not, and 5 unknown**: *IBM's new product is called “Open
+Client Offering”* passes, and the sentences with the two dashes now fail
+on their other causes, *has come after a 1–4 defeat* on the comma
+phrase before it and the score before a noun, the dateline on its
+appositive and its *to*-infinitive after a noun.

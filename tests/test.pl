@@ -320,6 +320,13 @@ test(at_code_type,    (code_type(0'A, to_lower(L)), L =:= 0'a, code_type(0'\n, e
                        code_type(a, alpha),
                        catch(char_type(ab, alpha), error(type_error(character, ab), _), true))).
 test(at_char_type_utf8,(char_type('é', alpha), \+ char_type('é', upper))).
+test(at_char_type_unicode_punct,
+                      (\+ char_type('\x201C\', alpha), char_type('\x201D\', punct),
+                       char_type('\x2013\', punct), char_type('\x2014\', punct),
+                       char_type('\x2026\', punct), char_type('\xAB\', punct),
+                       char_type('\xB5\', alpha), char_type('\x416\', alpha),
+                       char_type('\xA0\', space), \+ char_type('\xA0\', graph),
+                       \+ char_type('\xA0\', alpha), code_type(0x2019, punct))).
 test(at_join_many,    (numlist(1, 50000, L), atomic_list_concat(L, ',', A),
                        atom_length(A, N), N =:= 288893)).
 test(at_sub_atom,     (sub_atom(abcde, 1, 3, A, S), S == bcd, A =:= 1)).

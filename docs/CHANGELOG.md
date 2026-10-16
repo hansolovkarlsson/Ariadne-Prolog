@@ -62,6 +62,16 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Fixed
 
+- **`char_type/2` took Unicode's punctuation for letters.** Every
+  character past ASCII was `alpha`, so a curly quotation mark, an en or
+  em dash and the ellipsis were letters, and the grammar checker read
+  *“Open* and *1–4* as words. The blocks Unicode sets aside for
+  punctuation and symbols are `punct` now, its spaces, the no-break
+  space among them, `space`, and the C1 controls `cntrl`, as SWI-Prolog
+  has them; `graph` and `print` follow. Letters past ASCII, *é*, *Ж*,
+  *µ*, are as they were. 339 tests. The third corpus gives 13, 32 and
+  5; 697 grammar checks, 704 with WordNet.
+
 - ***US* was the pronoun *us*.** A closed-class word is never a name,
   which keeps a capital at the start of a sentence from making one, and
   so *six US NATO service members* had no reading. A word of two letters
