@@ -1486,6 +1486,75 @@ filled top down and a call's answers are found whole before they are
 kept, so a rule that called itself where it started would still loop.
 That is tabling's, and the roadmap now says so.
 
+## Day thirteen: stage 2's three leftovers, and a third corpus, news
+
+Thirteen days after day twelve, on 2026-10-16. The tree was as the
+standup had left it, and `make check` and `make english` gave its numbers
+exactly, 338 and 616. The standup listed nothing small; the roadmap
+still listed three pieces stage 2 had left out on 2026-09-29, which the
+standup had not carried, and they were taken first, as small and ready.
+
+*The park in which the dog walks* came first. The grammar's gap had only
+ever been a noun phrase, so a second kind went in beside it, `ppgap`, a
+whole prepositional phrase missing, with two relative clauses that read
+a preposition and *which* or *whom* and then a statement carrying it.
+The first version placed the new gap wherever a prepositional phrase
+could stand, and *the park in which the dog sleeps in the garden* had
+two readings, the gap before *in the garden* and after it, which nothing
+in the words tells apart. The fix was to place it in two places only,
+the predicate after *be* and the last of the modifiers, so it gives one
+reading. The question form was asked for next, and explained before it
+was built: *in which park does the dog sleep* is a fourth `wh_question`
+clause over the same gap, and needed nothing new where the gap lands.
+
+*The king of France's dog* was one clause, phrases after a possessor
+with a determiner and before its *'s*, and it showed that the grammar
+had read the sentence all along, the other way: *the king of [France's
+dog]*. Both readings are English, so both are kept, as *Sedan* keeps its
+seven. The possessive is a chain read left to right, so nothing called
+itself on the left.
+
+*Who* against *which* was larger than the roadmap's note, "every noun
+marked as a person or a thing", and also smaller, since `person/1`
+already marked persons, from WordNet's `wn_person/1`. The question was
+whether WordNet could mark things, and the measurement said no. A noun
+with any sense among persons, animals or groups lets *book* through,
+which has a group sense, and *park*, which has Mungo Park; first sense
+only flags *star*; the first two senses let *table* and *town* through
+and flag *legend*, which has no person sense at all, though *a legend
+who sang* is ordinary English. Even the most cautious rule refused
+*legend*. *Which* after a person, read from the first sense, was clean
+but for *character*. Hans chose *which* only, and that went in, checked
+after the relative clause is read where the head noun is known, so the
+chart's table did not change. *A character which appears* is refused,
+and is written down as the rule's cost.
+
+With the roadmap's grammar list empty, the next thing was the standup's
+open decision, a third corpus, and Hans took it. The rule was written
+down before any text was drawn: English Wikinews, news, a register the
+grammar had not met; the random list, published articles only, the
+first two sentences after the dateline, verbatim, by the checker's own
+splitter, 25 articles. Two things went wrong in the drawing. The first
+fetch kept only each article's first paragraph, which was not the rule,
+and showed thirteen articles with one sentence; the same 40 were fetched
+again whole, in the same order, rather than drawn again, which would
+have chosen the text after seeing it. And the first requests carried
+Hans's email address in their User-Agent, which nobody had agreed to
+send; the later ones carry the project's public URL, which is also what
+stopped Wikimedia's rate limit. The corpus gave **9 grammatical, 31 not
+and 10 unknown**, in 8.7 seconds, where the second corpus began at none,
+19 and 31.
+
+The splitter cut three of its sentences wrongly, after *Inc.*, after
+*Rep.*, and at an ellipsis inside a quotation; a list would have taken
+*Inc.*, and was refused because the same article has *Red Hat Inc. It
+is*, where it ends a sentence. What tells is what comes after: a word in
+lower case does not begin a sentence, so a piece followed by one goes
+on, and titles before a name, which a capital follows, are listed. Run
+old against new over the full text of all 40 articles drawn, the new
+splitter changed nine cuts and each was a mend, and the corpus came out
+as the file had it with no hand corrections.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1496,8 +1565,8 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 616 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
-| `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of `english/corpus.txt` and the fifty of `english/corpus2.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
+| `make english` | The grammar checker's 662 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
+| `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of each of `english/corpus.txt`, `english/corpus2.txt` and `english/corpus3.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
 

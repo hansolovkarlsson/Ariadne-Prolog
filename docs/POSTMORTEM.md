@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Fifty-nine defects, in five cohorts that failed for five different reasons:
+Sixty defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -31,12 +31,13 @@ Fifty-nine defects, in five cohorts that failed for five different reasons:
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
   by asking what a check could reach.
-- **Scale**: eighteen defects that no test was large enough to meet, a fixed
+- **Scale**: nineteen defects that no test was large enough to meet, a fixed
   buffer, a recursion on the C stack, a cost that grew with the square or a
   fixed allocation, ten found on 2026-09-27, nine of them by probing a
   neighbour of the defect before, three on 2026-09-29, one on 2026-10-01,
   three on 2026-10-02, each a rule that was cheap until the search
-  reached past it, and one on 2026-10-03 of the same kind.
+  reached past it, one on 2026-10-03 of the same kind, and one on
+  2026-10-16, the sentence splitter again, on text it had not met.
 
 ## Cohort A — the design era
 
@@ -396,7 +397,7 @@ the only evidence that it can.
 
 ## Cohort E: scale
 
-Eighteen defects that no test was large enough to meet, ten of them found on
+Nineteen defects that no test was large enough to meet, ten of them found on
 2026-09-27. The first nine came one from another: each fix was followed by probing the same shape a
 step further, at a million elements or a million levels, and the probe found
 the next.
@@ -717,6 +718,30 @@ assert after, is what the chart does.
 layer meant to give the same answers faster is checked by counting its
 answers, all of them, against the layer it replaces.
 
+### A splitter that took *Inc.*, *Rep.* and an ellipsis for ends
+
+The splitter learned the shape of an abbreviation on 2026-09-30, after
+the second corpus: initials, a short word before a number, and a short
+list. News met it with three more. *International Business Machines
+Inc. said* was cut after *Inc.*, *Rep. Duncan Hunter* after *Rep.*, and
+*we are investigating ... but he is being released* at the ellipsis.
+*Inc.* could not be listed: the same article has *Red Hat Inc. It is*,
+where it ends the sentence. What tells is the next word. A sentence does
+not begin in lower case, so a piece that ends as a sentence does and is
+followed by a word in lower case now goes on; titles before a name,
+which a capital follows, are listed (`1b38db4`).
+
+Found on 2026-10-16 by cutting a newly drawn corpus, fifty sentences
+from English Wikinews, with the checker's own splitter and reading the
+cuts against the source, as the second corpus was. The fix was checked
+the same way, old splitter against new over the full text of all 40
+articles drawn: nine cuts changed, each a mend.
+
+*What this says:* the splitter's earlier entry said a longer list would
+move the problem rather than end it, and it did move: to the next
+register. Shape answered it there too, but a different shape, the word
+after the stop rather than the word before it.
+
 ## What found what
 
 | Found by | Count |
@@ -734,6 +759,7 @@ answers, all of them, against the layer it replaces.
 | Timing each sentence of a corpus against the commit before, then cutting the slow one down until the cost moved | 4 |
 | A corpus count pinned in the runner, which fails the build when a sentence moves | 1 |
 | Cutting a refused corpus sentence into pieces and checking each | 2 |
+| Cutting a newly drawn corpus with the checker's own splitter, and reading the cuts against the source | 1 |
 | Diffing a corpus run's verdicts and counts of readings against the commit before | 1 |
 | A check taking minutes where it had taken seconds, then counting one sentence's parses against the commit before | 1 |
 | CI's first run (matrix, `-Werror`, sanitizer configuration) | 3 |
@@ -749,7 +775,7 @@ answers, all of them, against the layer it replaces.
 
 Three things stand out.
 
-**The test suite found four of fifty-nine.** It is a good suite, 334 tests
+**The test suite found four of sixty.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong
