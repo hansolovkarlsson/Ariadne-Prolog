@@ -1320,3 +1320,19 @@ appositive after *Italy's lower house*, a *to*-infinitive of purpose,
 to be the defects and the words: *come*, *himself*, *US*, curly quotation
 marks and *police*. The largest causes are the numbers, which are many
 small things, and the comma after a noun phrase.
+
+A quantity after a definite determiner or a possessor went first: *the
+three Romanian journalists*, *their seven encounters*, *these two dogs*,
+*Alice's three dogs*, and *few* and *many* the same way, *the many
+dogs*. After a determiner the two words are one determiner, as *about
+six* is, so the noun agrees with it and *the three dog* is refused for
+that; after a possessor the noun agrees with the quantity. A number in
+digits was read there already, among the modifiers, *the 2020 census*,
+and is not read again. *These* and *those* take a plural quantity only.
+*The two hundred dogs* still has no reading, nor *the past few days*,
+where an adjective comes before the quantity. The corpus gives **10
+grammatical, 30 not, and 10 unknown**, *The three Romanian journalists
+kidnapped in Iraq on March 28 were freed yesterday* the new pass, with
+one reading; no other sentence of the three corpora moved, nor its count
+of readings. *Their seven encounters* now reads, and the sentence it is
+in waits for *ranked number one*.

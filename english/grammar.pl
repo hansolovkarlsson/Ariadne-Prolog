@@ -366,6 +366,15 @@ det_np(Agr, np(poss(P), N), V0, V) -->
     possessor(P, V0, V1),
     nominal(Num, _, _, N, V1, V),
     { agr_of(Num, Agr) }.
+% A possessor before a quantity, "Alice's three dogs", "the farmer's many
+% cows", which the noun agrees with as it would with a determiner.
+det_np(Agr, np(poss(P), nom([num(W)|As], n(Head), Posts)), V0, V) -->
+    possessive_ahead,
+    possessor(P, V0, V1),
+    [W], { quantity(W, QNum) },
+    nominal(Num, _, Head, nom(As, n(Head), Posts), V1, V2),
+    { agree(det_noun(W, Head), QNum, Num, V2, V),
+      agr_of(Num, Agr) }.
 
 % apposition(-Tree, V0, V): a noun phrase a comma sets beside a name to say
 % what the name is: "Mukesh Ambani, chairman of Reliance Industries",
@@ -494,7 +503,9 @@ names_only(nom([A|As], n(H), _)) :-
 % determiner(-Det, -Number, -Sound): a determiner; such before a or an,
 % "such a sunset"; a number that takes one before it, "a hundred", "two
 % thousand"; or a number with a word before it that makes it rough,
-% "about six". Each two-word one counts as one word.
+% "about six"; or a definite determiner before a quantity, "the three
+% Romanian journalists", "their seven encounters", "these few dogs". Each
+% two-word one counts as one word.
 determiner(D, DNum, DSound) --> [D], { det(D, DNum, DSound) }.
 determiner(D, sg, S) -->
     [such, A], { ( A == a ; A == an ), det(A, sg, S),
@@ -505,6 +516,24 @@ determiner(D, pl, _) -->
 determiner(D, Num, _) -->
     [A, N], { approximator(A), number_word(N, Num),
               atomic_list_concat([A, N], ' ', D) }.
+determiner(D, Num, _) -->
+    [A, N], { definite_det(A, ANum), quantity(N, Num), ANum = Num,
+              atomic_list_concat([A, N], ' ', D) }.
+
+% definite_det(Word, Number): a determiner that may stand before a
+% quantity, "the three", "those few", "our many"; these and those only
+% before a plural one.
+definite_det(the, _).
+definite_det(these, pl). definite_det(those, pl).
+definite_det(D, _) :- memberchk(D, [my, your, his, her, its, our, their]).
+
+% quantity(Word, Number): a number in words, or few or many, which may
+% follow a definite determiner or a possessor, "the three dogs", "Alice's
+% many friends". A number in digits is not one, as it is read already
+% among the modifiers, "the 2020 census", see leading_number//1.
+quantity(W, Num) :- number_word(W, Num), \+ digits(W).
+quantity(few, pl).
+quantity(many, pl).
 
 % approximator(Word): a word that goes before a number to say it is not
 % exact, "about 2,850 people", "nearly six years", "over a thousand" not

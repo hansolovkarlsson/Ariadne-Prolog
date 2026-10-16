@@ -43,6 +43,15 @@ There are no releases yet, so entries are grouped by the day they landed on
   with the other two and records 9 grammatical, 31 not and 10 with an
   unknown word. The splitter cut three sentences wrongly, a finding.
 
+- **A quantity after a determiner or a possessor.** *The three Romanian
+  journalists*, *their seven encounters*, *these two dogs*, *Alice's
+  three dogs*, *the many dogs*. After a definite determiner the two
+  words are one determiner, so *the three dog* is refused as *these dog*
+  is; after a possessor the noun agrees with the quantity. *These* and
+  *those* take a plural one only. The third corpus gives 10, 30 and 10,
+  one sentence the new pass and no other sentence or count of readings
+  moved. 675 checks, 682 with WordNet.
+
 ### Fixed
 
 - ***Has come*, from WordNet.** *Come*, *run* and the same verbs after a

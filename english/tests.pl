@@ -738,6 +738,21 @@ answers('The dog in the garden that barks is old.', 2, 2).
 answers('The dogs chased by the cat barks.', 0, 1).
 answers('Alice gave Bob 3 dogs.', 8, 8).
 
+% A quantity after a definite determiner or a possessor.
+good('The three dogs sleep.').
+good('Their seven dogs sleep.').
+good('These two dogs sleep.').
+good('The one dog sleeps.').
+good('The few dogs sleep.').
+good('Alice\'s three dogs sleep.').
+good('I saw the three dogs that Alice likes.').
+good('The three dogs and two cats sleep.').
+readings('The three dogs sleep.', 1).
+readings('Alice\'s three dogs sleep.', 1).
+bad('The three dog sleeps.',               det_noun('the three', dog)).
+bad('Alice\'s three dog sleeps.',          det_noun(three, dog)).
+bad('These one dog sleeps.',               no_reading).
+
 % A verb whose participle is its base and its past is not, from WordNet.
 wordnet_good('The dog has come.').
 wordnet_good('The dog has become big.').

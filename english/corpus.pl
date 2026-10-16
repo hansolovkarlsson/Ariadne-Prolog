@@ -32,7 +32,7 @@
 % and the record is brought up to date with it.
 recorded('english/corpus.txt', 50, 0, 0).
 recorded('english/corpus2.txt', 49, 0, 1).
-recorded('english/corpus3.txt', 9, 31, 10).
+recorded('english/corpus3.txt', 10, 30, 10).
 
 corpus :-
     corpus('english/corpus.txt'),

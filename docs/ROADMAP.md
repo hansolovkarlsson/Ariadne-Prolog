@@ -184,7 +184,8 @@ These change the shape of the system rather than adding to it.
        *musician Michael Jackson* (9); a *to*-infinitive of purpose or
        after a noun (6); a bare singular noun, *on trial* (6); verb
        frames, *described as* (6); a quantity after a determiner or with
-       *of*, *the three journalists*, *many of the rockets* (6); words
+       *of*, *many of the rockets* (5, *the three journalists* done
+       2026-10-16; left, *the past few days*, *the two hundred*); words
        and characters, *himself*, *US*, curly quotes, *police* (13, each
        small); quoted speech (2); a comma phrase at the end (3).
 
