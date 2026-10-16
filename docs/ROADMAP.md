@@ -166,9 +166,9 @@ These change the shape of the system rather than adding to it.
      A third corpus, news, fifty sentences from 25 articles drawn at
      random from English Wikinews by a rule fixed before the text was
      seen, went in on 2026-10-16: 9 grammatical, 31 not, 10 with a word
-     nothing knows. What it asks, in `english/README.md`:
-     - the splitter's three wrong cuts, after *Inc.*, after *Rep.*, and
-       at an ellipsis inside a quotation;
+     nothing knows. The splitter's three wrong cuts in it, after *Inc.*,
+     after *Rep.* and at an ellipsis, were mended the same day. What it
+     asks, in `english/README.md`:
      - each failing sentence cut down until its cause shows, and the
        record by cause written, as for the second corpus;
      - then the causes, one at a time, by how many sentences each holds.

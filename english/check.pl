@@ -455,6 +455,10 @@ stream_lines(In, Lines) :-
 % last word of a sentence. A list alone had to choose for "no." and
 % "etc.", and each ends real sentences often enough to join two that
 % should stay apart; "no." before a number is now caught by its shape.
+% And a piece that ends as a sentence does, but is followed by a word in
+% lower case, goes on: "Business Machines Inc. said", "investigating ...
+% but he is", "\"Who?\" she asked". Inc. is not listed, as it ends a
+% sentence as often as not, "Red Hat Inc. It is"; what comes after tells.
 text_sentences(Text, Ss) :-
     atom_chars(Text, Cs),
     split_sentences(Cs, Ss0),
@@ -470,6 +474,9 @@ join_abbreviations([], []).
 % joins(+Piece, +Next): Piece ends in an abbreviation, and Next goes on
 % the same sentence.
 joins(S1, S2) :-
+    atom_chars(S2, [C|_]), char_type(C, lower(_)),
+    atom_chars(S1, Cs1), reverse(Cs1, Rs1), ends_sentence(Rs1), !.
+joins(S1, S2) :-
     atomic_list_concat(Parts, ' ', S1), last(Parts, W0),
     atom_chars(W0, Cs0), exclude(opener, Cs0, Cs),
     atom_chars(W1, Cs), downcase_atom(W1, W),
@@ -481,6 +488,12 @@ joins(S1, S2) :-
         maplist(letter, Letters),
         atom_chars(S2, Next), starts_number(Next)
     ).
+
+% ends_sentence(+ReversedChars): the piece ends with a full stop, question
+% mark or exclamation mark, and perhaps closing quotes or brackets after
+% it; a heading that ends without one is not joined to the next line.
+ends_sentence([C|Cs]) :- closer(C), !, ends_sentence(Cs).
+ends_sentence([C|_]) :- sentence_end(C).
 
 % starts_number(+Chars): a number comes first, "5" or "#8".
 starts_number([D|_]) :- digit(D).
@@ -498,6 +511,12 @@ abbreviation('dr.'). abbreviation('prof.'). abbreviation('st.').
 abbreviation('jr.'). abbreviation('sr.'). abbreviation('vs.').
 abbreviation('e.g.'). abbreviation('i.e.'). abbreviation('lit.').
 abbreviation('cf.').
+% Titles before a name, "Rep. Duncan Hunter", which a capital follows and
+% which seldom end a sentence.
+abbreviation('rep.'). abbreviation('sen.'). abbreviation('gov.').
+abbreviation('gen.'). abbreviation('col.'). abbreviation('lt.').
+abbreviation('sgt.'). abbreviation('capt.'). abbreviation('rev.').
+abbreviation('hon.').
 
 split_sentences([], []) :- !.
 split_sentences(Cs, Ss) :-

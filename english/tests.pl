@@ -753,6 +753,15 @@ splits('It is No. 5 on the list.', ['It is No. 5 on the list.']).
 splits('I said no. Then she left.', ['I said no.', 'Then she left.']).
 splits('The dog barks. 3 cats sleep.', ['The dog barks.', '3 cats sleep.']).
 splits('... 42. -- !', []).
+splits('The representatives of Business Machines Inc. said it would.',
+       ['The representatives of Business Machines Inc. said it would.']).
+splits('It was made with Red Hat Inc. It is new.',
+       ['It was made with Red Hat Inc.', 'It is new.']).
+splits('We are investigating ... but he is free. It ended.',
+       ['We are investigating ... but he is free.', 'It ended.']).
+splits('"Who?" she asked. Nobody knew.', ['"Who?" she asked.', 'Nobody knew.']).
+splits('Rep. Duncan Hunter called a vote.', ['Rep. Duncan Hunter called a vote.']).
+splits('A Heading\n\nthe dog barks.', ['A Heading', 'the dog barks.']).
 splits('', []).
 
 % verdict(+Text, -V): grammatical, unknown (a word outside the lexicon that

@@ -1182,7 +1182,15 @@ The splitter cut three of the fifty in the wrong place: after *Inc.* in
 Hunter*, and at an ellipsis inside a quotation, *we are investigating ...
 but he is being released*. The file keeps the true sentences, and the
 three cuts are a finding of their own. One sentence keeps the source's
-typing, *the arrest.We don't know*, as the rule says verbatim.
+typing, *the arrest.We don't know*, as the rule says verbatim. Since the
+same day the splitter cuts all three right: a piece that ends as a
+sentence does but is followed by a word in lower case goes on, which
+mends *Inc. said* and the ellipsis without listing *Inc.*, since *Red Hat
+Inc. It is* ends a sentence in the same article; and ten titles that come
+before a name, *Rep.*, *Sen.*, *Gov.* and their kind, are listed. Over all
+40 articles drawn, the new splitter changed nine cuts and every one was a
+mend, among them *Pathetic!" yelled Rep. Martin T. Meehan*, which had been
+cut twice; the fifty sentences come out as the file has them.
 
 On 2026-10-16, **9 were grammatical, 31 were not, and 10 had a word in
 neither the lexicon nor WordNet**, in 8.7 seconds. Corpus 2 began at none,

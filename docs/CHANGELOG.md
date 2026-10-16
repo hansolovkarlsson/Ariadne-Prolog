@@ -43,6 +43,16 @@ There are no releases yet, so entries are grouped by the day they landed on
   with the other two and records 9 grammatical, 31 not and 10 with an
   unknown word. The splitter cut three sentences wrongly, a finding.
 
+### Fixed
+
+- **The splitter's three wrong cuts in the third corpus.** A piece that
+  ends as a sentence does, followed by a word in lower case, goes on:
+  *Business Machines Inc. said*, *investigating ... but he is*, *"Who?"
+  she asked*. Ten titles before a name are listed, *Rep.*, *Sen.*,
+  *Gov.* and their kind. Over the 40 Wikinews articles drawn it changes
+  nine cuts, each a mend, and the corpus comes out as the file has it.
+  662 checks.
+
 ## 2026-10-03
 
 ### Added
