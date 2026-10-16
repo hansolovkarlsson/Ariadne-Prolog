@@ -285,6 +285,14 @@ end of this file.
   the mouse*. The verb of a relative clause with no subject agrees with the
   noun: *the dogs that chase*, not *the dogs that chases*. *Whom* stands only
   for an object: *whom did Alice see*, not *whom chased the cat*.
+- **A preposition may go before the relative or question word**: *the
+  park in which the dog sleeps*, *the man with whom Alice walks*, *the
+  park, in which the dog sleeps, is big*, *in which park does the dog
+  sleep*, *with whom did Alice walk*; with *which*, *whom* or *what*,
+  never *that* or *who*, so *the park in that the dog sleeps* and *with
+  who did Alice walk* have no reading. The clause then lacks a
+  prepositional phrase rather than a noun phrase, so *the park in which
+  the dog chased* has none either.
 
 It says nothing about meaning. *Colorless green ideas sleep furiously* is
 grammatical here, as it is in English.
@@ -311,8 +319,15 @@ A relative clause or a *wh*-question has **a gap**, threaded through the rules
 beside the violations: it is waiting to be placed until a noun phrase takes
 it, and a clause that must have one parses only if it was placed exactly
 once. It may be an object, or a preposition's object (*the park that the dog
-walks in*). A missing subject needs no gap at all, since what follows the
-relative or question word is then a verb phrase, which agrees with the noun
+walks in*). When the preposition goes first with the relative or question
+word, *the park in which the dog walks*, *in which park does the dog
+sleep*, the gap is a whole prepositional phrase, and only the predicate
+after *be* or the last of the modifiers after the verb takes it; it is
+kept last because nothing in the words shows where among the modifiers
+it would stand, and a gap free to go anywhere among them gave one
+reading for each place. A missing subject needs no gap at all, since what
+follows the relative or question word is then a verb phrase, which agrees
+with the noun
 it stands for as it would with a subject. English allows no gap inside a
 subject or one half of an *and*, and the rules place none there.
 

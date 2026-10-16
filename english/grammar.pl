@@ -26,6 +26,9 @@
     the object of a preposition; a missing subject is simpler, since the
     rest is only a verb phrase, and has rules of its own. No gap is placed
     inside a subject or in either half of an and, as English allows neither.
+    When a preposition goes before the relative word, "the park in which
+    the dog walks _", the gap is a whole prepositional phrase, ppgap, and
+    only a prepositional phrase can place it.
 
     Recursion is on the right throughout: a noun phrase is followed by its
     prepositional phrases and relative clause, never built from a smaller
@@ -191,6 +194,12 @@ wh_question(wh(W, Q), V0, V) -->
 wh_question(wh(whadv(A), Q), V0, V) -->
     [A], { wh_adverb(A) },
     question(Q, nogap, nogap, V0, V).
+% A preposition may go before what is asked for, and the question then
+% has a prepositional phrase missing: "in which park does the dog sleep
+% _", "with whom did Alice walk _". Not who, as in a relative clause.
+wh_question(wh(whpp(P, W), Q), V0, V) -->
+    preposition(P), wh_phrase(W, _, Word, _, V0, V1), { Word \== who },
+    question(Q, ppgap, nogap, V1, V).
 
 % wh_phrase(-Tree, -Agr, -Word, -Case, V0, V): who, whom, what, or which or
 % what before a noun, "which dogs".
@@ -808,6 +817,19 @@ relative(Agr, [rel(W, C)], V0, V) -->
     [','], [W], { nonrestrictive(W) },
     relative_body(Agr, W, C, V0, V),
     apposition_end.
+% A preposition may go before the relative word, and the clause then has
+% a prepositional phrase missing: "the park in which the dog walks", "the
+% man with whom Alice walks", and set off by a comma, "the park, in which
+% the dog walks, is big". The word is which or whom, never that or who.
+relative(_, [rel(pp(P, W), S)], V0, V) -->
+    preposition(P), [W], { pied_piped(W) },
+    statement(S, ppgap, nogap, V0, V).
+relative(_, [rel(pp(P, W), S)], V0, V) -->
+    [','], preposition(P), [W], { pied_piped(W) },
+    statement(S, ppgap, nogap, V0, V),
+    apposition_end.
+
+pied_piped(which). pied_piped(whom).
 % A clause with its relative word and be left out is a participle and
 % what follows it, passive, "a movie directed by Eldar Ryazanov", or in
 % -ing, "a network broadcasting from Dubai". The rule is entered only
@@ -1012,6 +1034,9 @@ predicate(AP, G, G, V, V) --> adj_group(AP).
 predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
 predicate(NP, G, G, V0, V) --> role_np(NP, V0, V).
 predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
+% The prepositional phrase a relative clause has missing, "the garden in
+% which the children were _".
+predicate(gap, ppgap, nogap, V, V) --> [].
 predicate(inf(VP), G0, G, V0, V) -->
     [to], verb_phrase(base, 2, to, VP, G0, G, V0, V).
 
@@ -1033,6 +1058,11 @@ modifiers([PP|Ms], G0, G, V0, V) -->
 modifiers([npadv(D, N)|Ms], G0, G, V0, V) -->
     [D, N], { adverbial_np(D, N) }, modifiers(Ms, G0, G, V0, V).
 modifiers([], G, G, V, V) --> [].
+% The prepositional phrase a relative clause has missing, "the park in
+% which the dog walks _". It is placed last, as nothing in the words
+% shows where among the modifiers it would stand, and a gap free to go
+% anywhere among them gave one reading for each place.
+modifiers([gap], ppgap, nogap, V, V) --> [].
 
 % A participle phrase a comma sets off, after the verb and what it takes:
 % "is a businesswoman, best known as the chairperson", "was a sitcom

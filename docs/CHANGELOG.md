@@ -6,6 +6,19 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-10-16
+
+### Added
+
+- **A preposition before the relative or question word.** *The park in
+  which the dog sleeps*, *the man with whom Alice walks*, the same set
+  off by commas, and *in which park does the dog sleep*, *with whom did
+  Alice walk*; not with *that* or *who*. The gap is then a whole
+  prepositional phrase, placed by the predicate after *be* or as the
+  last modifier after the verb, so it gives one reading and not one for
+  each place among the modifiers. One of the three things stage 2 left
+  out; two remain. 641 checks; both corpora unchanged, 50 and 49.
+
 ## 2026-10-03
 
 ### Added

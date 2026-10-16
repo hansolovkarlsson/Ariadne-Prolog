@@ -585,8 +585,10 @@ bracket(wh(W, C))          --> ['[SBARQ'], bracket(W), bracket(C), [']'].
 bracket(wh_pro(W))         --> ['[WHNP', W, ']'].
 bracket(wh_np(D, Nom))     --> ['[WHNP', D], nom(Nom), [']'].
 bracket(whadv(A))          --> ['[WHADVP', A, ']'].
+bracket(whpp(P, W))        --> ['[WHPP', P], bracket(W), [']'].
 bracket(rel(none, S))      --> ['[SBAR'], bracket(S), [']'].
-bracket(rel(W, C))         --> { W \== none }, ['[SBAR', W], bracket(C), [']'].
+bracket(rel(pp(P, W), C))  --> ['[SBAR', '[PP', P, '[NP', W, ']', ']'], bracket(C), [']'].
+bracket(rel(W, C))         --> { atom(W), W \== none }, ['[SBAR', W], bracket(C), [']'].
 bracket(gap)               --> ['_'].
 bracket(coord(C, Ts))      --> ['[NP'], joined_out(bracket, C, Ts), [']'].
 bracket(vp_coord(C, Ts))   --> ['[VP'], joined_out(bracket, C, Ts), [']'].

@@ -626,6 +626,33 @@ readings('The dog, which barks, sleeps.', 1).
 bad('The dog, that barks, sleeps.',         no_reading).
 bad('The dog, which barks sleeps.',         no_reading).
 bad('The dogs, which barks, sleep.',        subject_verb(barks)).
+% A preposition before the relative word, the gap a prepositional phrase.
+good('The park in which the dog sleeps is big.').
+good('The man with whom Alice walks sleeps.').
+good('I saw the box in which the cat sleeps.').
+good('The park, in which the dog sleeps, is big.').
+good('The garden in which the children were is big.').
+readings('The park in which the dog sleeps is big.', 1).
+readings('The park in which the dog sleeps in the garden is big.', 1).
+readings('The garden in which the children were yesterday is big.', 1).
+bad('The park in that the dog sleeps is big.',  no_reading).
+bad('The park in who the dog sleeps is big.',   no_reading).
+bad('The park in which sleeps is big.',         no_reading).
+bad('The park in which the dog chased is big.', no_reading).
+bad('The parks in which the dog sleep are big.', subject_verb(sleep)).
+% A preposition before what a question asks for.
+good('In which park does the dog sleep?').
+good('With whom did Alice walk?').
+good('In which box was the cat?').
+good('In which parks do the dogs sleep?').
+readings('In which park does the dog sleep?', 1).
+readings('In which box was the cat?', 1).
+readings('In which park is the dog sleeping?', 2).
+bad('With who did Alice walk?',             no_reading).
+bad('In which park the dog sleeps?',        no_reading).
+bad('In which park does the dog chase?',    no_reading).
+bad('In which park sleeps the dog?',        question_do(sleeps)).
+bad('In which park do the dog sleep?',      subject_verb(do)).
 % A participle phrase a comma sets off, after a name or a verb phrase.
 good('Alice, known as the queen, sleeps.').
 good('Alice, often known as the queen, sleeps.').
