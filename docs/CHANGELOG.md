@@ -26,6 +26,16 @@ There are no releases yet, so entries are grouped by the day they landed on
   noun phrase, as in English. The second of stage 2's leftovers; *who*
   against *which* remains. 648 checks; both corpora unchanged.
 
+- ***Which* does not stand for a person.** *The man which sleeps*, *the
+  teacher, which sleeps*, *the man with which Alice walks* are refused,
+  and the diagnosis says to use *who* or *whom*. A person is a noun
+  `person/1` lists: the lexicon's own, or one whose most frequent sense
+  in WordNet is a person. *Who* after a thing is not checked, settled by
+  Hans: WordNet gives *legend* no sense of a person and *table* one of
+  people, so no rule from it is right both ways. *A character which
+  appears* is refused, its known cost. The last of stage 2's leftovers.
+  656 checks; both corpora unchanged.
+
 ## 2026-10-03
 
 ### Added

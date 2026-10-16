@@ -662,6 +662,15 @@ bad('In which park the dog sleeps?',        no_reading).
 bad('In which park does the dog chase?',    no_reading).
 bad('In which park sleeps the dog?',        question_do(sleeps)).
 bad('In which park do the dog sleep?',      subject_verb(do)).
+% Which does not stand for a person; who after a thing is not checked.
+good('The man that sleeps is old.').
+good('The dog which barks sleeps.').
+good('The dog who barks sleeps.').
+bad('The man which sleeps is old.',          which_person(man)).
+bad('The farmer which Alice saw sleeps.',    which_person(farmer)).
+bad('The teacher, which sleeps, is old.',    which_person(teacher)).
+bad('The man with which Alice walks sleeps.', which_person(man)).
+bad('The doctor and teacher which sleeps is old.', which_person(teacher)).
 % A participle phrase a comma sets off, after a name or a verb phrase.
 good('Alice, known as the queen, sleeps.').
 good('Alice, often known as the queen, sleeps.').

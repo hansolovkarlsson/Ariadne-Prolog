@@ -96,9 +96,11 @@ These change the shape of the system rather than adding to it.
      after stage 1 against an estimate of months: auxiliaries, negation,
      yes/no and *wh*-questions, passives, relative clauses, a guess at a
      word missing from the lexicon from its ending, contractions and
-     possessives. What it leaves out, each a small piece of its own:
-     - *who* against *which*, which needs every noun marked as a person or
-       a thing.
+     possessives. The three small pieces it left out, a preposition
+     before the relative word, a possessor with a prepositional phrase,
+     and *who* against *which*, were done on 2026-10-16; of the last,
+     only *which* after a person is checked, as WordNet cannot tell a
+     thing from a person well enough to check *who*.
   3. **Done on 2026-09-29**, in [the changelog](CHANGELOG.md): WordNet 3.1's
      words, generated at build time by `make wordnet`, and a record of what
      they break in [english/README.md](../english/README.md), from fifty

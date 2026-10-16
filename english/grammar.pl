@@ -331,8 +331,9 @@ det_np(Agr, np(det(D), N), V0, V) -->
 % the end.
 det_np_end(_, _, Num, _, nom(As, H, Posts0), nom(As, H, Posts), Agr, V0, V) -->
     { agr_of(Num, Agr) },
-    relative(Agr, Rels, V0, V),
-    { append(Posts0, Rels, Posts) }.
+    relative(Agr, Rels, V0, V1),
+    { H = n(Head), rel_fits(Head, Rels, V1, V),
+      append(Posts0, Rels, Posts) }.
 det_np_end(D, DNum, Num1, Head1, N1, coord(C, [N1|Ns]), Agr, V0, V) -->
     nouns_after(N1, Head1, Items, C, V0, V1),
     { pairs_keys_values(Items, NumHeads, Ns),
@@ -622,8 +623,9 @@ nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
 nominal_rest(Num, Head, Posts, V0, V) -->
     noun_posts(Head, PPs, V0, V1),
     { agr_of(Num, Agr) },
-    relative(Agr, Rels, V1, V),
-    { append(PPs, Rels, Posts) }.
+    relative(Agr, Rels, V1, V2),
+    { rel_fits(Head, Rels, V2, V),
+      append(PPs, Rels, Posts) }.
 
 % noun_posts(+HeadNoun, -Posts, V0, V): what follows the noun before a
 % relative clause: the name, the of after kind, and the prepositional
@@ -866,6 +868,21 @@ relative_body(_, _, S, V0, V) -->
     statement(S, gap, nogap, V0, V).
 
 nonrestrictive(which). nonrestrictive(who). nonrestrictive(whom).
+
+% rel_fits(+HeadNoun, +Rels, V0, V): which, alone or after a preposition,
+% does not stand for a person: "the man who sleeps", "the man that
+% sleeps", not "the man which sleeps". A person is a noun person/1 lists,
+% the lexicon's own or one whose most frequent sense in WordNet is a
+% person. Who after a thing is not checked: WordNet gives no sense of a
+% person to "a legend who", and some of one to "the table who", so no
+% rule from it is right both ways. Animals take either word.
+rel_fits(Head, [rel(W, _)], V0, V) :-
+    rel_word(W, which), person(Head), !,
+    violation(which_person(Head), V0, V).
+rel_fits(_, _, V, V).
+
+rel_word(pp(_, W), W) :- !.
+rel_word(W, W).
 
 /* ---------------- verb phrases ---------------- */
 

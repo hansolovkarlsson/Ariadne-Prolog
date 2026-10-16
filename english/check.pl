@@ -280,6 +280,8 @@ message(punctuation('?'), M) :-
 message(punctuation(P), M) :-
     P \== '?',
     format(atom(M), "a question ends with a question mark, not '~w'", [P]).
+message(which_person(N), M) :-
+    format(atom(M), "'which' stands for a thing, and '~w' is a person: use 'who' or 'whom'", [N]).
 message(bare(N), M) :-
     format(atom(M), "the singular noun '~w' needs a determiner, such as 'the' or 'a'", [N]).
 message(verb_form(Prev, W, Form), M) :-

@@ -285,6 +285,16 @@ end of this file.
   the mouse*. The verb of a relative clause with no subject agrees with the
   noun: *the dogs that chase*, not *the dogs that chases*. *Whom* stands only
   for an object: *whom did Alice see*, not *whom chased the cat*.
+- ***Which* does not stand for a person**: *the man who sleeps*, *the man
+  that sleeps*, not *the man which sleeps*, nor *the teacher, which
+  sleeps*, nor *the man with which Alice walks*. A person is a noun the
+  lexicon marks as one, or one whose most frequent sense in WordNet is a
+  person. *Who* after a thing is not checked, since WordNet cannot tell
+  the two apart well enough: it gives *legend* no sense of a person, so
+  *a legend who sang* would be refused, and *table* a sense of people, so
+  *the table who* would pass. Animals take either word. The check's known
+  cost is *a character which appears in the novel*, refused because a
+  character is first a person in WordNet.
 - **A preposition may go before the relative or question word**: *the
   park in which the dog sleeps*, *the man with whom Alice walks*, *the
   park, in which the dog sleeps, is big*, *in which park does the dog
