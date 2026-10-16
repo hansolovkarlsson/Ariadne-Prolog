@@ -534,10 +534,20 @@ possessor_chain(B, P, V0, V) -->
 possessor_base(name(N), V, V) --> name(N).
 possessor_base(np(det(D), N), V0, V) -->
     [D], { det(D, DNum, DSound) },
-    core_nominal(Num, First, Head, N),
+    core_nominal(Num, First, Head, N0),
     { det_agrees(D, Head, DNum, Num, V0, V1),
       sound(First, Sound),
-      agree(article(D, First), DSound, Sound, V1, V) }.
+      agree(article(D, First), DSound, Sound, V1, V2) },
+    possessor_pps(N0, N, V2, V).
+
+% possessor_pps(+Nominal0, -Nominal, V0, V): the prepositional phrases
+% after a possessor with a determiner, before its 's: "the king of
+% France's dog", "the man in the hat's dog". The 's then belongs to the
+% whole phrase, and "the king of France's dog" has a second reading,
+% the king of France's dog, which English has as well.
+possessor_pps(N, N, V, V) --> [].
+possessor_pps(nom(As, H, []), nom(As, H, [PP|PPs]), V0, V) -->
+    pp(PP, nogap, nogap, V0, V1), pps(PPs, V1, V).
 possessor_base(np(N), V0, V) -->
     core_nominal(Num, _, Head, N),
     { \+ leads_number(N), bare_ok(Head, Num, V0, V) }.

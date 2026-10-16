@@ -335,7 +335,11 @@ A **possessive** is a determiner made of a noun phrase and *'s*: *Alice's
 dog*. A possessor may itself be possessed, *Alice's friend's dog*, which
 would be a rule calling itself on the left if written as English grammars
 usually write it. Here it is a chain read left to right instead, each link a
-noun and its *'s*.
+noun and its *'s*. The first link, when it has a determiner, may have
+prepositional phrases before its *'s*, *the king of France's dog*, and the
+*'s* then belongs to the whole phrase, the dog the king has; the same words
+also read with it on *France* alone, the king of a dog France has, which is
+English's ambiguity and not the grammar's.
 
 A word missing from the lexicon is **placed by its ending**. An inflected word
 is taken back to its stem by undoing the lexicon's own spelling rules (so

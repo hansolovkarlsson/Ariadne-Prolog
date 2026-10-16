@@ -19,6 +19,13 @@ There are no releases yet, so entries are grouped by the day they landed on
   each place among the modifiers. One of the three things stage 2 left
   out; two remain. 641 checks; both corpora unchanged, 50 and 49.
 
+- **A possessor with prepositional phrases.** *The king of France's
+  dog*, *the man in the garden's dog*: a possessor with a determiner may
+  have phrases before its *'s*, which then belongs to the whole. Such a
+  sentence reads two ways, the *'s* on the whole phrase or on its last
+  noun phrase, as in English. The second of stage 2's leftovers; *who*
+  against *which* remains. 648 checks; both corpora unchanged.
+
 ## 2026-10-03
 
 ### Added

@@ -172,6 +172,15 @@ good('Alice\'s friend\'s dog barks.').
 good('The dogs\' bones are big.').
 good('The children\'s toys are red.').
 good('The cat chased Alice\'s dog.').
+% A possessor with prepositional phrases: the 's belongs to the whole
+% phrase, or to the last noun phrase in it, two readings as in English.
+good('The man in the garden\'s dog barks.').
+good('The friend of the farmer\'s dog sleeps.').
+good('The cat chased the man in the garden\'s dog.').
+readings('The man in the garden\'s dog barks.', 2).
+readings('The friend of the farmer\'s friend\'s dog sleeps.', 3).
+bad('The man in the garden\'s dog bark.',  subject_verb(bark)).
+bad('An man in the garden\'s dog barks.',  article(an, man)).
 
 % Stage 3: lexicon entries the corpus found incomplete.
 good('The teacher tells a story.').

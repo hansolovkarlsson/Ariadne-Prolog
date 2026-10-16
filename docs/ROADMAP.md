@@ -98,8 +98,7 @@ These change the shape of the system rather than adding to it.
      word missing from the lexicon from its ending, contractions and
      possessives. What it leaves out, each a small piece of its own:
      - *who* against *which*, which needs every noun marked as a person or
-       a thing;
-     - a possessor with a prepositional phrase, *the king of France's dog*.
+       a thing.
   3. **Done on 2026-09-29**, in [the changelog](CHANGELOG.md): WordNet 3.1's
      words, generated at build time by `make wordnet`, and a record of what
      they break in [english/README.md](../english/README.md), from fifty
