@@ -1195,21 +1195,123 @@ cut twice; the fifty sentences come out as the file has them.
 On 2026-10-16, **9 were grammatical, 31 were not, and 10 had a word in
 neither the lexicon nor WordNet**, in 8.7 seconds. Corpus 2 began at none,
 19 and 31; news has fewer names nobody has heard of, and the grammar had
-grown. The record by cause, each failing sentence cut down until it
-passes, is still to be made. What a first reading shows:
+grown. The record by cause was made the same day, by cutting each failing
+sentence down until it passed. Most sentences hold more than one cause;
+each is counted under every cause it holds, and the count is of sentences,
+of the 41.
 
-- **Words the checker has no entry for**: *himself*, twice, as no
-  reflexive pronoun is in the lexicon; *than* in *more than twenty*;
-  *via*; the en dash in a score, *1–4*; curly quotation marks; a web
-  address, *www.mjjsource.com*; the dash after a dateline, *THE HAGUE —*;
-  and *exoplanet* and *extrasolar*, which WordNet does not have.
-- **A singular noun with no determiner**: a title before a name,
-  *musician Michael Jackson*; *Millwall football club*; *Thursday the 2
-  August*.
-- **No reading**, 28 sentences, among them, by a first reading only: a
-  participle with phrases of its own after a noun, *journalists kidnapped
-  in Iraq on March 28*; *saw* with a bare infinitive, *saw Videla gain
-  power*; quoted speech, *read: "It is ..."*, *as "grim"*; a semicolon
-  between clauses; an object clause without *that*, *reported many of the
-  rockets were shot down*; *either ... or* between numbers; money and
-  percentages, *US$5.1 billion*, *40%*; and a score, *7-6 (3)*.
+The first reading, by eye, was wrong in three places, and cutting down is
+what showed it. A participle with phrases of its own after a noun,
+*journalists kidnapped in Iraq on March 28*, already reads; *saw Videla
+gain power* reads; and so does an object clause without *that*, *officials
+reported the rockets were shot down*. What fails in those sentences is
+something else in them.
+
+**Numbers, times and dates (10).** A time of day, *13:44 UTC*, *12:30
+p.m.*, has no reading, and *p.m.* is cut into the letters *p* and *m*; *the
+2nd of August* and *Thursday the 2 August*; money with a fraction, *US$5.1
+billion*, read as *5.1* failing to agree with *billion*; *1.7 times the
+size*, and *twice the size*; two scores in a row, *7-6 (3), 7-5*, where
+either alone reads; the en dash in a score, *1–4*, read as a word, and a
+score before a noun, *a 1-4 defeat*; *more than twenty*, with no *than*;
+and a range before a noun, *the eight to seventeen years age group*.
+
+**A comma and a noun phrase or participle after a noun phrase (9).** A
+name may take an appositive and a participle phrase after its comma, and
+a noun phrase may take a name; nothing else is set beside a noun phrase.
+So *Italy's lower house, the Chamber of Deputies*, *the Tweede Kamer, the
+country's parliament* and *presumptive Republican presidential nominee,
+former Massachusetts governor Mitt Romney* fail, and *the ambassador to
+Iraq, Zalmay Khalilzad* fails because a noun phrase that ends in a name
+takes no name after its comma, which is the rule that reads *a city in
+McLennan County, Texas*. A participle phrase set off by commas fails
+after anything but a name: *His sacking, announced on Tuesday,*, *Freezing
+temperatures, combined with snow,*, *The planet, named TrES-4,*. And after
+a name it fails when the participle takes a number: *Videla, aged 84,*.
+
+**A title or description with no determiner (9).** News puts the role
+before the name and leaves out *the*: *musician Michael
+Jackson*, *spokeswoman Raymone Bain*, *public relations firm Davis, Bain,
+and Associates*, *slain Bharatiya Janata Party leader Pramod Mahajan*,
+*Dutch filmmaker Theo van Gogh*, *diamond giant De Beers*, *former
+Massachusetts governor Mitt Romney*, *Virginia governor Bob McDonnell*,
+*Japanese Prime Minister Junichiro Koizumi's visit*. Each reads with
+*the* before it. The grammar has a bare role noun beside a name after a
+comma, *Mukesh Ambani, chairman of*, and not before it. Nor after *as*:
+*he was manager of the club* reads and *sacked as manager of* does not.
+
+**A *to*-infinitive after a verb phrase or a noun (6).** Of purpose,
+*defeated Jankovic to win the Rogers Cup*, *spoke to the director to have
+a look*; and after a noun, *the proposal to strengthen*, *a price to buy*,
+*an option to increase*, *a resolution to withdraw*. One of them splits
+it, *to immediately withdraw*.
+
+**A singular noun with no determiner (6).** In a set phrase, *on trial*,
+*to police custody*, *by email*, *via email*; and nouns the mass nouns
+did not reach, *wrangling*, *doubt*, *educational use*.
+
+**Verbs that take more than the grammar gives them (6).** *Describe* with
+*as*, *described the prospects as grim*, quoted or not; a verb with an
+object and a participle, *discovered orbiting the star*; *consider* with
+an object and a noun phrase, *had been considered a potential running
+mate*; *put forth*, where *pulled over* reads, since *forth* is no
+particle; *had anything to do with*, and *nothing to do with*; *has yet
+to be recovered*; and *ranked number one*.
+
+**A quantity after a determiner or with *of* (6).** A determiner or a
+possessor before a number or *few* has no reading: *the three Romanian
+journalists*, *the past few days*, *their seven encounters*. *Three
+Romanian journalists* reads, and *the Romanian journalists*; *the three
+dogs* does not, with WordNet or without. And a quantity with *of* as a
+noun phrase of its own: *eight of them*, *one of which*, *many of the
+rockets*. *All of the rockets* fails as a subject too, though *in all of
+their encounters* reads.
+
+**Words and characters (13).** No reflexive pronoun, *himself*, twice.
+*Via*. Curly quotation marks, *“Open Client Offering”*, where straight ones
+read. A web address, *www.mjjsource.com*. The dateline in capitals and its
+dash, *THE HAGUE —*. *Exoplanet* and *extrasolar*, which WordNet does not
+have. *US* before a noun, *six US NATO service members*, which is
+lowercased and read as the pronoun *us*. A name with a particle in lower
+case, *Theo van Gogh*, *Abdul Aziz al-Hakim*, read as a name and a noun.
+*Police* is singular, so *the police have reported* and *police have
+reported* fail on agreement and *by police* wants a determiner. And
+*Millwall football club*, a name in the source's lower case.
+
+**Two defects.** *Has come* has no reading, and neither has *has become*
+or *has overcome*: WordNet lists *came* as an irregular form of *come*,
+but its list holds only forms that differ from the base, so the
+participle, which is the base, is not found, as *broadcast* was not.
+*Run* reads, since the lexicon lists it. And a word the lexicon lists is
+never looked up in WordNet, which is so that *can* and *will* do not
+become nouns; the cost is that *visit* and *walk*, listed as verbs only,
+have no noun, and *the visit was bad* has no reading.
+
+**Quoted speech (2).** A quotation before its verb, *"I am sorry," the
+ambassador said*, and after a colon, *read: "It is the sense of the
+House"*. The second also holds a subjunctive, *that the deployment be
+terminated*, which fails without the quotation too.
+
+**A phrase after a comma at the end (3).** *Occurred on 10 November,
+Japanese time*; *as of 13:44 UTC, yesterday*; *orbiting the star, around
+1,435 light years away*. *The star is around 1,435 light years away*
+reads.
+
+**The rest, one sentence each.** *As well as*; a plural noun before a
+noun, *human rights violations*, where *rights violations* reads; an
+adverb before a participle before a noun, *the extensively revised
+version*; *due to*; a phrase between the subject and its verb, *Hunter on
+Friday called a vote*; a relative clause after an appositive, *Rahul
+Mahajan, the son of Pramod Mahajan, who was arrested*; *a doubt that*
+clause; *go online* after *saw* and its object, where *go away* reads; and
+a possessor before a name that looks plural, *Jackson's MJJ Productions
+has*, read as the plural noun *productions*.
+
+Twelve sentences hold one cause only, and each goes with its cause:
+*the three Romanian journalists*, *himself*, *US*, curly quotation marks,
+*police*, *many of*, *eight of them*, the comma phrase at the end, the
+appositive after *Italy's lower house*, a *to*-infinitive of purpose,
+*an option to increase*, and *Thursday the 2 August*. The cheapest look
+to be the defects and the words: *come*, *himself*, *US*, curly quotation
+marks and *police*. The largest causes are the numbers, which are many
+small things, and the comma after a noun phrase.

@@ -168,10 +168,21 @@ These change the shape of the system rather than adding to it.
      seen, went in on 2026-10-16: 9 grammatical, 31 not, 10 with a word
      nothing knows. The splitter's three wrong cuts in it, after *Inc.*,
      after *Rep.* and at an ellipsis, were mended the same day. What it
-     asks, in `english/README.md`:
-     - each failing sentence cut down until its cause shows, and the
-       record by cause written, as for the second corpus;
-     - then the causes, one at a time, by how many sentences each holds.
+     asks, in `english/README.md`, where the record by cause was
+     written the same day, each of the 41 failing sentences cut down
+     until its cause showed:
+     - two defects first: *has come*, *has become* and *has overcome*
+       have no participle from WordNet, and a word the lexicon lists as
+       a verb only, *visit*, *walk*, has no noun;
+     - then the causes, one at a time, by how many sentences each holds:
+       numbers, times and dates (10); a comma and a noun phrase or
+       participle after a noun phrase (9); a title with no determiner,
+       *musician Michael Jackson* (9); a *to*-infinitive of purpose or
+       after a noun (6); a bare singular noun, *on trial* (6); verb
+       frames, *described as* (6); a quantity after a determiner or with
+       *of*, *the three journalists*, *many of the rockets* (6); words
+       and characters, *himself*, *US*, curly quotes, *police* (13, each
+       small); quoted speech (2); a comma phrase at the end (3).
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids
