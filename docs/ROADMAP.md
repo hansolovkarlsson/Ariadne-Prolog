@@ -186,8 +186,9 @@ These change the shape of the system rather than adding to it.
        frames, *described as* (6); a quantity after a determiner or with
        *of*, *many of the rockets* (5, *the three journalists* done
        2026-10-16; left, *the past few days*, *the two hundred*); words
-       and characters, *himself*, *US*, curly quotes, *police* (13, each
-       small); quoted speech (2); a comma phrase at the end (3).
+       and characters, *US*, curly quotes, *police* (11, each small;
+       *himself* done 2026-10-16, an object or after a subject, not
+       checked against the subject, settled by Hans); quoted speech (2); a comma phrase at the end (3).
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

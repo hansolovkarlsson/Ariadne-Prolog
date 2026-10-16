@@ -273,6 +273,8 @@ message(article(D, W), M) :-
     ( A == a -> B = an ; B = a ),
     append(Before, [B], Ws1), atomic_list_concat(Ws1, ' ', Other),
     format(atom(M), "'~w ~w' should be '~w ~w'", [D, W, Other, W]).
+message(reflexive(W), M) :-
+    format(atom(M), "'~w' does not agree with the subject it stands after", [W]).
 message(case(W), M) :-
     format(atom(M), "the pronoun '~w' is in the wrong case for where it stands", [W]).
 message(punctuation('?'), M) :-
@@ -619,6 +621,8 @@ bracket(adj_coord(C, As))  --> ['[AP'], joined_out(bracket, C, As), [']'].
 bracket(pro(W))            --> ['[NP', W, ']'].
 bracket(name(W))           --> ['[NP', W, ']'].
 bracket(appos(N, NP))      --> ['[NP'], bracket(N), [','], bracket(NP), [']'].
+bracket(emph(NP, W))       --> ['[NP'], bracket(NP), ['[NP', W, ']', ']'].
+bracket(emph_vp(W, VP))    --> ['[NP', W, ']'], bracket(VP).
 bracket(np(det(D), Nom))   --> ['[NP', D], nom(Nom), [']'].
 bracket(np(Nom))           --> ['[NP'], nom(Nom), [']'].
 bracket(np(poss(P), Nom))  --> ['[NP'], bracket(P), ['\'s'], nom(Nom), [']'].

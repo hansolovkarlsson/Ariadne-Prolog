@@ -1336,3 +1336,18 @@ kidnapped in Iraq on March 28 were freed yesterday* the new pass, with
 one reading; no other sentence of the three corpora moved, nor its count
 of readings. *Their seven encounters* now reads, and the sentence it is
 in waits for *ranked number one*.
+
+The reflexive pronouns came next, *himself*, *themselves* and the rest.
+One stands where an object does, *blew himself up*, *walks by herself*,
+and never as a subject, *himself sleeps*. Who it stands for is not
+checked, settled by Hans the same day: the subject does not reach the
+object in this grammar, and the agreement has no gender, so *Alice saw
+himself* could not be refused either way, and *Alice saw myself* passes,
+a known cost. Straight after a subject one stresses it, *the king
+himself*, *who himself had been considered*, and there it does agree,
+so *they himself sleep* is refused; after an object it is not read,
+since *Alice saw the dog herself* stresses Alice. The corpus gives **11
+grammatical, 31 not, and 8 unknown**: *On Monday, a suicide bomber blew
+himself up on a motorcycle* passes, and *Virginia governor Bob McDonnell,
+who himself had been considered* is no longer unknown and fails on its
+title with no determiner.

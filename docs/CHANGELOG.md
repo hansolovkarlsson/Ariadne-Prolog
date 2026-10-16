@@ -52,6 +52,14 @@ There are no releases yet, so entries are grouped by the day they landed on
   one sentence the new pass and no other sentence or count of readings
   moved. 675 checks, 682 with WordNet.
 
+- **Reflexive pronouns.** *Himself*, *themselves* and the rest stand
+  where an object does, *blew himself up*, *walks by herself*, never as
+  a subject, and straight after a subject, which they stress and agree
+  with, *the king himself*, *who himself had been considered*; *they
+  himself sleep* is refused. An object one is not checked against the
+  subject, settled by Hans: *Alice saw myself* passes, a known cost.
+  The third corpus gives 11, 31 and 8. 689 checks, 696 with WordNet.
+
 ### Fixed
 
 - ***Has come*, from WordNet.** *Come*, *run* and the same verbs after a

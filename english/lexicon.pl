@@ -199,6 +199,26 @@ pronoun(us,   agr(n, n, n), obj).
 pronoun(they, agr(n, n, n), subj).
 pronoun(them, agr(n, n, n), obj).
 
+% The reflexive pronouns stand only where an object does, "blew himself
+% up", "Alice saw herself", and never as a subject, "himself sleeps". Who
+% they stand for is not checked, so "Alice saw myself" passes: the subject
+% does not reach the object here, and the agreement has no gender, so
+% "Alice saw himself" could not be refused either way. Settled by Hans on
+% 2026-10-16, as a known cost. Straight after a subject one stresses it,
+% "the king himself came", and agrees with it; see emphatic//5 in
+% grammar.pl.
+pronoun(W, Agr, obj) :- reflexive(W, Agr).
+
+reflexive(myself,     agr(y, n, y)).
+reflexive(yourself,   agr(n, n, n)).
+reflexive(himself,    agr(n, y, y)).
+reflexive(herself,    agr(n, y, y)).
+reflexive(itself,     agr(n, y, y)).
+reflexive(oneself,    agr(n, y, y)).
+reflexive(ourselves,  agr(n, n, n)).
+reflexive(yourselves, agr(n, n, n)).
+reflexive(themselves, agr(n, n, n)).
+
 % The indefinite pronouns are third person singular, and one form serves
 % for subject and object: "nobody answered", "I saw nobody". WordNet lists
 % some as nouns, "a nobody", which the lexicon's entry replaces.

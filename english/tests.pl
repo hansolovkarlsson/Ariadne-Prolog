@@ -753,6 +753,23 @@ bad('The three dog sleeps.',               det_noun('the three', dog)).
 bad('Alice\'s three dog sleeps.',          det_noun(three, dog)).
 bad('These one dog sleeps.',               no_reading).
 
+% Reflexive pronouns: an object, or straight after a subject, which they
+% then agree with. Who an object one stands for is not checked.
+good('Alice saw herself.').
+good('The dog bites itself.').
+good('They gave themselves a bone.').
+good('Alice wants to see herself.').
+good('Alice walks by herself.').
+good('The king himself sleeps.').
+good('I myself sleep.').
+good('The dogs themselves sleep.').
+good('The man who himself sleeps is old.').
+good('Alice saw myself.').
+readings('The king himself sleeps.', 1).
+bad('Himself sleeps.',                     case(himself)).
+bad('They himself sleep.',                 reflexive(himself)).
+bad('The dogs who himself sleep bark.',    reflexive(himself)).
+
 % A verb whose participle is its base and its past is not, from WordNet.
 wordnet_good('The dog has come.').
 wordnet_good('The dog has become big.').

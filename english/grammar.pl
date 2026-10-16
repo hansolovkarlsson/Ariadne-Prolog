@@ -157,8 +157,20 @@ clauses_after(S1, joined(C, S1, T), V0, V) -->
 
 % statement(-Tree, G0, G, V0, V). The subject is never the gap.
 statement(s(NP, VP), G0, G, V0, V) -->
-    noun_phrase(Agr, subj, NP, nogap, nogap, V0, V1),
-    verb_phrase(fin(Agr), 1, subject, VP, G0, G, V1, V).
+    noun_phrase(Agr, subj, NP0, nogap, nogap, V0, V1),
+    emphatic(Agr, E, V1, V2),
+    { E == none -> NP = NP0 ; NP = emph(NP0, E) },
+    verb_phrase(fin(Agr), 1, subject, VP, G0, G, V2, V).
+
+% emphatic(+Agr, -Word, V0, V): a reflexive pronoun straight after a
+% subject, which it stresses, "the king himself came", "who himself had
+% been considered", and agrees with as the verb does: "they himself came"
+% is refused. Only after a subject, since after an object "Alice saw the
+% dog herself" stresses the subject and would be read as "the dog
+% herself". Word is none when there is none.
+emphatic(_, none, V, V) --> [].
+emphatic(Agr, W, V0, V) -->
+    [W], { reflexive(W, RAgr), agree(reflexive(W), RAgr, Agr, V0, V) }.
 
 % question(-Tree, G0, G, V0, V): a yes/no question.
 question(q(Tok, NP, Neg, Items), G0, G, V0, V) -->
@@ -890,9 +902,11 @@ participle_ahead([W|S], [W|S]) :- participle_word(W).
 % relative_body(+Agr, +Word, -Tree, V0, V): what follows the relative
 % word: a verb phrase, the word standing for the subject, or a statement
 % with the gap in it.
-relative_body(Agr, W, VP, V0, V) -->
+relative_body(Agr, W, T, V0, V) -->
     { rel_pronoun(W, Case), agree(case(W), Case, subj, V0, V1) },
-    verb_phrase(fin(Agr), 1, subject, VP, nogap, nogap, V1, V).
+    emphatic(Agr, E, V1, V2),
+    verb_phrase(fin(Agr), 1, subject, VP, nogap, nogap, V2, V),
+    { E == none -> T = VP ; T = emph_vp(E, VP) }.
 relative_body(_, _, S, V0, V) -->
     statement(S, gap, nogap, V0, V).
 
