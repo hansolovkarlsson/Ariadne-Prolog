@@ -62,6 +62,13 @@ There are no releases yet, so entries are grouped by the day they landed on
 
 ### Fixed
 
+- ***Police* was singular.** WordNet gives a noun no number, so *the
+  police have reported* was refused. *Police*, *cattle* and *vermin* are
+  listed as plural with no singular, and may stand before a noun, *a
+  police officer*. The third corpus gives 14, 31 and 5; one sentence
+  gained two readings, a wordless relative clause the guard now lets
+  through, English in form. 702 grammar checks, 709 with WordNet.
+
 - **`char_type/2` took Unicode's punctuation for letters.** Every
   character past ASCII was `alpha`, so a curly quotation mark, an en or
   em dash and the ellipsis were letters, and the grammar checker read

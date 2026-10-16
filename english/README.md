@@ -1365,8 +1365,8 @@ and injured several others* the new pass.
 Curly quotation marks were next, and they were not the checker's fault.
 The interpreter's `char_type/2` counted every character past ASCII as a
 letter, so *“Open* was one word, and so were the en dash in *1–4* and the
-dash after *THE HAGUE*, three of the causes under words and characters
-with one cause between them. Unicode's punctuation, space and symbol
+dash after *THE HAGUE*: two of the causes under words and characters and
+one under numbers, with one cause between them. Unicode's punctuation, space and symbol
 blocks are punctuation now, as SWI-Prolog has them, and the checker
 skips them as it skips straight quotation marks. The corpus gives **13
 grammatical, 32 not, and 5 unknown**: *IBM's new product is called “Open
@@ -1374,3 +1374,19 @@ Client Offering”* passes, and the sentences with the two dashes now fail
 on their other causes, *has come after a 1–4 defeat* on the comma
 phrase before it and the score before a noun, the dateline on its
 appositive and its *to*-infinitive after a noun.
+
+*Police* came last of the small ones. WordNet gives a noun no number, so
+*police* was singular, and *the police have reported* failed on
+agreement while *by police* wanted a determiner. Three nouns that are
+plural and have no singular are listed, *police*, *cattle* and *vermin*,
+and may stand before a noun as a singular one does, *a police officer*.
+Listed, *police* is no longer looked up in WordNet, so *to police the
+streets* has no verb, the cost of any word the lexicon lists. The corpus
+gives **14 grammatical, 31 not, and 5 unknown**, *Police in the
+Australian state of New South Wales have reported that they pulled over
+a 10 year-old child* the new pass. *According to police* is right now,
+and its sentence fails on the time of day. One sentence gained two
+readings, *brought to the Tughlaq Road police station* read also as *the
+Tughlaq Road that police station*, the relative clause with its word
+left out, which the guard let through once *police* was plural: English
+in form, as the *Class 91* sentence's second reading was.

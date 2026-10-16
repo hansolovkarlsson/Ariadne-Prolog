@@ -707,15 +707,20 @@ modifiers(Ms) -->
 leading_number([num(D)]) --> [D], { digits(D) }.
 leading_number([]) --> [].
 
+% modifier_noun(+Word): a noun that may stand before another, in the
+% singular, or one with no singular, "a police officer", "a cattle ranch".
+modifier_noun(W) :- noun_form(W, _, sg), !.
+modifier_noun(W) :- plural_noun(W).
+
 % leads_number(+Nominal): a number in digits opens it.
 leads_number(nom([num(_)|_], _, _)).
 
 noun_modifiers([nmod(W)|Ns]) -->
-    [W], { noun_form(W, _, sg), \+ proper(W), \+ adj(W) }, more_noun_modifiers(Ns).
+    [W], { modifier_noun(W), \+ proper(W), \+ adj(W) }, more_noun_modifiers(Ns).
 noun_modifiers([]) --> [].
 
 more_noun_modifiers([nmod(W)|Ns]) -->
-    [W], { noun_form(W, _, sg), \+ proper(W), \+ time_det(W) }, more_noun_modifiers(Ns).
+    [W], { modifier_noun(W), \+ proper(W), \+ time_det(W) }, more_noun_modifiers(Ns).
 more_noun_modifiers([adj(W)|Ns]) -->
     [W], { adj(W), \+ noun_form(W, _, _), \+ adv(W), \+ proper(W) },
     more_noun_modifiers(Ns).

@@ -546,6 +546,14 @@ clitic('\'d', would). clitic('\'d', had).
 % noun_form(?Word, -Singular, -Number)
 noun_form(Word, Sg, sg) :- noun(Sg), Word = Sg.
 noun_form(Word, Sg, pl) :- noun(Sg), plural(Sg, Word).
+noun_form(Word, Word, pl) :- plural_noun(Word).
+
+% plural_noun(Word): a noun that is plural and has no singular, "the police
+% have", "cattle graze". WordNet lists police as a noun and a verb, and
+% gives no number, so it was singular, and "the police have reported" was
+% refused. Listed, police is no longer looked up there, and "to police the
+% streets" has no verb, the cost of any word the lexicon lists.
+plural_noun(police). plural_noun(cattle). plural_noun(vermin).
 
 plural(Sg, Pl) :- irregular_plural(Sg, Pl0), !, Pl = Pl0.
 plural(Sg, Pl) :- s_form(Sg, Pl).

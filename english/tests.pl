@@ -783,6 +783,13 @@ good('“The dog sleeps.”').
 good('Alice likes ‘the dog’.').
 readings('“The dog sleeps.”', 1).
 
+% A noun that is plural and has no singular.
+good('The police have seen the dog.').
+good('Police chased the cat.').
+good('The cattle sleep.').
+good('The police dog sleeps.').
+bad('The police has seen the dog.',         subject_verb(has)).
+
 % A verb whose participle is its base and its past is not, from WordNet.
 wordnet_good('The dog has come.').
 wordnet_good('The dog has become big.').

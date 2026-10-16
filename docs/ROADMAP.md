@@ -186,9 +186,10 @@ These change the shape of the system rather than adding to it.
        frames, *described as* (6); a quantity after a determiner or with
        *of*, *many of the rockets* (5, *the three journalists* done
        2026-10-16; left, *the past few days*, *the two hundred*); words
-       and characters, *police* (7, each small; *himself*, *US*, and
-       curly quotes with both dashes, which were one defect in
-       `char_type/2`, done 2026-10-16, an object or after a subject, not
+       and characters (6, each small: *via*, a web address,
+       *exoplanet*, *van Gogh* and *al-Hakim*, *Millwall football
+       club*; *himself*, *US*, *police*, and curly quotes with both
+       dashes, which were one defect in `char_type/2`, done 2026-10-16, an object or after a subject, not
        checked against the subject, settled by Hans); quoted speech (2); a comma phrase at the end (3).
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
