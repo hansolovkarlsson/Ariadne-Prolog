@@ -543,9 +543,10 @@ names_only(nom([A|As], n(H), _)) :-
 % determiner(-Det, -Number, -Sound): a determiner; such before a or an,
 % "such a sunset"; a number that takes one before it, "a hundred", "two
 % thousand"; or a number with a word before it that makes it rough,
-% "about six"; or a definite determiner before a quantity, "the three
-% Romanian journalists", "their seven encounters", "these few dogs". Each
-% two-word one counts as one word.
+% "about six", or more than one, "more than twenty"; or a definite
+% determiner before a quantity, "the three Romanian journalists", "their
+% seven encounters", "these few dogs". Each one of two words or three
+% counts as one word.
 determiner(D, DNum, DSound) --> [D], { det(D, DNum, DSound) }.
 determiner(D, sg, S) -->
     [such, A], { ( A == a ; A == an ), det(A, sg, S),
@@ -556,6 +557,9 @@ determiner(D, pl, _) -->
 determiner(D, Num, _) -->
     [A, N], { approximator(A), number_word(N, Num),
               atomic_list_concat([A, N], ' ', D) }.
+determiner(D, Num, _) -->
+    [A, than, N], { comparative_quantity(A), number_word(N, Num),
+                    atomic_list_concat([A, than, N], ' ', D) }.
 determiner(D, Num, _) -->
     [A, N], { definite_det(A, ANum), quantity(N, Num), ANum = Num,
               atomic_list_concat([A, N], ' ', D) }.
@@ -581,6 +585,12 @@ quantity(many, pl).
 approximator(about). approximator(around). approximator(nearly).
 approximator(almost). approximator(approximately). approximator(roughly).
 approximator(over). approximator(under).
+
+% comparative_quantity(Word): a word that goes before than and a number,
+% "more than twenty officials", "fewer than ten dogs", the three words
+% one determiner. Than is read nowhere else.
+comparative_quantity(more). comparative_quantity(fewer).
+comparative_quantity(less).
 
 % possessor(-Tree, V0, V): a noun phrase and 's, standing where a
 % determiner would: "Alice's dog", "the old farmer's dog". A possessor can

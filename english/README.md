@@ -1453,3 +1453,12 @@ recovery begun on Thursday the 2 August was discontinued* the new pass;
 *on the 2nd of August* reads in its own sentence, which fails on *has
 yet to be recovered*. No other sentence moved, nor its count of
 readings.
+
+*More than twenty* was next. *More*, *fewer* or *less*, *than* and a
+number are one determiner, as *about six* is, and the noun agrees with
+the number: *more than one dog sleeps*, *more than two dogs sleep*.
+*Than* is read nowhere else, so *bigger than the cat* still has no
+reading, but it is a known word now. The corpus gives **16
+grammatical, 30 not, and 4 unknown**: the *Videla* sentence is no
+longer unknown, and fails on *began Friday* and *human rights
+violations*. No other sentence moved, nor its count of readings.

@@ -35,6 +35,12 @@ There are no releases yet, so entries are grouped by the day they landed on
   *of* or without, and a day of the week before it. The third corpus
   gives 16, 29 and 5, one new pass. 722 checks, 732 with WordNet.
 
+- ***More than* a number.** *More than twenty officials*, *fewer than
+  ten cats*: the three words are one determiner, and the noun agrees
+  with the number. *Than* is a known word, read only there. The third
+  corpus gives 16, 30 and 4, one sentence no longer unknown. 727
+  checks, 737 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

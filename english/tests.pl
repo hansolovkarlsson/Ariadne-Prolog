@@ -812,6 +812,13 @@ wordnet_good('The man has flung it.').
 wordnet_bad('The dog has came.',            verb_form(has, came, en)).
 wordnet_bad('The dog come.',                subject_verb(come)).
 
+% More, fewer or less than a number, as one determiner.
+good('More than two dogs sleep.').
+good('More than one dog sleeps.').
+good('Alice sees fewer than ten cats.').
+readings('More than two dogs sleep.', 1).
+bad('More than two dogs sleeps.',          subject_verb(sleeps)).
+
 % A date with the before its day, and a day of the week before that.
 good('The dog slept on the 2nd of August.').
 good('The dog slept on the 2 August 2012.').

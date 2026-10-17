@@ -364,6 +364,7 @@ known_word(W) :- coordinator(W), !.
 known_word(W) :- degree(W), !.
 known_word(W) :- subordinator(W), !.
 known_word(not).
+known_word(than).
 known_word(',').
 
 /* ---------------- running text ---------------- */

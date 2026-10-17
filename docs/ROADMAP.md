@@ -179,8 +179,8 @@ These change the shape of the system rather than adding to it.
        alone move nothing. Which, if either, is Hans's to say. The other
        defect, *has come*, was mended the same day;
      - then the causes, one at a time, by how many sentences each holds:
-       numbers, times and dates (10, a date with *the* done
-       2026-10-17); a comma and a noun phrase or participle after a
+       numbers, times and dates (10, a date with *the* and *more
+       than twenty* done 2026-10-17); a comma and a noun phrase or participle after a
        noun phrase (9); a title with no determiner,
        *musician Michael Jackson* (2, seven done 2026-10-17; left,
        *diamond giant De Beers*, where *giant* is no person, and *Theo
