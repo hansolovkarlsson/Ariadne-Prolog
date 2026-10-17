@@ -820,6 +820,17 @@ good('The dog barked around 12:30 p.m. AEST on Sunday.').
 readings('The dog sleeps at 12:30.', 1).
 bad('The dog sleeps at 13 p.m. today.',     no_reading).
 
+% A sum with its currency sign, singular; billion is a big number.
+good('The dog costs $5.').
+good('The dog costs £20 today.').
+good('$5 was big.').
+good('The dog costs US$5.1 billion.').
+good('Two billion people sleep.').
+good('About two thousand people sleep.').
+readings('Alice has $5.', 1).
+bad('$5 were big.',                         subject_verb(were)).
+bad('About two thousand person sleeps.',    det_noun('about two thousand', person)).
+
 % More, fewer or less than a number, as one determiner.
 good('More than two dogs sleep.').
 good('More than one dog sleeps.').

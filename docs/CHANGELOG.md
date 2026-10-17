@@ -51,6 +51,13 @@ There are no releases yet, so entries are grouped by the day they landed on
   *1.7 times the size*, *three times the price*. No sentence moved, nor
   any count of readings. 733 checks, 746 with WordNet.
 
+- **A sum with its currency sign.** *$5*, *£20*, *US$5.1 billion*: the
+  sign is a word, where it had been dropped, and the sum a singular
+  noun phrase. *Billion* and *trillion* are big numbers, and *about*
+  goes before one, *about two thousand people*, which had no reading.
+  No sentence moved, nor any count of readings. 742 checks, 755 with
+  WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

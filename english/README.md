@@ -1486,3 +1486,17 @@ sentence moved, since the one it is in, *The planet, named TrES-4, ...
 is 1.7 times the size*, has *exoplanet* and a participle phrase after a
 comma besides. *Saw the dog three times*, with *three times* after the
 verb, has no reading, and had none before.
+
+Money was next. The tokeniser dropped *$* as punctuation, so *US$5.1
+billion* was *US 5.1 billion*, and *billion* was WordNet's noun, wanting
+a determiner. A currency sign before a digit, *$*, *£* or *€*, is a word
+now, and a sum is a noun phrase, singular as a sum is, *$5 was big*:
+the sign, *US* before it or nothing, the number, and *million*,
+*billion* or the like after it or nothing. *Billion* and *trillion* are
+big numbers now, as *million* was, *two billion people*. That took a
+reading from *about 1,3 billion euros*, since *about* went only before
+a number of one word; it goes before *a* or a number and a big number
+too now, *about two thousand people*, which had no reading, and the
+sentence has its two again. The *Anglo American* sentence now fails
+only on *diamond giant De Beers*. No sentence moved, nor any count of
+readings.

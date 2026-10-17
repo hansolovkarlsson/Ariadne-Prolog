@@ -310,6 +310,8 @@ simple_np(Agr, _, date(D), V, V) -->
     date(D), { agr_of(sg, Agr) }.
 simple_np(Agr, _, time(T), V, V) -->
     time(T), { agr_of(sg, Agr) }.
+simple_np(Agr, _, money(M), V, V) -->
+    money(M), { agr_of(sg, Agr) }.
 simple_np(Agr, _, num(W), V, V) -->
     [W], { number_word(W, Num), agr_of(Num, Agr) }.
 simple_np(Agr, _, T, V0, V) --> det_np(Agr, T0, V0, V), np_appositive(T0, T).
@@ -499,6 +501,19 @@ time(T) --> [H, M], { day(H), atom_number(H, N), N =< 12, meridiem(M) },
             time_zone_after(Zs),
             { atomic_list_concat([H, M|Zs], ' ', T) }.
 
+% money(-Amount): a sum with its currency sign, "$5", "£20", "US$5.1
+% billion", the country before the sign or none. It is singular, as a
+% sum is: "$5 billion was spent".
+money(M) --> money_country(Cs), [C], { currency(C) }, [N], { digits(N) },
+             money_big(Bs),
+             { append([Cs, [C], [N], Bs], Ws), atomic_list_concat(Ws, ' ', M) }.
+
+money_country(['US']) --> ['US'].
+money_country([]) --> [].
+
+money_big([B]) --> [B], { big_number(B) }.
+money_big([]) --> [].
+
 time_meridiem([M]) --> [M], { meridiem(M) }.
 time_meridiem([]) --> [].
 
@@ -566,7 +581,8 @@ names_only(nom([A|As], n(H), _)) :-
 % determiner(-Det, -Number, -Sound): a determiner; such before a or an,
 % "such a sunset"; a number that takes one before it, "a hundred", "two
 % thousand"; or a number with a word before it that makes it rough,
-% "about six", or more than one, "more than twenty"; or a definite
+% "about six", "about two thousand", or more than one, "more than
+% twenty"; or a definite
 % determiner before a quantity, "the three Romanian journalists", "their
 % seven encounters", "these few dogs". Each one of two words or three
 % counts as one word.
@@ -580,6 +596,9 @@ determiner(D, pl, _) -->
 determiner(D, Num, _) -->
     [A, N], { approximator(A), number_word(N, Num),
               atomic_list_concat([A, N], ' ', D) }.
+determiner(D, pl, _) -->
+    [A, N, B], { approximator(A), ( N == a ; number_word(N, _) ), big_number(B),
+                 atomic_list_concat([A, N, B], ' ', D) }.
 determiner(D, Num, _) -->
     [A, than, N], { comparative_quantity(A), number_word(N, Num),
                     atomic_list_concat([A, than, N], ' ', D) }.

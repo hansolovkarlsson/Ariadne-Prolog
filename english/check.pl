@@ -365,6 +365,7 @@ known_word(W) :- degree(W), !.
 known_word(W) :- subordinator(W), !.
 known_word(not).
 known_word(than).
+known_word(W) :- currency(W), !.
 known_word(W) :- time_word(W), !.
 known_word(W) :- meridiem(W), !.
 known_word(W) :- time_zone(W), !.
@@ -597,6 +598,7 @@ bracket(sub_first(C, S1, S2)) -->
 bracket(num(W))            --> ['[NP', W, ']'].
 bracket(date(D))           --> ['[NP', D, ']'].
 bracket(time(T))           --> ['[NP', T, ']'].
+bracket(money(M))          --> ['[NP', M, ']'].
 bracket(mult(M, NP))       --> ['[NP', M], bracket(NP), [']'].
 bracket(fronted(A, S))     --> ['[S'], bracket(A), bracket(S), [']'].
 bracket(imp(P1, Neg, VP, P2)) -->
@@ -826,6 +828,10 @@ plain_apostrophe(C, C).
 
 split_letters([], []).
 split_letters([','|Cs], [','|Ws]) :- !, split_letters(Cs, Ws).
+% A currency sign before a number is a word of its own, "US$5.1 billion",
+% "£20".
+split_letters([C, D|Cs], [C|Ws]) :-
+    currency(C), digit(D), !, split_letters([D|Cs], Ws).
 split_letters([C|Cs], Words) :-
     digit(C), !,
     take_number([C|Cs], Ds, Rest),

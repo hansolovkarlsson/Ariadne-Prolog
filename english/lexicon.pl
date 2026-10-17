@@ -302,6 +302,10 @@ time_word(W) :-
     catch(( atom_number(H, HN), atom_number(M, MN) ), _, fail),
     integer(HN), HN >= 0, HN =< 24, integer(MN), MN >= 0, MN =< 59.
 meridiem('a.m.'). meridiem('p.m.').
+
+% currency(Sign): a sign that goes before an amount, "$5", "US$5.1
+% billion", "£20", which words/2 in check.pl keeps as a word.
+currency('$'). currency('£'). currency('€').
 time_zone(W) :- memberchk(W, [utc, gmt, bst, cet, cest, eet, eest, est, edt,
                               cst, cdt, mst, mdt, pst, pdt, aest, aedt, acst,
                               awst, ist, jst, nzst, nzdt]).
@@ -331,7 +335,7 @@ number_name(seventy). number_name(eighty). number_name(ninety).
 % big_number(Word): a number that needs one before it, "a hundred", "two
 % thousand"; see determiner//3 in grammar.pl.
 big_number(hundred). big_number(thousand). big_number(million).
-big_number(dozen).
+big_number(billion). big_number(trillion). big_number(dozen).
 
 digit(C) :- char_type(C, digit(_)).
 
