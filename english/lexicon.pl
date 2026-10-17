@@ -639,6 +639,19 @@ clitic('\'d', would). clitic('\'d', had).
 
 /* ---------------- forms ---------------- */
 
+% plural_modifier(Noun): a plural that stands before another noun, as a
+% singular does, "human rights violations", "the foreign affairs
+% committee", "a sports car". Only these: any plural there would read
+% "the cats chase dogs" as the noun phrase "the cats chase" and the verb
+% "dogs".
+plural_modifier(rights). plural_modifier(affairs). plural_modifier(sports).
+plural_modifier(arms). plural_modifier(sales). plural_modifier(savings).
+plural_modifier(customs). plural_modifier(goods). plural_modifier(relations).
+plural_modifier(communications). plural_modifier(operations).
+plural_modifier(services). plural_modifier(systems). plural_modifier(games).
+plural_modifier(weapons). plural_modifier(drugs). plural_modifier(women).
+plural_modifier(children). plural_modifier(news). plural_modifier(earnings).
+
 % noun_form(?Word, -Singular, -Number)
 noun_form(Word, Sg, sg) :- noun(Sg), Word = Sg.
 noun_form(Word, Sg, pl) :- noun(Sg), plural(Sg, Word).

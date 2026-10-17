@@ -714,6 +714,9 @@ readings('The dog walks.', 1).
 readings('Alice visits Bob.', 1).
 bad('The dog is to walks.',                 verb_form(to, walks, base)).
 bad('Alice walk.',                          subject_verb(walk)).
+% A listed plural before a noun; any other plural is no noun modifier.
+readings('The cats chase dogs.', 1).
+readings('The dogs chase cats in the garden.', 2).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
@@ -901,6 +904,8 @@ wordnet_good('A body has yet to be recovered.').
 wordnet_good('It has nothing to do with the proposal.').
 wordnet_good('Donner put forth the proposal.').
 wordnet_good('It snowed over the past few days.').
+wordnet_good('Officials charged with human rights violations sleep.').
+wordnet_good('Alice has a sports car.').
 wordnet_good('Monday saw the edition go quietly online.').
 wordnet_good('Alice made the dog sleep.').
 wordnet_good('The edition went quietly online.').

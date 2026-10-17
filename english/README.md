@@ -204,6 +204,10 @@ end of this file.
   *notice*, *observe* and *help*, in the active; *helps Bob sleeps* is
   told the verb after the object should be *sleep*. And an adverb before
   the adjective a verb takes, *went quietly online*.
+- **A plural before a noun**: *human rights violations*, *a sports car*,
+  for the plurals `plural_modifier/1` lists, which English puts there;
+  no other, so *the cats chase dogs* is not the noun phrase *the cats
+  chase* and the verb *dogs*.
 - **A quantity with *of***: *many of the rockets*, *eight of them*, *some
   of the cake*, a quantity, *of*, and a definite noun phrase or an object
   pronoun, agreeing as the quantity does or, for *some*, *all* and their
@@ -1741,3 +1745,18 @@ and Trade Minister described the prospects for such a visit as "grim"*
 the new pass, with two readings, the subject one noun phrase or *the
 foreign affairs* and *trade minister*. No other sentence of the three corpora moved, nor its
 count of readings.
+
+A plural before a noun was next. A noun before another had to be
+singular, or one with no singular, *a police officer*, so *human rights
+violations* had no reading. Twenty plurals that English puts there are
+listed now, *rights*, *affairs*, *sports*, *arms*, *sales* and their
+kind; any plural would read *the cats chase dogs* with *the cats chase*
+its subject and *dogs* its verb, as WordNet has *chase* a noun and *dog*
+a verb. *Public relations firm*, which the record by cause counted
+under this, read already. The corpus gives **31 grammatical, 17 not,
+and 2 unknown**, *The trial of Argentina's ex-president Jorge Videla
+began Friday, in addition to more than twenty other former government
+officials charged with human rights violations* the new pass, with four
+readings, *of Argentina's* or *the trial of Argentina's* the possessor,
+and *with human rights violations* on *charged* or on the verb. No
+other sentence of the three corpora moved, nor its count of readings.

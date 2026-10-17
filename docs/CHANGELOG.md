@@ -111,6 +111,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   before the adjective a verb takes, *went quietly online*. The third
   corpus gives 29, 19 and 2, one new pass. 810 checks, 845 with WordNet.
 
+- **A plural before a noun.** *Human rights violations*, *a sports car*:
+  twenty plurals English puts there are listed, and no other plural
+  stands before a noun. The third corpus gives 31, 17 and 2, one new
+  pass. 818 checks, 855 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

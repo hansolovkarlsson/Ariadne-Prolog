@@ -926,9 +926,12 @@ leading_number([num(D)]) --> [D], { ( digits(D) ; score(D) ) }.
 leading_number([]) --> [].
 
 % modifier_noun(+Word): a noun that may stand before another, in the
-% singular, or one with no singular, "a police officer", "a cattle ranch".
+% singular, or one with no singular, "a police officer", "a cattle ranch",
+% or a plural that English puts there, "human rights violations"; see
+% plural_modifier/1.
 modifier_noun(W) :- noun_form(W, _, sg), !.
 modifier_noun(W) :- plural_noun(W).
+modifier_noun(W) :- plural_modifier(W).
 
 % leads_number(+Nominal): a number in digits opens it.
 leads_number(nom([num(_)|_], _, _)).
