@@ -30,6 +30,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   two corpora and their counts of readings are unchanged. 716 checks,
   726 with WordNet.
 
+- **A date with *the*.** *The 2nd of August*, *the 2 August 2012*,
+  *Thursday the 2 August*: the day in digits or as an ordinal, with
+  *of* or without, and a day of the week before it. The third corpus
+  gives 16, 29 and 5, one new pass. 722 checks, 732 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

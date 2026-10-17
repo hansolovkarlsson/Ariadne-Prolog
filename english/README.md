@@ -1442,3 +1442,14 @@ defect above, with the appositive after *the Tweede Kamer*. A *price
 to buy* is read as the verb's purpose, *negotiated a price to buy*, and
 *price* is not listed. The first two corpora unchanged, and no count of
 readings moved.
+
+The numbers came next, one small thing at a time, dates first. A date
+may have *the* before its day, in digits or as an ordinal, with *of* or
+without: *the 2nd of August*, *the 2 August 2012*; and a day of the week
+before that, *Thursday the 2 August*. *Thursday 2 August*, with no
+*the*, read already, as a name with a number in it, and is not read
+again. The corpus gives **16 grammatical, 29 not, and 5 unknown**, *A
+recovery begun on Thursday the 2 August was discontinued* the new pass;
+*on the 2nd of August* reads in its own sentence, which fails on *has
+yet to be recovered*. No other sentence moved, nor its count of
+readings.

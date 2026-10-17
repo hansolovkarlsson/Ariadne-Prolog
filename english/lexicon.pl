@@ -289,6 +289,11 @@ month(january). month(february). month(march). month(april). month(may).
 month(june). month(july). month(august). month(september).
 month(october). month(november). month(december).
 
+% weekday(Word): a day of the week, which may go before a date with the,
+% "Thursday the 2 August".
+weekday(monday). weekday(tuesday). weekday(wednesday). weekday(thursday).
+weekday(friday). weekday(saturday). weekday(sunday).
+
 % digits(Word): a number written in digits, 91 or 3.5 or 1,000. Not an
 % ordinal, 27th, which is an adjective; see ordinal/1.
 digits(W) :-

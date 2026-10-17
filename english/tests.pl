@@ -812,6 +812,14 @@ wordnet_good('The man has flung it.').
 wordnet_bad('The dog has came.',            verb_form(has, came, en)).
 wordnet_bad('The dog come.',                subject_verb(come)).
 
+% A date with the before its day, and a day of the week before that.
+good('The dog slept on the 2nd of August.').
+good('The dog slept on the 2 August 2012.').
+good('The dog slept on Thursday the 2 August.').
+good('The 2nd of May was cold.').
+readings('The dog slept on Thursday the 2nd of August.', 1).
+bad('The dog slept on the 32nd of August.',  no_reading).
+
 % A to-infinitive of purpose, last after the verb phrase.
 good('Alice walks to see the dog.').
 good('The dog ran to chase the cat.').
