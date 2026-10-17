@@ -664,7 +664,7 @@ name_of([of, W|Ws]) --> [of, W], { proper(W) }, name_rest(Ws).
 name_of([]) --> [].
 
 name_rest([W|Ws]) --> [W], { proper(W) }, !, name_rest(Ws).
-name_rest([D|Ws]) --> [D], { digits(D) }, name_rest(Ws).
+name_rest([D|Ws]) --> [D], { ( digits(D) ; catalogue_number(D) ) }, name_rest(Ws).
 name_rest([]) --> [].
 
 name_places([P|Ps]) -->

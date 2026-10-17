@@ -370,6 +370,7 @@ known_word(not).
 known_word(than).
 known_word(W) :- currency(W), !.
 known_word(W) :- score(W), !.
+known_word(W) :- catalogue_number(W), !.
 known_word(W) :- time_word(W), !.
 known_word(W) :- meridiem(W), !.
 known_word(W) :- time_zone(W), !.

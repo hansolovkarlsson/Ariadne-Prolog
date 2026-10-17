@@ -89,6 +89,9 @@ noun(homework). noun(advice). noun(information). noun(furniture).
 noun(football). noun(breakfast). noun(lunch). noun(dinner).
 noun(night). noun(day). noun(week). noun(month). noun(year). noun(morning).
 noun(evening). noun(afternoon).
+% Words WordNet is too old to have, listed as the news uses them:
+% "the largest extrasolar planet or exoplanet".
+noun(exoplanet).
 noun(Sg) :- guessed(noun, Sg).
 
 % mass(Noun): a noun that can stand in the singular with no determiner,
@@ -323,9 +326,21 @@ time_word(W) :-
 meridiem('a.m.'). meridiem('p.m.').
 
 % score(Word): two numbers in digits joined by a hyphen, 7-6, 1-4, which
-% words/2 in check.pl keeps as one word from a hyphen or an en dash.
+% words/2 in check.pl keeps as one word from a hyphen or an en dash. Each
+% is short, three digits or fewer, and has no 0 before it; otherwise the
+% two are a catalogue number, a name's own, "the star GSC 02620-00648".
 score(W) :-
+    hyphened_digits(W, A, B), short_number(A), short_number(B).
+
+catalogue_number(W) :-
+    hyphened_digits(W, A, B), \+ ( short_number(A), short_number(B) ).
+
+hyphened_digits(W, A, B) :-
     atom(W), atomic_list_concat([A, B], '-', W), digits(A), digits(B).
+
+short_number(D) :-
+    atom_length(D, N), N =< 3,
+    \+ ( N > 1, sub_atom(D, 0, 1, _, '0') ).
 
 % currency(Sign): a sign that goes before an amount, "$5", "US$5.1
 % billion", "£20", which words/2 in check.pl keeps as a word.
@@ -373,6 +388,7 @@ adj(brown). adj(tall). adj(short). adj(long). adj(warm). adj(cold).
 adj(clever). adj(kind). adj(brave). adj(funny). adj(strange). adj(empty).
 adj(beautiful). adj(ugly). adj(honest). adj(orange). adj(early). adj(late).
 adj(colorless).
+adj(extrasolar).
 adj(A) :- guessed(adj, A).
 adj(A) :- ordinal(A).
 % A measure before a noun, a number and a singular noun joined by a hyphen,

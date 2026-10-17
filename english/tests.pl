@@ -722,6 +722,13 @@ good('Alice visits wikinews.org.').
 good('Alice sees www.example.com in the garden.').
 readings('Alice visits wikinews.org.', 1).
 bad('Alice visits wikinews.zz.',            unknown).
+% exoplanet and extrasolar, which WordNet does not have; and a catalogue
+% number, long or with a 0 before it, is a name's, not a score.
+good('The exoplanet is big.').
+good('Alice sees the extrasolar exoplanet.').
+good('Alice sees GSC 02620-00648.').
+readings('Alice sees GSC 02620-00648.', 1).
+bad('Alice sees 02620-00648.',              no_reading).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).

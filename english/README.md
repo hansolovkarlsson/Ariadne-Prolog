@@ -1793,3 +1793,18 @@ a name with commas in it is one name; *that* is a determiner in half of
 them, *that Jackson's MJJ Productions*, as it has been. *Diamond giant
 De Beers* reads, and its sentence fails on *40% of* alone. No other
 sentence of the three corpora moved, nor its count of readings.
+
+*Exoplanet* and *extrasolar* were next, the last words of the corpus
+that nothing knew; WordNet is older than both, and the lexicon lists
+them. Their sentence then read, but with *02620-00648*, the second half
+of the star's name *GSC 02620-00648*, a score on the verb; the score
+rule had said the star *reads with the score after the name*, which was
+that misreading. A score's numbers are short now, three digits or fewer
+with no 0 before them, and two numbers joined by a hyphen otherwise are
+a catalogue number, which a name may end in as it may in digits. The
+corpus gives **33 grammatical, 17 not, and none unknown**, *The largest
+extrasolar planet or exoplanet has been discovered orbiting the star
+GSC 02620-00648, around 1,435 light years away* the new pass, with
+three readings, *around 1,435 light years* on *orbiting* or on
+*discovered*, or *away* on *orbiting* as well. No other sentence of the
+three corpora moved, nor its count of readings.

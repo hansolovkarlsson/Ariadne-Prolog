@@ -125,6 +125,14 @@ There are no releases yet, so entries are grouped by the day they landed on
   company's name *Davis, Bain, and Associates* for a list. 822 checks,
   862 with WordNet.
 
+- ***Exoplanet*, *extrasolar*, and a catalogue number.** The two words
+  are in the lexicon, as WordNet has neither. Two numbers joined by a
+  hyphen are a score only when each is short, three digits or fewer
+  with no 0 before it; otherwise a catalogue number, which ends a name,
+  *the star GSC 02620-00648*, where it had been read as a score on the
+  verb. The third corpus gives 33, 17 and none unknown, one new pass.
+  827 checks, 867 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

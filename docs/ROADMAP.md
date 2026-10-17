@@ -202,12 +202,12 @@ These change the shape of the system rather than adding to it.
        2026-10-16, the rest 2026-10-17; left, a percentage before *of*,
        *40% of diamond giant De Beers*); a plural before a noun, *human
        rights violations* (done 2026-10-17); words and characters (6,
-       each small: *exoplanet*, *Millwall football club*; done
+       each small: *Millwall football club*; done
        2026-10-16, *himself* as an object or after a subject, an object
        not checked against the subject, settled by Hans; *US*; *police*;
        and curly quotes with both dashes, which were one defect in
        `char_type/2`; done 2026-10-17, *via*, the semicolon and a web
-       address, and *Theo van Gogh* reads; a name with commas in it,
+       address, *exoplanet*, and *Theo van Gogh* reads; a name with commas in it,
        *Davis, Bain, and Associates*, is read as a list); quoted speech
        (2); a comma phrase at the end (3).
 
