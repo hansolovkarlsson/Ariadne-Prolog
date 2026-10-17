@@ -140,6 +140,12 @@ There are no releases yet, so entries are grouped by the day they landed on
   35, 15 and none unknown, two new passes. 836 checks, 876 with
   WordNet.
 
+- **A dateline is taken off.** *THE HAGUE — The proposal*: a place in
+  capitals and a dash before a sentence is not part of it. The check on
+  the capitals defect, which had a dateline, reads *The IT dog sees the
+  it* now. The third corpus gives 36, 14 and none unknown, one new pass.
+  840 checks, 880 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

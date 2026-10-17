@@ -898,8 +898,13 @@ good('They saw us.').
 readings('The US dog sleeps.', 1).
 bad('THE DOG SLEEPS.',                     no_reading).
 % It keeps its capitals, so the same word in lower case is no name: a
-% dateline's THE made every the in the sentence one, and "the" alone an
-% object.
+% dateline's THE made every the in the sentence one, and the IT here
+% would make "the it" a determiner and a name.
+bad('The IT dog sees the it.',              no_reading).
+% A dateline, a place in capitals and a dash, is taken off.
+good('THE HAGUE — Alice sees the dog.').
+good('WASHINGTON, D.C. – Alice sleeps.').
+readings('THE HAGUE — Alice sees the dog.', 1).
 bad('THE HAGUE — Alice sees the.',          no_reading).
 
 % Curly quotation marks are punctuation, as straight ones are.

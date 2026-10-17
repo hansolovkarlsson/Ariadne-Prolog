@@ -725,7 +725,8 @@ words(Text, Words) :- words(Text, Words, _).
 words(Text, Words, Names) :-
     atom_chars(Text, Chars0),
     maplist(plain_apostrophe, Chars0, Chars1),
-    set_aside(Chars1, Chars),
+    drop_dateline(Chars1, Chars2),
+    set_aside(Chars2, Chars),
     split_letters(Chars, Cased0),
     maplist(unhyphen, Cased0, Nested), append(Nested, Cased),
     maplist(downcase_atom, Cased, Words0),
@@ -749,6 +750,22 @@ shout(Cased, Shout) :-
 % Tweede Kamer" had every the a name once THE was one.
 kept_case(no, C, W, C) :- abbreviation(C), closed_class(W), !.
 kept_case(_, _, W, W).
+
+% drop_dateline(+Chars, -Rest): a news story's dateline is not part of its
+% first sentence, and is taken off: a place in capitals and a dash, "THE
+% HAGUE — The proposal ...", "WASHINGTON, D.C. – The vote ...". Only
+% capitals, spaces, commas and points before an em or en dash with a
+% space on each side, and two letters at least.
+drop_dateline(Cs, Rest) :-
+    append(Head, [' ', D, ' '|Rest0], Cs), memberchk(D, ['—', '–']), !,
+    (   dateline(Head) -> Rest = Rest0 ; Rest = Cs ).
+drop_dateline(Cs, Cs).
+
+dateline([C|Cs]) :-
+    letter(C),
+    include(letter, [C|Cs], Ls), Ls = [_, _|_],
+    forall(member(L, Ls), char_type(L, upper(_))),
+    forall(member(X, [C|Cs]), ( letter(X) ; memberchk(X, [' ', ',', '.']) )).
 
 % set_aside(+Chars, -Rest): Chars with what stands in brackets taken out,
 % round or square, nested or not: "Nita Ambani (born 1 November 1963) is

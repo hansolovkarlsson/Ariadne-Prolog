@@ -215,6 +215,8 @@ end of this file.
   quantity with *of* and what is said of it, *eleven ships, eight of
   them exclusively for military use*, only with such a quantity, so *saw
   the dogs, the cats happy* has no reading.
+- **A dateline** is taken off a sentence, a place in capitals and an em
+  or en dash, *THE HAGUE — The proposal*, *WASHINGTON, D.C. – The vote*.
 - **A web address** is one word and a name, *www.mjjsource.com*, when its
   last label is a domain `web_address/1` lists; *U.S.* and a sentence run
   together, *the arrest.We*, are not one.
@@ -1835,3 +1837,17 @@ with 84, of which 28 are its readings without the names and *as well
 as*, from the *of* phrases and *as of 13:44 UTC* attaching in turn and
 *that* read as a determiner. No other sentence of the three corpora
 moved, nor its count of readings.
+
+The dateline went next, the one cause left in its sentence. The draw's
+rule drops a leading dateline, but the file kept this one, *THE HAGUE
+—*, with its sentence. The checker
+takes one off now, as it sets brackets aside: capitals, spaces, commas
+and points before an em or en dash with a space each side, two letters
+at least, so *WASHINGTON, D.C. –* goes too and a dash inside a sentence
+is left. The check on the capitals defect had used the dateline, *THE
+HAGUE — Alice sees the*, which now tests nothing; it reads *The IT dog
+sees the it* instead, which passes with the defect, *the it* a
+determiner and a name, and fails without it. The corpus gives **36
+grammatical, 14 not, and none unknown**, the *THE HAGUE* sentence the
+new pass, with the 24 readings it has without its dateline. No other
+sentence of the three corpora moved, nor its count of readings.
