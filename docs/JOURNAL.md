@@ -1595,6 +1595,89 @@ unknown**, one cause per commit, and the full output was diffed after
 each. Two sentences gained readings, a wordless relative after a plural
 and *station* as a verb, both English in form, and are recorded.
 
+## Day fourteen: the third corpus by cause, from 14 to 40
+
+The next day, 2026-10-17. The tree was as the standup had left it,
+day thirteen's records uncommitted; they went in first and were pushed.
+Then the record by cause was taken in its own order, one cause to a
+commit, each with its checks and its records, and the whole of the
+three corpora diffed against the last run after every change. That diff
+is what carried the day: nearly every rule's first version moved a
+count of readings somewhere it should not have, and the diff said where
+before anything was committed. The corpus went from **14 grammatical,
+31 not and 5 unknown** to **40, 10 and none**, over 24 commits.
+
+*Musician Michael Jackson* was first: a person's noun before a name
+stands bare. It turned a check round, *I see farmer Bob*, which had been
+refused and is ordinary news English; *I see dog Rex* is still refused,
+and Hans was asked to confirm the change. The next rule, an infinitive
+after a noun, made the dateline sentence pass when its record said it
+should not, and the brackets showed *the* read as a name: once *THE* in
+*THE HAGUE* was one, every *the* was, because the checker keeps names as
+a set of words. That is the postmortem's sixty-third defect, found as
+the last one of its kind was, by reading the brackets of a pass nobody
+expected. The infinitive itself went in only after a listed noun, as
+after any noun *saw the dog to win* read twice.
+
+The numbers were six small commits. Two taught something. *Billion*
+made a big number took a reading from *about 1,3 billion euros*, since
+*about* went only before a number of one word; and *defeated Jankovic
+7-6* had passed all along as a name ending in two numbers, which the
+score rule ended. A participle phrase after a noun phrase's comma
+doubled *Nita Ambani ... best known as*, where the verb phrase reads
+it already, and is closed by a comma only; a second noun phrase after
+the comma read *the dog, the cat, and the bird* twice, and its comma
+may not come before *and*. The check on the dateline defect then had to
+change, as its sentence, *the Bob, the dog*, now read as it should.
+
+Two first framings were wrong in the same way, a wider rule where a
+narrow one was meant. *Wrangling between the teams* was first made a
+mass noun, any noun WordNet has in *-ing*, which doubled two sentences
+the gerund after a preposition already read; it is a gerund subject,
+and only first in the sentence, since inside one *after eating the
+cakes sleeps* read. And the adverb particles and *yet* were made known
+words so that a check could run without WordNet, which stopped them
+being looked up there, and *the lights went out* lost its readings; the
+checks moved to WordNet instead. *Do* had no entry as a verb at all,
+so *Alice did the homework* had no reading; given one without an
+object, it read *to do with the proposal* as a purpose and doubled the
+Donner sentence, and it takes an object only.
+
+The record by cause was wrong twice, and cutting down showed it each
+time. *Saw Videla gain power*, counted as reading, read only as a noun
+phrase, *Videla gain power*; an object and a bare infinitive had no
+rule, WordNet's frames with one being left out. And the scores record
+had said *the star GSC 02620-00648* reads with the score after the name,
+which was the misreading itself: a catalogue number is no score, and a
+score's numbers are short now. The semicolon had been dropped with the
+punctuation, so *will jump; the government has* read as *will jump
+[that] the government has*.
+
+The *visit* defect came back with a sentence behind it: *such a visit
+as "grim"* read with *trip*. Measured alone, *visit* and *walk* as nouns
+broke no check and moved that sentence, but let one fault through that
+no check held, *the dog is to walks*, read as *be* and a place. Hans
+chose the two with a guard after *be*, which went in. The web address
+made the Jackson sentence pass on readings that were all wrong, *public
+relations* a subject and *firm* its verb, and the pass was not taken
+until a noun for a company could stand before its name; even then none
+of its 28 readings is right, as *Davis, Bain, and Associates* is one
+name read as a list, and the record says so. A possessor before any
+name read *the People's Republic of China* twice, and is read only
+before a name that ends in a plural, *Jackson's MJJ Productions has*.
+
+The rest were one piece each: *as well as*, which first went after a
+list's last item as well as after the list; a phrase with its own
+subject at the end, only with a quantity and *of*, where a check first
+written for it, *the dog, the cat in the garden*, already read as an
+appositive and proved nothing; the dateline taken off, which meant the
+defect's check needed a third sentence, *The IT dog sees the it*,
+proved by undoing the fix as the first had been; a percentage, a body's
+name with no determiner, the clock a time is given in, and *aged 84*.
+Of the ten left, three are faults of the source, a comma missing twice
+and a sentence run into the next, and the others each need a rule of
+their own.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1605,7 +1688,7 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 702 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
+| `make english` | The grammar checker's 852 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
 | `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of each of `english/corpus.txt`, `english/corpus2.txt` and `english/corpus3.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
