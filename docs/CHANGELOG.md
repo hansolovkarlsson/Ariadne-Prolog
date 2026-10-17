@@ -157,6 +157,10 @@ There are no releases yet, so entries are grouped by the day they landed on
   *party* join the list of such nouns. The third corpus gives 38, 12 and
   none unknown, one new pass. 848 checks, 889 with WordNet.
 
+- **The clock a time is given in.** *On 10 November, Japanese time*,
+  last after a comma. The third corpus gives 39, 11 and none unknown,
+  one new pass. 848 checks, 892 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

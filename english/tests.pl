@@ -951,6 +951,9 @@ wordnet_good('Jackson\'s MJJ Productions has terminated Bain.').
 wordnet_good('MJJ Productions has terminated public relations firm Davis.').
 wordnet_good('Anglo American bought diamond giant De Beers.').
 wordnet_good('Alice joined Millwall football club.').
+wordnet_good('The dog slept on 10 November, Japanese time.').
+wordnet_good('The dog slept at six, local time.').
+wordnet_bad('The dog slept, time.',         no_reading).
 wordnet_good('Monday saw the edition go quietly online.').
 wordnet_good('Alice made the dog sleep.').
 wordnet_good('The edition went quietly online.').

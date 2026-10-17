@@ -211,7 +211,9 @@ end of this file.
 - ***As well as*** with a noun phrase, set off by commas after a noun
   phrase or a list, *Ion, Ohanesian and Miscoci, as well as their guide,
   Mohamed Munaf, were*, agreeing as what comes before it does.
-- **Last after a comma**: an adverb, *as of 13:44 UTC, yesterday*; or a
+- **Last after a comma**: the clock a time is given in, *on 10 November,
+  Japanese time*, *time* with a word before it; an adverb, *as of 13:44
+  UTC, yesterday*; or a
   quantity with *of* and what is said of it, *eleven ships, eight of
   them exclusively for military use*, only with such a quantity, so *saw
   the dogs, the cats happy* has no reading.
@@ -1881,3 +1883,12 @@ unknown**, *Ian Holloway has been sacked as manager of Millwall
 football club* the new pass, with two readings, *sacked* an adjective
 or a participle. No other sentence of the three corpora moved, nor its
 count of readings.
+
+*On 10 November, Japanese time (UTC+9)* came next. The bracket is set
+aside, and what is left is a comma and the clock the time is given in,
+which goes last: *time*, singular, with a word before it that says
+whose, *Japanese time*, *local time*, and no determiner, so *the dog
+slept, time* has no reading. The corpus gives **39 grammatical, 11 not,
+and none unknown**, *The intrusion occurred on 10 November, Japanese
+time (UTC+9)* the new pass, with one reading. No other sentence of the
+three corpora moved, nor its count of readings.

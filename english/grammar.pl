@@ -1524,6 +1524,12 @@ modifiers([S], G, G, V0, V) --> supplement(S, V0, V).
 % exclusively for military use". Only a quantity with of, since with any
 % noun phrase "Alice saw the dog, the cat in the garden" would read.
 modifiers([adv(A)], G, G, V, V, [',', A], []) :- adv(A).
+% Or a comma and the clock a time is given in, "on 10 November, Japanese
+% time", "at six, local time": time with a word before it that says
+% whose, and no determiner, so "the dog slept, time" has no reading.
+modifiers([clock(N)], G, G, V0, V) -->
+    [','], nominal(sg, _, time, N, V0, V), { N = nom([_|_], _, _) },
+    end_of_words.
 modifiers([absolute(NP, P)], G, G, V0, V) -->
     [','], [Q], { partitive(Q, _) }, [of],
     absolute_np(Q, NP, V0, V1),
