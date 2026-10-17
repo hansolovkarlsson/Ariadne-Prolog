@@ -530,7 +530,17 @@ good('The dog sees the farmer Bob of London.').
 readings('The river Thames is long.', 1).
 readings('I know the farmer Bob.', 1).
 bad('The farmer Bob are old.',             subject_verb(are)).
-bad('I see farmer Bob.',                  bare(farmer)).
+% A title before a name needs no determiner, as news has it, but only a
+% noun for a person: "former governor Mitt Romney", and not "dog Rex".
+good('I see farmer Bob.').
+good('The dog sees old farmer Bob of London.').
+good('I know farmer Bob\'s dog.').
+readings('I see farmer Bob.', 1).
+bad('I see dog Rex.',                     bare(dog)).
+bad('Farmer Bob are old.',                subject_verb(are)).
+% As takes a bare role noun with of, as be does.
+good('Alice walks as queen of the garden.').
+bad('Alice walks as queen.',              bare(queen)).
 % A preposition of three words.
 good('The dog sleeps in front of the house.').
 good('The cat sleeps on top of the box.').

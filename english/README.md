@@ -1390,3 +1390,21 @@ readings, *brought to the Tughlaq Road police station* read also as *the
 Tughlaq Road that police station*, the relative clause with its word
 left out, which the guard let through once *police* was plural: English
 in form, as the *Class 91* sentence's second reading was.
+
+A title with no determiner went in on 2026-10-17. A singular noun for a
+person, one `role_np` would take, may stand bare when a name follows it
+straight away: *musician Michael Jackson*, *Virginia governor Bob
+McDonnell*, *slain Bharatiya Janata Party leader Pramod Mahajan*, and the
+same before *'s*, *musician Michael Jackson's legal team*. *As* takes a
+bare role noun as *be* does, *sacked as manager of the club*. Only a
+person: *I see dog Rex* is still refused, and *I see farmer Bob*, which a
+check had refused since the name after a noun went in, now reads, as news
+writes it. Cut down, seven of the nine read. *Diamond giant De Beers*
+does not, since WordNet has no person among the senses of *giant*, and
+here it is a company; *Dutch filmmaker Theo van Gogh* fails on *van*.
+No sentence moved, as each of the nine holds another cause, and the
+corpus stays at **14 grammatical, 31 not, and 5 unknown**; two sentences
+now fail further on, *Wrangling between musician Michael Jackson's* on
+*wrangling* and *Virginia governor Bob McDonnell, who himself had been
+considered* on *considered* with a noun phrase after it. No other
+sentence of the three corpora moved, nor its count of readings.

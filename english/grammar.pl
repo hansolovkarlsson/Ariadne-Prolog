@@ -314,8 +314,17 @@ simple_np(Agr, _, T, V0, V) --> det_np(Agr, T0, V0, V), np_appositive(T0, T).
 simple_np(Agr, _, np(N), V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
     { \+ names_only(N), \+ leads_number(N),
-      bare_ok(Head, Num, V1, V),
+      (   title_before_name(N) -> V1 = V
+      ;   bare_ok(Head, Num, V1, V)
+      ),
       agr_of(Num, Agr) }.
+
+% title_before_name(+Nominal): a singular noun for a person and the name
+% straight after it, which news puts with no determiner: "musician Michael
+% Jackson", "former Massachusetts governor Mitt Romney". The noun is one
+% role_np/3 would take, so "Alice saw dog Rex" is still refused.
+title_before_name(nom(_, n(Head), [name(_)|_])) :-
+    noun_form(Head, _, sg), person(Head).
 
 % det_np(-Agr, -Tree, V0, V): a noun phrase with a determiner or a
 % possessor before its noun, which is what may stand beside a name as an
@@ -593,6 +602,12 @@ possessor_pps(nom(As, H, []), nom(As, H, [PP|PPs]), V0, V) -->
 possessor_base(np(N), V0, V) -->
     core_nominal(Num, _, Head, N),
     { \+ leads_number(N), bare_ok(Head, Num, V0, V) }.
+% A title and a name, "musician Michael Jackson's legal team".
+possessor_base(np(N), V, V) -->
+    core_nominal(sg, _, Head, nom(As, n(Head), [])),
+    name(Name),
+    { N = nom(As, n(Head), [name(Name)]),
+      \+ leads_number(N), title_before_name(N) }.
 
 % Nouns joined under one determiner: "a doctor and teacher", "the bishop
 % and primate of the church", "these cats and dogs". The determiner agrees
@@ -824,6 +839,8 @@ pp(pp(P, NP), G0, G, V0, V) -->
     preposition(P), noun_phrase(_, obj, NP, G0, G, V0, V).
 pp(pp(P, VP), G0, G, V0, V) -->
     preposition(P), ing_ahead, verb_phrase(ing, 2, P, VP, G0, G, V0, V).
+% As takes a bare role noun, as be does: "sacked as manager of the club".
+pp(pp(as, NP), G, G, V0, V) --> [as], role_np(NP, V0, V).
 
 % preposition(-Prep): one word, or two or three that make one, "as of the
 % census", "out of the box", "as part of the project", "in front of the

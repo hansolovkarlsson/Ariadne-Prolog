@@ -6,6 +6,21 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-10-17
+
+### Added
+
+- **A title before a name with no determiner.** *Musician Michael
+  Jackson*, *former Massachusetts governor Mitt Romney*, *slain
+  Bharatiya Janata Party leader Pramod Mahajan*, and as a possessor,
+  *musician Michael Jackson's legal team*: a singular noun for a person
+  may stand bare when a name follows it. Only a noun for a person, so
+  *I see dog Rex* is still refused; *I see farmer Bob*, which a check
+  had refused, now reads. *As* takes a bare role noun, as *be* does,
+  *sacked as manager of the club*. Seven of the nine titles in the third
+  corpus read; no sentence moves, since each has other causes, and it
+  stays at 14, 31 and 5. 709 checks, 716 with WordNet.
+
 ## 2026-10-16
 
 ### Added

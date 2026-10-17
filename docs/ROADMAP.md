@@ -181,7 +181,9 @@ These change the shape of the system rather than adding to it.
      - then the causes, one at a time, by how many sentences each holds:
        numbers, times and dates (10); a comma and a noun phrase or
        participle after a noun phrase (9); a title with no determiner,
-       *musician Michael Jackson* (9); a *to*-infinitive of purpose or
+       *musician Michael Jackson* (2, seven done 2026-10-17; left,
+       *diamond giant De Beers*, where *giant* is no person, and *Theo
+       van Gogh*, under words); a *to*-infinitive of purpose or
        after a noun (6); a bare singular noun, *on trial* (6); verb
        frames, *described as* (6); a quantity after a determiner or with
        *of*, *many of the rockets* (5, *the three journalists* done
