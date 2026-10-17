@@ -766,6 +766,13 @@ readings('Alice, who is happy, sleeps.', 1).
 bad('Alice, that is happy, sleeps.',        no_reading).
 bad('Alice, who is happy sleeps.',          no_reading).
 bad('Alice, who are happy, sleeps.',        subject_verb(are)).
+% A phrase of time between a name or a pronoun and its verb.
+good('Alice on Monday sleeps.').
+good('She on Monday saw the dog.').
+readings('Alice on Monday sleeps.', 1).
+readings('The dog on Monday sleeps.', 1).
+bad('Alice in the garden sleeps.',          no_reading).
+bad('Alice on Monday sleep.',               subject_verb(sleep)).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).

@@ -181,7 +181,25 @@ statement(s(NP, VP), G0, G, V0, V) -->
     noun_phrase(Agr, subj, NP0, nogap, nogap, V0, V1),
     emphatic(Agr, E, V1, V2),
     { E == none -> NP = NP0 ; NP = emph(NP0, E) },
-    verb_phrase(fin(Agr), 1, subject, VP, G0, G, V2, V).
+    time_before_verb(NP0, Ts, V2, V3),
+    verb_phrase(fin(Agr), 1, subject, VP0, G0, G, V3, V),
+    { Ts == [] -> VP = VP0 ; VP = pre(Ts, VP0) }.
+
+% time_before_verb(+Subject, -Trees, V0, V): a phrase of time between a
+% name or a pronoun and its verb, "Rep. Duncan Hunter on Friday called a
+% vote", "she on Monday said". Only after a name or a pronoun, as after a
+% noun the phrase is the noun's already, "the dog on Friday barked", and
+% only of time, a day, a month, a date or a time of day.
+time_before_verb(_, [], V, V) --> [].
+time_before_verb(NP, [PP], V0, V) -->
+    { bare_subject(NP) }, pp(PP, nogap, nogap, V0, V), { time_pp(PP) }.
+
+bare_subject(name(_)).
+bare_subject(pro(_)).
+
+time_pp(pp(_, name(W))) :- atomic_list_concat([D|_], ' ', W), ( weekday(D) ; month(D) ), !.
+time_pp(pp(_, date(_))).
+time_pp(pp(_, time(_))).
 
 % emphatic(+Agr, -Word, V0, V): a reflexive pronoun straight after a
 % subject, which it stresses, "the king himself came", "who himself had

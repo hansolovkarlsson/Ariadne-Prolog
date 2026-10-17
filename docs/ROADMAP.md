@@ -166,7 +166,7 @@ These change the shape of the system rather than adding to it.
      A third corpus, news, fifty sentences from 25 articles drawn at
      random from English Wikinews by a rule fixed before the text was
      seen, went in on 2026-10-16: 9 grammatical, 31 not, 10 with a word
-     nothing knows; on 2026-10-17 it gives 42, 8 and none. The
+     nothing knows; on 2026-10-17 it gives 43, 7 and none. The
      splitter's three wrong cuts in it, after *Inc.*, after *Rep.* and
      at an ellipsis, were mended the same day. What it
      asks, in `english/README.md`, where the record by cause was

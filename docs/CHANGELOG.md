@@ -175,6 +175,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   gains two readings, a relative clause on a name. 858 checks, 904
   with WordNet.
 
+- **A phrase of time before the verb.** *Rep. Duncan Hunter on Friday
+  called a vote*: after a name or a pronoun, a day, a month, a date or
+  a time of day. The third corpus gives 43, 7 and none unknown, one new
+  pass. 864 checks, 910 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

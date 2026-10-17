@@ -251,6 +251,10 @@ end of this file.
   it, *the two hundred dogs*.
 - **A semicolon** joins two statements, *the dog sleeps; the cat
   barks*. It is a word of its own, where it had been dropped.
+- **A phrase of time before the verb**, after a name or a pronoun:
+  *Rep. Duncan Hunter on Friday called a vote*, *she on Monday said*; a
+  day, a month, a date or a time of day. After a noun the phrase is the
+  noun's, *the dog on Friday barked*, and is not read again.
 - **A phrase before the subject**: *yesterday the dog barked*, *in 2019,
   978 people lived there*, *last night the dog barked*, with a comma or
   none; but not *about the dog barked*.
@@ -1932,3 +1936,16 @@ version of Wikipedia, which is aimed at educational use* goes from three
 readings to five, the relative clause on the name *Wikipedia* as well,
 which is English and was not read before. No other sentence of the
 three corpora moved, nor its count of readings.
+
+*Rep. Duncan Hunter (R-CA) on Friday called a vote* was next. *The dog
+on Friday barked* read already, the phrase on the noun, but a name and
+a pronoun take no prepositional phrase after them, so *on Friday* had
+nowhere to stand. A phrase of time may stand between a name or a
+pronoun and its verb now, a day, a month, a date or a time of day; only
+there, so the noun's reading is not doubled, and only of time, so
+*Alice in the garden sleeps* is still refused. *To immediately
+withdraw* read already. The corpus gives **43 grammatical, 7 not, and
+none unknown**, the *Hunter* sentence the new pass, with 37 readings,
+from where *in the House*, *on a nonbinding resolution*, the infinitive
+and *from Iraq* each attach. No other sentence of the three corpora
+moved, nor its count of readings.
