@@ -188,9 +188,11 @@ These change the shape of the system rather than adding to it.
        2026-10-16; left, *the past few days*, *the two hundred*); words
        and characters (6, each small: *via*, a web address,
        *exoplanet*, *van Gogh* and *al-Hakim*, *Millwall football
-       club*; *himself*, *US*, *police*, and curly quotes with both
-       dashes, which were one defect in `char_type/2`, done 2026-10-16, an object or after a subject, not
-       checked against the subject, settled by Hans); quoted speech (2); a comma phrase at the end (3).
+       club*; done 2026-10-16, *himself* as an object or after a
+       subject, an object not checked against the subject, settled by
+       Hans; *US*; *police*; and curly quotes with both dashes, which
+       were one defect in `char_type/2`); quoted speech (2); a comma
+       phrase at the end (3).
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

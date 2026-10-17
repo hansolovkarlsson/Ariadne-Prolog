@@ -1555,6 +1555,46 @@ old against new over the full text of all 40 articles drawn, the new
 splitter changed nine cuts and each was a mend, and the corpus came out
 as the file had it with no hand corrections.
 
+The afternoon cut each of the 41 failing sentences down until its cause
+showed, as had been done for the second corpus, and the first reading by
+eye, written that morning, was wrong in three places. A participle with
+phrases of its own after a noun, *saw Videla gain power*, and an object
+clause without *that* all read already; what failed in those sentences
+was something else in them. Two of the causes were defects rather than
+missing grammar. *Has come* was refused because *come* is its own
+participle and WordNet's forms never said so; the first fix, the
+participle from the base, still let *the dog has came* through, which
+had been let through all along, and placing the participle from the past
+form too is what closed it. The other defect is still open: a word the
+lexicon lists as a verb only, *visit*, *walk*, has no noun, because the
+lexicon's words are never looked up in WordNet. Giving all forty such
+verbs their WordNet nouns broke thirteen checks, *Alice wants swim* and
+*the dog is to sleeps* among them passing, and giving *visit* and *walk*
+alone moved no sentence. Hans left it open.
+
+Then the causes, cheapest first. *The three Romanian journalists*, a
+quantity after a determiner, went in after a definite determiner or a
+possessor, *her three dogs*. Reflexive pronouns raised a question that
+was Hans's: whether *himself* as an object is checked against its
+subject, which the grammar does not carry that far. Hans chose to read
+it without the check, as a known cost; only the emphatic reflexive right
+after its subject, *the king himself*, is checked, since there the
+subject is beside it. *US* was a closed-class word in capitals, read now
+as a name unless the whole sentence is in capitals. Curly quotes looked
+like a tokeniser rule and were the interpreter's: `char_type/2` counted
+every character past ASCII as a letter, so *“Open* was one word, and so
+were both dashes. One mend in `lib/boot.pl` was three of the record's
+causes, and the postmortem has it, the sixty-second defect. Counting
+them, the en dash in *1–4* had been put under words and characters when
+it belonged under numbers, and the record says so. *Police* was last: a
+noun with no singular, listed with *cattle* and *vermin*, which at once
+broke *a police officer*, since a noun before a noun had to be singular,
+and loses WordNet's verb, *to police*, the trade every listed word makes.
+The corpus went from 9, 31 and 10 to **14 grammatical, 31 not and 5
+unknown**, one cause per commit, and the full output was diffed after
+each. Two sentences gained readings, a wordless relative after a plural
+and *station* as a verb, both English in form, and are recorded.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1565,7 +1605,7 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 662 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
+| `make english` | The grammar checker's 702 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
 | `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of each of `english/corpus.txt`, `english/corpus2.txt` and `english/corpus3.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
@@ -1576,9 +1616,9 @@ something it would have caught; those arrived with the program they check.
 ## Where it stands
 
 About 8,000 lines of hand-written C, 760 lines of library written in Prolog,
-a 338-test suite with a second leg that collects and a deep-term run beside
+a 339-test suite with a second leg that collects and a deep-term run beside
 it, five examples, four tutorial levels, an English grammar checker of about
-3,700 lines built on the interpreter, through all three of its stages, and a
+4,000 lines built on the interpreter, through all three of its stages, and a
 reference and internals document generated from the interpreter's own
 tables.
 
