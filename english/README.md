@@ -1462,3 +1462,17 @@ reading, but it is a known word now. The corpus gives **16
 grammatical, 30 not, and 4 unknown**: the *Videla* sentence is no
 longer unknown, and fails on *began Friday* and *human rights
 violations*. No other sentence moved, nor its count of readings.
+
+A time of day followed. The tokeniser keeps *13:44* as one word, a
+colon and two digits after a number, and *a.m.* and *p.m.* as one word
+each; a time is a noun phrase, with *a.m.* or *p.m.* after it or none,
+and a zone after that or none, *13:44 UTC*, *12:30 p.m. AEST*, the zone
+one of a short list so that a name after a time is not read as its
+zone. An hour alone takes *a.m.* or *p.m.*, *5 p.m.*, and only up to
+twelve. The corpus gives **16 grammatical, 31 not, and 3 unknown**: the
+*12:30 p.m. AEST* sentence is no longer unknown, and with its last
+clause cut, *one of which was driving*, it reads. The splitter does not
+end a sentence after *p.m.* before a capital, *It was 5 p.m. The dog
+slept*, which it did not before either: *p.m. AEST* goes on, and the
+two look alike to it. No other sentence moved, nor its count of
+readings.

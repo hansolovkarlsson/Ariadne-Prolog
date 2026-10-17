@@ -365,6 +365,9 @@ known_word(W) :- degree(W), !.
 known_word(W) :- subordinator(W), !.
 known_word(not).
 known_word(than).
+known_word(W) :- time_word(W), !.
+known_word(W) :- meridiem(W), !.
+known_word(W) :- time_zone(W), !.
 known_word(',').
 
 /* ---------------- running text ---------------- */
@@ -593,6 +596,7 @@ bracket(sub_first(C, S1, S2)) -->
     ['[S', '[SBAR', C], bracket(S1), [']'], bracket(S2), [']'].
 bracket(num(W))            --> ['[NP', W, ']'].
 bracket(date(D))           --> ['[NP', D, ']'].
+bracket(time(T))           --> ['[NP', T, ']'].
 bracket(fronted(A, S))     --> ['[S'], bracket(A), bracket(S), [']'].
 bracket(imp(P1, Neg, VP, P2)) -->
     ['[S'], please_word(P1), imp_neg(Neg), bracket(VP), please_word(P2), [']'].
@@ -827,6 +831,12 @@ split_letters([C|Cs], Words) :-
     atom_chars(W, Ds),
     Words = [W|Ws],
     split_letters(Rest, Ws).
+% a.m. and p.m. are one word each, as written, "12:30 p.m.".
+split_letters([C, '.', M, '.'|Cs], [W|Ws]) :-
+    downcase_atom(C, L), memberchk(L, [a, p]), downcase_atom(M, m),
+    \+ ( Cs = [N|_], letter(N) ), !,
+    atom_concat(L, '.m.', W),
+    split_letters(Cs, Ws).
 split_letters([C|Cs], Words) :-
     (   letter(C)
     ->  take_letters([C|Cs], Letters, Rest0),
@@ -866,12 +876,16 @@ unhyphen(W, Ws) :- atomic_list_concat(Ws0, '-', W), exclude(==(''), Ws0, Ws).
 letter(C) :- char_type(C, alpha).
 
 % take_number(+Chars, -Number, -Rest): a run of digits, with a point or
-% comma inside it kept when a digit follows, 3.5 or 1,000, and an
-% ordinal's ending when no letter follows that, 27th or 1st; a full stop
-% after it ends the sentence and is not part of it.
+% comma inside it kept when a digit follows, 3.5 or 1,000, a colon when
+% two digits follow, a time of day, 13:44, and an ordinal's ending when no
+% letter follows that, 27th or 1st; a full stop after it ends the
+% sentence and is not part of it.
 take_number([C|Cs], [C|Ds], Rest) :- digit(C), !, take_number(Cs, Ds, Rest).
 take_number([P, D|Cs], [P, D|Ds], Rest) :-
     ( P == '.' ; P == ',' ), digit(D), !, take_number(Cs, Ds, Rest).
+take_number([':', D1, D2|Cs], [':', D1, D2|Ds], Rest) :-
+    digit(D1), digit(D2), \+ ( Cs = [D3|_], digit(D3) ), !,
+    take_number(Cs, Ds, Rest).
 take_number([A, B|Cs], [A, B], Cs) :-
     atom_chars(S, [A, B]), memberchk(S, [st, nd, rd, th]),
     \+ ( Cs = [N|_], letter(N) ), !.

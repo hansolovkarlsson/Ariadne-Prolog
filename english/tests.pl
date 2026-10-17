@@ -812,6 +812,14 @@ wordnet_good('The man has flung it.').
 wordnet_bad('The dog has came.',            verb_form(has, came, en)).
 wordnet_bad('The dog come.',                subject_verb(come)).
 
+% A time of day, with a.m. or p.m. and a zone after it or none.
+good('The dog sleeps at 12:30.').
+good('The dog slept until 5 p.m. today.').
+good('Alice was happy as of 13:44 UTC.').
+good('The dog barked around 12:30 p.m. AEST on Sunday.').
+readings('The dog sleeps at 12:30.', 1).
+bad('The dog sleeps at 13 p.m. today.',     no_reading).
+
 % More, fewer or less than a number, as one determiner.
 good('More than two dogs sleep.').
 good('More than one dog sleeps.').

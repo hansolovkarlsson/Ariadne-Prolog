@@ -41,6 +41,12 @@ There are no releases yet, so entries are grouped by the day they landed on
   corpus gives 16, 30 and 4, one sentence no longer unknown. 727
   checks, 737 with WordNet.
 
+- **A time of day.** *13:44 UTC*, *12:30 p.m. AEST*, *5 p.m.*: the
+  tokeniser keeps *13:44*, *a.m.* and *p.m.* as one word each, and a
+  time is a noun phrase with *a.m.* or *p.m.* and a listed zone after
+  it or none. The third corpus gives 16, 31 and 3, one sentence no
+  longer unknown. 733 checks, 743 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

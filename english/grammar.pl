@@ -308,6 +308,8 @@ simple_np(Agr, _, np(nom(As, n(N), [])), V, V) -->
     plain_adjectives(As), name(N), { agr_of(sg, Agr) }.
 simple_np(Agr, _, date(D), V, V) -->
     date(D), { agr_of(sg, Agr) }.
+simple_np(Agr, _, time(T), V, V) -->
+    time(T), { agr_of(sg, Agr) }.
 simple_np(Agr, _, num(W), V, V) -->
     [W], { number_word(W, Num), agr_of(Num, Agr) }.
 simple_np(Agr, _, T, V0, V) --> det_np(Agr, T0, V0, V), np_appositive(T0, T).
@@ -481,6 +483,22 @@ date(D) --> date_weekday(Ws), [the, Day], { day_of_month(Day) },
             date_of(Os), [M], { month(M) }, date_year(Ys),
             { append([Ws, [the, Day], Os, [M], Ys], Words),
               atomic_list_concat(Words, ' ', D) }.
+
+% time(-Time): a time of day, "13:44", "12:30 p.m.", "5 p.m.", with its
+% zone after it or none, "13:44 UTC", "12:30 p.m. AEST". The zone is one
+% time_zone/1 lists, so that a name after a time is not read as one.
+time(T) --> [H], { time_word(H) }, time_meridiem(Ms), time_zone_after(Zs),
+            { atomic_list_concat([H|Ms], ' ', T0),
+              atomic_list_concat([T0|Zs], ' ', T) }.
+time(T) --> [H, M], { day(H), atom_number(H, N), N =< 12, meridiem(M) },
+            time_zone_after(Zs),
+            { atomic_list_concat([H, M|Zs], ' ', T) }.
+
+time_meridiem([M]) --> [M], { meridiem(M) }.
+time_meridiem([]) --> [].
+
+time_zone_after([Z]) --> [Z], { time_zone(Z) }.
+time_zone_after([]) --> [].
 
 date_weekday([W]) --> [W], { weekday(W) }.
 date_weekday([]) --> [].

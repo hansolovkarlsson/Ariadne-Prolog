@@ -294,6 +294,18 @@ month(october). month(november). month(december).
 weekday(monday). weekday(tuesday). weekday(wednesday). weekday(thursday).
 weekday(friday). weekday(saturday). weekday(sunday).
 
+% time_word(Word): a time of day in digits, 13:44, which words/2 in
+% check.pl keeps as one word; meridiem(Word), a.m. or p.m.; and
+% time_zone(Word), a zone that may follow a time, "13:44 UTC".
+time_word(W) :-
+    atom(W), atomic_list_concat([H, M], ':', W),
+    catch(( atom_number(H, HN), atom_number(M, MN) ), _, fail),
+    integer(HN), HN >= 0, HN =< 24, integer(MN), MN >= 0, MN =< 59.
+meridiem('a.m.'). meridiem('p.m.').
+time_zone(W) :- memberchk(W, [utc, gmt, bst, cet, cest, eet, eest, est, edt,
+                              cst, cdt, mst, mdt, pst, pdt, aest, aedt, acst,
+                              awst, ist, jst, nzst, nzdt]).
+
 % digits(Word): a number written in digits, 91 or 3.5 or 1,000. Not an
 % ordinal, 27th, which is an adjective; see ordinal/1.
 digits(W) :-
