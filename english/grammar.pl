@@ -334,7 +334,18 @@ simple_np(Agr, _, time(T), V, V) -->
 simple_np(Agr, _, money(M), V, V) -->
     money(M), { agr_of(sg, Agr) }.
 simple_np(Agr, _, num(W), V, V) -->
-    [W], { number_word(W, Num), agr_of(Num, Agr) }.
+    [W], { number_word(W, Num), agr_of(Num, Agr) }, \+ [of].
+% A quantity, of, and the noun phrase it is a part of, "many of the
+% rockets", "eight of them", "some of the cake". The phrase agrees as the
+% quantity does, or for some, all and their like as the noun phrase after
+% of does: "some of the cake is", "some of the cakes are". A number
+% alone is no noun phrase before of, as "saw two of the dogs" read with
+% "of the dogs" on the verb.
+simple_np(Agr, _, part(Q, NP), V0, V) -->
+    [Q], { partitive(Q, QNum) }, [of],
+    partitive_np(NP, Num0, V0, V),
+    { QNum == inner -> Num = Num0 ; Num = QNum },
+    { agr_of(Num, Agr) }.
 simple_np(Agr, _, T, V0, V) -->
     det_np(Agr, T0, V0, V1), np_appositive(T0, T, V1, V).
 % A multiple before a noun phrase with a determiner, "twice the size of
@@ -350,6 +361,32 @@ simple_np(Agr, _, T, V0, V) -->
       ),
       agr_of(Num, Agr) },
     np_appositive(np(N), T, V2, V).
+
+% partitive(Word, Number): a quantity that goes before of, and its
+% number, or inner for one that takes the number of the noun phrase after
+% of.
+partitive(W, Num) :- number_word(W, Num).
+partitive(many, pl). partitive(few, pl). partitive(several, pl).
+partitive(both, pl).
+partitive(each, sg). partitive(either, sg). partitive(neither, sg).
+partitive(some, inner). partitive(all, inner). partitive(most, inner).
+partitive(any, inner). partitive(none, inner). partitive(half, inner).
+partitive(much, inner).
+
+% partitive_np(-Tree, -Number, V0, V): what a quantity is a part of: a
+% definite noun phrase, with the, a possessor or a demonstrative, "of the
+% rockets", "of their seven encounters", or an object pronoun, "of them";
+% not "two of a dog".
+partitive_np(NP, Num, V0, V) -->
+    det_np(Agr, NP, V0, V), { definite_np(NP), agr_of(Num, Agr) }.
+partitive_np(pro(W), Num, V, V) --> [W], { partitive_pronoun(W, Num) }.
+
+definite_np(np(poss(_), _)).
+definite_np(np(det(D), _)) :-
+    atomic_list_concat([W|_], ' ', D), definite_det(W, _).
+
+partitive_pronoun(them, pl). partitive_pronoun(us, pl).
+partitive_pronoun(you, pl). partitive_pronoun(it, sg).
 
 % title_before_name(+Nominal): a singular noun for a person and the name
 % straight after it, which news puts with no determiner: "musician Michael
@@ -649,6 +686,19 @@ determiner(D, Num, _) -->
 determiner(D, Num, _) -->
     [A, N], { definite_det(A, ANum), quantity(N, Num), ANum = Num,
               atomic_list_concat([A, N], ' ', D) }.
+% An adjective of order between them, "the past few days", "the last
+% three years", "the other two", and a big number after the number, "the
+% two hundred".
+determiner(D, pl, _) -->
+    [A, J, N], { definite_det(A, _), order_adj(J), quantity(N, pl),
+                 atomic_list_concat([A, J, N], ' ', D) }.
+determiner(D, pl, _) -->
+    [A, N, B], { definite_det(A, _), number_word(N, _), \+ digits(N),
+                 big_number(B), atomic_list_concat([A, N, B], ' ', D) }.
+
+order_adj(past). order_adj(last). order_adj(next). order_adj(first).
+order_adj(previous). order_adj(final). order_adj(other).
+order_adj(remaining). order_adj(coming).
 
 % definite_det(Word, Number): a determiner that may stand before a
 % quantity, "the three", "those few", "our many"; these and those only
@@ -1063,6 +1113,15 @@ relative(_, [rel(pp(P, W), S)], V0, V) -->
     apposition_end.
 
 pied_piped(which). pied_piped(whom).
+% A quantity and of may go before the relative word, which then stands
+% for the subject, set off by a comma: "two children, one of which was
+% driving", "the dogs, some of whom sleep". The verb agrees as the
+% quantity does, or with the noun for some and its like.
+relative(Agr, [rel(part(Q, W), VP)], V0, V) -->
+    [','], [Q], { partitive(Q, QNum) }, [of], [W], { pied_piped(W) },
+    { QNum == inner -> RAgr = Agr ; agr_of(QNum, RAgr) },
+    verb_phrase(fin(RAgr), 1, subject, VP, nogap, nogap, V0, V),
+    apposition_end.
 % A clause with its relative word and be left out is a participle and
 % what follows it, passive, "a movie directed by Eldar Ryazanov", or in
 % -ing, "a network broadcasting from Dubai". The rule is entered only

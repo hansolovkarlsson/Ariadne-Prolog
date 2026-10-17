@@ -675,6 +675,24 @@ good('Alice wants nothing to eat.').
 readings('Alice wants something to eat.', 2).
 good('Alice did the homework.').
 bad('Alice does.',                          no_reading).
+% A quantity with of, as a noun phrase and opening a relative clause; a
+% determiner with an adjective of order or a big number.
+good('Two of the dogs sleep.').
+good('Many of the dogs sleep.').
+good('Eight of them sleep.').
+good('Some of the cake is good.').
+good('Some of the cakes are good.').
+good('The dog saw two cats, one of which slept.').
+good('The dogs, some of whom sleep, bark.').
+readings('Alice saw two of the dogs.', 1).
+readings('Two of the dogs sleep.', 1).
+bad('One of the dogs sleep.',               subject_verb(sleep)).
+bad('Some of the cake are good.',           subject_verb(are)).
+bad('Two of a dog sleep.',                  no_reading).
+bad('The dog saw two cats, one of which sleep.', subject_verb(sleep)).
+good('Alice saw the other two dogs.').
+good('Alice saw the two hundred dogs.').
+readings('Alice saw the other two dogs.', 1).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
@@ -861,6 +879,8 @@ wordnet_good('The planet has been discovered orbiting the star.').
 wordnet_good('A body has yet to be recovered.').
 wordnet_good('It has nothing to do with the proposal.').
 wordnet_good('Donner put forth the proposal.').
+wordnet_good('It snowed over the past few days.').
+wordnet_good('Officials reported many of the rockets were shot down.').
 wordnet_good('Alice has yet to sleep.').
 wordnet_good('Alice carries off the cake.').
 wordnet_bad('Alice has yet to sleeps.',     verb_form(to, sleeps, base)).

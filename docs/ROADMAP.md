@@ -199,8 +199,9 @@ These change the shape of the system rather than adding to it.
        as* (6, done 2026-10-17 but for *ranked world number one*, and
        *such a visit as "grim"*, which waits on the *visit* defect); a
        quantity after a determiner or with *of*, *many of the rockets*
-       (5, *the three journalists* done 2026-10-16; left,
-       *the past few days*, *the two hundred*); words and characters
+       (5, *the three journalists* done 2026-10-16, the rest 2026-10-17;
+       left, a percentage before *of*, *40% of diamond giant De
+       Beers*); words and characters
        (6, each small: a web address, *exoplanet*, *van Gogh* and
        *al-Hakim*, *Millwall football club*; done 2026-10-16, *himself*
        as an object or after a subject, an object not checked against

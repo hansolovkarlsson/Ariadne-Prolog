@@ -93,6 +93,13 @@ There are no releases yet, so entries are grouped by the day they landed on
   The third corpus gives 24, 24 and 2, three new passes. 783 checks,
   813 with WordNet.
 
+- **A quantity with *of*.** *Many of the rockets*, *eight of them*,
+  *some of the cake is*, agreeing with the quantity or, for *some* and
+  its like, with the noun phrase after *of*; *two cats, one of which
+  slept*, opening a relative clause; and *the past few days*, *the other
+  two*, *the two hundred dogs*. The third corpus gives 27, 21 and 2,
+  three new passes. 799 checks, 831 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

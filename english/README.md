@@ -199,6 +199,15 @@ end of this file.
   and a to-infinitive whose object it is, *anything to do with the
   proposal*, *something to eat*; and *do* as a verb with an object, *did
   the homework*.
+- **A quantity with *of***: *many of the rockets*, *eight of them*, *some
+  of the cake*, a quantity, *of*, and a definite noun phrase or an object
+  pronoun, agreeing as the quantity does or, for *some*, *all* and their
+  like, as the noun phrase does, so *one of the dogs sleep* and *some of
+  the cake are good* are refused; and opening a relative clause after a
+  comma, *two cats, one of which slept*. A number alone is no noun phrase
+  before *of*. A determiner may have an adjective of order before its
+  quantity, *the past few days*, *the other two*, or a big number after
+  it, *the two hundred dogs*.
 - **A phrase before the subject**: *yesterday the dog barked*, *in 2019,
   978 people lived there*, *last night the dog barked*, with a comma or
   none; but not *about the dog barked*.
@@ -1647,3 +1656,31 @@ as "grim"* reads with *trip* for *visit*, and fails on the defect that
 *visit* is a verb only; *ranked world number one* still has no reading.
 No other sentence of the three corpora moved, nor its count of
 readings.
+
+Quantities came next, five sentences. A quantity with *of* had no rule:
+*many of the rockets*, *one of which*, *all of their seven encounters*.
+It is a noun phrase now, the quantity, *of*, and a definite noun phrase,
+with *the*, a possessor or a demonstrative, or an object pronoun, *eight
+of them*. It agrees as the quantity does, *one of the dogs sleeps*, or,
+for *some*, *all*, *most* and their like, as the noun phrase after *of*
+does, *some of the cake is*, *some of the cakes are*. A number alone is
+no noun phrase before *of* any more, since *saw two of the dogs* read
+already, *two* with *of the dogs* on the verb, and would have read
+twice. After a comma, a quantity, *of* and *which* or *whom* open a
+relative clause whose subject they are, *two children ..., one of which
+was driving*. A determiner and its quantity may have an adjective of
+order between them, *the past few days*, *the last three years*, *the
+other two*, and a big number after the number, *the two hundred dogs*.
+The corpus gives **27 grammatical, 21 not, and 2 unknown**: *Freezing
+temperatures, combined with snow over the past few days*, with eight
+readings; the *12:30 p.m. AEST* sentence with *one of which was
+driving*, with 24; and *Israeli officials reported many of the rockets
+were shot down*, with four, from *shot* an adjective or a participle
+and *down* on either verb. *All of their seven encounters* reads, and
+its sentence fails on *ranked world number one*; *eight of them
+exclusively for military use* is a comma phrase at the end, under that
+cause. The *Anglo American* sentence still fails, now with no reading
+where it was told *giant* needs a determiner: *40% of diamond giant De
+Beers* had read *40* as a noun phrase and *of* on the verb, and a
+percentage before *of* is not read. No other sentence of the three
+corpora moved, nor its count of readings.

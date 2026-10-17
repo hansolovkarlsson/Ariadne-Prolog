@@ -597,6 +597,7 @@ bracket(joined(C, S1, S2)) -->
 bracket(sub_first(C, S1, S2)) -->
     ['[S', '[SBAR', C], bracket(S1), [']'], bracket(S2), [']'].
 bracket(num(W))            --> ['[NP', W, ']'].
+bracket(part(Q, NP))       --> ['[NP', Q, of], bracket(NP), [']'].
 bracket(date(D))           --> ['[NP', D, ']'].
 bracket(time(T))           --> ['[NP', T, ']'].
 bracket(money(M))          --> ['[NP', M, ']'].
@@ -624,6 +625,7 @@ bracket(whadv(A))          --> ['[WHADVP', A, ']'].
 bracket(whpp(P, W))        --> ['[WHPP', P], bracket(W), [']'].
 bracket(rel(none, S))      --> ['[SBAR'], bracket(S), [']'].
 bracket(rel(pp(P, W), C))  --> ['[SBAR', '[PP', P, '[NP', W, ']', ']'], bracket(C), [']'].
+bracket(rel(part(Q, W), C)) --> ['[SBAR', '[NP', Q, of, W, ']'], bracket(C), [']'].
 bracket(rel(W, C))         --> { atom(W), W \== none }, ['[SBAR', W], bracket(C), [']'].
 bracket(gap)               --> ['_'].
 bracket(coord(C, Ts))      --> ['[NP'], joined_out(bracket, C, Ts), [']'].
