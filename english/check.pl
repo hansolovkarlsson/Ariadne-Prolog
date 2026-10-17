@@ -602,6 +602,7 @@ bracket(time(T))           --> ['[NP', T, ']'].
 bracket(money(M))          --> ['[NP', M, ']'].
 bracket(score(Ss))         --> { atomic_list_concat(Ss, ', ', S) }, ['[NP', S, ']'].
 bracket(mult(M, NP))       --> ['[NP', M], bracket(NP), [']'].
+bracket(ger(VP))           --> ['[NP'], bracket(VP), [']'].
 bracket(fronted(A, S))     --> ['[S'], bracket(A), bracket(S), [']'].
 bracket(imp(P1, Neg, VP, P2)) -->
     ['[S'], please_word(P1), imp_neg(Neg), bracket(VP), please_word(P2), [']'].
@@ -836,8 +837,11 @@ split_letters([C, D|Cs], [C|Ws]) :-
     currency(C), digit(D), !, split_letters([D|Cs], Ws).
 split_letters([C|Cs], Words) :-
     digit(C), !,
-    take_number([C|Cs], Ds, Rest),
-    atom_chars(W, Ds),
+    take_number([C|Cs], Ds, Rest0),
+    (   measure_word(Ds, Rest0, W, Rest)
+    ->  true
+    ;   atom_chars(W, Ds), Rest = Rest0
+    ),
     Words = [W|Ws],
     split_letters(Rest, Ws).
 % a.m. and p.m. are one word each, as written, "12:30 p.m.".
@@ -883,6 +887,15 @@ unhyphen(W, [W]) :- downcase_atom(W, L), ( known_word(L) ; placement(L, wordnet,
 unhyphen(W, Ws) :- atomic_list_concat(Ws0, '-', W), exclude(==(''), Ws0, Ws).
 
 letter(C) :- char_type(C, alpha).
+
+% measure_word(+Digits, +Chars, -Word, -Rest): the digits, a hyphen and a
+% singular noun are one word when they make a measure, "2-day police
+% custody"; see measure_adj/1 in lexicon.pl. "10-year-old" is not one,
+% and is read as three words.
+measure_word(Ds, ['-'|Cs], W, Rest) :-
+    take_letters(Cs, Ls, Rest), Ls \== [],
+    append(Ds, ['-'|Ls], All), atom_chars(W, All),
+    downcase_atom(W, L), measure_adj(L).
 
 % take_number(+Chars, -Number, -Rest): a run of digits, with a point or
 % comma inside it kept when a digit follows, 3.5 or 1,000, a hyphen or an

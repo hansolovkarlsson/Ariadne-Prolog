@@ -75,6 +75,15 @@ There are no releases yet, so entries are grouped by the day they landed on
   check on the dateline defect has a new sentence, since its old one
   now reads as it should. 758 checks, 772 with WordNet.
 
+- **A bare noun in a set phrase, a gerund subject, and a measure.** *On
+  trial*, *by car*, *via email* after a short list of prepositions, on
+  a verb or after *be*; *doubt*, *use* and *custody* as mass nouns;
+  *wrangling between the teams may have yielded*, an *-ing* verb phrase
+  as the subject, first in the sentence; and *two-day*, *2-day*, a
+  number and a noun joined by a hyphen, as one adjective. *Via* is a
+  preposition. The third corpus gives 21, 27 and 2, two new passes. 772
+  checks, 792 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

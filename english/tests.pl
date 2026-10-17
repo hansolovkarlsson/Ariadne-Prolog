@@ -644,6 +644,23 @@ readings('Alice is a doctor, chased by the cat.', 1).
 bad('The dogs, the friends of Alice, sleeps.', subject_verb(sleeps)).
 bad('The dog, the cat sleeps.',             no_reading).
 bad('The dog, chased by the cat sleeps.',   no_reading).
+% A countable noun bare after one preposition, in a set phrase.
+good('Alice walks to the garden by car.').
+good('Alice walks to the garden on foot.').
+readings('Alice walks to the garden by car.', 1).
+bad('Alice walks to the garden by cake.',    bare(cake)).
+bad('Alice walks to the garden on car.',     bare(car)).
+% A gerund phrase as the subject, first in the sentence.
+good('Barking at the cat is bad.').
+good('Eating cakes is good.').
+readings('Barking at the cat is bad.', 1).
+bad('Barking at the cat are bad.',          subject_verb(are)).
+bad('The dog sleeps after eating the cakes sleeps.', no_reading).
+% A number and a noun joined by a hyphen, as one adjective.
+good('Alice has a two-day cake.').
+good('Alice has a 2-day cake.').
+readings('Alice has a 2-day cake.', 1).
+bad('Alice has a two-days cake.',           no_reading).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
@@ -823,6 +840,12 @@ wordnet_good('The dog has become big.').
 wordnet_good('The man has overcome it.').
 wordnet_good('He came and has come.').
 wordnet_good('The man has flung it.').
+wordnet_good('Videla is on trial regarding the deaths.').
+wordnet_good('Sarah spoke via email to Bob.').
+wordnet_good('The minister has expressed doubt.').
+wordnet_good('He was remanded to two-day police custody.').
+wordnet_good('It is aimed at educational use.').
+wordnet_good('Wrangling between the teams may have yielded its first casualty.').
 wordnet_bad('The dog has came.',            verb_form(has, came, en)).
 wordnet_bad('The dog come.',                subject_verb(come)).
 

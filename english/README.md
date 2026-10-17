@@ -174,6 +174,18 @@ end of this file.
   so *I am student* and *it is piece of cake* are refused. The nouns for
   people are the lexicon's own and those WordNet gives a person as the
   most frequent sense.
+- **A set phrase with a bare noun**: a countable noun stands bare after
+  one preposition, *on trial*, *on foot*, *by email*, *by car*, *via
+  email*, as `bare_pp/2` lists them, with the phrases a noun takes after
+  it, *on trial regarding the deaths*; on a verb or after *be*, never
+  after a noun, so *walks to the garden by car* has one reading.
+- **A gerund subject**: an *-ing* verb phrase is a singular subject,
+  *wrangling between the teams may have yielded its first casualty*,
+  *barking at the cat is bad*, first in the sentence only, so *the dog
+  sleeps after eating the cakes sleeps* is still refused.
+- **A measure before a noun**: a number and a singular noun joined by a
+  hyphen are one adjective, *a two-day trip*, *2-day police custody*;
+  *10-year-old* is read as three words, as before.
 - **A phrase before the subject**: *yesterday the dog barked*, *in 2019,
   978 people lived there*, *last night the dog barked*, with a comma or
   none; but not *about the dog barked*.
@@ -1551,3 +1563,36 @@ which now reads as it should, *the Bob* with its *the* and *the dog* its
 appositive; it reads *THE HAGUE — Alice sees the* now, which passes with
 the defect and fails without it. No other sentence moved, nor its count
 of readings.
+
+A singular noun with no determiner came next, in three parts. Six
+sentences hold the cause, and none had a rule to stand on: *on trial*,
+*via email*, *to two-day police custody*, *expressed doubt*, *aimed at
+educational use*, and *wrangling between ... teams*. *Doubt*, *use* and
+*custody* are mass nouns now, with the lexicon's others. A countable
+noun stands bare after one preposition in a set phrase, *on trial*, *by
+email*, *by car*, *on foot*, a short list, and takes the phrases a noun
+takes, *on trial regarding the deaths*; it goes on a verb or after *be*
+and not after a noun, since *walks to the garden by car* read *the
+garden by car* as well. *Via* is a preposition, which was among the
+small words. *Two-day* is one adjective, a number and a singular noun
+joined by a hyphen, and so is *2-day*, which the tokeniser had cut into
+*2* and *day*, the *2* then a determiner wanting a plural. And
+*wrangling* is no mass noun but a gerund: an *-ing* verb phrase is a
+singular subject, first in the sentence. Read as a mass noun, any noun
+WordNet has in *-ing*, it doubled *before dying of cancer* and *“Open
+Client Offering”*, which the gerund after a preposition and the name
+already read; and inside the sentence, *the dog sleeps after eating the
+cakes sleeps* read with *eating the cakes* the subject of a clause after
+*after*. The corpus gives **21 grammatical, 27 not, and 2 unknown**,
+*Wrangling between musician Michael Jackson's legal and public relation
+teams* and *Sarah Gavin spoke via email to Wikinews' Gabriel Pollard*
+the new passes, the second with two readings, *email to Gabriel
+Pollard* one of them. Cut down, *Videla is on trial regarding the deaths
+of 31 prisoners* and *Rahul Mahajan was remanded to two-day police
+custody by a Patiala House court* read; the first fails on *aged 84*
+and what else it holds, the second on the appositive and relative before
+its verb. *Expressed doubt* reads, and its sentence fails on *doubt
+that his country's President would*, a noun with a *that* clause; *aimed
+at educational use* reads, and its sentence, *Monday saw the latest
+edition ... go quietly online*, fails on something else. No other
+sentence of the three corpora moved, nor its count of readings.

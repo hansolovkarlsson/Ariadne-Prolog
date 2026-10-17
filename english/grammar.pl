@@ -58,6 +58,21 @@ sentence(T, V0, V) --> wh_question(T, V0, V).
 declarative(T, V0, V) -->
     statement(S, nogap, nogap, V0, V1),
     clauses_after(S, T, V1, V).
+% A gerund phrase is a subject too, singular, "wrangling between the
+% teams may have yielded its first casualty", and only first in the
+% sentence: inside one, "the dog sleeps after eating the cakes sleeps"
+% would read with "eating the cakes" the subject of a clause after
+% "after". It is entered only when an -ing form comes first, as after a
+% preposition, see ing_ahead//0.
+declarative(T, V0, V) -->
+    gerund_statement(S, V0, V1),
+    clauses_after(S, T, V1, V).
+
+gerund_statement(s(ger(VP0), VP), V0, V) -->
+    ing_ahead,
+    verb_phrase(ing, 2, subject, VP0, nogap, nogap, V0, V1),
+    { agr_of(sg, Agr) },
+    verb_phrase(fin(Agr), 1, subject, VP, nogap, nogap, V1, V).
 declarative(sub_first(C, S1, T), V0, V) -->
     [C], { subordinator(C) },
     statement(S1, nogap, nogap, V0, V1),
@@ -958,15 +973,26 @@ kind_last(N, V0, V) --> nominal(sg, _, _, N, V0, V).
 kind_noun(kind). kind_noun(kinds). kind_noun(sort). kind_noun(sorts).
 kind_noun(type). kind_noun(types). kind_noun(variety). kind_noun(form).
 
-pps([PP|PPs], V0, V) --> pp(PP, nogap, nogap, V0, V1), pps(PPs, V1, V).
+pps([PP|PPs], V0, V) -->
+    pp(PP, nogap, nogap, V0, V1), { \+ set_phrase(PP) }, pps(PPs, V1, V).
 pps([], V, V) --> [].
 
 pp(pp(P, NP), G0, G, V0, V) -->
     preposition(P), noun_phrase(_, obj, NP, G0, G, V0, V).
 pp(pp(P, VP), G0, G, V0, V) -->
     preposition(P), ing_ahead, verb_phrase(ing, 2, P, VP, G0, G, V0, V).
+% A countable noun stands bare after one preposition in a set phrase, "on
+% trial", "by email", with the phrases a noun takes after it, "on trial
+% regarding the deaths"; see bare_pp/2. It goes with a verb, or after be,
+% and not after a noun, so "walks to the garden by car" has one reading;
+% see pps//3.
+pp(pp(P, np(nom([], n(N), Posts))), G, G, V0, V) -->
+    preposition(P), [N], { bare_pp(P, N) },
+    nominal_rest(sg, N, Posts, V0, V).
 % As takes a bare role noun, as be does: "sacked as manager of the club".
 pp(pp(as, NP), G, G, V0, V) --> [as], role_np(NP, V0, V).
+
+set_phrase(pp(P, np(nom([], n(N), _)))) :- bare_pp(P, N).
 
 % preposition(-Prep): one word, or two or three that make one, "as of the
 % census", "out of the box", "as part of the project", "in front of the

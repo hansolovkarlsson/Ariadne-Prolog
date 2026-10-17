@@ -192,17 +192,18 @@ These change the shape of the system rather than adding to it.
        *diamond giant De Beers*, where *giant* is no person, and *Theo
        van Gogh*, under words); a *to*-infinitive of purpose or after
        a noun (6, done 2026-10-17); a bare singular noun, *on trial*
-       (6); verb
-       frames, *described as* (6); a quantity after a determiner or with
-       *of*, *many of the rockets* (5, *the three journalists* done
-       2026-10-16; left, *the past few days*, *the two hundred*); words
-       and characters (6, each small: *via*, a web address,
-       *exoplanet*, *van Gogh* and *al-Hakim*, *Millwall football
-       club*; done 2026-10-16, *himself* as an object or after a
-       subject, an object not checked against the subject, settled by
-       Hans; *US*; *police*; and curly quotes with both dashes, which
-       were one defect in `char_type/2`); quoted speech (2); a comma
-       phrase at the end (3).
+       (6, done 2026-10-17; left, a noun with a *that* clause, *doubt
+       that his country's President would*); verb frames, *described
+       as* (6); a quantity after a determiner or with *of*, *many of
+       the rockets* (5, *the three journalists* done 2026-10-16; left,
+       *the past few days*, *the two hundred*); words and characters
+       (6, each small: a web address, *exoplanet*, *van Gogh* and
+       *al-Hakim*, *Millwall football club*; done 2026-10-16, *himself*
+       as an object or after a subject, an object not checked against
+       the subject, settled by Hans; *US*; *police*; and curly quotes
+       with both dashes, which were one defect in `char_type/2`; done
+       2026-10-17, *via*); quoted speech (2); a comma phrase at the
+       end (3).
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

@@ -125,6 +125,7 @@ mass(life). mass(death). mass(education). mass(service). mass(experience).
 mass(history). mass(nature). mass(travel). mass(transport).
 mass(equipment). mass(luggage). mass(baggage). mass(clothing).
 mass(software). mass(housework). mass(employment). mass(unemployment).
+mass(doubt). mass(use). mass(custody).
 % Fields of study and work:
 mass(science). mass(art). mass(mathematics). mass(physics).
 mass(chemistry). mass(biology). mass(geology). mass(geography).
@@ -356,6 +357,15 @@ adj(beautiful). adj(ugly). adj(honest). adj(orange). adj(early). adj(late).
 adj(colorless).
 adj(A) :- guessed(adj, A).
 adj(A) :- ordinal(A).
+% A measure before a noun, a number and a singular noun joined by a hyphen,
+% read as one adjective: "a two-day trip", "remanded to 2-day police
+% custody", where the number alone would be taken for the determiner.
+adj(A) :- measure_adj(A).
+
+measure_adj(A) :-
+    atom(A), sub_atom(A, _, _, _, '-'),
+    atomic_list_concat([N, U], '-', A),
+    ( digits(N) ; number_word(N, _) ), noun_form(U, _, sg).
 
 prep(in). prep(on). prep(under). prep(near). prep(behind). prep(with).
 prep(without). prep(from). prep(to). prep(into). prep(over). prep(by).
@@ -365,6 +375,20 @@ prep(around). prep(about). prep(against). prep(since). prep(until).
 prep(along). prep(among). prep(above). prep(below). prep(beside).
 prep(inside). prep(outside). prep(toward). prep(towards). prep(within).
 prep(beyond). prep(throughout). prep(underneath).
+prep(via).
+
+% bare_pp(Prep, Noun): a countable noun that stands bare after one
+% preposition, in a set phrase: "on trial", "on foot", "by email", "by
+% car", "via email". See pp//5 in grammar.pl.
+bare_pp(on, trial). bare_pp(on, foot). bare_pp(on, duty).
+bare_pp(on, strike). bare_pp(on, holiday). bare_pp(on, leave).
+bare_pp(by, email). bare_pp(by, phone). bare_pp(by, telephone).
+bare_pp(by, mail). bare_pp(by, post). bare_pp(by, letter).
+bare_pp(by, car). bare_pp(by, bus). bare_pp(by, train).
+bare_pp(by, plane). bare_pp(by, boat). bare_pp(by, taxi).
+bare_pp(by, bicycle). bare_pp(by, hand).
+bare_pp(via, email). bare_pp(via, phone). bare_pp(via, telephone).
+bare_pp(via, satellite).
 
 % particle(Word): a preposition that may stand after a verb with nothing
 % after it, "sworn in", "carried on", "came by"; see modifiers//5 in
