@@ -397,9 +397,11 @@ partitive_pronoun(you, pl). partitive_pronoun(it, sg).
 % title_before_name(+Nominal): a singular noun for a person and the name
 % straight after it, which news puts with no determiner: "musician Michael
 % Jackson", "former Massachusetts governor Mitt Romney". The noun is one
-% role_np/3 would take, so "Alice saw dog Rex" is still refused.
+% role_np/3 would take, so "Alice saw dog Rex" is still refused, or one
+% for a company, "public relations firm Davis, Bain, and Associates",
+% "diamond giant De Beers"; see organisation/1.
 title_before_name(nom(_, n(Head), [name(_)|_])) :-
-    noun_form(Head, _, sg), person(Head).
+    noun_form(Head, _, sg), ( person(Head) ; organisation(Head) ), !.
 
 % det_np(-Agr, -Tree, V0, V): a noun phrase with a determiner or a
 % possessor before its noun, which is what may stand beside a name as an
@@ -462,6 +464,19 @@ det_np(Agr, np(poss(P), N), V0, V) -->
     possessor(P, V0, V1),
     nominal(Num, _, _, N, V1, V),
     { agr_of(Num, Agr) }.
+% A possessor before a name that ends in a plural noun, "Jackson's MJJ
+% Productions has terminated", singular as a name is, where the names
+% before a noun read it as plural. Not before other names, which the
+% names before a noun read already, "the People's Republic of China",
+% and would read twice.
+det_np(Agr, np(poss(P), nom([], n(N), [])), V0, V) -->
+    possessive_ahead,
+    possessor(P, V0, V),
+    name(N), { plural_name(N), agr_of(sg, Agr) }.
+
+plural_name(N) :-
+    atomic_list_concat(Ws, ' ', N), last(Ws, W),
+    noun_form(W, _, pl), \+ noun_form(W, _, sg).
 % A possessor before a quantity, "Alice's three dogs", "the farmer's many
 % cows", which the noun agrees with as it would with a determiner.
 det_np(Agr, np(poss(P), nom([num(W)|As], n(Head), Posts)), V0, V) -->

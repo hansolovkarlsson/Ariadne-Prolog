@@ -208,6 +208,14 @@ end of this file.
   for the plurals `plural_modifier/1` lists, which English puts there;
   no other, so *the cats chase dogs* is not the noun phrase *the cats
   chase* and the verb *dogs*.
+- **A web address** is one word and a name, *www.mjjsource.com*, when its
+  last label is a domain `web_address/1` lists; *U.S.* and a sentence run
+  together, *the arrest.We*, are not one.
+- **A title for a company**: a noun for a company or a body stands before
+  its name as a person's title does, *public relations firm Davis*,
+  *diamond giant De Beers*, for the nouns `organisation/1` lists; and a
+  possessor before a name that ends in a plural noun, *Jackson's MJJ
+  Productions has*, singular as a name is.
 - **A quantity with *of***: *many of the rockets*, *eight of them*, *some
   of the cake*, a quantity, *of*, and a definite noun phrase or an object
   pronoun, agreeing as the quantity does or, for *some*, *all* and their
@@ -1760,3 +1768,28 @@ officials charged with human rights violations* the new pass, with four
 readings, *of Argentina's* or *the trial of Argentina's* the possessor,
 and *with human rights violations* on *charged* or on the verb. No
 other sentence of the three corpora moved, nor its count of readings.
+
+The web address was next, in the Jackson sentence. The tokeniser cut
+*www.mjjsource.com* at its dots, and *mjjsource* and *com* were words
+nothing knew; it is one word now, and a name, when its last label is a
+domain from a short list, so that *U.S.* and *the arrest.We* are cut as
+before. That alone made the sentence pass, but only wrongly: its four
+readings had *public relations* a subject and *firm* its verb, *and
+public relations firm Davis, Bain, and Associates* a clause, since
+*firm* before a name was no title, as *giant* in *diamond giant De
+Beers* was none. A noun for a company or a body stands before its name
+now as a person's title does, from a list, as WordNet's category of
+groups is not generated: *firm*, *company*, *giant*, *bank*, *label* and
+thirteen more. *Jackson's MJJ Productions has* needed a possessor before
+a name, which the names before a noun read as plural, *MJJ* and the
+noun *productions*; it is read only where the name ends in a plural
+noun, since before any name it read *the People's Republic of China*
+twice, as a name and as the noun *republic*. The corpus gives **32
+grammatical, 17 not, and 1 unknown**, the Jackson sentence the new
+pass, with 28 readings. None is quite right: *Davis, Bain, and
+Associates* is one company's name, and the grammar reads it as a list,
+*public relations firm Davis*, *Bain* and *Associates*, as nothing says
+a name with commas in it is one name; *that* is a determiner in half of
+them, *that Jackson's MJJ Productions*, as it has been. *Diamond giant
+De Beers* reads, and its sentence fails on *40% of* alone. No other
+sentence of the three corpora moved, nor its count of readings.

@@ -188,28 +188,28 @@ These change the shape of the system rather than adding to it.
        but for *the ambassador to Iraq, Zalmay Khalilzad*, a name after
        a noun phrase that ends in one, and *Videla, aged 84*; two have
        no closing comma in the source); a title with no determiner,
-       *musician Michael Jackson* (2, seven done 2026-10-17; left,
-       *diamond giant De Beers*, where *giant* is no person, and *Theo
-       van Gogh*, under words); a *to*-infinitive of purpose or after
-       a noun (6, done 2026-10-17); a bare singular noun, *on trial*
-       (6, done 2026-10-17; left, a noun with a *that* clause, *doubt
-       that his country's President would*); verb frames, *described
-       as* (6, done 2026-10-17 but for *ranked world number one*, *such
-       a visit as "grim"* done with the *visit* defect); a
-       quantity after a determiner or with *of*, *many of the rockets*
-       (5, *the three journalists* done 2026-10-16, the rest 2026-10-17;
-       left, a percentage before *of*, *40% of diamond giant De
-       Beers*); words and characters
-       (6, each small: a web address, *exoplanet*, *van Gogh* and
-       *al-Hakim*, *Millwall football club*; done 2026-10-16, *himself*
-       as an object or after a subject, an object not checked against
-       the subject, settled by Hans; *US*; *police*; and curly quotes
-       with both dashes, which were one defect in `char_type/2`; done
-       2026-10-17, *via* and the semicolon); an object and a bare
+       *musician Michael Jackson* (9, done 2026-10-17, *diamond giant De Beers* with a list of nouns for
+       companies); a *to*-infinitive of purpose or after a noun (6, done
+       2026-10-17); a bare singular noun, *on trial* (6, done
+       2026-10-17; left, a noun with a *that* clause, *doubt that his
+       country's President would*); verb frames, *described as* (6, done
+       2026-10-17 but for *ranked world number one*; *such a visit as
+       "grim"* done with the *visit* defect); an object and a bare
        infinitive, *saw the edition go online*, which the record had
-       wrong, as *saw Videla gain power* read only as a noun phrase,
-       done 2026-10-17; quoted speech (2); a comma phrase at the
-       end (3).
+       wrong, as *saw Videla gain power* read only as a noun phrase
+       (done 2026-10-17); a quantity after a determiner or with *of*,
+       *many of the rockets* (5, *the three journalists* done
+       2026-10-16, the rest 2026-10-17; left, a percentage before *of*,
+       *40% of diamond giant De Beers*); a plural before a noun, *human
+       rights violations* (done 2026-10-17); words and characters (6,
+       each small: *exoplanet*, *Millwall football club*; done
+       2026-10-16, *himself* as an object or after a subject, an object
+       not checked against the subject, settled by Hans; *US*; *police*;
+       and curly quotes with both dashes, which were one defect in
+       `char_type/2`; done 2026-10-17, *via*, the semicolon and a web
+       address, and *Theo van Gogh* reads; a name with commas in it,
+       *Davis, Bain, and Associates*, is read as a list); quoted speech
+       (2); a comma phrase at the end (3).
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

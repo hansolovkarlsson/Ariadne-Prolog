@@ -116,6 +116,15 @@ There are no releases yet, so entries are grouped by the day they landed on
   stands before a noun. The third corpus gives 31, 17 and 2, one new
   pass. 818 checks, 855 with WordNet.
 
+- **A web address, and a title for a company.** *www.mjjsource.com* is
+  one word and a name, where the tokeniser had cut it at its dots; a
+  noun for a company stands before its name, *public relations firm
+  Davis*, *diamond giant De Beers*; and a possessor before a name that
+  ends in a plural noun, *Jackson's MJJ Productions has*. The third
+  corpus gives 32, 17 and 1, one new pass, whose readings take the
+  company's name *Davis, Bain, and Associates* for a list. 822 checks,
+  862 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

@@ -717,6 +717,11 @@ bad('Alice walk.',                          subject_verb(walk)).
 % A listed plural before a noun; any other plural is no noun modifier.
 readings('The cats chase dogs.', 1).
 readings('The dogs chase cats in the garden.', 2).
+% A web address is one word and a name; "U.S." and "arrest.We" are not.
+good('Alice visits wikinews.org.').
+good('Alice sees www.example.com in the garden.').
+readings('Alice visits wikinews.org.', 1).
+bad('Alice visits wikinews.zz.',            unknown).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
@@ -906,6 +911,9 @@ wordnet_good('Donner put forth the proposal.').
 wordnet_good('It snowed over the past few days.').
 wordnet_good('Officials charged with human rights violations sleep.').
 wordnet_good('Alice has a sports car.').
+wordnet_good('Jackson\'s MJJ Productions has terminated Bain.').
+wordnet_good('MJJ Productions has terminated public relations firm Davis.').
+wordnet_good('Anglo American bought diamond giant De Beers.').
 wordnet_good('Monday saw the edition go quietly online.').
 wordnet_good('Alice made the dog sleep.').
 wordnet_good('The edition went quietly online.').

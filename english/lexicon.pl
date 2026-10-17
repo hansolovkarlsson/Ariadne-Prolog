@@ -166,6 +166,18 @@ person(student). person(doctor). person(farmer). person(king).
 person(queen). person(neighbour). person(artist).
 person(W) :- guessed(noun, W), wn_person(W).
 
+% organisation(Noun): a noun for a company or a body, which news puts
+% before its name with no determiner, as it puts a person's title:
+% "public relations firm Davis, Bain, and Associates", "diamond giant De
+% Beers"; see title_before_name/1 in grammar.pl. Listed, as WordNet's
+% category of groups is not generated.
+organisation(firm). organisation(company). organisation(group).
+organisation(giant). organisation(conglomerate). organisation(agency).
+organisation(bank). organisation(airline). organisation(carrier).
+organisation(maker). organisation(manufacturer). organisation(retailer).
+organisation(publisher). organisation(studio). organisation(network).
+organisation(label). organisation(band). organisation(broadcaster).
+
 % time_noun(Noun): a noun that makes an adverb of time with last, next,
 % this, every or each before it, "last night", "every day"; see
 % adverbial_np/2 in grammar.pl. time, summer, winter, spring and autumn are

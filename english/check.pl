@@ -798,6 +798,35 @@ later_name(_, _, _, none).
 % where every word is.
 name_word(_, C, W) :- capital(C), \+ closed_class(W), !.
 name_word(no, C, _) :- abbreviation(C).
+name_word(_, C, _) :- web_address(C).
+
+% take_address(+Chars, -Address, -Rest): labels of letters, digits and
+% hyphens joined by dots, two labels or more, and nothing after the last
+% of a word's characters.
+take_address(Cs, As, Rest) :-
+    take_label(Cs, L, Cs1), L \== [],
+    Cs1 = ['.'|Cs2],
+    take_label(Cs2, L2, Cs3), L2 \== [],
+    more_labels(Cs3, Ls, Rest),
+    append([L, ['.'|L2], Ls], As),
+    \+ ( Rest = [N|_], ( letter(N) ; digit(N) ) ).
+
+more_labels(['.'|Cs], ['.'|As], Rest) :-
+    take_label(Cs, L, Cs1), L \== [], !,
+    more_labels(Cs1, Ls, Rest), append(L, Ls, As).
+more_labels(Rest, [], Rest).
+
+take_label([C|Cs], [C|Ls], Rest) :-
+    ( letter(C) ; digit(C) ; C == '-' ), !, take_label(Cs, Ls, Rest).
+take_label(Rest, [], Rest).
+
+% web_address(+Word): labels joined by dots, the last a top-level domain
+% this lists, "www.mjjsource.com", "wikinews.org"; so "Inc.", "U.S." and
+% a sentence run together, "the arrest.We", are not one.
+web_address(W) :-
+    atomic_list_concat(Ls, '.', W), Ls = [_, _|_],
+    last(Ls, T0), downcase_atom(T0, T),
+    memberchk(T, [com, org, net, edu, gov, int, io, info, uk, au, nz, ca, de, fr, nl]).
 
 abbreviation(C) :-
     atom_chars(C, Cs), Cs = [_, _|_],
@@ -855,6 +884,12 @@ split_letters([C|Cs], Words) :-
     ;   atom_chars(W, Ds), Rest = Rest0
     ),
     Words = [W|Ws],
+    split_letters(Rest, Ws).
+% A web address is one word, "www.mjjsource.com", and a name; see
+% web_address/1.
+split_letters([C|Cs], [W|Ws]) :-
+    letter(C), take_address([C|Cs], As, Rest),
+    atom_chars(W, As), web_address(W), !,
     split_letters(Rest, Ws).
 % a.m. and p.m. are one word each, as written, "12:30 p.m.".
 split_letters([C, '.', M, '.'|Cs], [W|Ws]) :-
