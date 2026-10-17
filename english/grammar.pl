@@ -314,19 +314,21 @@ simple_np(Agr, _, money(M), V, V) -->
     money(M), { agr_of(sg, Agr) }.
 simple_np(Agr, _, num(W), V, V) -->
     [W], { number_word(W, Num), agr_of(Num, Agr) }.
-simple_np(Agr, _, T, V0, V) --> det_np(Agr, T0, V0, V), np_appositive(T0, T).
+simple_np(Agr, _, T, V0, V) -->
+    det_np(Agr, T0, V0, V1), np_appositive(T0, T, V1, V).
 % A multiple before a noun phrase with a determiner, "twice the size of
 % Jupiter", "1.7 times the size", "three times the price"; the phrase
 % agrees as the noun phrase does.
 simple_np(Agr, _, mult(M, T), V0, V) -->
     multiple(M), det_np(Agr, T, V0, V).
-simple_np(Agr, _, np(N), V0, V) -->
+simple_np(Agr, _, T, V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
     { \+ names_only(N), \+ leads_number(N),
-      (   title_before_name(N) -> V1 = V
-      ;   bare_ok(Head, Num, V1, V)
+      (   title_before_name(N) -> V2 = V1
+      ;   bare_ok(Head, Num, V1, V2)
       ),
-      agr_of(Num, Agr) }.
+      agr_of(Num, Agr) },
+    np_appositive(np(N), T, V2, V).
 
 % title_before_name(+Nominal): a singular noun for a person and the name
 % straight after it, which news puts with no determiner: "musician Michael
@@ -427,6 +429,12 @@ name_appositive(T, V0, V) --> supplement_body(T, V0, V).
 apposition_end --> [','].
 apposition_end([], []).
 
+% apposition_close: as apposition_end, but not a comma before and or or,
+% where the noun phrase after the first comma is the second of a list,
+% "the dog, the cat, and the bird".
+apposition_close --> [','], \+ [and], \+ [or].
+apposition_close([], []).
+
 % np_appositive(+NP, -Tree): a name a comma sets after a noun phrase to
 % say which one it is, "her stage name, Barbara, from her grandmother",
 % "the doctor, Alice, sleeps". It is closed as the appositive after a
@@ -435,10 +443,25 @@ apposition_end([], []).
 % A noun phrase that ends in a name takes none, since a comma and a name
 % after a name place it, "a city in McLennan County, Texas", and that is
 % read by name//1.
-np_appositive(T, T) --> [].
-np_appositive(T, appos(T, name(N))) -->
+np_appositive(T, T, V, V) --> [].
+np_appositive(T, appos(T, name(N)), V, V) -->
     { \+ ends_in_name(T) },
     [','], name(N), apposition_end.
+np_appositive(T, appos(T, A), V0, V) -->
+    [','], np_apposition(A, V0, V), apposition_close.
+np_appositive(T, appos(T, A), V0, V) -->
+    [','], supplement_body(A, V0, V), [','].
+
+% np_apposition(-Tree, V0, V): what else a comma may set after a noun
+% phrase: another noun phrase with a determiner or a possessor, "Italy's
+% lower house, the Chamber of Deputies"; a title and a name, "the
+% nominee, former governor Mitt Romney". A participle phrase, "his
+% sacking, announced on Tuesday, has come", is closed by a comma only,
+% since one at the end is read on the verb phrase, "is a businesswoman,
+% best known as the chairperson", and would be read twice.
+np_apposition(T, V0, V) --> det_np(_, T, V0, V).
+np_apposition(np(N), V0, V) -->
+    nominal(_, _, _, N, V0, V), { title_before_name(N) }.
 
 % ends_in_name(+Tree): the last word of a noun phrase is a name.
 ends_in_name(name(_)).

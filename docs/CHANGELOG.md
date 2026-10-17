@@ -65,6 +65,16 @@ There are no releases yet, so entries are grouped by the day they landed on
   The third corpus gives 17, 30 and 3, one new pass. 746 checks, 760
   with WordNet.
 
+- **A noun phrase or a participle phrase after a noun phrase's comma.**
+  *Italy's lower house, the Chamber of Deputies*, *the doctor, farmer
+  Bob*, *his sacking, announced on Tuesday, has come*, after a noun
+  phrase with a determiner, a possessor or none; where a name alone had
+  stood there. The participle phrase is closed by a comma only, and the
+  closing comma may not come before *and* or *or*, so a list keeps its
+  one reading. The third corpus gives 19, 28 and 3, two new passes. The
+  check on the dateline defect has a new sentence, since its old one
+  now reads as it should. 758 checks, 772 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

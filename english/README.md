@@ -148,7 +148,12 @@ end of this file.
   a noun phrase the appositive is a name, *she took her stage name,
   Barbara, from her grandmother*, *the doctor, Alice, sleeps*, closed
   the same way, and not after a noun phrase that ends in a name, where
-  the comma and the name place it, *a city in McLennan County, Texas*.
+  the comma and the name place it, *a city in McLennan County, Texas*;
+  or a noun phrase with a determiner or a possessor, *Italy's lower
+  house, the Chamber of Deputies*, or a title and a name, closed the
+  same way but not by a comma before *and* or *or*; or a participle
+  phrase, *his sacking, announced on Tuesday, has come*, closed by a
+  comma only.
 - **The before a name**: *the Sernf*, *the Hague*, *the Rhine*, a
   singular name; only *the*.
 - **A relative clause a comma sets off**: *comedy routines in Cosby's
@@ -1516,3 +1521,33 @@ pass, with two readings, one an older one of *has* with *defeated
 Jelena Jankovic* as an adjective and a name. *A 1–4 defeat* reads in
 its own sentence, which fails on the participle after a comma. No
 other sentence moved, nor its count of readings.
+
+A comma and a noun phrase after a noun phrase came next. A noun phrase
+with a determiner or a possessor, or with none, may take after its comma
+another such noun phrase, *Italy's lower house, the Chamber of
+Deputies*, *the doctor, a friend of Alice, sleeps*, or a title and a
+name, *the doctor, farmer Bob*, closed by a comma or the end as the name
+after a noun phrase is; and a participle phrase, *his sacking, announced
+on Tuesday, has come*, *freezing temperatures, combined with snow,*,
+closed by a comma only, since one at the end is the verb phrase's, *is a
+businesswoman, best known as the chairperson*, and the *Nita Ambani*
+sentence had four readings where it has two. The comma that closes the
+noun phrase may not come before *and* or *or*, or *the dog, the cat, and
+the bird* would read twice, the second an appositive in a list of two.
+The corpus gives **19 grammatical, 28 not, and 3 unknown**, the *Italy's
+lower house* and *His sacking* sentences the new passes. Of the other
+seven, *the Tweede Kamer, the country's parliament* reads, and its
+sentence fails on the dateline alone; *Freezing temperatures* fails on
+*the past few days*; *The planet, named TrES-4, after the Transatlantic
+Exoplanet Survey (TrES) is* has no comma to close the participle phrase
+before *is*, and *nominee, former Massachusetts governor Mitt Romney
+selected* none before *selected*; *the ambassador to Iraq, Zalmay
+Khalilzad* still fails, since a noun phrase that ends in a name takes no
+name after its comma, the rule that reads *a city in McLennan County,
+Texas*, and lifting it would read *the mayor of Waco, Texas, sleeps*
+twice; and *Videla, aged 84,* fails on *aged* with a number. The check
+on the dateline defect read *THE HAGUE — Alice sees the Bob, the dog*,
+which now reads as it should, *the Bob* with its *the* and *the dog* its
+appositive; it reads *THE HAGUE — Alice sees the* now, which passes with
+the defect and fails without it. No other sentence moved, nor its count
+of readings.

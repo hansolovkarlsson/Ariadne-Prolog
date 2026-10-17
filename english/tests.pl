@@ -631,6 +631,19 @@ good('I saw the doctor, Alice.').
 readings('I saw the doctor, Alice and Bob.', 1).
 bad('The doctors, Alice, sleeps.',          subject_verb(sleeps)).
 bad('The doctor, Alice sleeps.',            no_reading).
+% A noun phrase or a participle phrase a comma sets after a noun phrase.
+good('The doctor, a friend of Alice, sleeps.').
+good('I saw the doctor, a friend of Alice.').
+good('I saw the doctor, farmer Bob.').
+good('The dog, chased by the cat, sleeps.').
+good('Dogs, chased by the cat, sleep.').
+readings('The dog, a friend of Alice, sleeps.', 1).
+readings('I saw the dog, the cat, and the farmer.', 1).
+readings('I saw the dog, the cat and the farmer.', 1).
+readings('Alice is a doctor, chased by the cat.', 1).
+bad('The dogs, the friends of Alice, sleeps.', subject_verb(sleeps)).
+bad('The dog, the cat sleeps.',             no_reading).
+bad('The dog, chased by the cat sleeps.',   no_reading).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
@@ -788,8 +801,9 @@ good('They saw us.').
 readings('The US dog sleeps.', 1).
 bad('THE DOG SLEEPS.',                     no_reading).
 % It keeps its capitals, so the same word in lower case is no name: a
-% dateline's THE made every the in the sentence one.
-bad('THE HAGUE — Alice sees the Bob, the dog.', no_reading).
+% dateline's THE made every the in the sentence one, and "the" alone an
+% object.
+bad('THE HAGUE — Alice sees the.',          no_reading).
 
 % Curly quotation marks are punctuation, as straight ones are.
 good('“The dog sleeps.”').

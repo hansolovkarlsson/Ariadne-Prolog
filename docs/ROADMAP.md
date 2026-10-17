@@ -180,16 +180,19 @@ These change the shape of the system rather than adding to it.
        defect, *has come*, was mended the same day;
      - then the causes, one at a time, by how many sentences each holds:
        numbers, times and dates (10, a date with *the*, *more than
-       twenty*, a time of day, *twice the size*, *US$5.1
-       billion* and scores done 2026-10-17; left, the range *the eight
-       to seventeen years age group*; the splitter does
-       not cut after *p.m.* before a capital, *It was 5 p.m. The dog
-       slept*); a comma and a noun phrase or participle after a
-       noun phrase (9); a title with no determiner,
+       twenty*, a time of day, *twice the size*, *US$5.1 billion* and
+       scores done 2026-10-17; left, the range *the eight to seventeen
+       years age group*; the splitter does not cut after *p.m.* before
+       a capital, *It was 5 p.m. The dog slept*); a comma and a noun
+       phrase or participle after a noun phrase (9, done 2026-10-17
+       but for *the ambassador to Iraq, Zalmay Khalilzad*, a name after
+       a noun phrase that ends in one, and *Videla, aged 84*; two have
+       no closing comma in the source); a title with no determiner,
        *musician Michael Jackson* (2, seven done 2026-10-17; left,
        *diamond giant De Beers*, where *giant* is no person, and *Theo
-       van Gogh*, under words); a *to*-infinitive of purpose or
-       after a noun (6, done 2026-10-17); a bare singular noun, *on trial* (6); verb
+       van Gogh*, under words); a *to*-infinitive of purpose or after
+       a noun (6, done 2026-10-17); a bare singular noun, *on trial*
+       (6); verb
        frames, *described as* (6); a quantity after a determiner or with
        *of*, *many of the rockets* (5, *the three journalists* done
        2026-10-16; left, *the past few days*, *the two hundred*); words
