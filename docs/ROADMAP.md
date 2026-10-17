@@ -209,7 +209,8 @@ These change the shape of the system rather than adding to it.
        `char_type/2`; done 2026-10-17, *via*, the semicolon and a web
        address, *exoplanet*, and *Theo van Gogh* reads; a name with commas in it,
        *Davis, Bain, and Associates*, is read as a list); quoted speech
-       (2); a comma phrase at the end (3).
+       (2); a comma phrase at the end (3, done 2026-10-17, with *as well
+       as*).
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain
   DCG loop, and shared sub-parses are redone on every backtrack. Stage 1 avoids

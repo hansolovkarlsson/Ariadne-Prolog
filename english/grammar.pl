@@ -254,15 +254,44 @@ wh_phrase(wh_np(D, N), Agr, D, _, V0, V) -->
 % relative or question word may stand: whom in a subject's place is caught
 % by the rules for a missing subject.
 noun_phrase(_, _, gap, gap, nogap, V, V) --> [].
-noun_phrase(Agr, Case, T, G, G, V0, V) -->
+noun_phrase(Agr, Case, T, G, G, V0, V) --> np_list(Agr, Case, T, V0, V).
+
+np_list(Agr, Case, T, V0, V) -->
     correlative_word(Pre, Cs),
     np_first(Case, T1, V0, V1),
     joined(np_item(Case), np_last(Case), Cs, Items, C, V1, V),
     { last(Items, Last-_), coord_agr(C, Last, Agr), pairs_values(Items, Ts),
       correlated(Pre, coord(C, [T1|Ts]), T) }.
 
+% A noun phrase, or a list, and as well as with a noun phrase, set off by
+% commas: "Ion, Ohanesian and Miscoci, as well as their guide, Mohamed
+% Munaf, were under the protection", which agrees as the first does. It
+% is closed by a comma, or the end, or the comma that closed the noun
+% phrase's own appositive, "their guide, Mohamed Munaf,". Entered only
+% when as well as is ahead.
+noun_phrase(Agr, Case, as_well(T1, T2), G, G, V0, V) -->
+    as_well_ahead,
+    np_base(Agr, Case, T1, V0, V1),
+    [',', as, well, as],
+    as_well_rest(Case, T2, V1, V).
+
+as_well_ahead(S, S) :- append(_, [as, well, as|_], S), !.
+
+np_base(Agr, Case, T, V0, V) --> simple_np(Agr, Case, T, V0, V).
+np_base(Agr, Case, T, V0, V) --> np_list(Agr, Case, T, V0, V).
+
+as_well_rest(Case, T, V0, V, S0, S) :-
+    phrase(noun_phrase(_, Case, T, nogap, nogap, V0, V), S0, S1),
+    (   S1 = [','|S]
+    ;   S1 == [], S = []
+    ;   append(Read, S1, S0), last(Read, ','), S = S1
+    ).
+
 np_item(Case, A-T, V0, V) --> simple_np(A, Case, T, V0, V).
-np_last(Case, A-T, V0, V) --> noun_phrase(A, Case, T, nogap, nogap, V0, V).
+% The last of a list is no as well as phrase, which goes after the whole
+% list, "Ion and Miscoci, as well as their guide", not after Miscoci.
+np_last(Case, A-T, V0, V) -->
+    noun_phrase(A, Case, T, nogap, nogap, V0, V), { T \= as_well(_, _) }.
 
 coord_agr(and, _, agr(n, n, n)).
 coord_agr(or, Agr, Agr).
@@ -1468,6 +1497,25 @@ modifiers([gap], ppgap, nogap, V, V) --> [].
 % It is the last of them, so that what follows it is its own and not
 % the verb's again.
 modifiers([S], G, G, V0, V) --> supplement(S, V0, V).
+% Last in the sentence, a comma and an adverb, "as of 13:44 UTC,
+% yesterday"; or a comma and a phrase with a subject of its own, a
+% quantity with of, and what is said of it, "eleven ships, eight of them
+% exclusively for military use". Only a quantity with of, since with any
+% noun phrase "Alice saw the dog, the cat in the garden" would read.
+modifiers([adv(A)], G, G, V, V, [',', A], []) :- adv(A).
+modifiers([absolute(NP, P)], G, G, V0, V) -->
+    [','], [Q], { partitive(Q, _) }, [of],
+    absolute_np(Q, NP, V0, V1),
+    absolute_pred(P, V1, V),
+    end_of_words.
+
+absolute_np(Q, part(Q, NP), V0, V) --> partitive_np(NP, _, V0, V).
+
+absolute_pred(pre([adv(A)], PP), V0, V) --> [A], { adv(A) }, pp(PP, nogap, nogap, V0, V).
+absolute_pred(PP, V0, V) --> pp(PP, nogap, nogap, V0, V).
+absolute_pred(AP, V, V) --> adj_group(AP).
+
+end_of_words([], []).
 % A to-infinitive of purpose, last for the same reason: "defeated
 % Jankovic to win the Rogers Cup", "spoke to the director to have a
 % look". It takes no gap.

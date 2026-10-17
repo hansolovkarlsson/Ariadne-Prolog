@@ -729,6 +729,18 @@ good('Alice sees the extrasolar exoplanet.').
 good('Alice sees GSC 02620-00648.').
 readings('Alice sees GSC 02620-00648.', 1).
 bad('Alice sees 02620-00648.',              no_reading).
+% As well as set off by commas, agreeing with what comes before it; a
+% comma and an adverb last; a comma and a quantity with of and what is
+% said of it, last.
+good('Alice, as well as Bob, sleeps.').
+good('Alice and Carol, as well as Bob, sleep.').
+good('I saw Alice, as well as Bob.').
+readings('Alice and Carol, as well as Bob, sleep.', 1).
+bad('Alice, as well as Bob, sleep.',        subject_verb(sleep)).
+good('Alice saw two cats, one of them in the garden.').
+readings('Alice saw two cats, one of them in the garden.', 1).
+bad('Alice saw the dogs, the cats happy.',    no_reading).
+bad('Alice saw two cats, one of them.',     no_reading).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).

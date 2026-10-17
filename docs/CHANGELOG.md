@@ -133,6 +133,13 @@ There are no releases yet, so entries are grouped by the day they landed on
   verb. The third corpus gives 33, 17 and none unknown, one new pass.
   827 checks, 867 with WordNet.
 
+- **A comma phrase at the end, and *as well as*.** *Eleven ships,
+  eight of them exclusively for military use*; *as of 13:44 UTC,
+  yesterday*; and *Ion, Ohanesian and Miscoci, as well as their guide,
+  were*, agreeing as what comes before it does. The third corpus gives
+  35, 15 and none unknown, two new passes. 836 checks, 876 with
+  WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

@@ -208,6 +208,13 @@ end of this file.
   for the plurals `plural_modifier/1` lists, which English puts there;
   no other, so *the cats chase dogs* is not the noun phrase *the cats
   chase* and the verb *dogs*.
+- ***As well as*** with a noun phrase, set off by commas after a noun
+  phrase or a list, *Ion, Ohanesian and Miscoci, as well as their guide,
+  Mohamed Munaf, were*, agreeing as what comes before it does.
+- **Last after a comma**: an adverb, *as of 13:44 UTC, yesterday*; or a
+  quantity with *of* and what is said of it, *eleven ships, eight of
+  them exclusively for military use*, only with such a quantity, so *saw
+  the dogs, the cats happy* has no reading.
 - **A web address** is one word and a name, *www.mjjsource.com*, when its
   last label is a domain `web_address/1` lists; *U.S.* and a sentence run
   together, *the arrest.We*, are not one.
@@ -1808,3 +1815,23 @@ GSC 02620-00648, around 1,435 light years away* the new pass, with
 three readings, *around 1,435 light years* on *orbiting* or on
 *discovered*, or *away* on *orbiting* as well. No other sentence of the
 three corpora moved, nor its count of readings.
+
+A comma phrase at the end was next, two sentences, and each needed one
+thing more. *Eleven ships, eight of them exclusively for military use*
+is a phrase with a subject of its own, a quantity with *of*, and what is
+said of it, a prepositional phrase or an adjective, with an adverb
+before it or none; only a quantity with *of*, since with any noun phrase
+*saw the dogs, the cats happy* would read. *As of 13:44 UTC, yesterday*
+is a comma and an adverb, last. And *Marie-Jeanne Ion, Ovidiu Ohanesian
+and Sorin Miscoci, as well as their guide, Mohamed Munaf, were* needed
+*as well as*, which goes after a noun phrase or a whole list, set off by
+commas, and agrees as what comes before it does, *Alice, as well as
+Bob, sleeps*. Its comma may be the one that closed an appositive, as
+after *Mohamed Munaf*; and it goes after the whole list only, since
+after its last item, *Miscoci*, it read every list twice. The corpus
+gives **35 grammatical, 15 not, and none unknown**: the *Spanish
+government* sentence, with 25 readings, and the *Presidency* sentence,
+with 84, of which 28 are its readings without the names and *as well
+as*, from the *of* phrases and *as of 13:44 UTC* attaching in turn and
+*that* read as a determiner. No other sentence of the three corpora
+moved, nor its count of readings.
