@@ -376,6 +376,15 @@ simple_np(Agr, _, num(W), V, V) -->
 % of does: "some of the cake is", "some of the cakes are". A number
 % alone is no noun phrase before of, as "saw two of the dogs" read with
 % "of the dogs" on the verb.
+% A percentage is a noun phrase, "jump from 45% to 85%", and takes of with
+% what it is a part of, as a quantity does, and with a name or a title and
+% a name as well, "40% of diamond giant De Beers"; it agrees as that does,
+% "40% of the cake is", "40% of the dogs are".
+simple_np(Agr, _, num(W), V, V) -->
+    [W], { percentage(W), agr_of(sg, Agr) }, \+ [of].
+simple_np(Agr, _, part(W, NP), V0, V) -->
+    [W], { percentage(W) }, [of],
+    percent_of(NP, Num, V0, V), { agr_of(Num, Agr) }.
 simple_np(Agr, _, part(Q, NP), V0, V) -->
     [Q], { partitive(Q, QNum) }, [of],
     partitive_np(NP, Num0, V0, V),
@@ -419,6 +428,11 @@ partitive_np(pro(W), Num, V, V) --> [W], { partitive_pronoun(W, Num) }.
 definite_np(np(poss(_), _)).
 definite_np(np(det(D), _)) :-
     atomic_list_concat([W|_], ' ', D), definite_det(W, _).
+
+percent_of(NP, Num, V0, V) --> partitive_np(NP, Num, V0, V).
+percent_of(name(N), sg, V, V) --> name(N).
+percent_of(np(N), Num, V0, V) -->
+    nominal(Num, _, _, N, V0, V), { title_before_name(N) }.
 
 partitive_pronoun(them, pl). partitive_pronoun(us, pl).
 partitive_pronoun(you, pl). partitive_pronoun(it, sg).

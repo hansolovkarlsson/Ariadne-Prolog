@@ -199,8 +199,8 @@ These change the shape of the system rather than adding to it.
        wrong, as *saw Videla gain power* read only as a noun phrase
        (done 2026-10-17); a quantity after a determiner or with *of*,
        *many of the rockets* (5, *the three journalists* done
-       2026-10-16, the rest 2026-10-17; left, a percentage before *of*,
-       *40% of diamond giant De Beers*); a plural before a noun, *human
+       2026-10-16, the rest 2026-10-17, a percentage before *of*
+       among them); a plural before a noun, *human
        rights violations* (done 2026-10-17); words and characters (6,
        each small: *Millwall football club*; done
        2026-10-16, *himself* as an object or after a subject, an object

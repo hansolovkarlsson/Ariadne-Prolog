@@ -332,6 +332,11 @@ meridiem('a.m.'). meridiem('p.m.').
 score(W) :-
     hyphened_digits(W, A, B), short_number(A), short_number(B).
 
+% percentage(Word): a number and a per cent sign, "40%", which words/2 in
+% check.pl keeps as one word.
+percentage(W) :-
+    atom(W), atom_concat(N, '%', W), N \== '', number_word(N, _).
+
 catalogue_number(W) :-
     hyphened_digits(W, A, B), \+ ( short_number(A), short_number(B) ).
 

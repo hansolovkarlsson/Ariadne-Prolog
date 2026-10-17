@@ -146,6 +146,12 @@ There are no releases yet, so entries are grouped by the day they landed on
   it* now. The third corpus gives 36, 14 and none unknown, one new pass.
   840 checks, 880 with WordNet.
 
+- **A percentage.** *40%* is one word, where *%* had been dropped, and a
+  noun phrase; with *of* it agrees as what follows does, and takes a
+  name or a title and a name, *40% of diamond giant De Beers*. The third
+  corpus gives 37, 13 and none unknown, one new pass. 847 checks, 887
+  with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

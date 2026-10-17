@@ -371,6 +371,7 @@ known_word(than).
 known_word(W) :- currency(W), !.
 known_word(W) :- score(W), !.
 known_word(W) :- catalogue_number(W), !.
+known_word(W) :- percentage(W), !.
 known_word(W) :- time_word(W), !.
 known_word(W) :- meridiem(W), !.
 known_word(W) :- time_zone(W), !.
@@ -979,6 +980,7 @@ take_number([H, D|Cs], ['-', D|Ds], Rest) :-
 take_number([':', D1, D2|Cs], [':', D1, D2|Ds], Rest) :-
     digit(D1), digit(D2), \+ ( Cs = [D3|_], digit(D3) ), !,
     take_number(Cs, Ds, Rest).
+take_number(['%'|Cs], ['%'], Cs) :- !.
 take_number([A, B|Cs], [A, B], Cs) :-
     atom_chars(S, [A, B]), memberchk(S, [st, nd, rd, th]),
     \+ ( Cs = [N|_], letter(N) ), !.

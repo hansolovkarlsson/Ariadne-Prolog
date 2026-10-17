@@ -215,6 +215,10 @@ end of this file.
   quantity with *of* and what is said of it, *eleven ships, eight of
   them exclusively for military use*, only with such a quantity, so *saw
   the dogs, the cats happy* has no reading.
+- **A percentage** is one word and a noun phrase, *from 45% to 85%*,
+  and takes *of* as a quantity does, with a name or a title and a name
+  as well, *40% of diamond giant De Beers*, agreeing as what follows *of*
+  does.
 - **A dateline** is taken off a sentence, a place in capitals and an em
   or en dash, *THE HAGUE — The proposal*, *WASHINGTON, D.C. – The vote*.
 - **A web address** is one word and a name, *www.mjjsource.com*, when its
@@ -1851,3 +1855,17 @@ determiner and a name, and fails without it. The corpus gives **36
 grammatical, 14 not, and none unknown**, the *THE HAGUE* sentence the
 new pass, with the 24 readings it has without its dateline. No other
 sentence of the three corpora moved, nor its count of readings.
+
+A percentage was next. The tokeniser dropped *%*, so *40% of diamond
+giant De Beers* was *40 of diamond giant De Beers*, and a number before
+*of* takes a definite noun phrase. *40%* is one word now, a percentage,
+and a noun phrase, singular, *from 45% to 85%*; with *of* it agrees as
+what follows does, *40% of the dogs sleep*, *40% of the cake is*, and
+what follows may be a name or a title and a name as well as a definite
+noun phrase, since a share is of a company as often as of a thing. The
+corpus gives **37 grammatical, 13 not, and none unknown**, *Anglo
+American PLC has negotiated a price of US$5.1 billion to buy 40% of
+diamond giant De Beers from the Oppenheimer family* the new pass, with
+four readings, *of US$5.1 billion* and *from the Oppenheimer family*
+each in two places. The *Anglo's stake* sentence keeps its two. No
+other sentence of the three corpora moved, nor its count of readings.

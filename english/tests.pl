@@ -741,6 +741,15 @@ good('Alice saw two cats, one of them in the garden.').
 readings('Alice saw two cats, one of them in the garden.', 1).
 bad('Alice saw the dogs, the cats happy.',    no_reading).
 bad('Alice saw two cats, one of them.',     no_reading).
+% A percentage is one word and a noun phrase, and takes of as a quantity
+% does, with a name as well.
+good('40% of the dogs sleep.').
+good('40% of the cake is good.').
+good('Alice has 40% of Bob.').
+good('Alice walks from the garden to 85%.').
+readings('40% of the dogs sleep.', 1).
+bad('40% of the dogs sleeps.',              subject_verb(sleeps)).
+bad('40% of a dog sleeps.',                 no_reading).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
