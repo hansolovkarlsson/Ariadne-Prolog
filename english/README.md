@@ -208,6 +208,8 @@ end of this file.
   before *of*. A determiner may have an adjective of order before its
   quantity, *the past few days*, *the other two*, or a big number after
   it, *the two hundred dogs*.
+- **A semicolon** joins two statements, *the dog sleeps; the cat
+  barks*. It is a word of its own, where it had been dropped.
 - **A phrase before the subject**: *yesterday the dog barked*, *in 2019,
   978 people lived there*, *last night the dog barked*, with a comma or
   none; but not *about the dog barked*.
@@ -1684,3 +1686,23 @@ where it was told *giant* needs a determiner: *40% of diamond giant De
 Beers* had read *40* as a noun phrase and *of* on the verb, and a
 percentage before *of* is not read. No other sentence of the three
 corpora moved, nor its count of readings.
+
+The semicolon was next, from the small words and characters. It had been
+dropped with the rest of the punctuation, so *Anglo's stake will jump
+from 45% to either 75% or 85%; the Botswanan government has an option*
+was read as one clause, *will jump [that] the Botswanan government has*,
+and failed only on what came before. It is a word now, which joins two
+statements as a conjunction does, and *Alice knows; the dog sleeps* has
+no reading, where without its semicolon it would. The corpus gives
+**28 grammatical, 20 not, and 2 unknown**, the *Anglo's stake* sentence
+the new pass, with two readings, *an option* with its infinitive or the
+infinitive on *has*. The one semicolon of the second corpus is in
+brackets, which are set aside. No other sentence of the three corpora
+moved, nor its count of readings.
+
+Cutting down what was left showed a mistake in the record by cause:
+*saw Videla gain power* reads only as a noun phrase, *Videla gain
+power*, the name before two nouns, and an object and a bare infinitive,
+*saw the edition go online*, *made the dog sleep*, has no rule; WordNet's
+frames with one are left out, see `tools/gen_wordnet.py`. That is what
+stops *Monday saw the latest edition ... go quietly online*.

@@ -693,6 +693,11 @@ bad('The dog saw two cats, one of which sleep.', subject_verb(sleep)).
 good('Alice saw the other two dogs.').
 good('Alice saw the two hundred dogs.').
 readings('Alice saw the other two dogs.', 1).
+% A semicolon joins two statements; it is a word, not dropped.
+good('The dog sleeps; the cat barks.').
+readings('The dog sleeps; the cat barks.', 1).
+bad('The dog sleeps; the cat.',             no_reading).
+bad('Alice knows; the dog sleeps.',         no_reading).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).

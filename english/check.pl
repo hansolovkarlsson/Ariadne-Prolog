@@ -371,6 +371,7 @@ known_word(W) :- time_word(W), !.
 known_word(W) :- meridiem(W), !.
 known_word(W) :- time_zone(W), !.
 known_word(',').
+known_word(';').
 
 /* ---------------- running text ---------------- */
 
@@ -835,6 +836,10 @@ plain_apostrophe(C, C).
 
 split_letters([], []).
 split_letters([','|Cs], [','|Ws]) :- !, split_letters(Cs, Ws).
+% A semicolon is a word too, which joins two statements; dropped with the
+% rest of the punctuation, "will jump; the government has" read as "will
+% jump [that] the government has".
+split_letters([';'|Cs], [';'|Ws]) :- !, split_letters(Cs, Ws).
 % A currency sign before a number is a word of its own, "US$5.1 billion",
 % "£20".
 split_letters([C, D|Cs], [C|Ws]) :-

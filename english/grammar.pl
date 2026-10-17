@@ -169,6 +169,12 @@ clauses_after(S1, joined(C, S1, T), V0, V) -->
     [C], { coordinator(C) ; subordinator(C) },
     statement(S2, nogap, nogap, V0, V1),
     clauses_after(S2, T, V1, V).
+% A semicolon joins two statements with no word between them, "Anglo's
+% stake will jump to 85%; the government has an option".
+clauses_after(S1, joined(';', S1, T), V0, V) -->
+    [';'],
+    statement(S2, nogap, nogap, V0, V1),
+    clauses_after(S2, T, V1, V).
 
 % statement(-Tree, G0, G, V0, V). The subject is never the gap.
 statement(s(NP, VP), G0, G, V0, V) -->

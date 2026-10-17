@@ -100,6 +100,12 @@ There are no releases yet, so entries are grouped by the day they landed on
   two*, *the two hundred dogs*. The third corpus gives 27, 21 and 2,
   three new passes. 799 checks, 831 with WordNet.
 
+- **A semicolon between two statements.** *The dog sleeps; the cat
+  barks*: the semicolon is a word, where it had been dropped and the two
+  statements read as one, *will jump [that] the government has*. The
+  third corpus gives 28, 20 and 2, one new pass. 803 checks, 835 with
+  WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name
