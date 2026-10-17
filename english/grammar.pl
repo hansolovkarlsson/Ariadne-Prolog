@@ -400,11 +400,18 @@ simple_np(Agr, _, mult(M, T), V0, V) -->
 simple_np(Agr, _, T, V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
     { \+ names_only(N), \+ leads_number(N),
-      (   title_before_name(N) -> V2 = V1
+      (   ( title_before_name(N) ; named_body(N) ) -> V2 = V1
       ;   bare_ok(Head, Num, V1, V2)
       ),
       agr_of(Num, Agr) },
     np_appositive(np(N), T, V2, V).
+
+% named_body(+Nominal): a name before a singular noun for a body, with
+% nouns between or none, which is that body's name and stands bare as a
+% name does: "manager of Millwall football club". Only such a noun, so
+% "Alice saw Bob dog" is still refused.
+named_body(nom([name(_)|_], n(Head), _)) :-
+    noun_form(Head, _, sg), organisation(Head).
 
 % partitive(Word, Number): a quantity that goes before of, and its
 % number, or inner for one that takes the number of the noun phrase after

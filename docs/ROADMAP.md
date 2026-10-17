@@ -200,16 +200,15 @@ These change the shape of the system rather than adding to it.
        (done 2026-10-17); a quantity after a determiner or with *of*,
        *many of the rockets* (5, *the three journalists* done
        2026-10-16, the rest 2026-10-17, a percentage before *of*
-       among them); a plural before a noun, *human
-       rights violations* (done 2026-10-17); words and characters (6,
-       each small: *Millwall football club*; done
-       2026-10-16, *himself* as an object or after a subject, an object
-       not checked against the subject, settled by Hans; *US*; *police*;
-       and curly quotes with both dashes, which were one defect in
-       `char_type/2`; done 2026-10-17, *via*, the semicolon and a web
-       address, *exoplanet* and a dateline, and *Theo van Gogh*
-       reads; a name with commas in it,
-       *Davis, Bain, and Associates*, is read as a list); quoted speech
+       among them); a plural before a noun, *human rights violations*
+       (done 2026-10-17); words and characters (6, done 2026-10-16,
+       *himself* as an object or after a subject, an object not checked
+       against the subject, settled by Hans; *US*; *police*; and curly
+       quotes with both dashes, which were one defect in `char_type/2`;
+       done 2026-10-17, *via*, the semicolon and a web address,
+       *exoplanet*, a dateline and *Millwall football club*, and *Theo
+       van Gogh* reads; a name with commas in it, *Davis, Bain, and
+       Associates*, is read as a list); quoted speech
        (2); a comma phrase at the end (3, done 2026-10-17, with *as well
        as*).
 

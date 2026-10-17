@@ -229,6 +229,8 @@ end of this file.
   *diamond giant De Beers*, for the nouns `organisation/1` lists; and a
   possessor before a name that ends in a plural noun, *Jackson's MJJ
   Productions has*, singular as a name is.
+  A name before such a noun, with nouns between or none, is that body's
+  name and stands bare, *manager of Millwall football club*.
 - **A quantity with *of***: *many of the rockets*, *eight of them*, *some
   of the cake*, a quantity, *of*, and a definite noun phrase or an object
   pronoun, agreeing as the quantity does or, for *some*, *all* and their
@@ -1869,3 +1871,13 @@ diamond giant De Beers from the Oppenheimer family* the new pass, with
 four readings, *of US$5.1 billion* and *from the Oppenheimer family*
 each in two places. The *Anglo's stake* sentence keeps its two. No
 other sentence of the three corpora moved, nor its count of readings.
+
+*Millwall football club* was next. A name before a noun for a body, with
+nouns between or none, is that body's own name, and stands bare as a
+name does; only a noun the list of bodies has, which takes *club*,
+*team* and *party* now, so *Alice saw Bob dog* is still told *dog* needs
+a determiner. The corpus gives **38 grammatical, 12 not, and none
+unknown**, *Ian Holloway has been sacked as manager of Millwall
+football club* the new pass, with two readings, *sacked* an adjective
+or a participle. No other sentence of the three corpora moved, nor its
+count of readings.

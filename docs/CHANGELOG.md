@@ -152,6 +152,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   corpus gives 37, 13 and none unknown, one new pass. 847 checks, 887
   with WordNet.
 
+- **A body's name with no determiner.** *Manager of Millwall football
+  club*: a name before a noun for a body stands bare. *Club*, *team* and
+  *party* join the list of such nouns. The third corpus gives 38, 12 and
+  none unknown, one new pass. 848 checks, 889 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

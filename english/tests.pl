@@ -750,6 +750,9 @@ good('Alice walks from the garden to 85%.').
 readings('40% of the dogs sleep.', 1).
 bad('40% of the dogs sleeps.',              subject_verb(sleeps)).
 bad('40% of a dog sleeps.',                 no_reading).
+% A name before a noun for a body is that body's name and stands bare;
+% see the WordNet checks for it.
+bad('Alice saw Bob dog.',                   bare(dog)).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
@@ -947,6 +950,7 @@ wordnet_good('Alice has a sports car.').
 wordnet_good('Jackson\'s MJJ Productions has terminated Bain.').
 wordnet_good('MJJ Productions has terminated public relations firm Davis.').
 wordnet_good('Anglo American bought diamond giant De Beers.').
+wordnet_good('Alice joined Millwall football club.').
 wordnet_good('Monday saw the edition go quietly online.').
 wordnet_good('Alice made the dog sleep.').
 wordnet_good('The edition went quietly online.').
