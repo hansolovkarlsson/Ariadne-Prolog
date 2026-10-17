@@ -1417,3 +1417,28 @@ its names as a set of words. *The Tweede Kamer* was then one name and
 took the appositive a name takes. A closed-class word read as an
 abbreviation keeps its capitals now, a word of its own, and the defect
 is in the postmortem. No sentence moved with the fix alone.
+
+The *to*-infinitive went in then, in two rules. One of purpose comes
+last after the verb phrase, as a participle phrase after a comma does:
+*defeated Jankovic to win the Rogers Cup*, *spoke to the director to
+have a look*. One after a noun comes after its prepositional phrases,
+*the proposal from Donner to strengthen the provisions*, and only after
+a noun listed as taking one, *proposal*, *option*, *resolution*, *plan*,
+*decision* and fifteen more: after any noun, every *saw the dog to win*
+would read twice, the infinitive on the noun and on the verb. No
+relative clause follows it, since *the proposal to strengthen the
+provisions has been rejected* read *the proposal to strengthen [that]
+the provisions has been _* as well, WordNet having *provisions* as a
+singular noun. *Went to school* keeps its one reading, and *helps Bob
+to sleep* reads as one, the object and infinitive and the object and a
+purpose printing alike. The corpus gives **15 grammatical, 30 not, and
+5 unknown**, *Wikinews spoke to the Global Communications Director at
+Bebo to have a look at the popular social networking site* the new
+pass, with four readings. Cut down, every infinitive of the six reads;
+the others fail on what else they hold: the scores before *to win*,
+*US$5.1 billion*, the semicolon in *Anglo's stake will jump*, *Hunter on
+Friday called*, and the dateline, which had read only through the
+defect above, with the appositive after *the Tweede Kamer*. A *price
+to buy* is read as the verb's purpose, *negotiated a price to buy*, and
+*price* is not listed. The first two corpora unchanged, and no count of
+readings moved.

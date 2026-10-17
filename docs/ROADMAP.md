@@ -184,7 +184,7 @@ These change the shape of the system rather than adding to it.
        *musician Michael Jackson* (2, seven done 2026-10-17; left,
        *diamond giant De Beers*, where *giant* is no person, and *Theo
        van Gogh*, under words); a *to*-infinitive of purpose or
-       after a noun (6); a bare singular noun, *on trial* (6); verb
+       after a noun (6, done 2026-10-17); a bare singular noun, *on trial* (6); verb
        frames, *described as* (6); a quantity after a determiner or with
        *of*, *many of the rockets* (5, *the three journalists* done
        2026-10-16; left, *the past few days*, *the two hundred*); words

@@ -812,6 +812,19 @@ wordnet_good('The man has flung it.').
 wordnet_bad('The dog has came.',            verb_form(has, came, en)).
 wordnet_bad('The dog come.',                subject_verb(come)).
 
+% A to-infinitive of purpose, last after the verb phrase.
+good('Alice walks to see the dog.').
+good('The dog ran to chase the cat.').
+readings('Alice walks to see the dog.', 1).
+readings('Alice wants to sleep.', 1).
+readings('Alice helps Bob to sleep.', 1).
+bad('The dog ran to chases the cat.',       verb_form(to, chases, base)).
+% A to-infinitive after a noun that takes one, and no relative clause
+% after it.
+wordnet_good('The plan to win the race failed.').
+wordnet_good('The proposal to strengthen the code has been rejected.').
+wordnet_good('The government has an option to increase its stake.').
+
 % splits(Text, Sentences): Text cuts into exactly these sentences.
 splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).
 splits('Does it bark?  It does!', ['Does it bark?', 'It does!']).

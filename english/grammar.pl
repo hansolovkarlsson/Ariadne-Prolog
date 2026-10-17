@@ -352,7 +352,7 @@ det_np(Agr, np(det(D), N), V0, V) -->
 % the end.
 det_np_end(_, _, Num, _, nom(As, H, Posts0), nom(As, H, Posts), Agr, V0, V) -->
     { agr_of(Num, Agr) },
-    relative(Agr, Rels, V0, V1),
+    post_relative(Posts0, Agr, Rels, V0, V1),
     { H = n(Head), rel_fits(Head, Rels, V1, V),
       append(Posts0, Rels, Posts) }.
 det_np_end(D, DNum, Num1, Head1, N1, coord(C, [N1|Ns]), Agr, V0, V) -->
@@ -679,9 +679,18 @@ nominal(Num, First, Head, nom(As, n(Head), Posts), V0, V) -->
 nominal_rest(Num, Head, Posts, V0, V) -->
     noun_posts(Head, PPs, V0, V1),
     { agr_of(Num, Agr) },
-    relative(Agr, Rels, V1, V2),
+    post_relative(PPs, Agr, Rels, V1, V2),
     { rel_fits(Head, Rels, V2, V),
       append(PPs, Rels, Posts) }.
+
+% post_relative(+Posts, +Agr, -Rels, V0, V): the relative clause after
+% what follows a noun, none after a to-infinitive: "the proposal to
+% strengthen the provisions has been rejected" read "the proposal to
+% strengthen [that] the provisions has been _" as well.
+post_relative(Posts, _, [], V, V) --> { last(Posts, inf(_)) }.
+post_relative(Posts, Agr, Rels, V0, V) -->
+    { \+ last(Posts, inf(_)) },
+    relative(Agr, Rels, V0, V).
 
 % noun_posts(+HeadNoun, -Posts, V0, V): what follows the noun before a
 % relative clause: the name, the of after kind, and the prepositional
@@ -689,8 +698,26 @@ nominal_rest(Num, Head, Posts, V0, V) -->
 noun_posts(Head, PPs, V0, V) -->
     name_after(Ns),
     kind_of(Head, KPs, V0, V1),
-    pps(PPs0, V1, V),
-    { append([Ns, KPs, PPs0], PPs) }.
+    pps(PPs0, V1, V2),
+    noun_inf(Head, Is, V2, V),
+    { append([Ns, KPs, PPs0, Is], PPs) }.
+
+% noun_inf(+HeadNoun, -Trees, V0, V): a to-infinitive after a noun that
+% takes one, "the proposal to strengthen the provisions", "an option to
+% increase its stake", after its prepositional phrases, "the proposal
+% from Donner to strengthen". Only the nouns inf_noun/1 lists: any noun
+% would read every "saw the dog to win" twice, with the infinitive on the
+% noun and as the verb's purpose.
+noun_inf(Head, [inf(VP)], V0, V) -->
+    { noun_form(Head, Sg, _), inf_noun(Sg) },
+    [to], verb_phrase(base, 2, to, VP, nogap, nogap, V0, V).
+noun_inf(_, [], V, V) --> [].
+
+inf_noun(ability). inf_noun(attempt). inf_noun(bid). inf_noun(chance).
+inf_noun(decision). inf_noun(effort). inf_noun(failure). inf_noun(motion).
+inf_noun(offer). inf_noun(opportunity). inf_noun(option). inf_noun(order).
+inf_noun(permission). inf_noun(plan). inf_noun(promise). inf_noun(proposal).
+inf_noun(refusal). inf_noun(request). inf_noun(resolution). inf_noun(right).
 
 % modifiers(-Trees): what goes before the noun: its adjectives and names,
 % then the nouns that modify it, "the old stone bridge", "the NBC
@@ -1162,6 +1189,11 @@ modifiers([gap], ppgap, nogap, V, V) --> [].
 % It is the last of them, so that what follows it is its own and not
 % the verb's again.
 modifiers([S], G, G, V0, V) --> supplement(S, V0, V).
+% A to-infinitive of purpose, last for the same reason: "defeated
+% Jankovic to win the Rogers Cup", "spoke to the director to have a
+% look". It takes no gap.
+modifiers([inf(VP)], G, G, V0, V) -->
+    [to], verb_phrase(base, 2, to, VP, nogap, nogap, V0, V).
 
 % pp_joined(+PP, -Tree, V0, V): a prepositional phrase alone, or joined to
 % a second by and or or, "known as the chairperson and as a director",

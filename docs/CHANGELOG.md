@@ -21,6 +21,15 @@ There are no releases yet, so entries are grouped by the day they landed on
   corpus read; no sentence moves, since each has other causes, and it
   stays at 14, 31 and 5. 709 checks, 716 with WordNet.
 
+- **A *to*-infinitive of purpose, and after a noun.** *Defeated
+  Jankovic to win the Rogers Cup*, last after the verb phrase; and *the
+  proposal to strengthen the provisions*, *an option to increase its
+  stake*, after a noun listed as taking one, twenty of them, with no
+  relative clause after it. The third corpus gives 15, 30 and 5, one
+  new pass; every infinitive of the six reads cut down, and the first
+  two corpora and their counts of readings are unchanged. 716 checks,
+  726 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name
