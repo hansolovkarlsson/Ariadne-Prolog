@@ -313,6 +313,11 @@ simple_np(Agr, _, time(T), V, V) -->
 simple_np(Agr, _, num(W), V, V) -->
     [W], { number_word(W, Num), agr_of(Num, Agr) }.
 simple_np(Agr, _, T, V0, V) --> det_np(Agr, T0, V0, V), np_appositive(T0, T).
+% A multiple before a noun phrase with a determiner, "twice the size of
+% Jupiter", "1.7 times the size", "three times the price"; the phrase
+% agrees as the noun phrase does.
+simple_np(Agr, _, mult(M, T), V0, V) -->
+    multiple(M), det_np(Agr, T, V0, V).
 simple_np(Agr, _, np(N), V0, V) -->
     nominal(Num, _, Head, N, V0, V1),
     { \+ names_only(N), \+ leads_number(N),
@@ -603,6 +608,11 @@ quantity(many, pl).
 approximator(about). approximator(around). approximator(nearly).
 approximator(almost). approximator(approximately). approximator(roughly).
 approximator(over). approximator(under).
+
+% multiple(-Words): twice, or a number and times, "1.7 times", "three
+% times", which goes before a noun phrase.
+multiple(twice) --> [twice].
+multiple(M) --> [N, times], { number_word(N, _), atomic_list_concat([N, times], ' ', M) }.
 
 % comparative_quantity(Word): a word that goes before than and a number,
 % "more than twenty officials", "fewer than ten dogs", the three words

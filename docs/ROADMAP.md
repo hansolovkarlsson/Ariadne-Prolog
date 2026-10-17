@@ -180,7 +180,7 @@ These change the shape of the system rather than adding to it.
        defect, *has come*, was mended the same day;
      - then the causes, one at a time, by how many sentences each holds:
        numbers, times and dates (10, a date with *the*, *more than
-       twenty* and a time of day done 2026-10-17; the splitter does
+       twenty*, a time of day and *twice the size* done 2026-10-17; the splitter does
        not cut after *p.m.* before a capital, *It was 5 p.m. The dog
        slept*); a comma and a noun phrase or participle after a
        noun phrase (9); a title with no determiner,

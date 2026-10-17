@@ -47,6 +47,10 @@ There are no releases yet, so entries are grouped by the day they landed on
   it or none. The third corpus gives 16, 31 and 3, one sentence no
   longer unknown. 733 checks, 743 with WordNet.
 
+- **A multiple before a noun phrase.** *Twice the size of Jupiter*,
+  *1.7 times the size*, *three times the price*. No sentence moved, nor
+  any count of readings. 733 checks, 746 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

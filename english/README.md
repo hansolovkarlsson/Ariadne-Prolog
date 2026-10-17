@@ -1476,3 +1476,13 @@ end a sentence after *p.m.* before a capital, *It was 5 p.m. The dog
 slept*, which it did not before either: *p.m. AEST* goes on, and the
 two look alike to it. No other sentence moved, nor its count of
 readings.
+
+A multiple before a noun phrase, *twice the size of Jupiter*, *1.7
+times the size*, *three times the price*, is a noun phrase too, and
+agrees as the one after it does; that one has a determiner or a
+possessor. It adds no reading: *is 1.7 times the size of the planet
+Jupiter* has the four that *is the size of the planet Jupiter* has. No
+sentence moved, since the one it is in, *The planet, named TrES-4, ...
+is 1.7 times the size*, has *exoplanet* and a participle phrase after a
+comma besides. *Saw the dog three times*, with *three times* after the
+verb, has no reading, and had none before.

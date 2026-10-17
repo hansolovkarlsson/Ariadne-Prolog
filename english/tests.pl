@@ -842,6 +842,10 @@ readings('Alice walks to see the dog.', 1).
 readings('Alice wants to sleep.', 1).
 readings('Alice helps Bob to sleep.', 1).
 bad('The dog ran to chases the cat.',       verb_form(to, chases, base)).
+% A multiple before a noun phrase with a determiner.
+wordnet_good('The planet is twice the size of Jupiter.').
+wordnet_good('The dog is three times the size of the cat.').
+wordnet_good('The planet is 1.7 times the size of the planet.').
 % A to-infinitive after a noun that takes one, and no relative clause
 % after it.
 wordnet_good('The plan to win the race failed.').
