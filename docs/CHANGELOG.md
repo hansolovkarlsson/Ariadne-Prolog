@@ -121,6 +121,15 @@ There are no releases yet, so entries are grouped by the day they landed on
   word of its own. No sentence of the three corpora moved. 710 checks,
   717 with WordNet.
 
+- ***Visit* and *walk* had no noun.** A word the lexicon lists is not
+  looked up in WordNet, and the lexicon had both as verbs only, so *such
+  a visit* and *took a walk* had no reading. Both are nouns as well now,
+  settled by Hans; the other lexicon verbs WordNet has as nouns are not,
+  as giving all forty a noun let thirteen faults through. After *be*,
+  *to* and a verb's *-s* form is still the infinitive in the wrong form,
+  so *the dog is to walks* is refused and not read as a place. The third
+  corpus gives 30, 18 and 2, one new pass. 816 checks, 851 with WordNet.
+
 ## 2026-10-16
 
 ### Added

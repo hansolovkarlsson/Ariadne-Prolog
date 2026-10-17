@@ -1725,3 +1725,19 @@ educational use, go quietly online* the new pass, with three readings,
 one for each place the *of* phrases and the relative clause can attach.
 No other sentence of the three corpora moved, nor its count of
 readings.
+
+*Visit* and *walk* went in next as nouns, settled by Hans: the lexicon
+had them as verbs only, and a word it lists is not looked up in WordNet,
+so *such a visit* and *took a walk* had no reading. Measured on its own,
+the change moved one sentence and broke no check, but let one fault
+through that no check held: *the dog is to walks*, read as *is* and a
+place, *to walks*. After *be*, *to* and a bare noun that is also a
+verb's *-s* form is not read as a place, and the sentence is told the
+verb after *to* should be *walk*; *goes to walks* and *is in walks* read
+as before. The other lexicon verbs WordNet has as nouns stay verbs only,
+since giving all forty a noun let thirteen faults through. The corpus
+gives **30 grammatical, 18 not, and 2 unknown**, *The Foreign Affairs
+and Trade Minister described the prospects for such a visit as "grim"*
+the new pass, with two readings, the subject one noun phrase or *the
+foreign affairs* and *trade minister*. No other sentence of the three corpora moved, nor its
+count of readings.

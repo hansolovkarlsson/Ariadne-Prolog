@@ -1405,12 +1405,17 @@ complementizer(none) --> [].
 predicate(AP, G, G, V, V) --> adj_group(AP).
 predicate(NP, G0, G, V0, V) --> noun_phrase(_, _, NP, G0, G, V0, V).
 predicate(NP, G, G, V0, V) --> role_np(NP, V0, V).
-predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V).
+predicate(PP, G0, G, V0, V) --> pp(PP, G0, G, V0, V), { \+ to_verb_form(PP) }.
 % The prepositional phrase a relative clause has missing, "the garden in
 % which the children were _".
 predicate(gap, ppgap, nogap, V, V) --> [].
 predicate(inf(VP), G0, G, V0, V) -->
     [to], verb_phrase(base, 2, to, VP, G0, G, V0, V).
+
+% to_verb_form(+PP): to and a bare noun that is also a verb's -s form,
+% which after be is the verb of a to-infinitive in the wrong form: "the
+% dog is to walks" is not "is [to walks]", a place, but "is to walk".
+to_verb_form(pp(to, np(nom(_, n(H), _)))) :- verb_form(H, _, fin(agr(_, y, _))).
 
 % Adverbs and prepositional phrases after the verb and what it takes. The
 % gap may be a preposition's object: "the park that the dog walks in _".

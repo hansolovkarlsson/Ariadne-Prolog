@@ -173,13 +173,11 @@ These change the shape of the system rather than adding to it.
      until its cause showed:
      - a defect: a word the lexicon lists as a verb only, *visit*,
        *walk*, has no noun, since the lexicon's words are never looked
-       up in WordNet. Measured on 2026-10-16: giving all 40 such verbs
-       WordNet has as nouns a noun breaks 13 checks, *Alice wants swim*
-       and *The dog is to sleeps* among them passing; *visit* and *walk*
-       alone moved nothing then; since 2026-10-17 *visit* is all that
-       stops *described the prospects for such a visit as "grim"*.
-       Which, if either, is Hans's to say. The other defect, *has
-       come*, was mended the same day;
+       up in WordNet. Giving all 40 such verbs WordNet has as nouns a
+       noun breaks 13 checks, measured on 2026-10-16; *visit* and *walk*
+       alone were given one on 2026-10-17, settled by Hans, with a guard
+       after *be* so that *the dog is to walks* is still refused. The
+       other defect, *has come*, was mended on 2026-10-16;
      - then the causes, one at a time, by how many sentences each holds:
        numbers, times and dates (10, a date with *the*, *more than
        twenty*, a time of day, *twice the size*, *US$5.1 billion* and
@@ -196,8 +194,8 @@ These change the shape of the system rather than adding to it.
        a noun (6, done 2026-10-17); a bare singular noun, *on trial*
        (6, done 2026-10-17; left, a noun with a *that* clause, *doubt
        that his country's President would*); verb frames, *described
-       as* (6, done 2026-10-17 but for *ranked world number one*, and
-       *such a visit as "grim"*, which waits on the *visit* defect); a
+       as* (6, done 2026-10-17 but for *ranked world number one*, *such
+       a visit as "grim"* done with the *visit* defect); a
        quantity after a determiner or with *of*, *many of the rockets*
        (5, *the three journalists* done 2026-10-16, the rest 2026-10-17;
        left, a percentage before *of*, *40% of diamond giant De

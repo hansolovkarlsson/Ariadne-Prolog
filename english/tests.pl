@@ -706,6 +706,14 @@ readings('Alice saw Bob sleep.', 1).
 readings('Alice helps Bob sleep.', 1).
 bad('Alice helps Bob sleeps.',              verb_form(bare, sleeps, base)).
 bad('Alice chases Bob sleep.',              no_reading).
+% visit and walk are nouns as well as verbs; after be, to and a verb's -s
+% form is still the infinitive in the wrong form.
+good('The visit was long.').
+good('Alice has a walk in the garden.').
+readings('The dog walks.', 1).
+readings('Alice visits Bob.', 1).
+bad('The dog is to walks.',                 verb_form(to, walks, base)).
+bad('Alice walk.',                          subject_verb(walk)).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).

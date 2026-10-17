@@ -60,6 +60,12 @@ agr_of(pl, agr(n, n, n)).
 noun(dog). noun(cat). noun(bird). noun(horse). noun(cow). noun(fox).
 noun(lion). noun(tiger). noun(rabbit). noun(snake). noun(fish). noun(sheep).
 noun(man). noun(woman). noun(child). noun(person). noun(boy). noun(girl).
+% visit and walk are verbs too, and a noun here as WordNet has them, "such
+% a visit", "took a walk"; a word the lexicon lists is not looked up in
+% WordNet, so without these they had no noun. Not the other lexicon verbs
+% WordNet has as nouns: measured on 2026-10-16, giving all forty a noun
+% let thirteen faults through, "Alice wants swim" among them.
+noun(visit). noun(walk).
 noun(baby). noun(friend). noun(teacher). noun(student). noun(doctor).
 noun(farmer). noun(king). noun(queen). noun(neighbour). noun(artist).
 % kind is an adjective as well, "a kind man", and a word listed here is not
