@@ -1348,6 +1348,10 @@ complements(ditrans, _, [O1, O2], G0, G, V0, V) -->
     noun_phrase(_, obj, O1, G0, G1, V0, V1),
     noun_phrase(_, obj, O2, G1, G, V1, V).
 complements(pred, _, [A], G, G, V, V) --> adj_group(A).
+% An adverb may stand before the adjective, as before be's, "went quietly
+% online", "grew slowly dark".
+complements(pred, _, [adv(D), A], G, G, V, V) -->
+    [D], { adv(D), \+ approximator(D), \+ inner_adverb(D) }, adj_group(A).
 complements(obj_pred, _, [O, A], G0, G, V0, V) -->
     noun_phrase(_, obj, O, G0, G, V0, V), adj_group(A).
 complements(clause, _, [sbar(C, S)], G0, G, V0, V) -->
@@ -1367,6 +1371,8 @@ complements(ing, Tok, [VP], G0, G, V0, V) -->
 %                                           they described it as grim
 %   as_pred    as and an adjective, in the passive of obj_as
 %   yet_inf    yet and a to-infinitive      the body has yet to be found
+%   obj_bare   a noun phrase, a bare infinitive
+%                                           she made the dog sleep
 % With a noun phrase after it, as is the preposition, "described him as
 % a genius", so obj_as takes an adjective only.
 complements(obj_np, _, [O, P], G0, G, V0, V) -->
@@ -1376,6 +1382,12 @@ complements(np_pred, _, [P], G0, G, V0, V) --> noun_phrase(_, obj, P, G0, G, V0,
 complements(obj_as, _, [O, as(A)], G0, G, V0, V) -->
     noun_phrase(_, obj, O, G0, G, V0, V), [as], adj_group(A).
 complements(as_pred, _, [as(A)], G, G, V, V) --> [as], adj_group(A).
+% The bare infinitive does not open with a noun phrase of time, "did you
+% see the film last night", where last would be the verb.
+complements(obj_bare, _, [O, VP], G0, G, V0, V) -->
+    noun_phrase(_, obj, O, G0, G1, V0, V1),
+    \+ ( [D, N], { adverbial_np(D, N) } ),
+    verb_phrase(base, 2, bare, VP, G1, G, V1, V).
 complements(yet_inf, _, [adv(yet), inf(VP)], G0, G, V0, V) -->
     [yet, to], verb_phrase(base, 2, to, VP, G0, G, V0, V).
 

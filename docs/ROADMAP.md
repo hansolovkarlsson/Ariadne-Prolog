@@ -209,7 +209,8 @@ These change the shape of the system rather than adding to it.
        with both dashes, which were one defect in `char_type/2`; done
        2026-10-17, *via* and the semicolon); an object and a bare
        infinitive, *saw the edition go online*, which the record had
-       wrong, as *saw Videla gain power* reads only as a noun phrase; quoted speech (2); a comma phrase at the
+       wrong, as *saw Videla gain power* read only as a noun phrase,
+       done 2026-10-17; quoted speech (2); a comma phrase at the
        end (3).
 
   The known wall is left recursion: a rule such as `NP -> NP PP` makes a plain

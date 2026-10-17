@@ -299,6 +299,9 @@ shown(W, S) :-
     clitic(W, _), !,
     findall(A, clitic(W, A), As), atomic_list_concat(As, ' or ', Alt),
     format(atom(S), "~w (~w)", [W, Alt]).
+% bare stands for the object before a bare infinitive, "made the dog
+% sleep", see complements//7.
+shown(bare, 'the object') :- !.
 shown(W, S) :- format(atom(S), "'~w'", [W]).
 message(finite(W), M) :-
     format(atom(M), "'~w' cannot be the first verb after its subject; it needs one such as 'is' or 'has' before it", [W]).

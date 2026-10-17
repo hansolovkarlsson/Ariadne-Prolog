@@ -199,6 +199,11 @@ end of this file.
   and a to-infinitive whose object it is, *anything to do with the
   proposal*, *something to eat*; and *do* as a verb with an object, *did
   the homework*.
+- **An object and a bare infinitive**: *made the dog sleep*, *saw the
+  edition go online*, for *see*, *hear*, *watch*, *make*, *let*, *feel*,
+  *notice*, *observe* and *help*, in the active; *helps Bob sleeps* is
+  told the verb after the object should be *sleep*. And an adverb before
+  the adjective a verb takes, *went quietly online*.
 - **A quantity with *of***: *many of the rockets*, *eight of them*, *some
   of the cake*, a quantity, *of*, and a definite noun phrase or an object
   pronoun, agreeing as the quantity does or, for *some*, *all* and their
@@ -1706,3 +1711,17 @@ power*, the name before two nouns, and an object and a bare infinitive,
 *saw the edition go online*, *made the dog sleep*, has no rule; WordNet's
 frames with one are left out, see `tools/gen_wordnet.py`. That is what
 stops *Monday saw the latest edition ... go quietly online*.
+
+It went in next. An object and a bare infinitive is a frame of its own,
+`extra_frame/2` giving it to nine verbs, in the active only; *was made
+to go* has *to*. The infinitive does not open with a noun phrase of
+time, since *did you see the film last night* read *last* as its verb.
+*Saw the dogs sleep* has two readings, the other a clause, *saw [that]
+the dogs sleep*, as *see* takes one. *Go quietly online* needed an
+adverb before the adjective a verb takes, which only *be* had. The
+corpus gives **29 grammatical, 19 not, and 2 unknown**, *Monday saw the
+latest edition of the vetted version of Wikipedia, which is aimed at
+educational use, go quietly online* the new pass, with three readings,
+one for each place the *of* phrases and the relative clause can attach.
+No other sentence of the three corpora moved, nor its count of
+readings.

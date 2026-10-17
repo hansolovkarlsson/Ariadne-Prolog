@@ -698,6 +698,14 @@ good('The dog sleeps; the cat barks.').
 readings('The dog sleeps; the cat barks.', 1).
 bad('The dog sleeps; the cat.',             no_reading).
 bad('Alice knows; the dog sleeps.',         no_reading).
+% An object and a bare infinitive.
+good('Alice saw Bob sleep.').
+good('Alice heard the dog bark in the garden.').
+good('Alice helps Bob sleep.').
+readings('Alice saw Bob sleep.', 1).
+readings('Alice helps Bob sleep.', 1).
+bad('Alice helps Bob sleeps.',              verb_form(bare, sleeps, base)).
+bad('Alice chases Bob sleep.',              no_reading).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
@@ -885,6 +893,9 @@ wordnet_good('A body has yet to be recovered.').
 wordnet_good('It has nothing to do with the proposal.').
 wordnet_good('Donner put forth the proposal.').
 wordnet_good('It snowed over the past few days.').
+wordnet_good('Monday saw the edition go quietly online.').
+wordnet_good('Alice made the dog sleep.').
+wordnet_good('The edition went quietly online.').
 wordnet_good('Officials reported many of the rockets were shot down.').
 wordnet_good('Alice has yet to sleep.').
 wordnet_good('Alice carries off the cake.').

@@ -106,6 +106,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   third corpus gives 28, 20 and 2, one new pass. 803 checks, 835 with
   WordNet.
 
+- **An object and a bare infinitive.** *Made the dog sleep*, *saw the
+  edition go online*, for nine verbs, in the active; and an adverb
+  before the adjective a verb takes, *went quietly online*. The third
+  corpus gives 29, 19 and 2, one new pass. 810 checks, 845 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

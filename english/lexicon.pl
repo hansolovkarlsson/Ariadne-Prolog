@@ -519,6 +519,8 @@ verb(Base, Frames) :- guessed(verb(Frames), Base).
 %             only: the planet was discovered orbiting the star
 %   yet_inf   yet and a to-infinitive, after have
 %             the body has yet to be recovered
+%   obj_bare  a noun phrase and a bare infinitive, active only
+%             monday saw the new edition go online, she made the dog sleep
 extra_frame(describe, obj_as).   extra_frame(regard, obj_as).
 extra_frame(view, obj_as).       extra_frame(see, obj_as).
 extra_frame(define, obj_as).     extra_frame(portray, obj_as).
@@ -533,6 +535,11 @@ extra_frame(spot, obj_ing).      extra_frame(catch, obj_ing).
 extra_frame(observe, obj_ing).   extra_frame(leave, obj_ing).
 extra_frame(keep, obj_ing).
 extra_frame(have, yet_inf).
+extra_frame(see, obj_bare).      extra_frame(hear, obj_bare).
+extra_frame(watch, obj_bare).    extra_frame(make, obj_bare).
+extra_frame(let, obj_bare).      extra_frame(feel, obj_bare).
+extra_frame(notice, obj_bare).   extra_frame(observe, obj_bare).
+extra_frame(help, obj_bare).
 
 % irregular_past(Base, Past).
 irregular_past(run, ran).      irregular_past(swim, swam).
