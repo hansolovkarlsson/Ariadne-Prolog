@@ -366,6 +366,7 @@ known_word(W) :- subordinator(W), !.
 known_word(not).
 known_word(than).
 known_word(W) :- currency(W), !.
+known_word(W) :- score(W), !.
 known_word(W) :- time_word(W), !.
 known_word(W) :- meridiem(W), !.
 known_word(W) :- time_zone(W), !.
@@ -599,6 +600,7 @@ bracket(num(W))            --> ['[NP', W, ']'].
 bracket(date(D))           --> ['[NP', D, ']'].
 bracket(time(T))           --> ['[NP', T, ']'].
 bracket(money(M))          --> ['[NP', M, ']'].
+bracket(score(Ss))         --> { atomic_list_concat(Ss, ', ', S) }, ['[NP', S, ']'].
 bracket(mult(M, NP))       --> ['[NP', M], bracket(NP), [']'].
 bracket(fronted(A, S))     --> ['[S'], bracket(A), bracket(S), [']'].
 bracket(imp(P1, Neg, VP, P2)) -->
@@ -883,13 +885,17 @@ unhyphen(W, Ws) :- atomic_list_concat(Ws0, '-', W), exclude(==(''), Ws0, Ws).
 letter(C) :- char_type(C, alpha).
 
 % take_number(+Chars, -Number, -Rest): a run of digits, with a point or
-% comma inside it kept when a digit follows, 3.5 or 1,000, a colon when
-% two digits follow, a time of day, 13:44, and an ordinal's ending when no
+% comma inside it kept when a digit follows, 3.5 or 1,000, a hyphen or an
+% en dash when a digit follows, a score or a range, 7-6 or 1–4, written
+% with the hyphen, a colon when two digits follow, a time of day, 13:44,
+% and an ordinal's ending when no
 % letter follows that, 27th or 1st; a full stop after it ends the
 % sentence and is not part of it.
 take_number([C|Cs], [C|Ds], Rest) :- digit(C), !, take_number(Cs, Ds, Rest).
 take_number([P, D|Cs], [P, D|Ds], Rest) :-
     ( P == '.' ; P == ',' ), digit(D), !, take_number(Cs, Ds, Rest).
+take_number([H, D|Cs], ['-', D|Ds], Rest) :-
+    ( H == '-' ; H == '–' ), digit(D), !, take_number(Cs, Ds, Rest).
 take_number([':', D1, D2|Cs], [':', D1, D2|Ds], Rest) :-
     digit(D1), digit(D2), \+ ( Cs = [D3|_], digit(D3) ), !,
     take_number(Cs, Ds, Rest).

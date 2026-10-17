@@ -58,6 +58,13 @@ There are no releases yet, so entries are grouped by the day they landed on
   No sentence moved, nor any count of readings. 742 checks, 755 with
   WordNet.
 
+- **Scores.** *7-6* and *1–4* are one word each, where they had been
+  two numbers, and a score stands before a noun, *a 1–4 defeat*, or
+  after the verb and what it takes, *defeated Jankovic 7-6 (3), 7-5*.
+  *Defeated Jankovic 7-6* had passed only as a name ending in numbers.
+  The third corpus gives 17, 30 and 3, one new pass. 746 checks, 760
+  with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

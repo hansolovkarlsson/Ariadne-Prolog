@@ -820,6 +820,14 @@ good('The dog barked around 12:30 p.m. AEST on Sunday.').
 readings('The dog sleeps at 12:30.', 1).
 bad('The dog sleeps at 13 p.m. today.',     no_reading).
 
+% A score, one word from a hyphen or an en dash: after the verb and
+% what it takes, a run of them set off by commas, or before a noun.
+good('Alice chased Bob 7-6.').
+good('Alice chased Bob 7-6 (3), 7-5.').
+wordnet_good('The dog slept after a 1–4 defeat.').
+readings('Alice chased Bob 7-6.', 1).
+readings('Alice chased Bob 7-6, 7-5.', 1).
+
 % A sum with its currency sign, singular; billion is a big number.
 good('The dog costs $5.').
 good('The dog costs £20 today.').

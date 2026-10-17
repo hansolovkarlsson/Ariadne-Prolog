@@ -303,6 +303,11 @@ time_word(W) :-
     integer(HN), HN >= 0, HN =< 24, integer(MN), MN >= 0, MN =< 59.
 meridiem('a.m.'). meridiem('p.m.').
 
+% score(Word): two numbers in digits joined by a hyphen, 7-6, 1-4, which
+% words/2 in check.pl keeps as one word from a hyphen or an en dash.
+score(W) :-
+    atom(W), atomic_list_concat([A, B], '-', W), digits(A), digits(B).
+
 % currency(Sign): a sign that goes before an amount, "$5", "US$5.1
 % billion", "£20", which words/2 in check.pl keeps as a word.
 currency('$'). currency('£'). currency('€').

@@ -818,11 +818,11 @@ modifiers(Ms) -->
 
 % leading_number(-Trees): a number in digits first among the modifiers,
 % "the 2020 census", "the 2017 World Aquatics Championships", "a 1968
-% Soviet comedy movie". It follows a determiner or a possessor: with
+% Soviet comedy movie", or a score, "a 1-4 defeat". It follows a determiner or a possessor: with
 % nothing before it the digits are the determiner, "3 dogs", and the
 % noun phrases that take no determiner leave it out, see
 % leads_number/1.
-leading_number([num(D)]) --> [D], { digits(D) }.
+leading_number([num(D)]) --> [D], { ( digits(D) ; score(D) ) }.
 leading_number([]) --> [].
 
 % modifier_noun(+Word): a noun that may stand before another, in the
@@ -1250,6 +1250,9 @@ modifiers([PP|Ms], G0, G, V0, V) -->
 % is entered only when a preposition follows the comma, and takes no gap.
 modifiers([PP|Ms], G0, G, V0, V) -->
     [','], prep_ahead, pp(PP, nogap, nogap, V0, V1), modifiers(Ms, G0, G, V1, V).
+% A score, or scores set off by commas, "defeated Jankovic 7-6, 7-5".
+modifiers([score(Ss)|Ms], G0, G, V0, V) -->
+    scores(Ss), modifiers(Ms, G0, G, V0, V).
 modifiers([npadv(D, N)|Ms], G0, G, V0, V) -->
     [D, N], { adverbial_np(D, N) }, modifiers(Ms, G0, G, V0, V).
 modifiers([], G, G, V, V) --> [].
@@ -1270,6 +1273,10 @@ modifiers([S], G, G, V0, V) --> supplement(S, V0, V).
 % look". It takes no gap.
 modifiers([inf(VP)], G, G, V0, V) -->
     [to], verb_phrase(base, 2, to, VP, nogap, nogap, V0, V).
+
+scores([S|Ss]) --> [S], { score(S) }, more_scores(Ss).
+more_scores(Ss) --> [','], scores(Ss).
+more_scores([]) --> [].
 
 % pp_joined(+PP, -Tree, V0, V): a prepositional phrase alone, or joined to
 % a second by and or or, "known as the chairperson and as a director",

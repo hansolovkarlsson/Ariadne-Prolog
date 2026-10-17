@@ -1500,3 +1500,19 @@ too now, *about two thousand people*, which had no reading, and the
 sentence has its two again. The *Anglo American* sentence now fails
 only on *diamond giant De Beers*. No sentence moved, nor any count of
 readings.
+
+Scores came next. The tokeniser cut *7-6* into *7* and *6*, and *Jankovic
+7 6* read as a name, since a name may end in numbers; that is how
+*defeated Jankovic 7-6* had passed. Two numbers joined by a hyphen or an
+en dash are one word now, a score, written with the hyphen. A score
+stands first among a noun's modifiers, as a number does, *a 1–4
+defeat*, and after the verb and what it takes, alone or a run set off
+by commas, *defeated Jankovic 7-6 (3), 7-5*, the bracket set aside. A
+name does not end in one, or *Jankovic 7-6* would read twice; *the star
+GSC 02620-00648* reads with the score after the name. The corpus gives
+**17 grammatical, 30 not, and 3 unknown**, *Justine Henin has defeated
+Jelena Jankovic 7-6 (3), 7-5 to win the prestigeous Rogers Cup* the new
+pass, with two readings, one an older one of *has* with *defeated
+Jelena Jankovic* as an adjective and a name. *A 1–4 defeat* reads in
+its own sentence, which fails on the participle after a comma. No
+other sentence moved, nor its count of readings.
