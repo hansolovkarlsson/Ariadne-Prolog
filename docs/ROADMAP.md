@@ -176,8 +176,10 @@ These change the shape of the system rather than adding to it.
        up in WordNet. Measured on 2026-10-16: giving all 40 such verbs
        WordNet has as nouns a noun breaks 13 checks, *Alice wants swim*
        and *The dog is to sleeps* among them passing; *visit* and *walk*
-       alone move nothing. Which, if either, is Hans's to say. The other
-       defect, *has come*, was mended the same day;
+       alone moved nothing then; since 2026-10-17 *visit* is all that
+       stops *described the prospects for such a visit as "grim"*.
+       Which, if either, is Hans's to say. The other defect, *has
+       come*, was mended the same day;
      - then the causes, one at a time, by how many sentences each holds:
        numbers, times and dates (10, a date with *the*, *more than
        twenty*, a time of day, *twice the size*, *US$5.1 billion* and
@@ -194,8 +196,10 @@ These change the shape of the system rather than adding to it.
        a noun (6, done 2026-10-17); a bare singular noun, *on trial*
        (6, done 2026-10-17; left, a noun with a *that* clause, *doubt
        that his country's President would*); verb frames, *described
-       as* (6); a quantity after a determiner or with *of*, *many of
-       the rockets* (5, *the three journalists* done 2026-10-16; left,
+       as* (6, done 2026-10-17 but for *ranked world number one*, and
+       *such a visit as "grim"*, which waits on the *visit* defect); a
+       quantity after a determiner or with *of*, *many of the rockets*
+       (5, *the three journalists* done 2026-10-16; left,
        *the past few days*, *the two hundred*); words and characters
        (6, each small: a web address, *exoplanet*, *van Gogh* and
        *al-Hakim*, *Millwall football club*; done 2026-10-16, *himself*

@@ -186,6 +186,19 @@ end of this file.
 - **A measure before a noun**: a number and a singular noun joined by a
   hyphen are one adjective, *a two-day trip*, *2-day police custody*;
   *10-year-old* is read as three words, as before.
+- **More verb frames**: *as* and an adjective after the object, *described
+  the prospects as grim*, and after the passive, *is seen as happy*, for
+  the verbs `extra_frame/2` lists (with a noun phrase *as* is the
+  preposition); an object and an *-ing* phrase in the passive only, *has
+  been discovered orbiting the star*; a noun phrase as the second
+  complement where WordNet's frame is "something Adjective/Noun",
+  *considered Bob a potential running mate*, *had been considered a
+  potential running mate*, unless the verb takes two objects; *have yet
+  to*, *has yet to be recovered*; an adverb particle before the object,
+  *picked up the box*, *put forth the proposal*; an indefinite pronoun
+  and a to-infinitive whose object it is, *anything to do with the
+  proposal*, *something to eat*; and *do* as a verb with an object, *did
+  the homework*.
 - **A phrase before the subject**: *yesterday the dog barked*, *in 2019,
   978 people lived there*, *last night the dog barked*, with a comma or
   none; but not *about the dog barked*.
@@ -1596,3 +1609,41 @@ that his country's President would*, a noun with a *that* clause; *aimed
 at educational use* reads, and its sentence, *Monday saw the latest
 edition ... go quietly online*, fails on something else. No other
 sentence of the three corpora moved, nor its count of readings.
+
+Verb frames were next, six sentences. *Described the prospects as grim*
+is a frame of its own, a noun phrase, *as* and an adjective, which
+`extra_frame/2` gives *describe*, *regard*, *see* and eleven more; with
+a noun phrase after *as* the preposition reads it already, *sees the dog
+as a friend*, so the frame takes an adjective only. *Has been
+discovered orbiting the star* is an object and an *-ing* phrase,
+passive, and read only in the passive, since *found the dog sleeping*
+reads already, the dog with a participle after it. *Had been considered
+a potential running mate* takes a noun phrase where WordNet's frame 5,
+"Something ----s something Adjective/Noun", had been read as an
+adjective only; a verb with that frame takes a noun phrase as well,
+unless it takes two objects, so that *call him a taxi* is not read
+twice. *Has yet to be recovered* is *have*, *yet* and a to-infinitive.
+*Put forth the proposal* needed a particle before the object, which the
+grammar had only for a preposition, *pulled over a child*: *picked up
+the box* had no reading either. *Up*, *down*, *out*, *off*, *away*,
+*back* and *forth* may stand there now; they are not made known words,
+since a known word is not looked up in WordNet, and *the lights went
+out* lost its readings when they were. *Had anything to do with the
+proposal* is an indefinite pronoun and a to-infinitive whose object it
+is, *something to eat*, and *do* had no entry as a verb, only as the
+auxiliary, so *Alice did the homework* had no reading. It takes an
+object only: with *do* alone as well, *to do with the proposal* read as
+a purpose too, and the Donner sentence doubled. *Alice wants something
+to eat* has two readings, the other *wants something* and a purpose.
+The corpus gives **24 grammatical, 24 not, and 2 unknown**: the Donner
+sentence, with sixteen readings, most of them from WordNet's *deny* with
+two objects and *that* as a determiner; *After an introduction from
+Virginia governor Bob McDonnell, who himself had been considered a
+potential running mate*, with three; and *A body found in the Cradle
+Mountain national park ... has yet to be recovered*, with twenty. The
+Donner sentence reads *Theo van Gogh* as a name, where the record by
+cause had it fail on *van*. *Described the prospects for such a visit
+as "grim"* reads with *trip* for *visit*, and fails on the defect that
+*visit* is a verb only; *ranked world number one* still has no reading.
+No other sentence of the three corpora moved, nor its count of
+readings.

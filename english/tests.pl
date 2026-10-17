@@ -661,6 +661,20 @@ good('Alice has a two-day cake.').
 good('Alice has a 2-day cake.').
 readings('Alice has a 2-day cake.', 1).
 bad('Alice has a two-days cake.',           no_reading).
+% Verb frames: as and an adjective, an object and an -ing phrase in the
+% passive, yet and a to-infinitive, a particle before the object, an
+% indefinite pronoun and an infinitive with a gap, and do as a verb.
+good('Alice sees the dog as happy.').
+good('The dog is seen as happy.').
+readings('Alice sees the dog as happy.', 1).
+readings('Alice sees the dog as a friend.', 2).
+bad('The dog is seen as.',                  no_reading).
+good('The dog was found sleeping in the garden.').
+readings('Alice found the dog sleeping.', 1).
+good('Alice wants nothing to eat.').
+readings('Alice wants something to eat.', 2).
+good('Alice did the homework.').
+bad('Alice does.',                          no_reading).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
@@ -840,6 +854,16 @@ wordnet_good('The dog has become big.').
 wordnet_good('The man has overcome it.').
 wordnet_good('He came and has come.').
 wordnet_good('The man has flung it.').
+wordnet_good('The minister described the prospects as grim.').
+wordnet_good('Bob had been considered a potential running mate.').
+wordnet_good('They considered Bob a potential running mate.').
+wordnet_good('The planet has been discovered orbiting the star.').
+wordnet_good('A body has yet to be recovered.').
+wordnet_good('It has nothing to do with the proposal.').
+wordnet_good('Donner put forth the proposal.').
+wordnet_good('Alice has yet to sleep.').
+wordnet_good('Alice carries off the cake.').
+wordnet_bad('Alice has yet to sleeps.',     verb_form(to, sleeps, base)).
 wordnet_good('Videla is on trial regarding the deaths.').
 wordnet_good('Sarah spoke via email to Bob.').
 wordnet_good('The minister has expressed doubt.').

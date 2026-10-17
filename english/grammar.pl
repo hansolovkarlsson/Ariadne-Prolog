@@ -314,6 +314,12 @@ noun_phrase(Agr, Case, T, G, G, V0, V) -->
 simple_np(Agr, Case, pro(W), V0, V) -->
     [W], { pronoun(W, Agr, PCase),
            agree(case(W), PCase, Case, V0, V) }.
+% An indefinite pronoun with a to-infinitive whose object it is,
+% "something to eat", "had anything to do with the proposal", "nothing to
+% do with it".
+simple_np(Agr, _, inf_rel(pro(W), VP), V0, V) -->
+    [W], { indefinite(W), pronoun(W, Agr, _) },
+    [to], verb_phrase(base, 2, to, VP, gap, nogap, V0, V).
 simple_np(Agr, _, name(N), V, V) -->
     name(N), { agr_of(sg, Agr) }.
 simple_np(Agr, _, appos(name(N), NP), V0, V) -->
@@ -1221,18 +1227,39 @@ rest(cop,   _, _, _, Items, G0, G, V0, V) -->
     modifiers(Ms, G1, G, V1, V),
     { append(As, [C|Ms], Items) }.
 rest(lex, Base, Tok, Form, Items, G0, G, V0, V) -->
-    { verb(Base, Frames), member(Frame0, Frames), frame(Form, Frame0, Frame) },
+    { verb_frames(Base, Frames), member(Frame0, Frames),
+      frame(Form, Frame0, Frame) },
     complements(Frame, Tok, Cs, G0, G1, V0, V1),
     modifiers(Ms, G1, G, V1, V),
     { append(Cs, Ms, Items) }.
 
+% verb_frames(+Base, -Frames): the verb's frames, with those extra_frame/2
+% adds; and a noun phrase as the second complement, obj_np, "they
+% considered Bob a potential running mate", for a verb that takes a noun
+% phrase and an adjective, as WordNet's frame "Something ----s something
+% Adjective/Noun" does, unless it takes two objects as well, since "call
+% him a taxi" would read twice.
+verb_frames(Base, Frames) :-
+    verb(Base, Frames0),
+    findall(F, extra_frame(Base, F), Es),
+    (   memberchk(obj_pred, Frames0), \+ memberchk(ditrans, Frames0)
+    ->  Ns = [obj_np]
+    ;   Ns = []
+    ),
+    append([Frames0, Es, Ns], Frames).
+
 % A passive has lost its first object to the subject: "the cat was chased",
-% "the dog was given a bone".
-frame(Form, F, F) :- Form \== pass.
+% "the dog was given a bone". An object and an -ing verb phrase is read in
+% the passive only, "was discovered orbiting the star": "found the dog
+% sleeping" reads already, the dog with a participle after it.
+frame(Form, F, F) :- Form \== pass, F \== obj_ing.
 frame(pass, trans, intrans).
 frame(pass, ditrans, trans).
 frame(pass, obj_pred, pred).
+frame(pass, obj_np, np_pred).
 frame(pass, obj_inf, inf).
+frame(pass, obj_as, as_pred).
+frame(pass, obj_ing, ing).
 
 % complements(+Frame, +Verb, -Items, G0, G, V0, V): what the verb takes, by
 % the frame chosen from its entry:
@@ -1247,6 +1274,11 @@ frame(pass, obj_inf, inf).
 %   ing        an -ing verb phrase          the dog stopped barking
 complements(intrans, _, [], G, G, V, V) --> [].
 complements(trans, _, [O], G0, G, V0, V) --> noun_phrase(_, obj, O, G0, G, V0, V).
+% An adverb particle may come before the object, "picked up the box",
+% "put forth the proposal"; see adv_particle/1. After the object it is
+% read as an adverb already, "put the proposal forth".
+complements(trans, _, [prt(P), O], G0, G, V0, V) -->
+    [P], { adv_particle(P) }, noun_phrase(_, obj, O, G0, G, V0, V).
 complements(ditrans, _, [O1, O2], G0, G, V0, V) -->
     noun_phrase(_, obj, O1, G0, G1, V0, V1),
     noun_phrase(_, obj, O2, G1, G, V1, V).
@@ -1262,6 +1294,25 @@ complements(obj_inf, _, [O, inf(VP)], G0, G, V0, V) -->
     [to], verb_phrase(base, 2, to, VP, G1, G, V1, V).
 complements(ing, Tok, [VP], G0, G, V0, V) -->
     verb_phrase(ing, 3, Tok, VP, G0, G, V0, V).
+%   obj_np     two noun phrases, the second what the first is
+%                                           they considered Bob a candidate
+%   np_pred    a noun phrase, in the passive of obj_np
+%                                           Bob was considered a candidate
+%   obj_as     a noun phrase, as, an adjective
+%                                           they described it as grim
+%   as_pred    as and an adjective, in the passive of obj_as
+%   yet_inf    yet and a to-infinitive      the body has yet to be found
+% With a noun phrase after it, as is the preposition, "described him as
+% a genius", so obj_as takes an adjective only.
+complements(obj_np, _, [O, P], G0, G, V0, V) -->
+    noun_phrase(_, obj, O, G0, G1, V0, V1),
+    noun_phrase(_, obj, P, G1, G, V1, V).
+complements(np_pred, _, [P], G0, G, V0, V) --> noun_phrase(_, obj, P, G0, G, V0, V).
+complements(obj_as, _, [O, as(A)], G0, G, V0, V) -->
+    noun_phrase(_, obj, O, G0, G, V0, V), [as], adj_group(A).
+complements(as_pred, _, [as(A)], G, G, V, V) --> [as], adj_group(A).
+complements(yet_inf, _, [adv(yet), inf(VP)], G0, G, V0, V) -->
+    [yet, to], verb_phrase(base, 2, to, VP, G0, G, V0, V).
 
 complementizer(that) --> [that].
 complementizer(none) --> [].

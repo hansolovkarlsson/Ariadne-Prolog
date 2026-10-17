@@ -84,6 +84,15 @@ There are no releases yet, so entries are grouped by the day they landed on
   preposition. The third corpus gives 21, 27 and 2, two new passes. 772
   checks, 792 with WordNet.
 
+- **Verb frames.** *Described the prospects as grim*; *has been
+  discovered orbiting the star*, in the passive; *considered Bob a
+  potential running mate*, active and passive; *has yet to be
+  recovered*; a particle before the object, *picked up the box*, *put
+  forth the proposal*; *anything to do with the proposal*, *something to
+  eat*; and *do* as a verb, *did the homework*, which had no reading.
+  The third corpus gives 24, 24 and 2, three new passes. 783 checks,
+  813 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

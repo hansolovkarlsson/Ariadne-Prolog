@@ -613,6 +613,8 @@ bracket(adjp(Ds, A))       --> ['[AP'], Ds, [A, ']'].
 bracket(sbar(that, S))     --> ['[SBAR', that], bracket(S), [']'].
 bracket(sbar(none, S))     --> ['[SBAR'], bracket(S), [']'].
 bracket(inf(VP))           --> ['[VP', to], bracket(VP), [']'].
+bracket(as(A))             --> [as], bracket(A).
+bracket(inf_rel(P, VP))    --> ['[NP'], bracket(P), ['[VP', to], bracket(VP), [']', ']'].
 bracket(npadv(D, N))       --> ['[NP', D, N, ']'].
 bracket(q(W, NP, Neg, Is)) --> ['[SQ', W], bracket(NP), neg(Neg), items(Is), [']'].
 bracket(wh(W, C))          --> ['[SBARQ'], bracket(W), bracket(C), [']'].

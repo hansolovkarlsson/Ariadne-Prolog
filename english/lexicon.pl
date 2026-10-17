@@ -396,6 +396,12 @@ bare_pp(via, satellite).
 particle(in). particle(on). particle(over). particle(through).
 particle(along). particle(around). particle(about). particle(across).
 particle(by).
+% adv_particle(Word): an adverb that goes with a verb and may stand before
+% its object, "picked up the box", "put forth the proposal"; see
+% complements//7 in grammar.pl. None is a preposition, so the phrase is
+% not read again as one.
+adv_particle(up). adv_particle(down). adv_particle(out). adv_particle(off).
+adv_particle(away). adv_particle(back). adv_particle(forth).
 % as is listed because WordNet has it as a noun, the Roman coin, and with
 % nothing else knowing it "best known as the chairperson" became a noun
 % phrase headed by as once a participle could stand before a noun, and
@@ -502,7 +508,31 @@ verb(send,   [trans, ditrans]).        verb(show,   [trans, ditrans]).
 verb(bring,  [trans, ditrans]).        verb(tell,   [trans, ditrans, obj_inf]).
 verb(buy,    [trans, ditrans]).        verb(teach,  [trans, ditrans, obj_inf]).
 verb(have,   [trans]).                 verb(please, [intrans, trans]).
+verb(do,     [trans]).
 verb(Base, Frames) :- guessed(verb(Frames), Base).
+
+% extra_frame(Base, Frame): a frame WordNet does not give the verb, which
+% complements//7 in grammar.pl sets out:
+%   obj_as    a noun phrase, as, and an adjective
+%             they described the prospects as grim
+%   obj_ing   a noun phrase and an -ing verb phrase, read in the passive
+%             only: the planet was discovered orbiting the star
+%   yet_inf   yet and a to-infinitive, after have
+%             the body has yet to be recovered
+extra_frame(describe, obj_as).   extra_frame(regard, obj_as).
+extra_frame(view, obj_as).       extra_frame(see, obj_as).
+extra_frame(define, obj_as).     extra_frame(portray, obj_as).
+extra_frame(depict, obj_as).     extra_frame(characterize, obj_as).
+extra_frame(characterise, obj_as). extra_frame(label, obj_as).
+extra_frame(classify, obj_as).   extra_frame(treat, obj_as).
+extra_frame(consider, obj_as).   extra_frame(rate, obj_as).
+extra_frame(discover, obj_ing).  extra_frame(find, obj_ing).
+extra_frame(see, obj_ing).       extra_frame(hear, obj_ing).
+extra_frame(watch, obj_ing).     extra_frame(notice, obj_ing).
+extra_frame(spot, obj_ing).      extra_frame(catch, obj_ing).
+extra_frame(observe, obj_ing).   extra_frame(leave, obj_ing).
+extra_frame(keep, obj_ing).
+extra_frame(have, yet_inf).
 
 % irregular_past(Base, Past).
 irregular_past(run, ran).      irregular_past(swim, swam).
@@ -517,6 +547,7 @@ irregular_past(give, gave).    irregular_past(send, sent).
 irregular_past(bring, brought). irregular_past(tell, told).
 irregular_past(buy, bought).   irregular_past(teach, taught).
 irregular_past(have, had).    irregular_past(sleep, slept).
+irregular_past(do, did).
 irregular_past(Base, Past) :- guessed(irregular_form, Base-Past).
 
 % irregular_participle(Base, Participle): the en form, where it is not the
@@ -527,11 +558,13 @@ irregular_participle(eat, eaten).     irregular_participle(drink, drunk).
 irregular_participle(write, written). irregular_participle(see, seen).
 irregular_participle(know, known).    irregular_participle(bite, bitten).
 irregular_participle(give, given).    irregular_participle(show, shown).
+irregular_participle(do, done).
 irregular_participle(Base, Base) :- guessed(base_participle, Base).
 irregular_participle(Base, P) :- guessed(irregular_form, Base-P).
 
 % irregular_third(Base, Form): the -s form, where the rule does not make it.
 irregular_third(have, has).
+irregular_third(do, does).
 
 % doubles(Base): the final consonant doubles before -ed and -ing.
 doubles(run). doubles(swim). doubles(stop).
