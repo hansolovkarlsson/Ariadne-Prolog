@@ -156,6 +156,12 @@ end of this file.
   comma only.
 - **The before a name**: *the Sernf*, *the Hague*, *the Rhine*, a
   singular name; only *the*.
+- **A name with a relative clause a comma sets off**: *Justine, who is
+  ranked world number one, has defeated*, with *who*, *which* or *whom*;
+  and an appositive after a name may be closed by the comma that closed
+  its own relative clause, *Rahul Mahajan, the son of Pramod Mahajan, who
+  was arrested on Monday, was remanded*. A rank, *number one*, with nouns
+  before it or none, *world number one*.
 - **A relative clause a comma sets off**: *comedy routines in Cosby's
   act, which in turn were based on his family life*, with *which*,
   *who* or *whom*, never *that*, closed by a comma or the end, so *the
@@ -1904,3 +1910,25 @@ trial regarding the deaths of 31 prisoners who were killed soon after a
 War" soon after* the new pass, with the 64 readings it has without
 *aged 84*. No other sentence of the three corpora moved, nor its count
 of readings.
+
+*Justine, who is ranked world number one,* came next, and needed three
+things. A rank, *number* and a number, with nouns before it that say
+where or none, is a singular noun phrase, and *rank* takes an object and
+a noun phrase, *ranked her number one*, which WordNet does not give it,
+so its passive reads *is ranked world number one*. And a name took no
+relative clause: a name says which one already, and only one a comma
+sets off belongs after it, *Justine, who is happy, sleeps*; that is read
+now, with *who*, *which* or *whom* as after a noun, and *Alice, that is
+happy, sleeps* is still refused. *Bob McDonnell, who himself* had read
+only because a title came before the name. The *Rahul Mahajan* sentence
+then failed on one more thing: its appositive, *the son of ... Pramod
+Mahajan, who was arrested on Monday*, ends in a relative clause whose
+closing comma is the appositive's too, and an appositive after a name
+wanted a comma of its own. It may be closed by that comma now, as *as
+well as* is. The corpus gives **42 grammatical, 8 not, and none
+unknown**: the *Justine* sentence, with four readings, and the *Rahul
+Mahajan* sentence, with 36. *Monday saw the latest edition of the vetted
+version of Wikipedia, which is aimed at educational use* goes from three
+readings to five, the relative clause on the name *Wikipedia* as well,
+which is English and was not read before. No other sentence of the
+three corpora moved, nor its count of readings.

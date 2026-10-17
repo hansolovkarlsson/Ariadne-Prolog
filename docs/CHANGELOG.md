@@ -165,6 +165,16 @@ There are no releases yet, so entries are grouped by the day they landed on
   phrase set off by commas. The third corpus gives 40, 10 and none
   unknown, one new pass. 852 checks, 896 with WordNet.
 
+- **A name with a relative clause a comma sets off, and a rank.**
+  *Justine, who is ranked world number one, has defeated*: a name takes
+  a relative clause set off by commas; *number one* is a noun phrase,
+  and *rank* takes an object and one. An appositive after a name may be
+  closed by the comma that closed its relative clause, *the son of
+  Pramod Mahajan, who was arrested on Monday, was remanded*. The third
+  corpus gives 42, 8 and none unknown, two new passes; one sentence
+  gains two readings, a relative clause on a name. 858 checks, 904
+  with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name

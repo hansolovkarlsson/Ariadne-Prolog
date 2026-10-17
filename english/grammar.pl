@@ -282,10 +282,21 @@ np_base(Agr, Case, T, V0, V) --> np_list(Agr, Case, T, V0, V).
 
 as_well_rest(Case, T, V0, V, S0, S) :-
     phrase(noun_phrase(_, Case, T, nogap, nogap, V0, V), S0, S1),
-    (   S1 = [','|S]
-    ;   S1 == [], S = []
-    ;   append(Read, S1, S0), last(Read, ','), S = S1
-    ).
+    closed(S0, S1, S).
+
+% closed(+S0, +S1, -S): what was read from S0 to S1 is closed, by a comma
+% after it, by the end, or by the comma that closed what it ended in, as
+% a relative clause or an appositive is closed: "the son of Pramod
+% Mahajan, who was arrested on Monday, was remanded".
+closed(_, [','|S], S).
+closed(_, [], []).
+closed(S0, S1, S1) :- S1 \== [], append(Read, S1, S0), last(Read, ',').
+
+% closed_appositive(-Tree, V0, V): an appositive after a name and its
+% comma, closed as closed/3 says.
+closed_appositive(T, V0, V, S0, S) :-
+    phrase(name_appositive(T, V0, V), S0, S1),
+    closed(S0, S1, S).
 
 np_item(Case, A-T, V0, V) --> simple_np(A, Case, T, V0, V).
 % The last of a list is no as well as phrase, which goes after the whole
@@ -357,11 +368,21 @@ simple_np(Agr, _, inf_rel(pro(W), VP), V0, V) -->
     [to], verb_phrase(base, 2, to, VP, gap, nogap, V0, V).
 simple_np(Agr, _, name(N), V, V) -->
     name(N), { agr_of(sg, Agr) }.
+% A name with a relative clause a comma sets off, "Justine, who is
+% ranked world number one, has defeated Jankovic"; only one set off, as
+% a name says already which one it is.
+simple_np(Agr, _, np(nom([], n(N), Rels)), V0, V) -->
+    name(N), { agr_of(sg, Agr) },
+    comma_relative(Agr, Rels, V0, V).
 simple_np(Agr, _, appos(name(N), NP), V0, V) -->
-    name(N), [','], name_appositive(NP, V0, V), apposition_end,
+    name(N), [','], closed_appositive(NP, V0, V),
     { agr_of(sg, Agr) }.
 simple_np(Agr, _, np(nom(As, n(N), [])), V, V) -->
     plain_adjectives(As), name(N), { agr_of(sg, Agr) }.
+% A rank, number and a number, with nouns before it that say where or
+% none, and no determiner: "she is ranked world number one". Singular.
+simple_np(Agr, _, rank(Ns, N), V, V) -->
+    rank_nouns(Ns), [number, N], { number_word(N, _) }, { agr_of(sg, Agr) }.
 simple_np(Agr, _, date(D), V, V) -->
     date(D), { agr_of(sg, Agr) }.
 simple_np(Agr, _, time(T), V, V) -->
@@ -413,6 +434,9 @@ simple_np(Agr, _, T, V0, V) -->
 named_body(nom([name(_)|_], n(Head), _)) :-
     noun_form(Head, _, sg), organisation(Head).
 
+rank_nouns([W|Ws]) --> [W], { noun_form(W, _, sg), W \== number }, rank_nouns(Ws).
+rank_nouns([]) --> [].
+
 % partitive(Word, Number): a quantity that goes before of, and its
 % number, or inner for one that takes the number of the noun phrase after
 % of.
@@ -443,6 +467,9 @@ percent_of(np(N), Num, V0, V) -->
 
 partitive_pronoun(them, pl). partitive_pronoun(us, pl).
 partitive_pronoun(you, pl). partitive_pronoun(it, sg).
+
+comma_relative(Agr, Rels, V0, V, S0, S) :-
+    S0 = [','|_], relative(Agr, Rels, V0, V, S0, S), Rels = [_|_].
 
 % title_before_name(+Nominal): a singular noun for a person and the name
 % straight after it, which news puts with no determiner: "musician Michael

@@ -758,6 +758,14 @@ good('Alice, aged 12, sleeps.').
 good('Alice, aged 12 years, sleeps.').
 readings('Alice, aged 12, sleeps.', 1).
 bad('Alice, aged 12 sleeps.',               no_reading).
+% A name with a relative clause a comma sets off, never that; an
+% appositive closed by the comma that closed its relative clause; a rank.
+good('Alice, who is happy, sleeps.').
+good('Bob, the friend of Alice, who sleeps, is happy.').
+readings('Alice, who is happy, sleeps.', 1).
+bad('Alice, that is happy, sleeps.',        no_reading).
+bad('Alice, who is happy sleeps.',          no_reading).
+bad('Alice, who are happy, sleeps.',        subject_verb(are)).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).
@@ -959,6 +967,8 @@ wordnet_good('Alice joined Millwall football club.').
 wordnet_good('The dog slept on 10 November, Japanese time.').
 wordnet_good('The dog slept at six, local time.').
 wordnet_bad('The dog slept, time.',         no_reading).
+wordnet_good('Justine is ranked world number one.').
+wordnet_good('They ranked Justine number one.').
 wordnet_good('Monday saw the edition go quietly online.').
 wordnet_good('Alice made the dog sleep.').
 wordnet_good('The edition went quietly online.').
