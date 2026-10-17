@@ -21,6 +21,16 @@ There are no releases yet, so entries are grouped by the day they landed on
   corpus read; no sentence moves, since each has other causes, and it
   stays at 14, 31 and 5. 709 checks, 716 with WordNet.
 
+### Fixed
+
+- **A closed-class word in capitals made the same word a name
+  everywhere.** The checker's names are a set of words, so once *THE*
+  in a dateline was a name, every *the* in the sentence was, and *the
+  Tweede Kamer, the country's parliament* read as a name and its
+  appositive. Such a word, *US*, *THE*, keeps its capitals now and is a
+  word of its own. No sentence of the three corpora moved. 710 checks,
+  717 with WordNet.
+
 ## 2026-10-16
 
 ### Added

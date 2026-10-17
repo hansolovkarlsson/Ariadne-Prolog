@@ -787,6 +787,9 @@ good('The dog killed six US cats.').
 good('They saw us.').
 readings('The US dog sleeps.', 1).
 bad('THE DOG SLEEPS.',                     no_reading).
+% It keeps its capitals, so the same word in lower case is no name: a
+% dateline's THE made every the in the sentence one.
+bad('THE HAGUE — Alice sees the Bob, the dog.', no_reading).
 
 % Curly quotation marks are punctuation, as straight ones are.
 good('“The dog sleeps.”').

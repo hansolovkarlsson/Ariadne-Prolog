@@ -1408,3 +1408,12 @@ now fail further on, *Wrangling between musician Michael Jackson's* on
 *wrangling* and *Virginia governor Bob McDonnell, who himself had been
 considered* on *considered* with a noun phrase after it. No other
 sentence of the three corpora moved, nor its count of readings.
+
+The next rule, a *to*-infinitive after a noun, made the dateline sentence
+pass, *THE HAGUE — The proposal ... to strengthen*, when it should still
+have failed on its appositive, and its brackets showed why: once *THE*
+was a name, so was every *the* in the sentence, since the checker keeps
+its names as a set of words. *The Tweede Kamer* was then one name and
+took the appositive a name takes. A closed-class word read as an
+abbreviation keeps its capitals now, a word of its own, and the defect
+is in the postmortem. No sentence moved with the fix alone.

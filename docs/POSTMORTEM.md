@@ -9,7 +9,7 @@ shipped. This is the failures.
 
 ## Scope
 
-Sixty-two defects, in five cohorts that failed for five different reasons:
+Sixty-three defects, in five cohorts that failed for five different reasons:
 
 - **Design era**: seven bugs about memory lifetime and ordering, produced by the
   choice to copy structures and manage memory by hand. Five fixed before the
@@ -21,12 +21,13 @@ Sixty-two defects, in five cohorts that failed for five different reasons:
 - **Portability** — three bugs that existed from the first commit and were
   invisible on the machine the interpreter was written on. All three fell out of
   CI's first run.
-- **Consistency**: twenty-five defects in which two parts of the project did not
+- **Consistency**: twenty-six defects in which two parts of the project did not
   agree with each other: the code, the documentation, the standard, the flag
   reporting the behaviour, two predicates that should have matched. Eight found
   while writing the tutorials, two while adding the character predicates, five
   on 2026-09-27, one on 2026-09-28, six on 2026-09-29, one on 2026-09-30,
-  two on 2026-10-02, three on 2026-10-03 and one on 2026-10-16.
+  two on 2026-10-02, three on 2026-10-03, one on 2026-10-16 and one on
+  2026-10-17.
 - **The suite about itself**: three defects in the checks, each invisible to the
   check because the check was the thing that was wrong. The first found by an
   audit that counted the file against the runner; the other two on 2026-09-27,
@@ -148,7 +149,7 @@ log file, not a test. A finding has to fail the run or it scrolls past.
 
 ## Cohort C — consistency
 
-Twenty-five defects in which two parts of the project disagreed. The first eight were
+Twenty-six defects in which two parts of the project disagreed. The first eight were
 found while writing the four tutorial levels, which is the interesting part: writing
 documentation is a different test from writing tests, and it found things the
 256-test suite never would have.
@@ -342,6 +343,32 @@ letter. Asking the interpreter answered it.
 the layer the record was about. A cause that names a character is worth
 asking of the layer that classifies characters before it is mended in
 the one that reads words.
+
+### A dateline's capitals made every *the* a name
+
+The checker lowercases every word and keeps the names apart, as a set
+of the words the sentence writes with a capital where a name can
+stand. The set is of words, not of places in the sentence, which was
+safe while a closed-class word was never a name. On 2026-10-16 a
+closed-class word in capitals became one, *six US service members*,
+and the two disagreed: in *THE HAGUE — The proposal ... a majority of
+the Tweede Kamer, the country's parliament*, *THE* was a name, so every
+*the* was, and *the Tweede Kamer* was one name and took an appositive
+the grammar gives only a name. Such a word keeps its capitals now, *US*
+and *THE*, a word of its own, and the same word in lower case is not
+touched (`words/3` in `english/check.pl`).
+
+Found on 2026-10-17 by reading the brackets of a new pass. A rule for an
+infinitive after a noun made the dateline sentence grammatical, with 16
+readings, when its record said it would still fail on the appositive
+after *the Tweede Kamer*; the brackets had *the* as a name. The same
+sentence without its dateline failed, before the rule and after it.
+
+*What this says:* a lookup keyed on the word stands for every place
+the word is in. Once a rule could make one occurrence of a word a name
+and not another, the key was too coarse, and nothing failed until a
+sentence had both. A pass the record does not expect is worth its
+brackets.
 
 ## Cohort D — the suite about itself
 
@@ -803,7 +830,7 @@ after the stop rather than the word before it.
 | Probing past what the suite tries, at a million elements or levels | 4 |
 | Loading a large program and measuring it | 1 |
 | Running ordinary sentences through the grammar | 3 |
-| Reading a corpus's passes with their brackets | 1 |
+| Reading a corpus's passes with their brackets | 2 |
 | Reading the whole output of a run that was usually filtered | 1 |
 | Running the tokenizer on a case before building on it | 1 |
 | Timing each commit, looking for another cause | 1 |
@@ -827,7 +854,7 @@ after the stop rather than the word before it.
 
 Three things stand out.
 
-**The test suite found four of sixty-two.** It is a good suite, 334 tests
+**The test suite found four of sixty-three.** It is a good suite, 334 tests
 run normally, again bare with the collector inside every test, and again under
 two sanitizers, and it found under a tenth of the defects. Everything it found
 was a wrong *answer*. Everything it missed was a wrong *limit*, a wrong

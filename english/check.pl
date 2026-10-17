@@ -706,9 +706,27 @@ words(Text, Words, Names) :-
     set_aside(Chars1, Chars),
     split_letters(Chars, Cased0),
     maplist(unhyphen, Cased0, Nested), append(Nested, Cased),
-    maplist(downcase_atom, Cased, Words),
+    maplist(downcase_atom, Cased, Words0),
+    shout(Cased, Shout),
+    maplist(kept_case(Shout), Cased, Words0, Words),
     names(Cased, Words, Names0),
     sort(Names0, Names).
+
+% shout(+Cased, -Shout): yes when no word of the sentence has a lower-case
+% letter, so that it is all in capitals, and no otherwise.
+shout(Cased, Shout) :-
+    (   member(X, Cased), atom_chars(X, Xs), member(L, Xs), char_type(L, lower(_))
+    ->  Shout = no
+    ;   Shout = yes
+    ).
+
+% kept_case(+Shout, +Cased, +Word0, -Word): a closed-class word that is an
+% abbreviation, "US", "IT", keeps its capitals, so that it is a word of its
+% own and a name, and the same word in lower case in the sentence is not:
+% the names are a set of words, and "THE HAGUE — The proposal of the
+% Tweede Kamer" had every the a name once THE was one.
+kept_case(no, C, W, C) :- abbreviation(C), closed_class(W), !.
+kept_case(_, _, W, W).
 
 % set_aside(+Chars, -Rest): Chars with what stands in brackets taken out,
 % round or square, nested or not: "Nita Ambani (born 1 November 1963) is
@@ -740,10 +758,7 @@ closing_after([_|Cs], Close, D, After) :- closing_after(Cs, Close, D, After).
 
 names([], [], []).
 names([C|Cs], [W|Ws], Names) :-
-    (   member(X, [C|Cs]), atom_chars(X, Xs), member(L, Xs), char_type(L, lower(_))
-    ->  Shout = no
-    ;   Shout = yes
-    ),
+    shout([C|Cs], Shout),
     maplist(later_name(Shout), Cs, Ws, Ns0),
     exclude(==(none), Ns0, Ns),
     (   name_word(Shout, C, W),
