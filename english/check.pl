@@ -607,6 +607,7 @@ bracket(part(Q, NP))       --> ['[NP', Q, of], bracket(NP), [']'].
 bracket(as_well(A, B))     --> ['[NP'], bracket(A), [',', as, well, as], bracket(B), [']'].
 bracket(absolute(NP, P))   --> [',', '[S'], bracket(NP), bracket(P), [']'].
 bracket(clock(N))          --> [',', '[NP'], nom(N), [']'].
+bracket(aged(N))           --> ['[VP', aged, '[NP', N, ']', ']'].
 bracket(date(D))           --> ['[NP', D, ']'].
 bracket(time(T))           --> ['[NP', T, ']'].
 bracket(money(M))          --> ['[NP', M, ']'].

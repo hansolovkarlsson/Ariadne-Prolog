@@ -167,6 +167,7 @@ end of this file.
   businesswoman, best known as the chairperson*, *was a sitcom series,
   first broadcast in 1984 and ran for eight seasons*. It may have one
   adverb before it, and is entered only when a participle follows.
+  *Aged* and a number is one, *Videla, aged 84, is on trial*.
 - **A role noun stands bare**: a noun for a person, with *of* after it,
   needs no determiner after *be* or beside a name, *he was chairman of
   the board*, *chairman and managing director of Reliance Industries*;
@@ -1892,3 +1893,14 @@ slept, time* has no reading. The corpus gives **39 grammatical, 11 not,
 and none unknown**, *The intrusion occurred on 10 November, Japanese
 time (UTC+9)* the new pass, with one reading. No other sentence of the
 three corpora moved, nor its count of readings.
+
+*Videla, aged 84,* was next, the one thing left in its sentence. *Aged*
+and a number, with *years* after it or none, is a participle phrase of
+its own, set off by commas where one may be, *Alice, aged 12, sleeps*;
+WordNet gives *age* no frame with a number after it. The corpus gives
+**40 grammatical, 10 not, and none unknown**, *Videla, aged 84, is on
+trial regarding the deaths of 31 prisoners who were killed soon after a
+1976 coup, which saw Videla gain power and led to the so-called "Dirty
+War" soon after* the new pass, with the 64 readings it has without
+*aged 84*. No other sentence of the three corpora moved, nor its count
+of readings.

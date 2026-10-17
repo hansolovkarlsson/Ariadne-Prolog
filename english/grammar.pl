@@ -1576,11 +1576,18 @@ same_prep_ahead(P, S, S) :- phrase(preposition(P), S, _), !.
 % what follows is read as the verb phrase's own.
 supplement(T, V0, V) --> [','], supplement_body(T, V0, V).
 
+% Aged and a number, with years after it or none, is one too: "Videla,
+% aged 84, is on trial".
+supplement_body(aged(N), V, V) -->
+    [aged, N], { number_word(N, _) }, optional_years.
 supplement_body(T, V0, V) -->
     supplement_adverb(As),
     participle_ahead,
     supplement_vp(VP, V0, V),
     { As == [] -> T = VP ; T = pre(As, VP) }.
+
+optional_years --> [years].
+optional_years --> [].
 
 supplement_adverb([adv(A)]) --> [A], { adv(A) }.
 supplement_adverb([]) --> [].

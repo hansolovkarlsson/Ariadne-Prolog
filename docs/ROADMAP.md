@@ -186,7 +186,8 @@ These change the shape of the system rather than adding to it.
        a capital, *It was 5 p.m. The dog slept*); a comma and a noun
        phrase or participle after a noun phrase (9, done 2026-10-17
        but for *the ambassador to Iraq, Zalmay Khalilzad*, a name after
-       a noun phrase that ends in one, and *Videla, aged 84*; two have
+       a noun phrase that ends in one; *Videla, aged 84* done the same
+       day; two have
        no closing comma in the source); a title with no determiner,
        *musician Michael Jackson* (9, done 2026-10-17, *diamond giant De Beers* with a list of nouns for
        companies); a *to*-infinitive of purpose or after a noun (6, done

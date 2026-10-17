@@ -753,6 +753,11 @@ bad('40% of a dog sleeps.',                 no_reading).
 % A name before a noun for a body is that body's name and stands bare;
 % see the WordNet checks for it.
 bad('Alice saw Bob dog.',                   bare(dog)).
+% Aged and a number, set off by commas as a participle phrase is.
+good('Alice, aged 12, sleeps.').
+good('Alice, aged 12 years, sleeps.').
+readings('Alice, aged 12, sleeps.', 1).
+bad('Alice, aged 12 sleeps.',               no_reading).
 % The before a name.
 good('The Hague is big.').
 readings('The Hague is big.', 1).

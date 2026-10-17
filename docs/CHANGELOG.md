@@ -161,6 +161,10 @@ There are no releases yet, so entries are grouped by the day they landed on
   last after a comma. The third corpus gives 39, 11 and none unknown,
   one new pass. 848 checks, 892 with WordNet.
 
+- ***Aged* and a number.** *Videla, aged 84, is on trial*: a participle
+  phrase set off by commas. The third corpus gives 40, 10 and none
+  unknown, one new pass. 852 checks, 896 with WordNet.
+
 ### Fixed
 
 - **A closed-class word in capitals made the same word a name
