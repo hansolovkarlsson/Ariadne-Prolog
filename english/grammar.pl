@@ -973,10 +973,14 @@ nominal_rest(Num, Head, Posts, V0, V) -->
 % what follows a noun, none after a to-infinitive: "the proposal to
 % strengthen the provisions has been rejected" read "the proposal to
 % strengthen [that] the provisions has been _" as well.
-post_relative(Posts, _, [], V, V) --> { last(Posts, inf(_)) }.
+post_relative(Posts, _, [], V, V) --> { closed_posts(Posts) }.
 post_relative(Posts, Agr, Rels, V0, V) -->
-    { \+ last(Posts, inf(_)) },
+    { \+ closed_posts(Posts) },
     relative(Agr, Rels, V0, V).
+
+% closed_posts(+Posts): what follows a noun ends in a to-infinitive or a
+% that clause, after which no relative clause is read.
+closed_posts(Posts) :- last(Posts, P), ( P = inf(_) ; P = sbar(_, _) ), !.
 
 % noun_posts(+HeadNoun, -Posts, V0, V): what follows the noun before a
 % relative clause: the name, the of after kind, and the prepositional
@@ -985,8 +989,9 @@ noun_posts(Head, PPs, V0, V) -->
     name_after(Ns),
     kind_of(Head, KPs, V0, V1),
     pps(PPs0, V1, V2),
-    noun_inf(Head, Is, V2, V),
-    { append([Ns, KPs, PPs0, Is], PPs) }.
+    noun_inf(Head, Is, V2, V3),
+    noun_that(Head, Ts, V3, V),
+    { append([Ns, KPs, PPs0, Is, Ts], PPs) }.
 
 % noun_inf(+HeadNoun, -Trees, V0, V): a to-infinitive after a noun that
 % takes one, "the proposal to strengthen the provisions", "an option to
@@ -1004,6 +1009,24 @@ inf_noun(decision). inf_noun(effort). inf_noun(failure). inf_noun(motion).
 inf_noun(offer). inf_noun(opportunity). inf_noun(option). inf_noun(order).
 inf_noun(permission). inf_noun(plan). inf_noun(promise). inf_noun(proposal).
 inf_noun(refusal). inf_noun(request). inf_noun(resolution). inf_noun(right).
+
+% noun_that(+HeadNoun, -Trees, V0, V): a that clause after a noun that
+% takes one, which says what the doubt or the news is, "expressed doubt
+% that his country's President would be able to visit Japan", "the news
+% that the dog had escaped". The clause is whole, with no gap, which
+% tells it from a relative clause, "the news that the dog heard"; that
+% is not left out, as "the news the dog had escaped" would be read for
+% every noun phrase before a statement. Only the nouns that_noun/1 lists.
+noun_that(Head, [sbar(that, S)], V0, V) -->
+    { noun_form(Head, Sg, _), that_noun(Sg) },
+    [that], statement(S, nogap, nogap, V0, V).
+noun_that(_, [], V, V) --> [].
+
+that_noun(assurance). that_noun(belief). that_noun(claim). that_noun(conclusion).
+that_noun(doubt). that_noun(evidence). that_noun(fact). that_noun(fear).
+that_noun(feeling). that_noun(hope). that_noun(idea). that_noun(news).
+that_noun(notion). that_noun(possibility). that_noun(report). that_noun(rumour).
+that_noun(sign). that_noun(statement). that_noun(suggestion). that_noun(warning).
 
 % modifiers(-Trees): what goes before the noun: its adjectives and names,
 % then the nouns that modify it, "the old stone bridge", "the NBC

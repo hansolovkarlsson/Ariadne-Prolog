@@ -1050,6 +1050,17 @@ wordnet_good('The planet is 1.7 times the size of the planet.').
 wordnet_good('The plan to win the race failed.').
 wordnet_good('The proposal to strengthen the code has been rejected.').
 wordnet_good('The government has an option to increase its stake.').
+% A that clause after a noun that takes one: whole, with that, and no
+% relative clause after it; a clause with a gap is a relative clause.
+good('The idea that the dog sleeps is good.').
+good('Alice has evidence that the dog barks.').
+readings('Alice likes the idea that the dog sleeps.', 1).
+readings('The idea that the dog saw is good.', 1).
+bad('The dog that the cat sleeps barks.',   no_reading).
+bad('The idea the dog sleeps is good.',     no_reading).
+bad('The idea that the dog sleeps that Alice saw is good.', no_reading).
+bad('The idea that the dog sleep is good.', subject_verb(sleep)).
+wordnet_good('The minister has expressed doubt that the President would visit Japan.').
 
 % splits(Text, Sentences): Text cuts into exactly these sentences.
 splits('The dog barks. The cat sleeps.', ['The dog barks.', 'The cat sleeps.']).

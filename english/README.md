@@ -255,6 +255,12 @@ end of this file.
   *Rep. Duncan Hunter on Friday called a vote*, *she on Monday said*; a
   day, a month, a date or a time of day. After a noun the phrase is the
   noun's, *the dog on Friday barked*, and is not read again.
+- **A *that* clause after a noun**: *expressed doubt that his country's
+  President would be able to visit Japan*, *the idea that the dog
+  sleeps*, after twenty nouns listed as taking one, *doubt*, *news*,
+  *fact*, *claim*, *hope* among them. The clause is whole, which tells it
+  from a relative clause, *the idea that the dog saw*; *that* is not left
+  out, and no relative clause follows it.
 - **A phrase before the subject**: *yesterday the dog barked*, *in 2019,
   978 people lived there*, *last night the dog barked*, with a comma or
   none; but not *about the dog barked*.
@@ -1949,3 +1955,20 @@ none unknown**, the *Hunter* sentence the new pass, with 37 readings,
 from where *in the House*, *on a nonbinding resolution*, the infinitive
 and *from Iraq* each attach. No other sentence of the three corpora
 moved, nor its count of readings.
+
+*Doubt that his country's President would* was next, the first of the
+standup's four. A noun takes a *that* clause now, as twenty nouns take
+a *to*-infinitive: only the nouns listed, *doubt*, *news*, *fact*,
+*claim*, *hope*, *evidence*, *idea*, *possibility* and twelve more,
+after the noun's prepositional phrases. The clause is whole, with no
+gap, so *the idea that the dog saw* is still a relative clause and only
+that; *that* is not left out, as *the news the dog had escaped* would
+otherwise be read before every statement; and no relative clause
+follows it. The sentence moves on and fails on its next cause, *due to
+opinion*, a singular noun with no determiner. The corpus stays at **43
+grammatical, 7 not, and none unknown**. The *Jackson* sentence goes
+from 28 readings to 30: the bare plural *reports* with its clause is
+one more item of the list that ends in *public relations*, with *firm*
+as the verb, the wrong reading it had already, through one more noun.
+None of its readings was right before and none is now. No other
+sentence of the three corpora moved, nor its count of readings.

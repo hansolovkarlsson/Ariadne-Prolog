@@ -193,8 +193,9 @@ These change the shape of the system rather than adding to it.
        *musician Michael Jackson* (9, done 2026-10-17, *diamond giant De Beers* with a list of nouns for
        companies); a *to*-infinitive of purpose or after a noun (6, done
        2026-10-17); a bare singular noun, *on trial* (6, done
-       2026-10-17; left, a noun with a *that* clause, *doubt that his
-       country's President would*); verb frames, *described as* (6, done
+       2026-10-17; a noun with a *that* clause, *doubt that his
+       country's President would*, done 2026-10-18; left, *due to
+       opinion*, a singular noun with no determiner); verb frames, *described as* (6, done
        2026-10-17, *ranked world number one* with a name's comma
        relative clause, *such a visit as "grim"* with the *visit*
        defect); an object and a bare

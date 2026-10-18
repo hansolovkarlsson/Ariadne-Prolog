@@ -6,6 +6,17 @@ There are no releases yet, so entries are grouped by the day they landed on
 `main`. Commit hashes are given so each entry can be read in full with
 `git show`.
 
+## 2026-10-18
+
+### Added
+
+- **A *that* clause after a noun.** *Expressed doubt that his country's
+  President would be able to visit Japan*, after twenty nouns listed as
+  taking one; whole, with *that*, and no relative clause after it. The
+  third corpus stays at 43, 7 and none unknown, its sentence now failing
+  on *due to opinion*; the *Jackson* sentence goes from 28 readings to
+  30. 872 checks, 919 with WordNet.
+
 ## 2026-10-17
 
 ### Added
