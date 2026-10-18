@@ -1595,7 +1595,7 @@ unknown**, one cause per commit, and the full output was diffed after
 each. Two sentences gained readings, a wordless relative after a plural
 and *station* as a verb, both English in form, and are recorded.
 
-## Day fourteen: the third corpus by cause, from 14 to 40
+## Day fourteen: the third corpus by cause, from 14 to 43
 
 The next day, 2026-10-17. The tree was as the standup had left it,
 day thirteen's records uncommitted; they went in first and were pushed.
@@ -1678,6 +1678,21 @@ Of the ten left, three are faults of the source, a comma missing twice
 and a sentence run into the next, and the others each need a rule of
 their own.
 
+The day was closed out at 40, and two more commits followed. *Justine,
+who is ranked world number one,* needed a rank as a noun phrase and a
+frame for *rank*, but what stopped it was that a name took no relative
+clause at all: *Justine, who is happy, sleeps* had no reading, and *Bob
+McDonnell, who himself* had read only through the title before the
+name. With that in, the *Rahul Mahajan* sentence failed on the comma
+problem *as well as* had met: its appositive ends in a relative clause,
+and the clause's closing comma is the appositive's too. The two went in
+one commit, since the second leans on the first. Then *Rep. Duncan
+Hunter (R-CA) on Friday called a vote*: a name takes no prepositional
+phrase after it, so *on Friday* is read between the subject and the
+verb, only after a name or a pronoun, since after a noun the noun reads
+it already, and only of time. The corpus stood at **43, 7 and none** at
+the second closeout; of the seven, three are the source's.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1688,7 +1703,7 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 852 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
+| `make english` | The grammar checker's 864 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
 | `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of each of `english/corpus.txt`, `english/corpus2.txt` and `english/corpus3.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |
