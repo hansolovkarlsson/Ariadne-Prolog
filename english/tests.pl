@@ -987,6 +987,11 @@ wordnet_good('Videla is on trial regarding the deaths.').
 wordnet_good('Sarah spoke via email to Bob.').
 wordnet_good('The minister has expressed doubt.').
 wordnet_good('He could not visit Japan due to public opinion.').
+% A number or a range and years before the noun age, and only there.
+wordnet_good('The version targets the eight to seventeen years age group.').
+wordnet_good('The 18 years age limit is big.').
+wordnet_bad('The five years trip is big.',     no_reading).
+wordnet_bad('Alice sees a eight years age group.', article(a, eight)).
 wordnet_good('He was remanded to two-day police custody.').
 wordnet_good('It is aimed at educational use.').
 wordnet_good('Wrangling between the teams may have yielded its first casualty.').

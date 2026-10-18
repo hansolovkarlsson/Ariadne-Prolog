@@ -258,6 +258,10 @@ end of this file.
 - **A range of numbers** as a determiner: *eight to seventeen dogs*,
   *the eight to seventeen dogs*, *5 to 10 cats*, both numbers in words
   or both in digits.
+- **Years before *age***: a number or a range and *years* before the
+  noun *age*, *the eight to seventeen years age group*, *the 18 years
+  age limit*, as official figures put it; another plural measure before
+  a noun, *the five years trip*, is still refused.
 - **A *that* clause after a noun**: *expressed doubt that his country's
   President would be able to visit Japan*, *the idea that the dog
   sleeps*, after twenty nouns listed as taking one, *doubt*, *news*,
@@ -2008,3 +2012,16 @@ years age group*, where the grammar has the hyphen and the singular,
 *the seventeen-year age group*, and *the seventeen years age group*
 has no reading. No sentence of the three corpora moved, nor its count
 of readings.
+
+The plural measure went in narrow, by Hans's decision: a number or a
+range and *years* may stand first among a noun's modifiers when *age*
+follows, *the eight to seventeen years age group*, *the 18 years age
+limit*, the way official figures write it. English writes other
+measures with the hyphen and the singular, *a five-day trip*, which
+reads, and *the five years trip* is still refused. *A eight years age
+group* is told it should be *an eight*. The sentence fails again, on
+*the extensively revised version*, an adverb before a participle
+before a noun; cut down, *the version covers over five thousand
+topics, targeting the eight to seventeen years age group* reads, with
+two readings, *over* a preposition or before the number. No sentence of
+the three corpora moved, nor its count of readings.

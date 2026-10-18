@@ -184,8 +184,9 @@ These change the shape of the system rather than adding to it.
        numbers, times and dates (10, a date with *the*, *more than
        twenty*, a time of day, *twice the size*, *US$5.1 billion* and
        scores done 2026-10-17, the range *eight to seventeen*
-       2026-10-18; left, a plural measure before a noun, *the eight to
-       seventeen years age group*; the splitter does not cut after *p.m.* before
+       2026-10-18, with *years* before *age*, *the eight to seventeen
+       years age group*, settled by Hans, the sentence left failing on
+       *the extensively revised version*; the splitter does not cut after *p.m.* before
        a capital, *It was 5 p.m. The dog slept*); a comma and a noun
        phrase or participle after a noun phrase (9, done 2026-10-17
        but for *the ambassador to Iraq, Zalmay Khalilzad*, a name after

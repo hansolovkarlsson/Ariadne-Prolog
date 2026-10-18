@@ -33,6 +33,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   still fails, on *seventeen years age group*, a plural measure before
   a noun; nothing moved. 879 checks, 927 with WordNet.
 
+- ***Years* before *age*.** *The eight to seventeen years age group*,
+  *the 18 years age limit*: only before *age*, so *the five years trip*
+  is still refused. Its sentence now fails on *the extensively revised
+  version*; nothing moved. 879 checks, 931 with WordNet.
+
 ## 2026-10-17
 
 ### Added

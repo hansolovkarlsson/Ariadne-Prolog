@@ -1069,7 +1069,22 @@ modifiers(Ms) -->
 % noun phrases that take no determiner leave it out, see
 % leads_number/1.
 leading_number([num(D)]) --> [D], { ( digits(D) ; score(D) ) }.
+leading_number([measure(M)]) --> age_measure(M).
 leading_number([]) --> [].
+
+% age_measure(-Words): a number or a range and years, before the noun
+% age, "the eight to seventeen years age group", "the 18 years age
+% limit", as official figures put it. Only before age: another plural
+% measure before a noun, "a five days trip", is still refused, and the
+% hyphen and the singular, "a five-day trip", read already.
+age_measure(M) -->
+    [N, years], age_ahead, { number_word(N, pl),
+                             atomic_list_concat([N, years], ' ', M) }.
+age_measure(M) -->
+    [A, to, B, years], age_ahead, { range(A, B),
+                                    atomic_list_concat([A, to, B, years], ' ', M) }.
+
+age_ahead([age|S], [age|S]).
 
 % modifier_noun(+Word): a noun that may stand before another, in the
 % singular, or one with no singular, "a police officer", "a cattle ranch",
@@ -1161,6 +1176,7 @@ first_word([name(W)|_], _, W) :- !.
 first_word([nmod(W)|_], _, W) :- !.
 first_word([part(W)|_], _, W) :- !.
 first_word([num(D)|_], _, D) :- !.
+first_word([measure(M)|_], _, W) :- !, atomic_list_concat([W|_], ' ', M).
 first_word([], Head, Head).
 
 % kind_of(+Head, -PPs, V0, V): after kind, sort, type and their like, of and
