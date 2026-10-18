@@ -134,7 +134,7 @@ mass(life). mass(death). mass(education). mass(service). mass(experience).
 mass(history). mass(nature). mass(travel). mass(transport).
 mass(equipment). mass(luggage). mass(baggage). mass(clothing).
 mass(software). mass(housework). mass(employment). mass(unemployment).
-mass(doubt). mass(use). mass(custody).
+mass(doubt). mass(use). mass(custody). mass(opinion).
 % Fields of study and work:
 mass(science). mass(art). mass(mathematics). mass(physics).
 mass(chemistry). mass(biology). mass(geology). mass(geography).

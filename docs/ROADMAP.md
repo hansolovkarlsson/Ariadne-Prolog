@@ -166,7 +166,7 @@ These change the shape of the system rather than adding to it.
      A third corpus, news, fifty sentences from 25 articles drawn at
      random from English Wikinews by a rule fixed before the text was
      seen, went in on 2026-10-16: 9 grammatical, 31 not, 10 with a word
-     nothing knows; on 2026-10-17 it gives 43, 7 and none. The
+     nothing knows; on 2026-10-18 it gives 44, 6 and none. The
      splitter's three wrong cuts in it, after *Inc.*, after *Rep.* and
      at an ellipsis, were mended the same day. What it
      asks, in `english/README.md`, where the record by cause was
@@ -194,8 +194,8 @@ These change the shape of the system rather than adding to it.
        companies); a *to*-infinitive of purpose or after a noun (6, done
        2026-10-17); a bare singular noun, *on trial* (6, done
        2026-10-17; a noun with a *that* clause, *doubt that his
-       country's President would*, done 2026-10-18; left, *due to
-       opinion*, a singular noun with no determiner); verb frames, *described as* (6, done
+       country's President would*, done 2026-10-18, and *due to
+       opinion* the same day, *opinion* listed as a mass noun); verb frames, *described as* (6, done
        2026-10-17, *ranked world number one* with a name's comma
        relative clause, *such a visit as "grim"* with the *visit*
        defect); an object and a bare

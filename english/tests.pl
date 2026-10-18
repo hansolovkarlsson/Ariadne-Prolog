@@ -986,6 +986,7 @@ wordnet_bad('Alice has yet to sleeps.',     verb_form(to, sleeps, base)).
 wordnet_good('Videla is on trial regarding the deaths.').
 wordnet_good('Sarah spoke via email to Bob.').
 wordnet_good('The minister has expressed doubt.').
+wordnet_good('He could not visit Japan due to public opinion.').
 wordnet_good('He was remanded to two-day police custody.').
 wordnet_good('It is aimed at educational use.').
 wordnet_good('Wrangling between the teams may have yielded its first casualty.').
