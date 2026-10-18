@@ -1693,6 +1693,62 @@ verb, only after a name or a pronoun, since after a noun the noun reads
 it already, and only of time. The corpus stood at **43, 7 and none** at
 the second closeout; of the seven, three are the source's.
 
+## Day fifteen: a noun's *that* clause, the held sentences, and a range
+
+The next day, 2026-10-18. Day fourteen's second closeout was committed
+first, and then the standup's list was taken from the top, one cause to
+a commit, with the three corpora diffed after every change as the day
+before had taught. The count did not move all day, **43, 7 and none**,
+and that is the right result: three causes were taken out of sentences
+that each had another behind them, and the one sentence that did pass
+was held.
+
+*Expressed doubt that his country's President would* needed a noun to
+take a *that* clause, and it went in the way the infinitive after a
+noun had: twenty listed nouns, the clause whole with no gap, so that
+*the idea that the dog saw* stays a relative clause, *that* never left
+out, and no relative clause after it. The diff named one sentence, the
+*Jackson* one, from 28 readings to 30: the bare plural *reports* with
+its clause became one more item of the list read with *firm* as its
+verb. That is the wrong reading it had already, reached through one
+more noun, and a noun's clause in a list is English, so it was recorded
+and not blocked. The guard against a relative clause after the clause
+was proved by switching it off, since its check otherwise passes either
+way.
+
+The sentence moved on to *due to opinion*, and Hans chose to list
+*opinion* as a mass noun, as *doubt* is, over letting any bare noun
+stand after *due to*. With that the *Ban Ki-moon* sentence passed, and
+reading the brackets showed every one of its 46 readings wrong in the
+same place: the source has no comma after *the South Korean minister*,
+so *Ban Ki-moon* was read as an appositive to *talks*. It was the fault
+held in two other sentences, and the lesson is that holding had been
+only a word in the record, which a pass simply outran. Offered three
+ways out, reverting *opinion*, recording it only, or a list, Hans took
+the list: `held/2` in `english/corpus.pl` names the four sentences, and
+each is still checked and its verdict printed beside its fault, so a
+rule that moves one is seen, but it counts as not grammatical. Its
+first version matched nothing. It compared with `sub_string/5` against
+double-quoted text, and this Prolog has no strings: the corpus lines are
+atoms, and the recorded counts failing was how that showed.
+
+The range, *the eight to seventeen years age group*, turned out to be
+two causes. *Eight to seventeen* is a determiner now, as *more than
+twenty* is, both numbers in words or both in digits. One of its checks,
+*Alice sees 5 to 10 cats*, passed before the rule, as the number alone
+the object, and was rewritten to count readings so that it tests the
+rule. The second cause, *seventeen years age group*, is a plural
+measure before a noun, which standard English writes *seventeen-year*.
+Hans chose the narrow rule over holding it or allowing any plural
+measure: *years* before *age* only, as official figures write it, so
+*the five years trip* is still refused. Its first version gave no
+reading at all, though it parsed when called alone: the new modifier
+tree had no clause in `first_word/3`, which finds the word an article
+must agree with in sound, nor in the tree printer. With both, *a eight
+years age group* is told it should be *an eight*, and each of the three
+parts was proved by switching it off. The sentence now fails on *the
+extensively revised version*, a cause already in the record.
+
 ## How the work is checked
 
 The standing discipline, in the order the checks run:
@@ -1703,7 +1759,7 @@ The standing discipline, in the order the checks run:
 | `make test-asan` | All three again under the address and undefined behaviour sanitizers, aborting on UB rather than printing it. |
 | `make examples` | The five example programs still produce their answers. |
 | `make tutorials` | The four tutorial programs still load and answer. |
-| `make english` | The grammar checker's 864 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
+| `make english` | The grammar checker's 879 checks: five parses' answers, counted before sorting, as `phrase/2` gives them, first; good sentences pass, bad ones fail for the reason named, and running text is cut into the sentences expected. The checker is loaded twice. |
 | `make english-wordnet` | The same with WordNet's words loaded, and the fifty sentences of each of `english/corpus.txt`, `english/corpus2.txt` and `english/corpus3.txt`, whose counts are pinned in `english/corpus.pl`. CI runs it in a job of its own, with WordNet in the Actions cache. |
 | `make doc` + `git diff --exit-code` | The published pages in `web/` match their generators. |
 | The matrix | Linux and macOS, clang and gcc, `-Werror`. |

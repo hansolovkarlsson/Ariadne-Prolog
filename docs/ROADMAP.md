@@ -198,7 +198,10 @@ These change the shape of the system rather than adding to it.
        2026-10-17); a bare singular noun, *on trial* (6, done
        2026-10-17; a noun with a *that* clause, *doubt that his
        country's President would*, done 2026-10-18, and *due to
-       opinion* the same day, *opinion* listed as a mass noun); verb frames, *described as* (6, done
+       opinion* the same day, *opinion* listed as a mass noun; its
+       sentence is held for a missing comma, and *due* is read as an
+       adverb before *to* as well as in *due to*, in 26 of its 46
+       readings); verb frames, *described as* (6, done
        2026-10-17, *ranked world number one* with a name's comma
        relative clause, *such a visit as "grim"* with the *visit*
        defect); an object and a bare
