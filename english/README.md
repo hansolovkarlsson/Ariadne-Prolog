@@ -1976,14 +1976,18 @@ sentence of the three corpora moved, nor its count of readings.
 *Due to opinion* was that sentence's next cause. *Opinion* is a mass
 noun here, as *doubt* is, and is listed as one, so *public opinion*
 reads with no determiner; *I have opinion* is no longer refused, as *I
-have doubt* was not. The corpus gives **44 grammatical, 6 not, and
-none unknown**, the *Ban Ki-moon* sentence the new pass, with 46
+have doubt* was not. The *Ban Ki-moon* sentence then passed, with 46
 readings, and **every one of them is wrong in the same place**: the
 source has no comma after *the South Korean minister*, so *Ban
 Ki-moon* cannot be the subject with its appositive, and is read as an
 appositive to *talks* instead, with *the South Korean minister* the
 subject. It is the fault held in three other sentences, a missing
-closing comma, and the pass rests on it; what follows the subject,
+closing comma, and the pass rests on it, so it is held with them, by
+Hans's decision. The corpus runner holds them by name now, `held/2` in
+`corpus.pl`: a held sentence is checked and its verdict printed beside
+the fault, so a rule that moves it is still seen, and it counts as not
+grammatical. The corpus stays at **43 grammatical, 7 not, and none
+unknown**, four of the seven held. What follows the subject,
 *expressed doubt that ... due to opinion regarding ... Koizumi's
 visit to the Yasukuni Shrine*, is read as it should be. *Due* is read
 as an adverb before *to* as well as in *due to*, in 26 of the 46, as

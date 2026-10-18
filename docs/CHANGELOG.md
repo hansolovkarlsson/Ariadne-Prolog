@@ -17,11 +17,16 @@ There are no releases yet, so entries are grouped by the day they landed on
   on *due to opinion*; the *Jackson* sentence goes from 28 readings to
   30. 872 checks, 919 with WordNet.
 
-- ***Opinion* as a mass noun**, *due to public opinion*. The third
-  corpus gives 44, 6 and none unknown, the *Ban Ki-moon* sentence the
-  new pass; all 46 of its readings take *Ban Ki-moon* as an appositive
-  to *talks*, since the source has no closing comma after *the South
-  Korean minister*. 872 checks, 920 with WordNet.
+- ***Opinion* as a mass noun**, *due to public opinion*. The *Ban
+  Ki-moon* sentence then passed, but all 46 of its readings take *Ban
+  Ki-moon* as an appositive to *talks*, since the source has no closing
+  comma after *the South Korean minister*. 872 checks, 920 with WordNet.
+
+- **Held sentences in the corpus runner.** `held/2` in
+  `english/corpus.pl` names the four corpus 3 sentences with a fault in
+  the source; each is checked and its verdict printed beside the fault,
+  and counts as not grammatical. The third corpus stays at 43, 7 and
+  none unknown, four of the seven held.
 
 ## 2026-10-17
 

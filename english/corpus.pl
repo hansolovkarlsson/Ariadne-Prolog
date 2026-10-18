@@ -23,7 +23,9 @@
 
     Each sentence is checked and its verdict printed, then a count of each
     kind, which must be the recorded one. The sentences it rejects are the
-    record of what the grammar lacks, which the README sets out.
+    record of what the grammar lacks, which the README sets out. A
+    sentence with a fault in the source is held, see held/2, and counts
+    as not grammatical whatever the checker says of it.
 */
 
 % recorded(File, Grammatical, Not, Unknown): the counts the README records.
@@ -32,7 +34,7 @@
 % and the record is brought up to date with it.
 recorded('english/corpus.txt', 50, 0, 0).
 recorded('english/corpus2.txt', 49, 0, 1).
-recorded('english/corpus3.txt', 44, 6, 0).
+recorded('english/corpus3.txt', 43, 7, 0).
 
 corpus :-
     corpus('english/corpus.txt'),
@@ -68,5 +70,28 @@ read_lines(In, Lines) :-
 
 one(S, T0, T) :-
     sentence_result(S, R),
-    result_line(R, S),
-    count_result(R, T0, T).
+    (   held(Start, Why), sub_atom(S, 0, _, _, Start)
+    ->  held_line(R, S, Why),
+        count_result(no(held), T0, T)
+    ;   result_line(R, S),
+        count_result(R, T0, T)
+    ).
+
+% held(Start, Why): a sentence with a fault in the source, named by how it
+% starts, which is not worked on and counts as not grammatical whatever
+% the checker says. The checker's verdict is printed beside it, so a rule
+% that moves it is still seen. The Ban Ki-moon sentence passed on
+% 2026-10-18 with every reading wrong: with no comma after "the South
+% Korean minister", "Ban Ki-moon" was read as an appositive to "talks".
+held('"I am sorry about the arrest.We',
+     'two sentences run together inside a quotation, "the arrest.We"').
+held('The planet, named TrES-4, after',
+     'no comma to close the participle phrase before "is"').
+held('Yesterday, in front of the USS Wisconsin',
+     'no comma to close the appositive before "selected"').
+held('During talks between the respective Foreign Ministers',
+     'no comma to close the appositive after "the South Korean minister"').
+
+held_line(yes(N), S, Why) :- format("held      ~w  (~w; the checker: yes (~d))~n", [S, Why, N]).
+held_line(no(M), S, Why)  :- format("held      ~w  (~w; the checker: no, ~w)~n", [S, Why, M]).
+held_line(unknown(Ws), S, Why) :- format("held      ~w  (~w; the checker: unknown ~w)~n", [S, Why, Ws]).
