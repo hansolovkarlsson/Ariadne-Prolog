@@ -1027,6 +1027,17 @@ good('Alice sees fewer than ten cats.').
 readings('More than two dogs sleep.', 1).
 bad('More than two dogs sleeps.',          subject_verb(sleeps)).
 
+% A range, both numbers in words or both in digits, as one determiner;
+% after a verb, a number may be the object with a to phrase after it too,
+% "sees [5] [to 10 cats]", which read before.
+good('Eight to seventeen dogs sleep.').
+good('Alice sees the eight to seventeen cats.').
+readings('Alice sees 5 to 10 cats.', 2).
+readings('Eight to seventeen dogs sleep.', 1).
+readings('The eight to seventeen dogs sleep.', 1).
+bad('Eight to seventeen dogs sleeps.',      subject_verb(sleeps)).
+bad('Eight to 17 dogs sleep.',              no_reading).
+
 % A date with the before its day, and a day of the week before that.
 good('The dog slept on the 2nd of August.').
 good('The dog slept on the 2 August 2012.').

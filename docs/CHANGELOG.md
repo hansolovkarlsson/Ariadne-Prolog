@@ -28,6 +28,11 @@ There are no releases yet, so entries are grouped by the day they landed on
   and counts as not grammatical. The third corpus stays at 43, 7 and
   none unknown, four of the seven held.
 
+- **A range of numbers.** *Eight to seventeen dogs*, *the eight to
+  seventeen dogs*, *5 to 10 cats*, as one determiner. Its sentence
+  still fails, on *seventeen years age group*, a plural measure before
+  a noun; nothing moved. 879 checks, 927 with WordNet.
+
 ## 2026-10-17
 
 ### Added

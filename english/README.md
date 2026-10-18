@@ -255,6 +255,9 @@ end of this file.
   *Rep. Duncan Hunter on Friday called a vote*, *she on Monday said*; a
   day, a month, a date or a time of day. After a noun the phrase is the
   noun's, *the dog on Friday barked*, and is not read again.
+- **A range of numbers** as a determiner: *eight to seventeen dogs*,
+  *the eight to seventeen dogs*, *5 to 10 cats*, both numbers in words
+  or both in digits.
 - **A *that* clause after a noun**: *expressed doubt that his country's
   President would be able to visit Japan*, *the idea that the dog
   sleeps*, after twenty nouns listed as taking one, *doubt*, *news*,
@@ -1993,3 +1996,15 @@ visit to the Yasukuni Shrine*, is read as it should be. *Due* is read
 as an adverb before *to* as well as in *due to*, in 26 of the 46, as
 it was before. No other sentence of the three corpora moved, nor its
 count of readings.
+
+The range was next, *targeting the eight to seventeen years age
+group*, and it is two causes. *Eight to seventeen* is a determiner now,
+as *more than twenty* is, with *the* before it or none, both numbers in
+words or both in digits, so *eight to 17 dogs* is refused; after a
+verb, *sees 5 to 10 cats* has a second reading, the number alone the
+object and *to 10 cats* after it, which read before. The sentence still
+fails, on the second cause: a plural measure before a noun, *seventeen
+years age group*, where the grammar has the hyphen and the singular,
+*the seventeen-year age group*, and *the seventeen years age group*
+has no reading. No sentence of the three corpora moved, nor its count
+of readings.

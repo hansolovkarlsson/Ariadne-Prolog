@@ -779,7 +779,7 @@ names_only(nom([A|As], n(H), _)) :-
 % "such a sunset"; a number that takes one before it, "a hundred", "two
 % thousand"; or a number with a word before it that makes it rough,
 % "about six", "about two thousand", or more than one, "more than
-% twenty"; or a definite
+% twenty"; a range, "eight to seventeen"; or a definite
 % determiner before a quantity, "the three Romanian journalists", "their
 % seven encounters", "these few dogs". Each one of two words or three
 % counts as one word.
@@ -799,18 +799,31 @@ determiner(D, pl, _) -->
 determiner(D, Num, _) -->
     [A, than, N], { comparative_quantity(A), number_word(N, Num),
                     atomic_list_concat([A, than, N], ' ', D) }.
+% A range, "eight to seventeen", "5 to 10", both numbers in words or
+% both in digits.
+determiner(D, pl, _) -->
+    [A, to, B], { range(A, B), atomic_list_concat([A, to, B], ' ', D) }.
 determiner(D, Num, _) -->
     [A, N], { definite_det(A, ANum), quantity(N, Num), ANum = Num,
               atomic_list_concat([A, N], ' ', D) }.
 % An adjective of order between them, "the past few days", "the last
 % three years", "the other two", and a big number after the number, "the
-% two hundred".
+% two hundred"; and a range, "the eight to seventeen".
 determiner(D, pl, _) -->
     [A, J, N], { definite_det(A, _), order_adj(J), quantity(N, pl),
                  atomic_list_concat([A, J, N], ' ', D) }.
 determiner(D, pl, _) -->
     [A, N, B], { definite_det(A, _), number_word(N, _), \+ digits(N),
                  big_number(B), atomic_list_concat([A, N, B], ' ', D) }.
+determiner(D, pl, _) -->
+    [A, N, to, M], { definite_det(A, _), \+ digits(N), range(N, M),
+                     atomic_list_concat([A, N, to, M], ' ', D) }.
+
+% range(+From, +To): two numbers that make a range, "eight to seventeen",
+% both in words or both in digits, the second plural.
+range(A, B) :-
+    number_word(A, _), number_word(B, pl),
+    ( digits(A) -> digits(B) ; \+ digits(B) ).
 
 order_adj(past). order_adj(last). order_adj(next). order_adj(first).
 order_adj(previous). order_adj(final). order_adj(other).
